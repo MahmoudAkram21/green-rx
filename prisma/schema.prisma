@@ -1,0 +1,944 @@
+// Green RX Database Schema
+// Comprehensive schema for medical prescription management system
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma/client"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ============================================
+// ENUMS
+// ============================================
+
+enum UserRole {
+  Patient
+  Doctor
+  Admin
+  Company
+  SuperAdmin
+}
+
+enum Gender {
+  Male
+  Female
+  Other
+}
+
+enum AgeClassification {
+  Neonates
+  Infants
+  Toddlers
+  Children
+  Adolescents
+  Adults
+  Elderly
+}
+
+enum DiseaseSeverity {
+  None
+  Mild
+  Moderate
+  Severe
+  Critical
+}
+
+enum DiseaseStatus {
+  Active
+  Resolved
+  Chronic
+}
+
+enum PrescriptionStatus {
+  Draft
+  Pending
+  Approved
+  Filled
+  Cancelled
+}
+
+enum SubscriptionStatus {
+  Active
+  Expired
+  Cancelled
+  Suspended
+}
+
+enum MedicineAvailabilityStatus {
+  InStock
+  OutOfStock
+  Discontinued
+}
+
+enum InteractionSeverity {
+  Minor
+  Moderate
+  Major
+  Contraindicated
+}
+
+enum AllergySeverity {
+  Mild
+  Moderate
+  Severe
+  LifeThreatening
+}
+
+enum RelationshipType {
+  PrimaryCare
+  Specialist
+  Consultant
+}
+
+enum AppointmentStatus {
+  Scheduled
+  Confirmed
+  Completed
+  Cancelled
+  NoShow
+}
+
+enum NotificationType {
+  PrescriptionReady
+  DrugInteraction
+  AppointmentReminder
+  SystemAlert
+}
+
+enum PaymentStatus {
+  Pending
+  Completed
+  Failed
+  Refunded
+}
+
+enum WarningSeverity {
+  Low
+  Medium
+  High
+  Critical
+}
+
+// ============================================
+// USER & AUTHENTICATION
+// ============================================
+
+model User {
+  id                     Int       @id @default(autoincrement())
+  email                  String    @unique
+  passwordHash           String
+  role                   UserRole
+  emailVerified          Boolean   @default(false)
+  emailVerificationToken String?
+  passwordResetToken     String?
+  passwordResetExpires   DateTime?
+  isActive               Boolean   @default(true)
+  lastLoginAt            DateTime?
+  createdAt              DateTime  @default(now())
+  updatedAt              DateTime  @updatedAt
+  deletedAt              DateTime?
+
+  // Relations
+  subscription  Subscription?
+  patient       Patient?
+  doctor        Doctor?
+  notifications Notification[]
+  auditLogs     AuditLog[]
+  sessions      Session[]
+
+  @@index([role])
+  @@index([deletedAt])
+  @@map("users")
+}
+
+// ============================================
+// PRICING & SUBSCRIPTION
+// ============================================
+
+model PricingPlan {
+  id        Int      @id @default(autoincrement())
+  title     String
+  price     Decimal  @db.Decimal(10, 2)
+  salePrice Decimal? @db.Decimal(10, 2)
+  duration  Int // in days
+  isDefault Boolean  @default(false)
+  features  Json? // array of feature strings
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  subscriptions Subscription[]
+
+  @@index([isDefault])
+  @@map("pricing_plans")
+}
+
+model Subscription {
+  id            Int                @id @default(autoincrement())
+  userId        Int                @unique
+  pricingPlanId Int
+  status        SubscriptionStatus @default(Active)
+  startDate     DateTime
+  endDate       DateTime
+  autoRenew     Boolean            @default(true)
+  cancelledAt   DateTime?
+  createdAt     DateTime           @default(now())
+  updatedAt     DateTime           @updatedAt
+
+  // Relations
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  pricingPlan PricingPlan @relation(fields: [pricingPlanId], references: [id])
+  payments    Payment[]
+
+  @@index([status])
+  @@index([endDate])
+  @@map("subscriptions")
+}
+
+model Payment {
+  id             Int           @id @default(autoincrement())
+  subscriptionId Int
+  amount         Decimal       @db.Decimal(10, 2)
+  currency       String        @default("USD")
+  paymentMethod  String?
+  transactionId  String?       @unique
+  status         PaymentStatus @default(Pending)
+  paidAt         DateTime?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  // Relations
+  subscription Subscription @relation(fields: [subscriptionId], references: [id])
+
+  @@index([status])
+  @@map("payments")
+}
+
+// ============================================
+// PATIENT
+// ============================================
+
+model Patient {
+  id                  Int               @id @default(autoincrement())
+  userId              Int               @unique
+  name                String
+  age                 Int
+  ageClassification   AgeClassification
+  weight              Decimal?          @db.Decimal(5, 2) // in kg
+  height              Decimal?          @db.Decimal(5, 2) // in cm
+  gender              Gender
+  smoking             Boolean           @default(false)
+  pregnancyWarning    Boolean           @default(false)
+  lactation           Boolean           @default(false)
+  profileCompleteness Int               @default(0) // percentage
+  createdAt           DateTime          @default(now())
+  updatedAt           DateTime          @updatedAt
+  deletedAt           DateTime?
+
+  // Relations
+  user             User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  prescriptions    Prescription[]
+  patientDiseases  PatientDisease[]
+  medicalHistories MedicalHistory[]
+  familyHistories  FamilyHistory[]
+  lifestyle        Lifestyle?
+  allergies        Allergy[]
+  patientDoctors   PatientDoctor[]
+  consultations    Consultation[]
+  appointments     Appointment[]
+
+  @@index([age])
+  @@index([ageClassification])
+  @@map("patients")
+}
+
+model MedicalHistory {
+  id            Int           @id @default(autoincrement())
+  patientId     Int
+  condition     String
+  diagnosisDate DateTime?
+  treatment     String?
+  status        DiseaseStatus
+  notes         String?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  // Relations
+  patient Patient @relation(fields: [patientId], references: [id], onDelete: Cascade)
+
+  @@index([patientId])
+  @@index([status])
+  @@map("medical_histories")
+}
+
+model FamilyHistory {
+  id        Int      @id @default(autoincrement())
+  patientId Int
+  relation  String // e.g., "Father", "Mother", "Sibling"
+  condition String
+  notes     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  patient Patient @relation(fields: [patientId], references: [id], onDelete: Cascade)
+
+  @@index([patientId])
+  @@map("family_histories")
+}
+
+model Lifestyle {
+  id                   Int      @id @default(autoincrement())
+  patientId            Int      @unique
+  noGlasses            Boolean  @default(false)
+  alcoholAbuse         Boolean  @default(false)
+  excessCaffeine       Boolean  @default(false)
+  waterDaily           Decimal? @db.Decimal(4, 2) // liters per day
+  travellerAbroad      Boolean  @default(false)
+  annualVaccination    Boolean  @default(false)
+  surgeriesLast3Months Boolean  @default(false)
+  surgeriesDetails     String?
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  // Relations
+  patient Patient @relation(fields: [patientId], references: [id], onDelete: Cascade)
+
+  @@map("lifestyles")
+}
+
+model Allergy {
+  id           Int             @id @default(autoincrement())
+  patientId    Int
+  allergen     String
+  severity     AllergySeverity
+  reactionType String?
+  notes        String?
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+
+  // Relations
+  patient Patient @relation(fields: [patientId], references: [id], onDelete: Cascade)
+
+  @@index([patientId])
+  @@index([allergen])
+  @@map("allergies")
+}
+
+// ============================================
+// DOCTOR
+// ============================================
+
+model Doctor {
+  id             Int       @id @default(autoincrement())
+  userId         Int       @unique
+  name           String
+  licenseNumber  String    @unique
+  specialization String
+  isVerified     Boolean   @default(false)
+  verifiedAt     DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  deletedAt      DateTime?
+
+  // Relations
+  user           User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  prescriptions  Prescription[]
+  patientDoctors PatientDoctor[]
+  consultations  Consultation[]
+  appointments   Appointment[]
+
+  @@index([specialization])
+  @@map("doctors")
+}
+
+model PatientDoctor {
+  id               Int              @id @default(autoincrement())
+  patientId        Int
+  doctorId         Int
+  relationshipType RelationshipType
+  startDate        DateTime
+  endDate          DateTime?
+  isActive         Boolean          @default(true)
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+
+  // Relations
+  patient Patient @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  doctor  Doctor  @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+
+  @@unique([patientId, doctorId])
+  @@index([isActive])
+  @@map("patient_doctors")
+}
+
+model Consultation {
+  id               Int       @id @default(autoincrement())
+  patientId        Int
+  doctorId         Int
+  consultationDate DateTime
+  notes            String?
+  diagnosis        String?
+  followUpRequired Boolean   @default(false)
+  followUpDate     DateTime?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  // Relations
+  patient Patient @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  doctor  Doctor  @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+
+  @@index([patientId])
+  @@index([doctorId])
+  @@index([consultationDate])
+  @@map("consultations")
+}
+
+model Appointment {
+  id              Int               @id @default(autoincrement())
+  patientId       Int
+  doctorId        Int
+  appointmentDate DateTime
+  duration        Int // in minutes
+  status          AppointmentStatus @default(Scheduled)
+  notes           String?
+  reminderSent    Boolean           @default(false)
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  // Relations
+  patient Patient @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  doctor  Doctor  @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+
+  @@index([patientId])
+  @@index([doctorId])
+  @@index([appointmentDate])
+  @@index([status])
+  @@map("appointments")
+}
+
+// ============================================
+// DISEASE
+// ============================================
+
+model Disease {
+  id          Int             @id @default(autoincrement())
+  name        String          @unique
+  severity    DiseaseSeverity
+  description String?
+  isActive    Boolean         @default(true)
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  // Relations
+  diseaseActiveSubstanceWarnings DiseaseActiveSubstanceWarning[]
+  patientDiseases                PatientDisease[]
+
+  @@index([severity])
+  @@map("diseases")
+}
+
+model PatientDisease {
+  id            Int             @id @default(autoincrement())
+  patientId     Int
+  diseaseId     Int
+  diagnosisDate DateTime
+  severity      DiseaseSeverity
+  status        DiseaseStatus
+  notes         String?
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+
+  // Relations
+  patient Patient @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  disease Disease @relation(fields: [diseaseId], references: [id], onDelete: Cascade)
+
+  @@index([patientId, diseaseId])
+  @@index([status])
+  @@map("patient_diseases")
+}
+
+// ============================================
+// MEDICINE - ACTIVE SUBSTANCE
+// ============================================
+
+model ActiveSubstance {
+  id              Int     @id @default(autoincrement())
+  activeSubstance String
+  concentration   String?
+  classification  String?
+  dosageForm      String?
+  indication      String?
+
+  // Dosage Fields
+  adultDoseMaxPerDay String?
+  adultDoseMgPerKg   String?
+  doseInKg           String?
+  pediatricDose      String?
+
+  // Content Fields
+  glucoseContent                String?
+  lactoseContent                String?
+  fructoseContent               String?
+  preservativesInOcularProducts String?
+  eliminationPathway            String?
+
+  // Warning Fields
+  contraindications           Json?
+  pregnancyWarning            String?
+  lactationWarning            String?
+  reproductiveWarningFemale   String?
+  reproductiveWarningMale     String?
+  specialPopulationChildren   String?
+  specialPopulationElderly    String?
+  ethnicAction                String?
+  hepaticWarning              String?
+  renalWarning                String?
+  medicationErrorWarning      String?
+  carcinogenicityMutagenicity String?
+  gitWarning                  String?
+  metabolismWarning           String?
+  pulmonaryWarning            String?
+  immuneSystemWarning         String?
+  infectionWarning            String?
+  bloodWarning                String?
+  vascularWarning             String?
+  electrolyteImbalanceWarning String?
+  cardiacWarning              String?
+  psychiatricWarning          String?
+  nervousSystemWarning        String?
+  skinConnectiveTissueWarning String?
+  musculoSkeletalWarning      String?
+  eyeDisordersWarning         String?
+  earDisordersWarning         String?
+
+  // Drug Interaction Fields (JSON arrays)
+  interactionVitaminsFood        Json?
+  interactionBisphosphonates     Json?
+  interactionAlcohol             Json?
+  interactionMuscleRelaxant      Json?
+  interactionRetinoids           Json?
+  interactionCorticosteroids     Json?
+  interactionXanthines           Json?
+  interactionSympathomimetics    Json?
+  interactionAnticholinergic     Json?
+  interactionChemotherapy        Json?
+  interactionAntibiotics         Json?
+  interactionHormones            Json?
+  interactionStatins             Json?
+  interactionAntihypertensive    Json?
+  interactionAntidiuretics       Json?
+  interactionAntidepressant      Json?
+  interactionAntidiabetic        Json?
+  interactionLowBloodSugarAgents Json?
+  interactionDigoxin             Json?
+  interactionAnticoagulant       Json?
+  interactionNSAIDs              Json?
+  interactionImmunosuppressive   Json?
+  interactionAntacids            Json?
+  interactionUricosurics         Json?
+  interactionProtectants         Json?
+  interactionAntiParkinson       Json?
+  interactionHIVProtease         Json?
+  ironChelator                   String?
+  interactionBloodProduct        Json?
+  interactionVaccines            Json?
+  interactionAnthelmintics       Json?
+  interactionPDE5Inhibitors      Json?
+  interferenceLabTests           String?
+  effectOnDriving                String?
+
+  // Side Effects Fields (JSON arrays by frequency)
+  veryCommonGIT             Json?
+  veryCommonBlood           Json?
+  veryCommonVascular        Json?
+  veryCommonCardiac         Json?
+  veryCommonMusculoskeletal Json?
+  veryCommonNervousSystem   Json?
+  veryCommonEye             Json?
+  veryCommonMetabolism      Json?
+  veryCommonEar             Json?
+  veryCommonRespiratory     Json?
+  veryCommonSkin            Json?
+  veryCommonInfection       Json?
+  veryCommonPsychiatric     Json?
+  veryCommonRenal           Json?
+  veryCommonHepatic         Json?
+  veryCommonGeneral         Json?
+  commonGIT                 Json?
+  commonVascular            Json?
+  commonInfections          Json?
+  commonRespiratory         Json?
+  commonCardiac             Json?
+  commonBlood               Json?
+  commonSkin                Json?
+  commonEye                 Json?
+  commonEar                 Json?
+  commonMetabolism          Json?
+  commonGeneral             Json?
+  commonHepatobiliary       Json?
+  commonImmunity            Json?
+  commonPsychiatric         Json?
+  commonNervousSystem       Json?
+  commonRenal               Json?
+  commonMusculoskeletal     Json?
+  uncommonNervous           Json?
+  uncommonInfections        Json?
+  uncommonPsychiatric       Json?
+  uncommonEye               Json?
+  uncommonRespiratory       Json?
+  uncommonSkin              Json?
+  uncommonRenal             Json?
+  uncommonHepatobiliary     Json?
+  uncommonVascular          Json?
+  uncommonGIT               Json?
+  uncommonMusculoskeletal   Json?
+  uncommonMetabolism        Json?
+  uncommonEar               Json?
+  uncommonCardiac           Json?
+  uncommonBlood             Json?
+  uncommonImmunity          Json?
+  uncommonGeneral           Json?
+  rareEar                   Json?
+  rareBlood                 Json?
+  rareGIT                   Json?
+  rareHepatic               Json?
+  rareInfections            Json?
+  rareCardiac               Json?
+  rareVascular              Json?
+  rareImmune                Json?
+  rareMetabolism            Json?
+  rareNervous               Json?
+  rareMusculoskeletal       Json?
+  rarePsychiatric           Json?
+  rareEye                   Json?
+  rareRenal                 Json?
+  rareSkin                  Json?
+  rareRespiratory           Json?
+  rareEndocrine             Json?
+  rareGeneral               Json?
+  veryRareVascular          Json?
+  veryRareEndocrine         Json?
+  veryRareNervous           Json?
+  veryRarePsychiatric       Json?
+  veryRareEye               Json?
+  veryRareMusculoskeletal   Json?
+  veryRareBlood             Json?
+  veryRareCardiac           Json?
+  veryRareImmune            Json?
+  veryRareEar               Json?
+  veryRareRenal             Json?
+  veryRareGIT               Json?
+  veryRareHepatobiliary     Json?
+  veryRareInfections        Json?
+  veryRareRespiratory       Json?
+  veryRareSkin              Json?
+  veryRareGeneral           Json?
+  veryRareMetabolism        Json?
+  unknownNervous            Json?
+  unknownMusculoskeletal    Json?
+  unknownPsychiatric        Json?
+  unknownHepatobiliary      Json?
+  unknownRenal              Json?
+  unknownSkin               Json?
+  unknownRespiratory        Json?
+  unknownImmune             Json?
+  unknownVascular           Json?
+  unknownEar                Json?
+  unknownGIT                Json?
+  unknownGeneral            Json?
+  unknownMetabolism         Json?
+  unknownEye                Json?
+  unknownBlood              Json?
+  unknownCardiac            Json?
+  unknownInfections         Json?
+  unknownEndocrine          Json?
+
+  // Additional Fields
+  additiveRMM          String?
+  pregnancyCategory    String?
+  additionalMonitoring String?
+  highlightedWarning   String?
+  version              Int       @default(1)
+  isActive             Boolean   @default(true)
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+  deletedAt            DateTime?
+
+  // Relations
+  tradeNames                     TradeName[]
+  diseaseActiveSubstanceWarnings DiseaseActiveSubstanceWarning[]
+  medicineAlternatives           MedicineAlternative[]           @relation("PrimarySubstance")
+  alternativeTo                  MedicineAlternative[]           @relation("AlternativeSubstance")
+
+  @@index([activeSubstance])
+  @@index([isActive])
+  @@map("active_substances")
+}
+
+model DiseaseActiveSubstanceWarning {
+  id                Int             @id @default(autoincrement())
+  diseaseId         Int
+  activeSubstanceId Int
+  warningFieldName  String // which ActiveSubstance field to check
+  warningMessage    String // custom warning message
+  severity          WarningSeverity
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+
+  // Relations
+  disease         Disease         @relation(fields: [diseaseId], references: [id], onDelete: Cascade)
+  activeSubstance ActiveSubstance @relation(fields: [activeSubstanceId], references: [id], onDelete: Cascade)
+
+  @@unique([diseaseId, activeSubstanceId])
+  @@index([warningFieldName])
+  @@map("disease_active_substance_warnings")
+}
+
+model MedicineAlternative {
+  id                           Int      @id @default(autoincrement())
+  activeSubstanceId            Int
+  alternativeActiveSubstanceId Int
+  reason                       String?
+  createdAt                    DateTime @default(now())
+
+  // Relations
+  activeSubstance            ActiveSubstance @relation("PrimarySubstance", fields: [activeSubstanceId], references: [id], onDelete: Cascade)
+  alternativeActiveSubstance ActiveSubstance @relation("AlternativeSubstance", fields: [alternativeActiveSubstanceId], references: [id], onDelete: Cascade)
+
+  @@index([activeSubstanceId])
+  @@index([alternativeActiveSubstanceId])
+  @@map("medicine_alternatives")
+}
+
+// ============================================
+// MEDICINE - TRADE NAME
+// ============================================
+
+model TradeName {
+  id                  Int                        @id @default(autoincrement())
+  title               String
+  activeSubstanceId   Int
+  companyId           Int
+  warningNotification String? // for doctors only
+  batchNumber         String?
+  barCode             String?
+  availabilityStatus  MedicineAvailabilityStatus @default(InStock)
+  stockQuantity       Int?
+  expiryDate          DateTime?
+  isActive            Boolean                    @default(true)
+  createdAt           DateTime                   @default(now())
+  updatedAt           DateTime                   @updatedAt
+  deletedAt           DateTime?
+
+  // Relations
+  activeSubstance              ActiveSubstance               @relation(fields: [activeSubstanceId], references: [id], onDelete: Cascade)
+  company                      Company                       @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  prescriptions                Prescription[]
+  contractingCompanyTradeNames ContractingCompanyTradeName[]
+  drugInteractionAlerts        DrugInteractionAlert[]
+
+  @@index([title])
+  @@index([activeSubstanceId])
+  @@index([companyId])
+  @@index([availabilityStatus])
+  @@map("trade_names")
+}
+
+model Company {
+  id          Int       @id @default(autoincrement())
+  name        String    @unique
+  contactInfo Json?
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+
+  // Relations
+  tradeNames           TradeName[]
+  contractingCompanies ContractingCompany[]
+
+  @@map("companies")
+}
+
+model ContractingCompany {
+  id              Int       @id @default(autoincrement())
+  title           String
+  companyId       Int
+  contractingDate DateTime
+  expiryDate      DateTime?
+  isActive        Boolean   @default(true)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  // Relations
+  company                      Company                       @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  contractingCompanyTradeNames ContractingCompanyTradeName[]
+
+  @@index([contractingDate])
+  @@map("contracting_companies")
+}
+
+model ContractingCompanyTradeName {
+  id                   Int      @id @default(autoincrement())
+  contractingCompanyId Int
+  tradeNameId          Int
+  createdAt            DateTime @default(now())
+
+  // Relations
+  contractingCompany ContractingCompany @relation(fields: [contractingCompanyId], references: [id], onDelete: Cascade)
+  tradeName          TradeName          @relation(fields: [tradeNameId], references: [id], onDelete: Cascade)
+
+  @@unique([contractingCompanyId, tradeNameId])
+  @@map("contracting_company_trade_names")
+}
+
+// ============================================
+// PRESCRIPTION
+// ============================================
+
+model Prescription {
+  id                 Int                @id @default(autoincrement())
+  doctorId           Int
+  patientId          Int
+  tradeNameId        Int
+  status             PrescriptionStatus @default(Draft)
+  prescriptionDate   DateTime
+  validFrom          DateTime
+  validUntil         DateTime
+  dosage             String?
+  frequency          String?
+  duration           String?
+  instructions       String?
+  maxRefills         Int                @default(0)
+  currentRefillCount Int                @default(0)
+  notes              String?
+  version            Int                @default(1)
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+  deletedAt          DateTime?
+
+  // Relations
+  doctor                Doctor                 @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  patient               Patient                @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  tradeName             TradeName              @relation(fields: [tradeNameId], references: [id], onDelete: Cascade)
+  prescriptionVersions  PrescriptionVersion[]
+  drugInteractionAlerts DrugInteractionAlert[]
+
+  @@index([doctorId])
+  @@index([patientId])
+  @@index([status])
+  @@index([prescriptionDate])
+  @@map("prescriptions")
+}
+
+model PrescriptionVersion {
+  id             Int      @id @default(autoincrement())
+  prescriptionId Int
+  version        Int
+  changes        Json? // what changed
+  changedBy      Int // User ID
+  createdAt      DateTime @default(now())
+
+  // Relations
+  prescription Prescription @relation(fields: [prescriptionId], references: [id], onDelete: Cascade)
+
+  @@index([prescriptionId])
+  @@index([version])
+  @@map("prescription_versions")
+}
+
+model DrugInteractionAlert {
+  id                    Int                 @id @default(autoincrement())
+  prescriptionId        Int
+  interactingMedicineId Int // TradeName ID
+  interactionType       String
+  severity              InteractionSeverity
+  message               String
+  acknowledgedByDoctor  Boolean             @default(false)
+  acknowledgedByPatient Boolean             @default(false)
+  acknowledgedAt        DateTime?
+  createdAt             DateTime            @default(now())
+
+  // Relations
+  prescription        Prescription @relation(fields: [prescriptionId], references: [id], onDelete: Cascade)
+  interactingMedicine TradeName    @relation(fields: [interactingMedicineId], references: [id], onDelete: Cascade)
+
+  @@index([prescriptionId])
+  @@index([severity])
+  @@map("drug_interaction_alerts")
+}
+
+// ============================================
+// NOTIFICATIONS
+// ============================================
+
+model Notification {
+  id             Int              @id @default(autoincrement())
+  userId         Int
+  type           NotificationType
+  title          String
+  message        String
+  isRead         Boolean          @default(false)
+  readAt         DateTime?
+  deliveryStatus String? // Pending, Sent, Delivered, Failed
+  createdAt      DateTime         @default(now())
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([isRead])
+  @@index([type])
+  @@index([createdAt])
+  @@map("notifications")
+}
+
+// ============================================
+// AUDIT & SESSION
+// ============================================
+
+model AuditLog {
+  id         Int      @id @default(autoincrement())
+  userId     Int?
+  action     String // e.g., "UPDATE_MEDICINE", "DELETE_PRESCRIPTION"
+  entityType String // e.g., "ActiveSubstance", "Prescription"
+  entityId   Int
+  changes    Json? // what changed
+  ipAddress  String?
+  userAgent  String?
+  createdAt  DateTime @default(now())
+
+  // Relations
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([action])
+  @@index([entityType])
+  @@index([createdAt])
+  @@map("audit_logs")
+}
+
+model Session {
+  id           Int      @id @default(autoincrement())
+  userId       Int
+  token        String   @unique
+  refreshToken String?  @unique
+  expiresAt    DateTime
+  ipAddress    String?
+  userAgent    String?
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+  @@map("sessions")
+}
