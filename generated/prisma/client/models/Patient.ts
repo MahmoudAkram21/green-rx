@@ -326,6 +326,12 @@ export type PatientWhereInput = {
   patientDoctors?: Prisma.PatientDoctorListRelationFilter
   consultations?: Prisma.ConsultationListRelationFilter
   appointments?: Prisma.AppointmentListRelationFilter
+  medicalReports?: Prisma.MedicalReportListRelationFilter
+  shareLinks?: Prisma.PatientShareLinkListRelationFilter
+  adverseReactions?: Prisma.AdverseDrugReactionListRelationFilter
+  childrenProfiles?: Prisma.ChildProfileListRelationFilter
+  ratings?: Prisma.RatingListRelationFilter
+  visits?: Prisma.VisitListRelationFilter
 }
 
 export type PatientOrderByWithRelationInput = {
@@ -354,6 +360,12 @@ export type PatientOrderByWithRelationInput = {
   patientDoctors?: Prisma.PatientDoctorOrderByRelationAggregateInput
   consultations?: Prisma.ConsultationOrderByRelationAggregateInput
   appointments?: Prisma.AppointmentOrderByRelationAggregateInput
+  medicalReports?: Prisma.MedicalReportOrderByRelationAggregateInput
+  shareLinks?: Prisma.PatientShareLinkOrderByRelationAggregateInput
+  adverseReactions?: Prisma.AdverseDrugReactionOrderByRelationAggregateInput
+  childrenProfiles?: Prisma.ChildProfileOrderByRelationAggregateInput
+  ratings?: Prisma.RatingOrderByRelationAggregateInput
+  visits?: Prisma.VisitOrderByRelationAggregateInput
 }
 
 export type PatientWhereUniqueInput = Prisma.AtLeast<{
@@ -385,6 +397,12 @@ export type PatientWhereUniqueInput = Prisma.AtLeast<{
   patientDoctors?: Prisma.PatientDoctorListRelationFilter
   consultations?: Prisma.ConsultationListRelationFilter
   appointments?: Prisma.AppointmentListRelationFilter
+  medicalReports?: Prisma.MedicalReportListRelationFilter
+  shareLinks?: Prisma.PatientShareLinkListRelationFilter
+  adverseReactions?: Prisma.AdverseDrugReactionListRelationFilter
+  childrenProfiles?: Prisma.ChildProfileListRelationFilter
+  ratings?: Prisma.RatingListRelationFilter
+  visits?: Prisma.VisitListRelationFilter
 }, "id" | "userId">
 
 export type PatientOrderByWithAggregationInput = {
@@ -455,6 +473,12 @@ export type PatientCreateInput = {
   patientDoctors?: Prisma.PatientDoctorCreateNestedManyWithoutPatientInput
   consultations?: Prisma.ConsultationCreateNestedManyWithoutPatientInput
   appointments?: Prisma.AppointmentCreateNestedManyWithoutPatientInput
+  medicalReports?: Prisma.MedicalReportCreateNestedManyWithoutPatientInput
+  shareLinks?: Prisma.PatientShareLinkCreateNestedManyWithoutPatientInput
+  adverseReactions?: Prisma.AdverseDrugReactionCreateNestedManyWithoutPatientInput
+  childrenProfiles?: Prisma.ChildProfileCreateNestedManyWithoutParentInput
+  ratings?: Prisma.RatingCreateNestedManyWithoutPatientInput
+  visits?: Prisma.VisitCreateNestedManyWithoutPatientInput
 }
 
 export type PatientUncheckedCreateInput = {
@@ -482,6 +506,12 @@ export type PatientUncheckedCreateInput = {
   patientDoctors?: Prisma.PatientDoctorUncheckedCreateNestedManyWithoutPatientInput
   consultations?: Prisma.ConsultationUncheckedCreateNestedManyWithoutPatientInput
   appointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutPatientInput
+  medicalReports?: Prisma.MedicalReportUncheckedCreateNestedManyWithoutPatientInput
+  shareLinks?: Prisma.PatientShareLinkUncheckedCreateNestedManyWithoutPatientInput
+  adverseReactions?: Prisma.AdverseDrugReactionUncheckedCreateNestedManyWithoutPatientInput
+  childrenProfiles?: Prisma.ChildProfileUncheckedCreateNestedManyWithoutParentInput
+  ratings?: Prisma.RatingUncheckedCreateNestedManyWithoutPatientInput
+  visits?: Prisma.VisitUncheckedCreateNestedManyWithoutPatientInput
 }
 
 export type PatientUpdateInput = {
@@ -508,6 +538,12 @@ export type PatientUpdateInput = {
   patientDoctors?: Prisma.PatientDoctorUpdateManyWithoutPatientNestedInput
   consultations?: Prisma.ConsultationUpdateManyWithoutPatientNestedInput
   appointments?: Prisma.AppointmentUpdateManyWithoutPatientNestedInput
+  medicalReports?: Prisma.MedicalReportUpdateManyWithoutPatientNestedInput
+  shareLinks?: Prisma.PatientShareLinkUpdateManyWithoutPatientNestedInput
+  adverseReactions?: Prisma.AdverseDrugReactionUpdateManyWithoutPatientNestedInput
+  childrenProfiles?: Prisma.ChildProfileUpdateManyWithoutParentNestedInput
+  ratings?: Prisma.RatingUpdateManyWithoutPatientNestedInput
+  visits?: Prisma.VisitUpdateManyWithoutPatientNestedInput
 }
 
 export type PatientUncheckedUpdateInput = {
@@ -535,6 +571,12 @@ export type PatientUncheckedUpdateInput = {
   patientDoctors?: Prisma.PatientDoctorUncheckedUpdateManyWithoutPatientNestedInput
   consultations?: Prisma.ConsultationUncheckedUpdateManyWithoutPatientNestedInput
   appointments?: Prisma.AppointmentUncheckedUpdateManyWithoutPatientNestedInput
+  medicalReports?: Prisma.MedicalReportUncheckedUpdateManyWithoutPatientNestedInput
+  shareLinks?: Prisma.PatientShareLinkUncheckedUpdateManyWithoutPatientNestedInput
+  adverseReactions?: Prisma.AdverseDrugReactionUncheckedUpdateManyWithoutPatientNestedInput
+  childrenProfiles?: Prisma.ChildProfileUncheckedUpdateManyWithoutParentNestedInput
+  ratings?: Prisma.RatingUncheckedUpdateManyWithoutPatientNestedInput
+  visits?: Prisma.VisitUncheckedUpdateManyWithoutPatientNestedInput
 }
 
 export type PatientCreateManyInput = {
@@ -837,6 +879,92 @@ export type PatientUpdateOneRequiredWithoutPrescriptionsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.PatientUpdateToOneWithWhereWithoutPrescriptionsInput, Prisma.PatientUpdateWithoutPrescriptionsInput>, Prisma.PatientUncheckedUpdateWithoutPrescriptionsInput>
 }
 
+export type PatientCreateNestedOneWithoutMedicalReportsInput = {
+  create?: Prisma.XOR<Prisma.PatientCreateWithoutMedicalReportsInput, Prisma.PatientUncheckedCreateWithoutMedicalReportsInput>
+  connectOrCreate?: Prisma.PatientCreateOrConnectWithoutMedicalReportsInput
+  connect?: Prisma.PatientWhereUniqueInput
+}
+
+export type PatientUpdateOneRequiredWithoutMedicalReportsNestedInput = {
+  create?: Prisma.XOR<Prisma.PatientCreateWithoutMedicalReportsInput, Prisma.PatientUncheckedCreateWithoutMedicalReportsInput>
+  connectOrCreate?: Prisma.PatientCreateOrConnectWithoutMedicalReportsInput
+  upsert?: Prisma.PatientUpsertWithoutMedicalReportsInput
+  connect?: Prisma.PatientWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.PatientUpdateToOneWithWhereWithoutMedicalReportsInput, Prisma.PatientUpdateWithoutMedicalReportsInput>, Prisma.PatientUncheckedUpdateWithoutMedicalReportsInput>
+}
+
+export type PatientCreateNestedOneWithoutShareLinksInput = {
+  create?: Prisma.XOR<Prisma.PatientCreateWithoutShareLinksInput, Prisma.PatientUncheckedCreateWithoutShareLinksInput>
+  connectOrCreate?: Prisma.PatientCreateOrConnectWithoutShareLinksInput
+  connect?: Prisma.PatientWhereUniqueInput
+}
+
+export type PatientUpdateOneRequiredWithoutShareLinksNestedInput = {
+  create?: Prisma.XOR<Prisma.PatientCreateWithoutShareLinksInput, Prisma.PatientUncheckedCreateWithoutShareLinksInput>
+  connectOrCreate?: Prisma.PatientCreateOrConnectWithoutShareLinksInput
+  upsert?: Prisma.PatientUpsertWithoutShareLinksInput
+  connect?: Prisma.PatientWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.PatientUpdateToOneWithWhereWithoutShareLinksInput, Prisma.PatientUpdateWithoutShareLinksInput>, Prisma.PatientUncheckedUpdateWithoutShareLinksInput>
+}
+
+export type PatientCreateNestedOneWithoutAdverseReactionsInput = {
+  create?: Prisma.XOR<Prisma.PatientCreateWithoutAdverseReactionsInput, Prisma.PatientUncheckedCreateWithoutAdverseReactionsInput>
+  connectOrCreate?: Prisma.PatientCreateOrConnectWithoutAdverseReactionsInput
+  connect?: Prisma.PatientWhereUniqueInput
+}
+
+export type PatientUpdateOneWithoutAdverseReactionsNestedInput = {
+  create?: Prisma.XOR<Prisma.PatientCreateWithoutAdverseReactionsInput, Prisma.PatientUncheckedCreateWithoutAdverseReactionsInput>
+  connectOrCreate?: Prisma.PatientCreateOrConnectWithoutAdverseReactionsInput
+  upsert?: Prisma.PatientUpsertWithoutAdverseReactionsInput
+  disconnect?: Prisma.PatientWhereInput | boolean
+  delete?: Prisma.PatientWhereInput | boolean
+  connect?: Prisma.PatientWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.PatientUpdateToOneWithWhereWithoutAdverseReactionsInput, Prisma.PatientUpdateWithoutAdverseReactionsInput>, Prisma.PatientUncheckedUpdateWithoutAdverseReactionsInput>
+}
+
+export type PatientCreateNestedOneWithoutChildrenProfilesInput = {
+  create?: Prisma.XOR<Prisma.PatientCreateWithoutChildrenProfilesInput, Prisma.PatientUncheckedCreateWithoutChildrenProfilesInput>
+  connectOrCreate?: Prisma.PatientCreateOrConnectWithoutChildrenProfilesInput
+  connect?: Prisma.PatientWhereUniqueInput
+}
+
+export type PatientUpdateOneRequiredWithoutChildrenProfilesNestedInput = {
+  create?: Prisma.XOR<Prisma.PatientCreateWithoutChildrenProfilesInput, Prisma.PatientUncheckedCreateWithoutChildrenProfilesInput>
+  connectOrCreate?: Prisma.PatientCreateOrConnectWithoutChildrenProfilesInput
+  upsert?: Prisma.PatientUpsertWithoutChildrenProfilesInput
+  connect?: Prisma.PatientWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.PatientUpdateToOneWithWhereWithoutChildrenProfilesInput, Prisma.PatientUpdateWithoutChildrenProfilesInput>, Prisma.PatientUncheckedUpdateWithoutChildrenProfilesInput>
+}
+
+export type PatientCreateNestedOneWithoutRatingsInput = {
+  create?: Prisma.XOR<Prisma.PatientCreateWithoutRatingsInput, Prisma.PatientUncheckedCreateWithoutRatingsInput>
+  connectOrCreate?: Prisma.PatientCreateOrConnectWithoutRatingsInput
+  connect?: Prisma.PatientWhereUniqueInput
+}
+
+export type PatientUpdateOneRequiredWithoutRatingsNestedInput = {
+  create?: Prisma.XOR<Prisma.PatientCreateWithoutRatingsInput, Prisma.PatientUncheckedCreateWithoutRatingsInput>
+  connectOrCreate?: Prisma.PatientCreateOrConnectWithoutRatingsInput
+  upsert?: Prisma.PatientUpsertWithoutRatingsInput
+  connect?: Prisma.PatientWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.PatientUpdateToOneWithWhereWithoutRatingsInput, Prisma.PatientUpdateWithoutRatingsInput>, Prisma.PatientUncheckedUpdateWithoutRatingsInput>
+}
+
+export type PatientCreateNestedOneWithoutVisitsInput = {
+  create?: Prisma.XOR<Prisma.PatientCreateWithoutVisitsInput, Prisma.PatientUncheckedCreateWithoutVisitsInput>
+  connectOrCreate?: Prisma.PatientCreateOrConnectWithoutVisitsInput
+  connect?: Prisma.PatientWhereUniqueInput
+}
+
+export type PatientUpdateOneRequiredWithoutVisitsNestedInput = {
+  create?: Prisma.XOR<Prisma.PatientCreateWithoutVisitsInput, Prisma.PatientUncheckedCreateWithoutVisitsInput>
+  connectOrCreate?: Prisma.PatientCreateOrConnectWithoutVisitsInput
+  upsert?: Prisma.PatientUpsertWithoutVisitsInput
+  connect?: Prisma.PatientWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.PatientUpdateToOneWithWhereWithoutVisitsInput, Prisma.PatientUpdateWithoutVisitsInput>, Prisma.PatientUncheckedUpdateWithoutVisitsInput>
+}
+
 export type PatientCreateWithoutUserInput = {
   name: string
   age: number
@@ -860,6 +988,12 @@ export type PatientCreateWithoutUserInput = {
   patientDoctors?: Prisma.PatientDoctorCreateNestedManyWithoutPatientInput
   consultations?: Prisma.ConsultationCreateNestedManyWithoutPatientInput
   appointments?: Prisma.AppointmentCreateNestedManyWithoutPatientInput
+  medicalReports?: Prisma.MedicalReportCreateNestedManyWithoutPatientInput
+  shareLinks?: Prisma.PatientShareLinkCreateNestedManyWithoutPatientInput
+  adverseReactions?: Prisma.AdverseDrugReactionCreateNestedManyWithoutPatientInput
+  childrenProfiles?: Prisma.ChildProfileCreateNestedManyWithoutParentInput
+  ratings?: Prisma.RatingCreateNestedManyWithoutPatientInput
+  visits?: Prisma.VisitCreateNestedManyWithoutPatientInput
 }
 
 export type PatientUncheckedCreateWithoutUserInput = {
@@ -886,6 +1020,12 @@ export type PatientUncheckedCreateWithoutUserInput = {
   patientDoctors?: Prisma.PatientDoctorUncheckedCreateNestedManyWithoutPatientInput
   consultations?: Prisma.ConsultationUncheckedCreateNestedManyWithoutPatientInput
   appointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutPatientInput
+  medicalReports?: Prisma.MedicalReportUncheckedCreateNestedManyWithoutPatientInput
+  shareLinks?: Prisma.PatientShareLinkUncheckedCreateNestedManyWithoutPatientInput
+  adverseReactions?: Prisma.AdverseDrugReactionUncheckedCreateNestedManyWithoutPatientInput
+  childrenProfiles?: Prisma.ChildProfileUncheckedCreateNestedManyWithoutParentInput
+  ratings?: Prisma.RatingUncheckedCreateNestedManyWithoutPatientInput
+  visits?: Prisma.VisitUncheckedCreateNestedManyWithoutPatientInput
 }
 
 export type PatientCreateOrConnectWithoutUserInput = {
@@ -927,6 +1067,12 @@ export type PatientUpdateWithoutUserInput = {
   patientDoctors?: Prisma.PatientDoctorUpdateManyWithoutPatientNestedInput
   consultations?: Prisma.ConsultationUpdateManyWithoutPatientNestedInput
   appointments?: Prisma.AppointmentUpdateManyWithoutPatientNestedInput
+  medicalReports?: Prisma.MedicalReportUpdateManyWithoutPatientNestedInput
+  shareLinks?: Prisma.PatientShareLinkUpdateManyWithoutPatientNestedInput
+  adverseReactions?: Prisma.AdverseDrugReactionUpdateManyWithoutPatientNestedInput
+  childrenProfiles?: Prisma.ChildProfileUpdateManyWithoutParentNestedInput
+  ratings?: Prisma.RatingUpdateManyWithoutPatientNestedInput
+  visits?: Prisma.VisitUpdateManyWithoutPatientNestedInput
 }
 
 export type PatientUncheckedUpdateWithoutUserInput = {
@@ -953,6 +1099,12 @@ export type PatientUncheckedUpdateWithoutUserInput = {
   patientDoctors?: Prisma.PatientDoctorUncheckedUpdateManyWithoutPatientNestedInput
   consultations?: Prisma.ConsultationUncheckedUpdateManyWithoutPatientNestedInput
   appointments?: Prisma.AppointmentUncheckedUpdateManyWithoutPatientNestedInput
+  medicalReports?: Prisma.MedicalReportUncheckedUpdateManyWithoutPatientNestedInput
+  shareLinks?: Prisma.PatientShareLinkUncheckedUpdateManyWithoutPatientNestedInput
+  adverseReactions?: Prisma.AdverseDrugReactionUncheckedUpdateManyWithoutPatientNestedInput
+  childrenProfiles?: Prisma.ChildProfileUncheckedUpdateManyWithoutParentNestedInput
+  ratings?: Prisma.RatingUncheckedUpdateManyWithoutPatientNestedInput
+  visits?: Prisma.VisitUncheckedUpdateManyWithoutPatientNestedInput
 }
 
 export type PatientCreateWithoutMedicalHistoriesInput = {
@@ -978,6 +1130,12 @@ export type PatientCreateWithoutMedicalHistoriesInput = {
   patientDoctors?: Prisma.PatientDoctorCreateNestedManyWithoutPatientInput
   consultations?: Prisma.ConsultationCreateNestedManyWithoutPatientInput
   appointments?: Prisma.AppointmentCreateNestedManyWithoutPatientInput
+  medicalReports?: Prisma.MedicalReportCreateNestedManyWithoutPatientInput
+  shareLinks?: Prisma.PatientShareLinkCreateNestedManyWithoutPatientInput
+  adverseReactions?: Prisma.AdverseDrugReactionCreateNestedManyWithoutPatientInput
+  childrenProfiles?: Prisma.ChildProfileCreateNestedManyWithoutParentInput
+  ratings?: Prisma.RatingCreateNestedManyWithoutPatientInput
+  visits?: Prisma.VisitCreateNestedManyWithoutPatientInput
 }
 
 export type PatientUncheckedCreateWithoutMedicalHistoriesInput = {
@@ -1004,6 +1162,12 @@ export type PatientUncheckedCreateWithoutMedicalHistoriesInput = {
   patientDoctors?: Prisma.PatientDoctorUncheckedCreateNestedManyWithoutPatientInput
   consultations?: Prisma.ConsultationUncheckedCreateNestedManyWithoutPatientInput
   appointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutPatientInput
+  medicalReports?: Prisma.MedicalReportUncheckedCreateNestedManyWithoutPatientInput
+  shareLinks?: Prisma.PatientShareLinkUncheckedCreateNestedManyWithoutPatientInput
+  adverseReactions?: Prisma.AdverseDrugReactionUncheckedCreateNestedManyWithoutPatientInput
+  childrenProfiles?: Prisma.ChildProfileUncheckedCreateNestedManyWithoutParentInput
+  ratings?: Prisma.RatingUncheckedCreateNestedManyWithoutPatientInput
+  visits?: Prisma.VisitUncheckedCreateNestedManyWithoutPatientInput
 }
 
 export type PatientCreateOrConnectWithoutMedicalHistoriesInput = {
@@ -1045,6 +1209,12 @@ export type PatientUpdateWithoutMedicalHistoriesInput = {
   patientDoctors?: Prisma.PatientDoctorUpdateManyWithoutPatientNestedInput
   consultations?: Prisma.ConsultationUpdateManyWithoutPatientNestedInput
   appointments?: Prisma.AppointmentUpdateManyWithoutPatientNestedInput
+  medicalReports?: Prisma.MedicalReportUpdateManyWithoutPatientNestedInput
+  shareLinks?: Prisma.PatientShareLinkUpdateManyWithoutPatientNestedInput
+  adverseReactions?: Prisma.AdverseDrugReactionUpdateManyWithoutPatientNestedInput
+  childrenProfiles?: Prisma.ChildProfileUpdateManyWithoutParentNestedInput
+  ratings?: Prisma.RatingUpdateManyWithoutPatientNestedInput
+  visits?: Prisma.VisitUpdateManyWithoutPatientNestedInput
 }
 
 export type PatientUncheckedUpdateWithoutMedicalHistoriesInput = {
@@ -1071,6 +1241,12 @@ export type PatientUncheckedUpdateWithoutMedicalHistoriesInput = {
   patientDoctors?: Prisma.PatientDoctorUncheckedUpdateManyWithoutPatientNestedInput
   consultations?: Prisma.ConsultationUncheckedUpdateManyWithoutPatientNestedInput
   appointments?: Prisma.AppointmentUncheckedUpdateManyWithoutPatientNestedInput
+  medicalReports?: Prisma.MedicalReportUncheckedUpdateManyWithoutPatientNestedInput
+  shareLinks?: Prisma.PatientShareLinkUncheckedUpdateManyWithoutPatientNestedInput
+  adverseReactions?: Prisma.AdverseDrugReactionUncheckedUpdateManyWithoutPatientNestedInput
+  childrenProfiles?: Prisma.ChildProfileUncheckedUpdateManyWithoutParentNestedInput
+  ratings?: Prisma.RatingUncheckedUpdateManyWithoutPatientNestedInput
+  visits?: Prisma.VisitUncheckedUpdateManyWithoutPatientNestedInput
 }
 
 export type PatientCreateWithoutFamilyHistoriesInput = {
@@ -1096,6 +1272,12 @@ export type PatientCreateWithoutFamilyHistoriesInput = {
   patientDoctors?: Prisma.PatientDoctorCreateNestedManyWithoutPatientInput
   consultations?: Prisma.ConsultationCreateNestedManyWithoutPatientInput
   appointments?: Prisma.AppointmentCreateNestedManyWithoutPatientInput
+  medicalReports?: Prisma.MedicalReportCreateNestedManyWithoutPatientInput
+  shareLinks?: Prisma.PatientShareLinkCreateNestedManyWithoutPatientInput
+  adverseReactions?: Prisma.AdverseDrugReactionCreateNestedManyWithoutPatientInput
+  childrenProfiles?: Prisma.ChildProfileCreateNestedManyWithoutParentInput
+  ratings?: Prisma.RatingCreateNestedManyWithoutPatientInput
+  visits?: Prisma.VisitCreateNestedManyWithoutPatientInput
 }
 
 export type PatientUncheckedCreateWithoutFamilyHistoriesInput = {
@@ -1122,6 +1304,12 @@ export type PatientUncheckedCreateWithoutFamilyHistoriesInput = {
   patientDoctors?: Prisma.PatientDoctorUncheckedCreateNestedManyWithoutPatientInput
   consultations?: Prisma.ConsultationUncheckedCreateNestedManyWithoutPatientInput
   appointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutPatientInput
+  medicalReports?: Prisma.MedicalReportUncheckedCreateNestedManyWithoutPatientInput
+  shareLinks?: Prisma.PatientShareLinkUncheckedCreateNestedManyWithoutPatientInput
+  adverseReactions?: Prisma.AdverseDrugReactionUncheckedCreateNestedManyWithoutPatientInput
+  childrenProfiles?: Prisma.ChildProfileUncheckedCreateNestedManyWithoutParentInput
+  ratings?: Prisma.RatingUncheckedCreateNestedManyWithoutPatientInput
+  visits?: Prisma.VisitUncheckedCreateNestedManyWithoutPatientInput
 }
 
 export type PatientCreateOrConnectWithoutFamilyHistoriesInput = {
@@ -1163,6 +1351,12 @@ export type PatientUpdateWithoutFamilyHistoriesInput = {
   patientDoctors?: Prisma.PatientDoctorUpdateManyWithoutPatientNestedInput
   consultations?: Prisma.ConsultationUpdateManyWithoutPatientNestedInput
   appointments?: Prisma.AppointmentUpdateManyWithoutPatientNestedInput
+  medicalReports?: Prisma.MedicalReportUpdateManyWithoutPatientNestedInput
+  shareLinks?: Prisma.PatientShareLinkUpdateManyWithoutPatientNestedInput
+  adverseReactions?: Prisma.AdverseDrugReactionUpdateManyWithoutPatientNestedInput
+  childrenProfiles?: Prisma.ChildProfileUpdateManyWithoutParentNestedInput
+  ratings?: Prisma.RatingUpdateManyWithoutPatientNestedInput
+  visits?: Prisma.VisitUpdateManyWithoutPatientNestedInput
 }
 
 export type PatientUncheckedUpdateWithoutFamilyHistoriesInput = {
@@ -1189,6 +1383,12 @@ export type PatientUncheckedUpdateWithoutFamilyHistoriesInput = {
   patientDoctors?: Prisma.PatientDoctorUncheckedUpdateManyWithoutPatientNestedInput
   consultations?: Prisma.ConsultationUncheckedUpdateManyWithoutPatientNestedInput
   appointments?: Prisma.AppointmentUncheckedUpdateManyWithoutPatientNestedInput
+  medicalReports?: Prisma.MedicalReportUncheckedUpdateManyWithoutPatientNestedInput
+  shareLinks?: Prisma.PatientShareLinkUncheckedUpdateManyWithoutPatientNestedInput
+  adverseReactions?: Prisma.AdverseDrugReactionUncheckedUpdateManyWithoutPatientNestedInput
+  childrenProfiles?: Prisma.ChildProfileUncheckedUpdateManyWithoutParentNestedInput
+  ratings?: Prisma.RatingUncheckedUpdateManyWithoutPatientNestedInput
+  visits?: Prisma.VisitUncheckedUpdateManyWithoutPatientNestedInput
 }
 
 export type PatientCreateWithoutLifestyleInput = {
@@ -1214,6 +1414,12 @@ export type PatientCreateWithoutLifestyleInput = {
   patientDoctors?: Prisma.PatientDoctorCreateNestedManyWithoutPatientInput
   consultations?: Prisma.ConsultationCreateNestedManyWithoutPatientInput
   appointments?: Prisma.AppointmentCreateNestedManyWithoutPatientInput
+  medicalReports?: Prisma.MedicalReportCreateNestedManyWithoutPatientInput
+  shareLinks?: Prisma.PatientShareLinkCreateNestedManyWithoutPatientInput
+  adverseReactions?: Prisma.AdverseDrugReactionCreateNestedManyWithoutPatientInput
+  childrenProfiles?: Prisma.ChildProfileCreateNestedManyWithoutParentInput
+  ratings?: Prisma.RatingCreateNestedManyWithoutPatientInput
+  visits?: Prisma.VisitCreateNestedManyWithoutPatientInput
 }
 
 export type PatientUncheckedCreateWithoutLifestyleInput = {
@@ -1240,6 +1446,12 @@ export type PatientUncheckedCreateWithoutLifestyleInput = {
   patientDoctors?: Prisma.PatientDoctorUncheckedCreateNestedManyWithoutPatientInput
   consultations?: Prisma.ConsultationUncheckedCreateNestedManyWithoutPatientInput
   appointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutPatientInput
+  medicalReports?: Prisma.MedicalReportUncheckedCreateNestedManyWithoutPatientInput
+  shareLinks?: Prisma.PatientShareLinkUncheckedCreateNestedManyWithoutPatientInput
+  adverseReactions?: Prisma.AdverseDrugReactionUncheckedCreateNestedManyWithoutPatientInput
+  childrenProfiles?: Prisma.ChildProfileUncheckedCreateNestedManyWithoutParentInput
+  ratings?: Prisma.RatingUncheckedCreateNestedManyWithoutPatientInput
+  visits?: Prisma.VisitUncheckedCreateNestedManyWithoutPatientInput
 }
 
 export type PatientCreateOrConnectWithoutLifestyleInput = {
@@ -1281,6 +1493,12 @@ export type PatientUpdateWithoutLifestyleInput = {
   patientDoctors?: Prisma.PatientDoctorUpdateManyWithoutPatientNestedInput
   consultations?: Prisma.ConsultationUpdateManyWithoutPatientNestedInput
   appointments?: Prisma.AppointmentUpdateManyWithoutPatientNestedInput
+  medicalReports?: Prisma.MedicalReportUpdateManyWithoutPatientNestedInput
+  shareLinks?: Prisma.PatientShareLinkUpdateManyWithoutPatientNestedInput
+  adverseReactions?: Prisma.AdverseDrugReactionUpdateManyWithoutPatientNestedInput
+  childrenProfiles?: Prisma.ChildProfileUpdateManyWithoutParentNestedInput
+  ratings?: Prisma.RatingUpdateManyWithoutPatientNestedInput
+  visits?: Prisma.VisitUpdateManyWithoutPatientNestedInput
 }
 
 export type PatientUncheckedUpdateWithoutLifestyleInput = {
@@ -1307,6 +1525,12 @@ export type PatientUncheckedUpdateWithoutLifestyleInput = {
   patientDoctors?: Prisma.PatientDoctorUncheckedUpdateManyWithoutPatientNestedInput
   consultations?: Prisma.ConsultationUncheckedUpdateManyWithoutPatientNestedInput
   appointments?: Prisma.AppointmentUncheckedUpdateManyWithoutPatientNestedInput
+  medicalReports?: Prisma.MedicalReportUncheckedUpdateManyWithoutPatientNestedInput
+  shareLinks?: Prisma.PatientShareLinkUncheckedUpdateManyWithoutPatientNestedInput
+  adverseReactions?: Prisma.AdverseDrugReactionUncheckedUpdateManyWithoutPatientNestedInput
+  childrenProfiles?: Prisma.ChildProfileUncheckedUpdateManyWithoutParentNestedInput
+  ratings?: Prisma.RatingUncheckedUpdateManyWithoutPatientNestedInput
+  visits?: Prisma.VisitUncheckedUpdateManyWithoutPatientNestedInput
 }
 
 export type PatientCreateWithoutAllergiesInput = {
@@ -1332,6 +1556,12 @@ export type PatientCreateWithoutAllergiesInput = {
   patientDoctors?: Prisma.PatientDoctorCreateNestedManyWithoutPatientInput
   consultations?: Prisma.ConsultationCreateNestedManyWithoutPatientInput
   appointments?: Prisma.AppointmentCreateNestedManyWithoutPatientInput
+  medicalReports?: Prisma.MedicalReportCreateNestedManyWithoutPatientInput
+  shareLinks?: Prisma.PatientShareLinkCreateNestedManyWithoutPatientInput
+  adverseReactions?: Prisma.AdverseDrugReactionCreateNestedManyWithoutPatientInput
+  childrenProfiles?: Prisma.ChildProfileCreateNestedManyWithoutParentInput
+  ratings?: Prisma.RatingCreateNestedManyWithoutPatientInput
+  visits?: Prisma.VisitCreateNestedManyWithoutPatientInput
 }
 
 export type PatientUncheckedCreateWithoutAllergiesInput = {
@@ -1358,6 +1588,12 @@ export type PatientUncheckedCreateWithoutAllergiesInput = {
   patientDoctors?: Prisma.PatientDoctorUncheckedCreateNestedManyWithoutPatientInput
   consultations?: Prisma.ConsultationUncheckedCreateNestedManyWithoutPatientInput
   appointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutPatientInput
+  medicalReports?: Prisma.MedicalReportUncheckedCreateNestedManyWithoutPatientInput
+  shareLinks?: Prisma.PatientShareLinkUncheckedCreateNestedManyWithoutPatientInput
+  adverseReactions?: Prisma.AdverseDrugReactionUncheckedCreateNestedManyWithoutPatientInput
+  childrenProfiles?: Prisma.ChildProfileUncheckedCreateNestedManyWithoutParentInput
+  ratings?: Prisma.RatingUncheckedCreateNestedManyWithoutPatientInput
+  visits?: Prisma.VisitUncheckedCreateNestedManyWithoutPatientInput
 }
 
 export type PatientCreateOrConnectWithoutAllergiesInput = {
@@ -1399,6 +1635,12 @@ export type PatientUpdateWithoutAllergiesInput = {
   patientDoctors?: Prisma.PatientDoctorUpdateManyWithoutPatientNestedInput
   consultations?: Prisma.ConsultationUpdateManyWithoutPatientNestedInput
   appointments?: Prisma.AppointmentUpdateManyWithoutPatientNestedInput
+  medicalReports?: Prisma.MedicalReportUpdateManyWithoutPatientNestedInput
+  shareLinks?: Prisma.PatientShareLinkUpdateManyWithoutPatientNestedInput
+  adverseReactions?: Prisma.AdverseDrugReactionUpdateManyWithoutPatientNestedInput
+  childrenProfiles?: Prisma.ChildProfileUpdateManyWithoutParentNestedInput
+  ratings?: Prisma.RatingUpdateManyWithoutPatientNestedInput
+  visits?: Prisma.VisitUpdateManyWithoutPatientNestedInput
 }
 
 export type PatientUncheckedUpdateWithoutAllergiesInput = {
@@ -1425,6 +1667,12 @@ export type PatientUncheckedUpdateWithoutAllergiesInput = {
   patientDoctors?: Prisma.PatientDoctorUncheckedUpdateManyWithoutPatientNestedInput
   consultations?: Prisma.ConsultationUncheckedUpdateManyWithoutPatientNestedInput
   appointments?: Prisma.AppointmentUncheckedUpdateManyWithoutPatientNestedInput
+  medicalReports?: Prisma.MedicalReportUncheckedUpdateManyWithoutPatientNestedInput
+  shareLinks?: Prisma.PatientShareLinkUncheckedUpdateManyWithoutPatientNestedInput
+  adverseReactions?: Prisma.AdverseDrugReactionUncheckedUpdateManyWithoutPatientNestedInput
+  childrenProfiles?: Prisma.ChildProfileUncheckedUpdateManyWithoutParentNestedInput
+  ratings?: Prisma.RatingUncheckedUpdateManyWithoutPatientNestedInput
+  visits?: Prisma.VisitUncheckedUpdateManyWithoutPatientNestedInput
 }
 
 export type PatientCreateWithoutPatientDoctorsInput = {
@@ -1450,6 +1698,12 @@ export type PatientCreateWithoutPatientDoctorsInput = {
   allergies?: Prisma.AllergyCreateNestedManyWithoutPatientInput
   consultations?: Prisma.ConsultationCreateNestedManyWithoutPatientInput
   appointments?: Prisma.AppointmentCreateNestedManyWithoutPatientInput
+  medicalReports?: Prisma.MedicalReportCreateNestedManyWithoutPatientInput
+  shareLinks?: Prisma.PatientShareLinkCreateNestedManyWithoutPatientInput
+  adverseReactions?: Prisma.AdverseDrugReactionCreateNestedManyWithoutPatientInput
+  childrenProfiles?: Prisma.ChildProfileCreateNestedManyWithoutParentInput
+  ratings?: Prisma.RatingCreateNestedManyWithoutPatientInput
+  visits?: Prisma.VisitCreateNestedManyWithoutPatientInput
 }
 
 export type PatientUncheckedCreateWithoutPatientDoctorsInput = {
@@ -1476,6 +1730,12 @@ export type PatientUncheckedCreateWithoutPatientDoctorsInput = {
   allergies?: Prisma.AllergyUncheckedCreateNestedManyWithoutPatientInput
   consultations?: Prisma.ConsultationUncheckedCreateNestedManyWithoutPatientInput
   appointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutPatientInput
+  medicalReports?: Prisma.MedicalReportUncheckedCreateNestedManyWithoutPatientInput
+  shareLinks?: Prisma.PatientShareLinkUncheckedCreateNestedManyWithoutPatientInput
+  adverseReactions?: Prisma.AdverseDrugReactionUncheckedCreateNestedManyWithoutPatientInput
+  childrenProfiles?: Prisma.ChildProfileUncheckedCreateNestedManyWithoutParentInput
+  ratings?: Prisma.RatingUncheckedCreateNestedManyWithoutPatientInput
+  visits?: Prisma.VisitUncheckedCreateNestedManyWithoutPatientInput
 }
 
 export type PatientCreateOrConnectWithoutPatientDoctorsInput = {
@@ -1517,6 +1777,12 @@ export type PatientUpdateWithoutPatientDoctorsInput = {
   allergies?: Prisma.AllergyUpdateManyWithoutPatientNestedInput
   consultations?: Prisma.ConsultationUpdateManyWithoutPatientNestedInput
   appointments?: Prisma.AppointmentUpdateManyWithoutPatientNestedInput
+  medicalReports?: Prisma.MedicalReportUpdateManyWithoutPatientNestedInput
+  shareLinks?: Prisma.PatientShareLinkUpdateManyWithoutPatientNestedInput
+  adverseReactions?: Prisma.AdverseDrugReactionUpdateManyWithoutPatientNestedInput
+  childrenProfiles?: Prisma.ChildProfileUpdateManyWithoutParentNestedInput
+  ratings?: Prisma.RatingUpdateManyWithoutPatientNestedInput
+  visits?: Prisma.VisitUpdateManyWithoutPatientNestedInput
 }
 
 export type PatientUncheckedUpdateWithoutPatientDoctorsInput = {
@@ -1543,6 +1809,12 @@ export type PatientUncheckedUpdateWithoutPatientDoctorsInput = {
   allergies?: Prisma.AllergyUncheckedUpdateManyWithoutPatientNestedInput
   consultations?: Prisma.ConsultationUncheckedUpdateManyWithoutPatientNestedInput
   appointments?: Prisma.AppointmentUncheckedUpdateManyWithoutPatientNestedInput
+  medicalReports?: Prisma.MedicalReportUncheckedUpdateManyWithoutPatientNestedInput
+  shareLinks?: Prisma.PatientShareLinkUncheckedUpdateManyWithoutPatientNestedInput
+  adverseReactions?: Prisma.AdverseDrugReactionUncheckedUpdateManyWithoutPatientNestedInput
+  childrenProfiles?: Prisma.ChildProfileUncheckedUpdateManyWithoutParentNestedInput
+  ratings?: Prisma.RatingUncheckedUpdateManyWithoutPatientNestedInput
+  visits?: Prisma.VisitUncheckedUpdateManyWithoutPatientNestedInput
 }
 
 export type PatientCreateWithoutConsultationsInput = {
@@ -1568,6 +1840,12 @@ export type PatientCreateWithoutConsultationsInput = {
   allergies?: Prisma.AllergyCreateNestedManyWithoutPatientInput
   patientDoctors?: Prisma.PatientDoctorCreateNestedManyWithoutPatientInput
   appointments?: Prisma.AppointmentCreateNestedManyWithoutPatientInput
+  medicalReports?: Prisma.MedicalReportCreateNestedManyWithoutPatientInput
+  shareLinks?: Prisma.PatientShareLinkCreateNestedManyWithoutPatientInput
+  adverseReactions?: Prisma.AdverseDrugReactionCreateNestedManyWithoutPatientInput
+  childrenProfiles?: Prisma.ChildProfileCreateNestedManyWithoutParentInput
+  ratings?: Prisma.RatingCreateNestedManyWithoutPatientInput
+  visits?: Prisma.VisitCreateNestedManyWithoutPatientInput
 }
 
 export type PatientUncheckedCreateWithoutConsultationsInput = {
@@ -1594,6 +1872,12 @@ export type PatientUncheckedCreateWithoutConsultationsInput = {
   allergies?: Prisma.AllergyUncheckedCreateNestedManyWithoutPatientInput
   patientDoctors?: Prisma.PatientDoctorUncheckedCreateNestedManyWithoutPatientInput
   appointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutPatientInput
+  medicalReports?: Prisma.MedicalReportUncheckedCreateNestedManyWithoutPatientInput
+  shareLinks?: Prisma.PatientShareLinkUncheckedCreateNestedManyWithoutPatientInput
+  adverseReactions?: Prisma.AdverseDrugReactionUncheckedCreateNestedManyWithoutPatientInput
+  childrenProfiles?: Prisma.ChildProfileUncheckedCreateNestedManyWithoutParentInput
+  ratings?: Prisma.RatingUncheckedCreateNestedManyWithoutPatientInput
+  visits?: Prisma.VisitUncheckedCreateNestedManyWithoutPatientInput
 }
 
 export type PatientCreateOrConnectWithoutConsultationsInput = {
@@ -1635,6 +1919,12 @@ export type PatientUpdateWithoutConsultationsInput = {
   allergies?: Prisma.AllergyUpdateManyWithoutPatientNestedInput
   patientDoctors?: Prisma.PatientDoctorUpdateManyWithoutPatientNestedInput
   appointments?: Prisma.AppointmentUpdateManyWithoutPatientNestedInput
+  medicalReports?: Prisma.MedicalReportUpdateManyWithoutPatientNestedInput
+  shareLinks?: Prisma.PatientShareLinkUpdateManyWithoutPatientNestedInput
+  adverseReactions?: Prisma.AdverseDrugReactionUpdateManyWithoutPatientNestedInput
+  childrenProfiles?: Prisma.ChildProfileUpdateManyWithoutParentNestedInput
+  ratings?: Prisma.RatingUpdateManyWithoutPatientNestedInput
+  visits?: Prisma.VisitUpdateManyWithoutPatientNestedInput
 }
 
 export type PatientUncheckedUpdateWithoutConsultationsInput = {
@@ -1661,6 +1951,12 @@ export type PatientUncheckedUpdateWithoutConsultationsInput = {
   allergies?: Prisma.AllergyUncheckedUpdateManyWithoutPatientNestedInput
   patientDoctors?: Prisma.PatientDoctorUncheckedUpdateManyWithoutPatientNestedInput
   appointments?: Prisma.AppointmentUncheckedUpdateManyWithoutPatientNestedInput
+  medicalReports?: Prisma.MedicalReportUncheckedUpdateManyWithoutPatientNestedInput
+  shareLinks?: Prisma.PatientShareLinkUncheckedUpdateManyWithoutPatientNestedInput
+  adverseReactions?: Prisma.AdverseDrugReactionUncheckedUpdateManyWithoutPatientNestedInput
+  childrenProfiles?: Prisma.ChildProfileUncheckedUpdateManyWithoutParentNestedInput
+  ratings?: Prisma.RatingUncheckedUpdateManyWithoutPatientNestedInput
+  visits?: Prisma.VisitUncheckedUpdateManyWithoutPatientNestedInput
 }
 
 export type PatientCreateWithoutAppointmentsInput = {
@@ -1686,6 +1982,12 @@ export type PatientCreateWithoutAppointmentsInput = {
   allergies?: Prisma.AllergyCreateNestedManyWithoutPatientInput
   patientDoctors?: Prisma.PatientDoctorCreateNestedManyWithoutPatientInput
   consultations?: Prisma.ConsultationCreateNestedManyWithoutPatientInput
+  medicalReports?: Prisma.MedicalReportCreateNestedManyWithoutPatientInput
+  shareLinks?: Prisma.PatientShareLinkCreateNestedManyWithoutPatientInput
+  adverseReactions?: Prisma.AdverseDrugReactionCreateNestedManyWithoutPatientInput
+  childrenProfiles?: Prisma.ChildProfileCreateNestedManyWithoutParentInput
+  ratings?: Prisma.RatingCreateNestedManyWithoutPatientInput
+  visits?: Prisma.VisitCreateNestedManyWithoutPatientInput
 }
 
 export type PatientUncheckedCreateWithoutAppointmentsInput = {
@@ -1712,6 +2014,12 @@ export type PatientUncheckedCreateWithoutAppointmentsInput = {
   allergies?: Prisma.AllergyUncheckedCreateNestedManyWithoutPatientInput
   patientDoctors?: Prisma.PatientDoctorUncheckedCreateNestedManyWithoutPatientInput
   consultations?: Prisma.ConsultationUncheckedCreateNestedManyWithoutPatientInput
+  medicalReports?: Prisma.MedicalReportUncheckedCreateNestedManyWithoutPatientInput
+  shareLinks?: Prisma.PatientShareLinkUncheckedCreateNestedManyWithoutPatientInput
+  adverseReactions?: Prisma.AdverseDrugReactionUncheckedCreateNestedManyWithoutPatientInput
+  childrenProfiles?: Prisma.ChildProfileUncheckedCreateNestedManyWithoutParentInput
+  ratings?: Prisma.RatingUncheckedCreateNestedManyWithoutPatientInput
+  visits?: Prisma.VisitUncheckedCreateNestedManyWithoutPatientInput
 }
 
 export type PatientCreateOrConnectWithoutAppointmentsInput = {
@@ -1753,6 +2061,12 @@ export type PatientUpdateWithoutAppointmentsInput = {
   allergies?: Prisma.AllergyUpdateManyWithoutPatientNestedInput
   patientDoctors?: Prisma.PatientDoctorUpdateManyWithoutPatientNestedInput
   consultations?: Prisma.ConsultationUpdateManyWithoutPatientNestedInput
+  medicalReports?: Prisma.MedicalReportUpdateManyWithoutPatientNestedInput
+  shareLinks?: Prisma.PatientShareLinkUpdateManyWithoutPatientNestedInput
+  adverseReactions?: Prisma.AdverseDrugReactionUpdateManyWithoutPatientNestedInput
+  childrenProfiles?: Prisma.ChildProfileUpdateManyWithoutParentNestedInput
+  ratings?: Prisma.RatingUpdateManyWithoutPatientNestedInput
+  visits?: Prisma.VisitUpdateManyWithoutPatientNestedInput
 }
 
 export type PatientUncheckedUpdateWithoutAppointmentsInput = {
@@ -1779,6 +2093,12 @@ export type PatientUncheckedUpdateWithoutAppointmentsInput = {
   allergies?: Prisma.AllergyUncheckedUpdateManyWithoutPatientNestedInput
   patientDoctors?: Prisma.PatientDoctorUncheckedUpdateManyWithoutPatientNestedInput
   consultations?: Prisma.ConsultationUncheckedUpdateManyWithoutPatientNestedInput
+  medicalReports?: Prisma.MedicalReportUncheckedUpdateManyWithoutPatientNestedInput
+  shareLinks?: Prisma.PatientShareLinkUncheckedUpdateManyWithoutPatientNestedInput
+  adverseReactions?: Prisma.AdverseDrugReactionUncheckedUpdateManyWithoutPatientNestedInput
+  childrenProfiles?: Prisma.ChildProfileUncheckedUpdateManyWithoutParentNestedInput
+  ratings?: Prisma.RatingUncheckedUpdateManyWithoutPatientNestedInput
+  visits?: Prisma.VisitUncheckedUpdateManyWithoutPatientNestedInput
 }
 
 export type PatientCreateWithoutPatientDiseasesInput = {
@@ -1804,6 +2124,12 @@ export type PatientCreateWithoutPatientDiseasesInput = {
   patientDoctors?: Prisma.PatientDoctorCreateNestedManyWithoutPatientInput
   consultations?: Prisma.ConsultationCreateNestedManyWithoutPatientInput
   appointments?: Prisma.AppointmentCreateNestedManyWithoutPatientInput
+  medicalReports?: Prisma.MedicalReportCreateNestedManyWithoutPatientInput
+  shareLinks?: Prisma.PatientShareLinkCreateNestedManyWithoutPatientInput
+  adverseReactions?: Prisma.AdverseDrugReactionCreateNestedManyWithoutPatientInput
+  childrenProfiles?: Prisma.ChildProfileCreateNestedManyWithoutParentInput
+  ratings?: Prisma.RatingCreateNestedManyWithoutPatientInput
+  visits?: Prisma.VisitCreateNestedManyWithoutPatientInput
 }
 
 export type PatientUncheckedCreateWithoutPatientDiseasesInput = {
@@ -1830,6 +2156,12 @@ export type PatientUncheckedCreateWithoutPatientDiseasesInput = {
   patientDoctors?: Prisma.PatientDoctorUncheckedCreateNestedManyWithoutPatientInput
   consultations?: Prisma.ConsultationUncheckedCreateNestedManyWithoutPatientInput
   appointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutPatientInput
+  medicalReports?: Prisma.MedicalReportUncheckedCreateNestedManyWithoutPatientInput
+  shareLinks?: Prisma.PatientShareLinkUncheckedCreateNestedManyWithoutPatientInput
+  adverseReactions?: Prisma.AdverseDrugReactionUncheckedCreateNestedManyWithoutPatientInput
+  childrenProfiles?: Prisma.ChildProfileUncheckedCreateNestedManyWithoutParentInput
+  ratings?: Prisma.RatingUncheckedCreateNestedManyWithoutPatientInput
+  visits?: Prisma.VisitUncheckedCreateNestedManyWithoutPatientInput
 }
 
 export type PatientCreateOrConnectWithoutPatientDiseasesInput = {
@@ -1871,6 +2203,12 @@ export type PatientUpdateWithoutPatientDiseasesInput = {
   patientDoctors?: Prisma.PatientDoctorUpdateManyWithoutPatientNestedInput
   consultations?: Prisma.ConsultationUpdateManyWithoutPatientNestedInput
   appointments?: Prisma.AppointmentUpdateManyWithoutPatientNestedInput
+  medicalReports?: Prisma.MedicalReportUpdateManyWithoutPatientNestedInput
+  shareLinks?: Prisma.PatientShareLinkUpdateManyWithoutPatientNestedInput
+  adverseReactions?: Prisma.AdverseDrugReactionUpdateManyWithoutPatientNestedInput
+  childrenProfiles?: Prisma.ChildProfileUpdateManyWithoutParentNestedInput
+  ratings?: Prisma.RatingUpdateManyWithoutPatientNestedInput
+  visits?: Prisma.VisitUpdateManyWithoutPatientNestedInput
 }
 
 export type PatientUncheckedUpdateWithoutPatientDiseasesInput = {
@@ -1897,6 +2235,12 @@ export type PatientUncheckedUpdateWithoutPatientDiseasesInput = {
   patientDoctors?: Prisma.PatientDoctorUncheckedUpdateManyWithoutPatientNestedInput
   consultations?: Prisma.ConsultationUncheckedUpdateManyWithoutPatientNestedInput
   appointments?: Prisma.AppointmentUncheckedUpdateManyWithoutPatientNestedInput
+  medicalReports?: Prisma.MedicalReportUncheckedUpdateManyWithoutPatientNestedInput
+  shareLinks?: Prisma.PatientShareLinkUncheckedUpdateManyWithoutPatientNestedInput
+  adverseReactions?: Prisma.AdverseDrugReactionUncheckedUpdateManyWithoutPatientNestedInput
+  childrenProfiles?: Prisma.ChildProfileUncheckedUpdateManyWithoutParentNestedInput
+  ratings?: Prisma.RatingUncheckedUpdateManyWithoutPatientNestedInput
+  visits?: Prisma.VisitUncheckedUpdateManyWithoutPatientNestedInput
 }
 
 export type PatientCreateWithoutPrescriptionsInput = {
@@ -1922,6 +2266,12 @@ export type PatientCreateWithoutPrescriptionsInput = {
   patientDoctors?: Prisma.PatientDoctorCreateNestedManyWithoutPatientInput
   consultations?: Prisma.ConsultationCreateNestedManyWithoutPatientInput
   appointments?: Prisma.AppointmentCreateNestedManyWithoutPatientInput
+  medicalReports?: Prisma.MedicalReportCreateNestedManyWithoutPatientInput
+  shareLinks?: Prisma.PatientShareLinkCreateNestedManyWithoutPatientInput
+  adverseReactions?: Prisma.AdverseDrugReactionCreateNestedManyWithoutPatientInput
+  childrenProfiles?: Prisma.ChildProfileCreateNestedManyWithoutParentInput
+  ratings?: Prisma.RatingCreateNestedManyWithoutPatientInput
+  visits?: Prisma.VisitCreateNestedManyWithoutPatientInput
 }
 
 export type PatientUncheckedCreateWithoutPrescriptionsInput = {
@@ -1948,6 +2298,12 @@ export type PatientUncheckedCreateWithoutPrescriptionsInput = {
   patientDoctors?: Prisma.PatientDoctorUncheckedCreateNestedManyWithoutPatientInput
   consultations?: Prisma.ConsultationUncheckedCreateNestedManyWithoutPatientInput
   appointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutPatientInput
+  medicalReports?: Prisma.MedicalReportUncheckedCreateNestedManyWithoutPatientInput
+  shareLinks?: Prisma.PatientShareLinkUncheckedCreateNestedManyWithoutPatientInput
+  adverseReactions?: Prisma.AdverseDrugReactionUncheckedCreateNestedManyWithoutPatientInput
+  childrenProfiles?: Prisma.ChildProfileUncheckedCreateNestedManyWithoutParentInput
+  ratings?: Prisma.RatingUncheckedCreateNestedManyWithoutPatientInput
+  visits?: Prisma.VisitUncheckedCreateNestedManyWithoutPatientInput
 }
 
 export type PatientCreateOrConnectWithoutPrescriptionsInput = {
@@ -1989,6 +2345,12 @@ export type PatientUpdateWithoutPrescriptionsInput = {
   patientDoctors?: Prisma.PatientDoctorUpdateManyWithoutPatientNestedInput
   consultations?: Prisma.ConsultationUpdateManyWithoutPatientNestedInput
   appointments?: Prisma.AppointmentUpdateManyWithoutPatientNestedInput
+  medicalReports?: Prisma.MedicalReportUpdateManyWithoutPatientNestedInput
+  shareLinks?: Prisma.PatientShareLinkUpdateManyWithoutPatientNestedInput
+  adverseReactions?: Prisma.AdverseDrugReactionUpdateManyWithoutPatientNestedInput
+  childrenProfiles?: Prisma.ChildProfileUpdateManyWithoutParentNestedInput
+  ratings?: Prisma.RatingUpdateManyWithoutPatientNestedInput
+  visits?: Prisma.VisitUpdateManyWithoutPatientNestedInput
 }
 
 export type PatientUncheckedUpdateWithoutPrescriptionsInput = {
@@ -2015,6 +2377,864 @@ export type PatientUncheckedUpdateWithoutPrescriptionsInput = {
   patientDoctors?: Prisma.PatientDoctorUncheckedUpdateManyWithoutPatientNestedInput
   consultations?: Prisma.ConsultationUncheckedUpdateManyWithoutPatientNestedInput
   appointments?: Prisma.AppointmentUncheckedUpdateManyWithoutPatientNestedInput
+  medicalReports?: Prisma.MedicalReportUncheckedUpdateManyWithoutPatientNestedInput
+  shareLinks?: Prisma.PatientShareLinkUncheckedUpdateManyWithoutPatientNestedInput
+  adverseReactions?: Prisma.AdverseDrugReactionUncheckedUpdateManyWithoutPatientNestedInput
+  childrenProfiles?: Prisma.ChildProfileUncheckedUpdateManyWithoutParentNestedInput
+  ratings?: Prisma.RatingUncheckedUpdateManyWithoutPatientNestedInput
+  visits?: Prisma.VisitUncheckedUpdateManyWithoutPatientNestedInput
+}
+
+export type PatientCreateWithoutMedicalReportsInput = {
+  name: string
+  age: number
+  ageClassification: $Enums.AgeClassification
+  weight?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  height?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  gender: $Enums.Gender
+  smoking?: boolean
+  pregnancyWarning?: boolean
+  lactation?: boolean
+  profileCompleteness?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  user: Prisma.UserCreateNestedOneWithoutPatientInput
+  prescriptions?: Prisma.PrescriptionCreateNestedManyWithoutPatientInput
+  patientDiseases?: Prisma.PatientDiseaseCreateNestedManyWithoutPatientInput
+  medicalHistories?: Prisma.MedicalHistoryCreateNestedManyWithoutPatientInput
+  familyHistories?: Prisma.FamilyHistoryCreateNestedManyWithoutPatientInput
+  lifestyle?: Prisma.LifestyleCreateNestedOneWithoutPatientInput
+  allergies?: Prisma.AllergyCreateNestedManyWithoutPatientInput
+  patientDoctors?: Prisma.PatientDoctorCreateNestedManyWithoutPatientInput
+  consultations?: Prisma.ConsultationCreateNestedManyWithoutPatientInput
+  appointments?: Prisma.AppointmentCreateNestedManyWithoutPatientInput
+  shareLinks?: Prisma.PatientShareLinkCreateNestedManyWithoutPatientInput
+  adverseReactions?: Prisma.AdverseDrugReactionCreateNestedManyWithoutPatientInput
+  childrenProfiles?: Prisma.ChildProfileCreateNestedManyWithoutParentInput
+  ratings?: Prisma.RatingCreateNestedManyWithoutPatientInput
+  visits?: Prisma.VisitCreateNestedManyWithoutPatientInput
+}
+
+export type PatientUncheckedCreateWithoutMedicalReportsInput = {
+  id?: number
+  userId: number
+  name: string
+  age: number
+  ageClassification: $Enums.AgeClassification
+  weight?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  height?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  gender: $Enums.Gender
+  smoking?: boolean
+  pregnancyWarning?: boolean
+  lactation?: boolean
+  profileCompleteness?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  prescriptions?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutPatientInput
+  patientDiseases?: Prisma.PatientDiseaseUncheckedCreateNestedManyWithoutPatientInput
+  medicalHistories?: Prisma.MedicalHistoryUncheckedCreateNestedManyWithoutPatientInput
+  familyHistories?: Prisma.FamilyHistoryUncheckedCreateNestedManyWithoutPatientInput
+  lifestyle?: Prisma.LifestyleUncheckedCreateNestedOneWithoutPatientInput
+  allergies?: Prisma.AllergyUncheckedCreateNestedManyWithoutPatientInput
+  patientDoctors?: Prisma.PatientDoctorUncheckedCreateNestedManyWithoutPatientInput
+  consultations?: Prisma.ConsultationUncheckedCreateNestedManyWithoutPatientInput
+  appointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutPatientInput
+  shareLinks?: Prisma.PatientShareLinkUncheckedCreateNestedManyWithoutPatientInput
+  adverseReactions?: Prisma.AdverseDrugReactionUncheckedCreateNestedManyWithoutPatientInput
+  childrenProfiles?: Prisma.ChildProfileUncheckedCreateNestedManyWithoutParentInput
+  ratings?: Prisma.RatingUncheckedCreateNestedManyWithoutPatientInput
+  visits?: Prisma.VisitUncheckedCreateNestedManyWithoutPatientInput
+}
+
+export type PatientCreateOrConnectWithoutMedicalReportsInput = {
+  where: Prisma.PatientWhereUniqueInput
+  create: Prisma.XOR<Prisma.PatientCreateWithoutMedicalReportsInput, Prisma.PatientUncheckedCreateWithoutMedicalReportsInput>
+}
+
+export type PatientUpsertWithoutMedicalReportsInput = {
+  update: Prisma.XOR<Prisma.PatientUpdateWithoutMedicalReportsInput, Prisma.PatientUncheckedUpdateWithoutMedicalReportsInput>
+  create: Prisma.XOR<Prisma.PatientCreateWithoutMedicalReportsInput, Prisma.PatientUncheckedCreateWithoutMedicalReportsInput>
+  where?: Prisma.PatientWhereInput
+}
+
+export type PatientUpdateToOneWithWhereWithoutMedicalReportsInput = {
+  where?: Prisma.PatientWhereInput
+  data: Prisma.XOR<Prisma.PatientUpdateWithoutMedicalReportsInput, Prisma.PatientUncheckedUpdateWithoutMedicalReportsInput>
+}
+
+export type PatientUpdateWithoutMedicalReportsInput = {
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  age?: Prisma.IntFieldUpdateOperationsInput | number
+  ageClassification?: Prisma.EnumAgeClassificationFieldUpdateOperationsInput | $Enums.AgeClassification
+  weight?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  height?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender
+  smoking?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pregnancyWarning?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  lactation?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  profileCompleteness?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  user?: Prisma.UserUpdateOneRequiredWithoutPatientNestedInput
+  prescriptions?: Prisma.PrescriptionUpdateManyWithoutPatientNestedInput
+  patientDiseases?: Prisma.PatientDiseaseUpdateManyWithoutPatientNestedInput
+  medicalHistories?: Prisma.MedicalHistoryUpdateManyWithoutPatientNestedInput
+  familyHistories?: Prisma.FamilyHistoryUpdateManyWithoutPatientNestedInput
+  lifestyle?: Prisma.LifestyleUpdateOneWithoutPatientNestedInput
+  allergies?: Prisma.AllergyUpdateManyWithoutPatientNestedInput
+  patientDoctors?: Prisma.PatientDoctorUpdateManyWithoutPatientNestedInput
+  consultations?: Prisma.ConsultationUpdateManyWithoutPatientNestedInput
+  appointments?: Prisma.AppointmentUpdateManyWithoutPatientNestedInput
+  shareLinks?: Prisma.PatientShareLinkUpdateManyWithoutPatientNestedInput
+  adverseReactions?: Prisma.AdverseDrugReactionUpdateManyWithoutPatientNestedInput
+  childrenProfiles?: Prisma.ChildProfileUpdateManyWithoutParentNestedInput
+  ratings?: Prisma.RatingUpdateManyWithoutPatientNestedInput
+  visits?: Prisma.VisitUpdateManyWithoutPatientNestedInput
+}
+
+export type PatientUncheckedUpdateWithoutMedicalReportsInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  userId?: Prisma.IntFieldUpdateOperationsInput | number
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  age?: Prisma.IntFieldUpdateOperationsInput | number
+  ageClassification?: Prisma.EnumAgeClassificationFieldUpdateOperationsInput | $Enums.AgeClassification
+  weight?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  height?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender
+  smoking?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pregnancyWarning?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  lactation?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  profileCompleteness?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  prescriptions?: Prisma.PrescriptionUncheckedUpdateManyWithoutPatientNestedInput
+  patientDiseases?: Prisma.PatientDiseaseUncheckedUpdateManyWithoutPatientNestedInput
+  medicalHistories?: Prisma.MedicalHistoryUncheckedUpdateManyWithoutPatientNestedInput
+  familyHistories?: Prisma.FamilyHistoryUncheckedUpdateManyWithoutPatientNestedInput
+  lifestyle?: Prisma.LifestyleUncheckedUpdateOneWithoutPatientNestedInput
+  allergies?: Prisma.AllergyUncheckedUpdateManyWithoutPatientNestedInput
+  patientDoctors?: Prisma.PatientDoctorUncheckedUpdateManyWithoutPatientNestedInput
+  consultations?: Prisma.ConsultationUncheckedUpdateManyWithoutPatientNestedInput
+  appointments?: Prisma.AppointmentUncheckedUpdateManyWithoutPatientNestedInput
+  shareLinks?: Prisma.PatientShareLinkUncheckedUpdateManyWithoutPatientNestedInput
+  adverseReactions?: Prisma.AdverseDrugReactionUncheckedUpdateManyWithoutPatientNestedInput
+  childrenProfiles?: Prisma.ChildProfileUncheckedUpdateManyWithoutParentNestedInput
+  ratings?: Prisma.RatingUncheckedUpdateManyWithoutPatientNestedInput
+  visits?: Prisma.VisitUncheckedUpdateManyWithoutPatientNestedInput
+}
+
+export type PatientCreateWithoutShareLinksInput = {
+  name: string
+  age: number
+  ageClassification: $Enums.AgeClassification
+  weight?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  height?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  gender: $Enums.Gender
+  smoking?: boolean
+  pregnancyWarning?: boolean
+  lactation?: boolean
+  profileCompleteness?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  user: Prisma.UserCreateNestedOneWithoutPatientInput
+  prescriptions?: Prisma.PrescriptionCreateNestedManyWithoutPatientInput
+  patientDiseases?: Prisma.PatientDiseaseCreateNestedManyWithoutPatientInput
+  medicalHistories?: Prisma.MedicalHistoryCreateNestedManyWithoutPatientInput
+  familyHistories?: Prisma.FamilyHistoryCreateNestedManyWithoutPatientInput
+  lifestyle?: Prisma.LifestyleCreateNestedOneWithoutPatientInput
+  allergies?: Prisma.AllergyCreateNestedManyWithoutPatientInput
+  patientDoctors?: Prisma.PatientDoctorCreateNestedManyWithoutPatientInput
+  consultations?: Prisma.ConsultationCreateNestedManyWithoutPatientInput
+  appointments?: Prisma.AppointmentCreateNestedManyWithoutPatientInput
+  medicalReports?: Prisma.MedicalReportCreateNestedManyWithoutPatientInput
+  adverseReactions?: Prisma.AdverseDrugReactionCreateNestedManyWithoutPatientInput
+  childrenProfiles?: Prisma.ChildProfileCreateNestedManyWithoutParentInput
+  ratings?: Prisma.RatingCreateNestedManyWithoutPatientInput
+  visits?: Prisma.VisitCreateNestedManyWithoutPatientInput
+}
+
+export type PatientUncheckedCreateWithoutShareLinksInput = {
+  id?: number
+  userId: number
+  name: string
+  age: number
+  ageClassification: $Enums.AgeClassification
+  weight?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  height?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  gender: $Enums.Gender
+  smoking?: boolean
+  pregnancyWarning?: boolean
+  lactation?: boolean
+  profileCompleteness?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  prescriptions?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutPatientInput
+  patientDiseases?: Prisma.PatientDiseaseUncheckedCreateNestedManyWithoutPatientInput
+  medicalHistories?: Prisma.MedicalHistoryUncheckedCreateNestedManyWithoutPatientInput
+  familyHistories?: Prisma.FamilyHistoryUncheckedCreateNestedManyWithoutPatientInput
+  lifestyle?: Prisma.LifestyleUncheckedCreateNestedOneWithoutPatientInput
+  allergies?: Prisma.AllergyUncheckedCreateNestedManyWithoutPatientInput
+  patientDoctors?: Prisma.PatientDoctorUncheckedCreateNestedManyWithoutPatientInput
+  consultations?: Prisma.ConsultationUncheckedCreateNestedManyWithoutPatientInput
+  appointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutPatientInput
+  medicalReports?: Prisma.MedicalReportUncheckedCreateNestedManyWithoutPatientInput
+  adverseReactions?: Prisma.AdverseDrugReactionUncheckedCreateNestedManyWithoutPatientInput
+  childrenProfiles?: Prisma.ChildProfileUncheckedCreateNestedManyWithoutParentInput
+  ratings?: Prisma.RatingUncheckedCreateNestedManyWithoutPatientInput
+  visits?: Prisma.VisitUncheckedCreateNestedManyWithoutPatientInput
+}
+
+export type PatientCreateOrConnectWithoutShareLinksInput = {
+  where: Prisma.PatientWhereUniqueInput
+  create: Prisma.XOR<Prisma.PatientCreateWithoutShareLinksInput, Prisma.PatientUncheckedCreateWithoutShareLinksInput>
+}
+
+export type PatientUpsertWithoutShareLinksInput = {
+  update: Prisma.XOR<Prisma.PatientUpdateWithoutShareLinksInput, Prisma.PatientUncheckedUpdateWithoutShareLinksInput>
+  create: Prisma.XOR<Prisma.PatientCreateWithoutShareLinksInput, Prisma.PatientUncheckedCreateWithoutShareLinksInput>
+  where?: Prisma.PatientWhereInput
+}
+
+export type PatientUpdateToOneWithWhereWithoutShareLinksInput = {
+  where?: Prisma.PatientWhereInput
+  data: Prisma.XOR<Prisma.PatientUpdateWithoutShareLinksInput, Prisma.PatientUncheckedUpdateWithoutShareLinksInput>
+}
+
+export type PatientUpdateWithoutShareLinksInput = {
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  age?: Prisma.IntFieldUpdateOperationsInput | number
+  ageClassification?: Prisma.EnumAgeClassificationFieldUpdateOperationsInput | $Enums.AgeClassification
+  weight?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  height?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender
+  smoking?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pregnancyWarning?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  lactation?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  profileCompleteness?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  user?: Prisma.UserUpdateOneRequiredWithoutPatientNestedInput
+  prescriptions?: Prisma.PrescriptionUpdateManyWithoutPatientNestedInput
+  patientDiseases?: Prisma.PatientDiseaseUpdateManyWithoutPatientNestedInput
+  medicalHistories?: Prisma.MedicalHistoryUpdateManyWithoutPatientNestedInput
+  familyHistories?: Prisma.FamilyHistoryUpdateManyWithoutPatientNestedInput
+  lifestyle?: Prisma.LifestyleUpdateOneWithoutPatientNestedInput
+  allergies?: Prisma.AllergyUpdateManyWithoutPatientNestedInput
+  patientDoctors?: Prisma.PatientDoctorUpdateManyWithoutPatientNestedInput
+  consultations?: Prisma.ConsultationUpdateManyWithoutPatientNestedInput
+  appointments?: Prisma.AppointmentUpdateManyWithoutPatientNestedInput
+  medicalReports?: Prisma.MedicalReportUpdateManyWithoutPatientNestedInput
+  adverseReactions?: Prisma.AdverseDrugReactionUpdateManyWithoutPatientNestedInput
+  childrenProfiles?: Prisma.ChildProfileUpdateManyWithoutParentNestedInput
+  ratings?: Prisma.RatingUpdateManyWithoutPatientNestedInput
+  visits?: Prisma.VisitUpdateManyWithoutPatientNestedInput
+}
+
+export type PatientUncheckedUpdateWithoutShareLinksInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  userId?: Prisma.IntFieldUpdateOperationsInput | number
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  age?: Prisma.IntFieldUpdateOperationsInput | number
+  ageClassification?: Prisma.EnumAgeClassificationFieldUpdateOperationsInput | $Enums.AgeClassification
+  weight?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  height?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender
+  smoking?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pregnancyWarning?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  lactation?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  profileCompleteness?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  prescriptions?: Prisma.PrescriptionUncheckedUpdateManyWithoutPatientNestedInput
+  patientDiseases?: Prisma.PatientDiseaseUncheckedUpdateManyWithoutPatientNestedInput
+  medicalHistories?: Prisma.MedicalHistoryUncheckedUpdateManyWithoutPatientNestedInput
+  familyHistories?: Prisma.FamilyHistoryUncheckedUpdateManyWithoutPatientNestedInput
+  lifestyle?: Prisma.LifestyleUncheckedUpdateOneWithoutPatientNestedInput
+  allergies?: Prisma.AllergyUncheckedUpdateManyWithoutPatientNestedInput
+  patientDoctors?: Prisma.PatientDoctorUncheckedUpdateManyWithoutPatientNestedInput
+  consultations?: Prisma.ConsultationUncheckedUpdateManyWithoutPatientNestedInput
+  appointments?: Prisma.AppointmentUncheckedUpdateManyWithoutPatientNestedInput
+  medicalReports?: Prisma.MedicalReportUncheckedUpdateManyWithoutPatientNestedInput
+  adverseReactions?: Prisma.AdverseDrugReactionUncheckedUpdateManyWithoutPatientNestedInput
+  childrenProfiles?: Prisma.ChildProfileUncheckedUpdateManyWithoutParentNestedInput
+  ratings?: Prisma.RatingUncheckedUpdateManyWithoutPatientNestedInput
+  visits?: Prisma.VisitUncheckedUpdateManyWithoutPatientNestedInput
+}
+
+export type PatientCreateWithoutAdverseReactionsInput = {
+  name: string
+  age: number
+  ageClassification: $Enums.AgeClassification
+  weight?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  height?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  gender: $Enums.Gender
+  smoking?: boolean
+  pregnancyWarning?: boolean
+  lactation?: boolean
+  profileCompleteness?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  user: Prisma.UserCreateNestedOneWithoutPatientInput
+  prescriptions?: Prisma.PrescriptionCreateNestedManyWithoutPatientInput
+  patientDiseases?: Prisma.PatientDiseaseCreateNestedManyWithoutPatientInput
+  medicalHistories?: Prisma.MedicalHistoryCreateNestedManyWithoutPatientInput
+  familyHistories?: Prisma.FamilyHistoryCreateNestedManyWithoutPatientInput
+  lifestyle?: Prisma.LifestyleCreateNestedOneWithoutPatientInput
+  allergies?: Prisma.AllergyCreateNestedManyWithoutPatientInput
+  patientDoctors?: Prisma.PatientDoctorCreateNestedManyWithoutPatientInput
+  consultations?: Prisma.ConsultationCreateNestedManyWithoutPatientInput
+  appointments?: Prisma.AppointmentCreateNestedManyWithoutPatientInput
+  medicalReports?: Prisma.MedicalReportCreateNestedManyWithoutPatientInput
+  shareLinks?: Prisma.PatientShareLinkCreateNestedManyWithoutPatientInput
+  childrenProfiles?: Prisma.ChildProfileCreateNestedManyWithoutParentInput
+  ratings?: Prisma.RatingCreateNestedManyWithoutPatientInput
+  visits?: Prisma.VisitCreateNestedManyWithoutPatientInput
+}
+
+export type PatientUncheckedCreateWithoutAdverseReactionsInput = {
+  id?: number
+  userId: number
+  name: string
+  age: number
+  ageClassification: $Enums.AgeClassification
+  weight?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  height?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  gender: $Enums.Gender
+  smoking?: boolean
+  pregnancyWarning?: boolean
+  lactation?: boolean
+  profileCompleteness?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  prescriptions?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutPatientInput
+  patientDiseases?: Prisma.PatientDiseaseUncheckedCreateNestedManyWithoutPatientInput
+  medicalHistories?: Prisma.MedicalHistoryUncheckedCreateNestedManyWithoutPatientInput
+  familyHistories?: Prisma.FamilyHistoryUncheckedCreateNestedManyWithoutPatientInput
+  lifestyle?: Prisma.LifestyleUncheckedCreateNestedOneWithoutPatientInput
+  allergies?: Prisma.AllergyUncheckedCreateNestedManyWithoutPatientInput
+  patientDoctors?: Prisma.PatientDoctorUncheckedCreateNestedManyWithoutPatientInput
+  consultations?: Prisma.ConsultationUncheckedCreateNestedManyWithoutPatientInput
+  appointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutPatientInput
+  medicalReports?: Prisma.MedicalReportUncheckedCreateNestedManyWithoutPatientInput
+  shareLinks?: Prisma.PatientShareLinkUncheckedCreateNestedManyWithoutPatientInput
+  childrenProfiles?: Prisma.ChildProfileUncheckedCreateNestedManyWithoutParentInput
+  ratings?: Prisma.RatingUncheckedCreateNestedManyWithoutPatientInput
+  visits?: Prisma.VisitUncheckedCreateNestedManyWithoutPatientInput
+}
+
+export type PatientCreateOrConnectWithoutAdverseReactionsInput = {
+  where: Prisma.PatientWhereUniqueInput
+  create: Prisma.XOR<Prisma.PatientCreateWithoutAdverseReactionsInput, Prisma.PatientUncheckedCreateWithoutAdverseReactionsInput>
+}
+
+export type PatientUpsertWithoutAdverseReactionsInput = {
+  update: Prisma.XOR<Prisma.PatientUpdateWithoutAdverseReactionsInput, Prisma.PatientUncheckedUpdateWithoutAdverseReactionsInput>
+  create: Prisma.XOR<Prisma.PatientCreateWithoutAdverseReactionsInput, Prisma.PatientUncheckedCreateWithoutAdverseReactionsInput>
+  where?: Prisma.PatientWhereInput
+}
+
+export type PatientUpdateToOneWithWhereWithoutAdverseReactionsInput = {
+  where?: Prisma.PatientWhereInput
+  data: Prisma.XOR<Prisma.PatientUpdateWithoutAdverseReactionsInput, Prisma.PatientUncheckedUpdateWithoutAdverseReactionsInput>
+}
+
+export type PatientUpdateWithoutAdverseReactionsInput = {
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  age?: Prisma.IntFieldUpdateOperationsInput | number
+  ageClassification?: Prisma.EnumAgeClassificationFieldUpdateOperationsInput | $Enums.AgeClassification
+  weight?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  height?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender
+  smoking?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pregnancyWarning?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  lactation?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  profileCompleteness?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  user?: Prisma.UserUpdateOneRequiredWithoutPatientNestedInput
+  prescriptions?: Prisma.PrescriptionUpdateManyWithoutPatientNestedInput
+  patientDiseases?: Prisma.PatientDiseaseUpdateManyWithoutPatientNestedInput
+  medicalHistories?: Prisma.MedicalHistoryUpdateManyWithoutPatientNestedInput
+  familyHistories?: Prisma.FamilyHistoryUpdateManyWithoutPatientNestedInput
+  lifestyle?: Prisma.LifestyleUpdateOneWithoutPatientNestedInput
+  allergies?: Prisma.AllergyUpdateManyWithoutPatientNestedInput
+  patientDoctors?: Prisma.PatientDoctorUpdateManyWithoutPatientNestedInput
+  consultations?: Prisma.ConsultationUpdateManyWithoutPatientNestedInput
+  appointments?: Prisma.AppointmentUpdateManyWithoutPatientNestedInput
+  medicalReports?: Prisma.MedicalReportUpdateManyWithoutPatientNestedInput
+  shareLinks?: Prisma.PatientShareLinkUpdateManyWithoutPatientNestedInput
+  childrenProfiles?: Prisma.ChildProfileUpdateManyWithoutParentNestedInput
+  ratings?: Prisma.RatingUpdateManyWithoutPatientNestedInput
+  visits?: Prisma.VisitUpdateManyWithoutPatientNestedInput
+}
+
+export type PatientUncheckedUpdateWithoutAdverseReactionsInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  userId?: Prisma.IntFieldUpdateOperationsInput | number
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  age?: Prisma.IntFieldUpdateOperationsInput | number
+  ageClassification?: Prisma.EnumAgeClassificationFieldUpdateOperationsInput | $Enums.AgeClassification
+  weight?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  height?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender
+  smoking?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pregnancyWarning?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  lactation?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  profileCompleteness?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  prescriptions?: Prisma.PrescriptionUncheckedUpdateManyWithoutPatientNestedInput
+  patientDiseases?: Prisma.PatientDiseaseUncheckedUpdateManyWithoutPatientNestedInput
+  medicalHistories?: Prisma.MedicalHistoryUncheckedUpdateManyWithoutPatientNestedInput
+  familyHistories?: Prisma.FamilyHistoryUncheckedUpdateManyWithoutPatientNestedInput
+  lifestyle?: Prisma.LifestyleUncheckedUpdateOneWithoutPatientNestedInput
+  allergies?: Prisma.AllergyUncheckedUpdateManyWithoutPatientNestedInput
+  patientDoctors?: Prisma.PatientDoctorUncheckedUpdateManyWithoutPatientNestedInput
+  consultations?: Prisma.ConsultationUncheckedUpdateManyWithoutPatientNestedInput
+  appointments?: Prisma.AppointmentUncheckedUpdateManyWithoutPatientNestedInput
+  medicalReports?: Prisma.MedicalReportUncheckedUpdateManyWithoutPatientNestedInput
+  shareLinks?: Prisma.PatientShareLinkUncheckedUpdateManyWithoutPatientNestedInput
+  childrenProfiles?: Prisma.ChildProfileUncheckedUpdateManyWithoutParentNestedInput
+  ratings?: Prisma.RatingUncheckedUpdateManyWithoutPatientNestedInput
+  visits?: Prisma.VisitUncheckedUpdateManyWithoutPatientNestedInput
+}
+
+export type PatientCreateWithoutChildrenProfilesInput = {
+  name: string
+  age: number
+  ageClassification: $Enums.AgeClassification
+  weight?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  height?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  gender: $Enums.Gender
+  smoking?: boolean
+  pregnancyWarning?: boolean
+  lactation?: boolean
+  profileCompleteness?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  user: Prisma.UserCreateNestedOneWithoutPatientInput
+  prescriptions?: Prisma.PrescriptionCreateNestedManyWithoutPatientInput
+  patientDiseases?: Prisma.PatientDiseaseCreateNestedManyWithoutPatientInput
+  medicalHistories?: Prisma.MedicalHistoryCreateNestedManyWithoutPatientInput
+  familyHistories?: Prisma.FamilyHistoryCreateNestedManyWithoutPatientInput
+  lifestyle?: Prisma.LifestyleCreateNestedOneWithoutPatientInput
+  allergies?: Prisma.AllergyCreateNestedManyWithoutPatientInput
+  patientDoctors?: Prisma.PatientDoctorCreateNestedManyWithoutPatientInput
+  consultations?: Prisma.ConsultationCreateNestedManyWithoutPatientInput
+  appointments?: Prisma.AppointmentCreateNestedManyWithoutPatientInput
+  medicalReports?: Prisma.MedicalReportCreateNestedManyWithoutPatientInput
+  shareLinks?: Prisma.PatientShareLinkCreateNestedManyWithoutPatientInput
+  adverseReactions?: Prisma.AdverseDrugReactionCreateNestedManyWithoutPatientInput
+  ratings?: Prisma.RatingCreateNestedManyWithoutPatientInput
+  visits?: Prisma.VisitCreateNestedManyWithoutPatientInput
+}
+
+export type PatientUncheckedCreateWithoutChildrenProfilesInput = {
+  id?: number
+  userId: number
+  name: string
+  age: number
+  ageClassification: $Enums.AgeClassification
+  weight?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  height?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  gender: $Enums.Gender
+  smoking?: boolean
+  pregnancyWarning?: boolean
+  lactation?: boolean
+  profileCompleteness?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  prescriptions?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutPatientInput
+  patientDiseases?: Prisma.PatientDiseaseUncheckedCreateNestedManyWithoutPatientInput
+  medicalHistories?: Prisma.MedicalHistoryUncheckedCreateNestedManyWithoutPatientInput
+  familyHistories?: Prisma.FamilyHistoryUncheckedCreateNestedManyWithoutPatientInput
+  lifestyle?: Prisma.LifestyleUncheckedCreateNestedOneWithoutPatientInput
+  allergies?: Prisma.AllergyUncheckedCreateNestedManyWithoutPatientInput
+  patientDoctors?: Prisma.PatientDoctorUncheckedCreateNestedManyWithoutPatientInput
+  consultations?: Prisma.ConsultationUncheckedCreateNestedManyWithoutPatientInput
+  appointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutPatientInput
+  medicalReports?: Prisma.MedicalReportUncheckedCreateNestedManyWithoutPatientInput
+  shareLinks?: Prisma.PatientShareLinkUncheckedCreateNestedManyWithoutPatientInput
+  adverseReactions?: Prisma.AdverseDrugReactionUncheckedCreateNestedManyWithoutPatientInput
+  ratings?: Prisma.RatingUncheckedCreateNestedManyWithoutPatientInput
+  visits?: Prisma.VisitUncheckedCreateNestedManyWithoutPatientInput
+}
+
+export type PatientCreateOrConnectWithoutChildrenProfilesInput = {
+  where: Prisma.PatientWhereUniqueInput
+  create: Prisma.XOR<Prisma.PatientCreateWithoutChildrenProfilesInput, Prisma.PatientUncheckedCreateWithoutChildrenProfilesInput>
+}
+
+export type PatientUpsertWithoutChildrenProfilesInput = {
+  update: Prisma.XOR<Prisma.PatientUpdateWithoutChildrenProfilesInput, Prisma.PatientUncheckedUpdateWithoutChildrenProfilesInput>
+  create: Prisma.XOR<Prisma.PatientCreateWithoutChildrenProfilesInput, Prisma.PatientUncheckedCreateWithoutChildrenProfilesInput>
+  where?: Prisma.PatientWhereInput
+}
+
+export type PatientUpdateToOneWithWhereWithoutChildrenProfilesInput = {
+  where?: Prisma.PatientWhereInput
+  data: Prisma.XOR<Prisma.PatientUpdateWithoutChildrenProfilesInput, Prisma.PatientUncheckedUpdateWithoutChildrenProfilesInput>
+}
+
+export type PatientUpdateWithoutChildrenProfilesInput = {
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  age?: Prisma.IntFieldUpdateOperationsInput | number
+  ageClassification?: Prisma.EnumAgeClassificationFieldUpdateOperationsInput | $Enums.AgeClassification
+  weight?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  height?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender
+  smoking?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pregnancyWarning?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  lactation?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  profileCompleteness?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  user?: Prisma.UserUpdateOneRequiredWithoutPatientNestedInput
+  prescriptions?: Prisma.PrescriptionUpdateManyWithoutPatientNestedInput
+  patientDiseases?: Prisma.PatientDiseaseUpdateManyWithoutPatientNestedInput
+  medicalHistories?: Prisma.MedicalHistoryUpdateManyWithoutPatientNestedInput
+  familyHistories?: Prisma.FamilyHistoryUpdateManyWithoutPatientNestedInput
+  lifestyle?: Prisma.LifestyleUpdateOneWithoutPatientNestedInput
+  allergies?: Prisma.AllergyUpdateManyWithoutPatientNestedInput
+  patientDoctors?: Prisma.PatientDoctorUpdateManyWithoutPatientNestedInput
+  consultations?: Prisma.ConsultationUpdateManyWithoutPatientNestedInput
+  appointments?: Prisma.AppointmentUpdateManyWithoutPatientNestedInput
+  medicalReports?: Prisma.MedicalReportUpdateManyWithoutPatientNestedInput
+  shareLinks?: Prisma.PatientShareLinkUpdateManyWithoutPatientNestedInput
+  adverseReactions?: Prisma.AdverseDrugReactionUpdateManyWithoutPatientNestedInput
+  ratings?: Prisma.RatingUpdateManyWithoutPatientNestedInput
+  visits?: Prisma.VisitUpdateManyWithoutPatientNestedInput
+}
+
+export type PatientUncheckedUpdateWithoutChildrenProfilesInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  userId?: Prisma.IntFieldUpdateOperationsInput | number
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  age?: Prisma.IntFieldUpdateOperationsInput | number
+  ageClassification?: Prisma.EnumAgeClassificationFieldUpdateOperationsInput | $Enums.AgeClassification
+  weight?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  height?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender
+  smoking?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pregnancyWarning?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  lactation?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  profileCompleteness?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  prescriptions?: Prisma.PrescriptionUncheckedUpdateManyWithoutPatientNestedInput
+  patientDiseases?: Prisma.PatientDiseaseUncheckedUpdateManyWithoutPatientNestedInput
+  medicalHistories?: Prisma.MedicalHistoryUncheckedUpdateManyWithoutPatientNestedInput
+  familyHistories?: Prisma.FamilyHistoryUncheckedUpdateManyWithoutPatientNestedInput
+  lifestyle?: Prisma.LifestyleUncheckedUpdateOneWithoutPatientNestedInput
+  allergies?: Prisma.AllergyUncheckedUpdateManyWithoutPatientNestedInput
+  patientDoctors?: Prisma.PatientDoctorUncheckedUpdateManyWithoutPatientNestedInput
+  consultations?: Prisma.ConsultationUncheckedUpdateManyWithoutPatientNestedInput
+  appointments?: Prisma.AppointmentUncheckedUpdateManyWithoutPatientNestedInput
+  medicalReports?: Prisma.MedicalReportUncheckedUpdateManyWithoutPatientNestedInput
+  shareLinks?: Prisma.PatientShareLinkUncheckedUpdateManyWithoutPatientNestedInput
+  adverseReactions?: Prisma.AdverseDrugReactionUncheckedUpdateManyWithoutPatientNestedInput
+  ratings?: Prisma.RatingUncheckedUpdateManyWithoutPatientNestedInput
+  visits?: Prisma.VisitUncheckedUpdateManyWithoutPatientNestedInput
+}
+
+export type PatientCreateWithoutRatingsInput = {
+  name: string
+  age: number
+  ageClassification: $Enums.AgeClassification
+  weight?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  height?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  gender: $Enums.Gender
+  smoking?: boolean
+  pregnancyWarning?: boolean
+  lactation?: boolean
+  profileCompleteness?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  user: Prisma.UserCreateNestedOneWithoutPatientInput
+  prescriptions?: Prisma.PrescriptionCreateNestedManyWithoutPatientInput
+  patientDiseases?: Prisma.PatientDiseaseCreateNestedManyWithoutPatientInput
+  medicalHistories?: Prisma.MedicalHistoryCreateNestedManyWithoutPatientInput
+  familyHistories?: Prisma.FamilyHistoryCreateNestedManyWithoutPatientInput
+  lifestyle?: Prisma.LifestyleCreateNestedOneWithoutPatientInput
+  allergies?: Prisma.AllergyCreateNestedManyWithoutPatientInput
+  patientDoctors?: Prisma.PatientDoctorCreateNestedManyWithoutPatientInput
+  consultations?: Prisma.ConsultationCreateNestedManyWithoutPatientInput
+  appointments?: Prisma.AppointmentCreateNestedManyWithoutPatientInput
+  medicalReports?: Prisma.MedicalReportCreateNestedManyWithoutPatientInput
+  shareLinks?: Prisma.PatientShareLinkCreateNestedManyWithoutPatientInput
+  adverseReactions?: Prisma.AdverseDrugReactionCreateNestedManyWithoutPatientInput
+  childrenProfiles?: Prisma.ChildProfileCreateNestedManyWithoutParentInput
+  visits?: Prisma.VisitCreateNestedManyWithoutPatientInput
+}
+
+export type PatientUncheckedCreateWithoutRatingsInput = {
+  id?: number
+  userId: number
+  name: string
+  age: number
+  ageClassification: $Enums.AgeClassification
+  weight?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  height?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  gender: $Enums.Gender
+  smoking?: boolean
+  pregnancyWarning?: boolean
+  lactation?: boolean
+  profileCompleteness?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  prescriptions?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutPatientInput
+  patientDiseases?: Prisma.PatientDiseaseUncheckedCreateNestedManyWithoutPatientInput
+  medicalHistories?: Prisma.MedicalHistoryUncheckedCreateNestedManyWithoutPatientInput
+  familyHistories?: Prisma.FamilyHistoryUncheckedCreateNestedManyWithoutPatientInput
+  lifestyle?: Prisma.LifestyleUncheckedCreateNestedOneWithoutPatientInput
+  allergies?: Prisma.AllergyUncheckedCreateNestedManyWithoutPatientInput
+  patientDoctors?: Prisma.PatientDoctorUncheckedCreateNestedManyWithoutPatientInput
+  consultations?: Prisma.ConsultationUncheckedCreateNestedManyWithoutPatientInput
+  appointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutPatientInput
+  medicalReports?: Prisma.MedicalReportUncheckedCreateNestedManyWithoutPatientInput
+  shareLinks?: Prisma.PatientShareLinkUncheckedCreateNestedManyWithoutPatientInput
+  adverseReactions?: Prisma.AdverseDrugReactionUncheckedCreateNestedManyWithoutPatientInput
+  childrenProfiles?: Prisma.ChildProfileUncheckedCreateNestedManyWithoutParentInput
+  visits?: Prisma.VisitUncheckedCreateNestedManyWithoutPatientInput
+}
+
+export type PatientCreateOrConnectWithoutRatingsInput = {
+  where: Prisma.PatientWhereUniqueInput
+  create: Prisma.XOR<Prisma.PatientCreateWithoutRatingsInput, Prisma.PatientUncheckedCreateWithoutRatingsInput>
+}
+
+export type PatientUpsertWithoutRatingsInput = {
+  update: Prisma.XOR<Prisma.PatientUpdateWithoutRatingsInput, Prisma.PatientUncheckedUpdateWithoutRatingsInput>
+  create: Prisma.XOR<Prisma.PatientCreateWithoutRatingsInput, Prisma.PatientUncheckedCreateWithoutRatingsInput>
+  where?: Prisma.PatientWhereInput
+}
+
+export type PatientUpdateToOneWithWhereWithoutRatingsInput = {
+  where?: Prisma.PatientWhereInput
+  data: Prisma.XOR<Prisma.PatientUpdateWithoutRatingsInput, Prisma.PatientUncheckedUpdateWithoutRatingsInput>
+}
+
+export type PatientUpdateWithoutRatingsInput = {
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  age?: Prisma.IntFieldUpdateOperationsInput | number
+  ageClassification?: Prisma.EnumAgeClassificationFieldUpdateOperationsInput | $Enums.AgeClassification
+  weight?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  height?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender
+  smoking?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pregnancyWarning?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  lactation?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  profileCompleteness?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  user?: Prisma.UserUpdateOneRequiredWithoutPatientNestedInput
+  prescriptions?: Prisma.PrescriptionUpdateManyWithoutPatientNestedInput
+  patientDiseases?: Prisma.PatientDiseaseUpdateManyWithoutPatientNestedInput
+  medicalHistories?: Prisma.MedicalHistoryUpdateManyWithoutPatientNestedInput
+  familyHistories?: Prisma.FamilyHistoryUpdateManyWithoutPatientNestedInput
+  lifestyle?: Prisma.LifestyleUpdateOneWithoutPatientNestedInput
+  allergies?: Prisma.AllergyUpdateManyWithoutPatientNestedInput
+  patientDoctors?: Prisma.PatientDoctorUpdateManyWithoutPatientNestedInput
+  consultations?: Prisma.ConsultationUpdateManyWithoutPatientNestedInput
+  appointments?: Prisma.AppointmentUpdateManyWithoutPatientNestedInput
+  medicalReports?: Prisma.MedicalReportUpdateManyWithoutPatientNestedInput
+  shareLinks?: Prisma.PatientShareLinkUpdateManyWithoutPatientNestedInput
+  adverseReactions?: Prisma.AdverseDrugReactionUpdateManyWithoutPatientNestedInput
+  childrenProfiles?: Prisma.ChildProfileUpdateManyWithoutParentNestedInput
+  visits?: Prisma.VisitUpdateManyWithoutPatientNestedInput
+}
+
+export type PatientUncheckedUpdateWithoutRatingsInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  userId?: Prisma.IntFieldUpdateOperationsInput | number
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  age?: Prisma.IntFieldUpdateOperationsInput | number
+  ageClassification?: Prisma.EnumAgeClassificationFieldUpdateOperationsInput | $Enums.AgeClassification
+  weight?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  height?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender
+  smoking?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pregnancyWarning?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  lactation?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  profileCompleteness?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  prescriptions?: Prisma.PrescriptionUncheckedUpdateManyWithoutPatientNestedInput
+  patientDiseases?: Prisma.PatientDiseaseUncheckedUpdateManyWithoutPatientNestedInput
+  medicalHistories?: Prisma.MedicalHistoryUncheckedUpdateManyWithoutPatientNestedInput
+  familyHistories?: Prisma.FamilyHistoryUncheckedUpdateManyWithoutPatientNestedInput
+  lifestyle?: Prisma.LifestyleUncheckedUpdateOneWithoutPatientNestedInput
+  allergies?: Prisma.AllergyUncheckedUpdateManyWithoutPatientNestedInput
+  patientDoctors?: Prisma.PatientDoctorUncheckedUpdateManyWithoutPatientNestedInput
+  consultations?: Prisma.ConsultationUncheckedUpdateManyWithoutPatientNestedInput
+  appointments?: Prisma.AppointmentUncheckedUpdateManyWithoutPatientNestedInput
+  medicalReports?: Prisma.MedicalReportUncheckedUpdateManyWithoutPatientNestedInput
+  shareLinks?: Prisma.PatientShareLinkUncheckedUpdateManyWithoutPatientNestedInput
+  adverseReactions?: Prisma.AdverseDrugReactionUncheckedUpdateManyWithoutPatientNestedInput
+  childrenProfiles?: Prisma.ChildProfileUncheckedUpdateManyWithoutParentNestedInput
+  visits?: Prisma.VisitUncheckedUpdateManyWithoutPatientNestedInput
+}
+
+export type PatientCreateWithoutVisitsInput = {
+  name: string
+  age: number
+  ageClassification: $Enums.AgeClassification
+  weight?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  height?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  gender: $Enums.Gender
+  smoking?: boolean
+  pregnancyWarning?: boolean
+  lactation?: boolean
+  profileCompleteness?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  user: Prisma.UserCreateNestedOneWithoutPatientInput
+  prescriptions?: Prisma.PrescriptionCreateNestedManyWithoutPatientInput
+  patientDiseases?: Prisma.PatientDiseaseCreateNestedManyWithoutPatientInput
+  medicalHistories?: Prisma.MedicalHistoryCreateNestedManyWithoutPatientInput
+  familyHistories?: Prisma.FamilyHistoryCreateNestedManyWithoutPatientInput
+  lifestyle?: Prisma.LifestyleCreateNestedOneWithoutPatientInput
+  allergies?: Prisma.AllergyCreateNestedManyWithoutPatientInput
+  patientDoctors?: Prisma.PatientDoctorCreateNestedManyWithoutPatientInput
+  consultations?: Prisma.ConsultationCreateNestedManyWithoutPatientInput
+  appointments?: Prisma.AppointmentCreateNestedManyWithoutPatientInput
+  medicalReports?: Prisma.MedicalReportCreateNestedManyWithoutPatientInput
+  shareLinks?: Prisma.PatientShareLinkCreateNestedManyWithoutPatientInput
+  adverseReactions?: Prisma.AdverseDrugReactionCreateNestedManyWithoutPatientInput
+  childrenProfiles?: Prisma.ChildProfileCreateNestedManyWithoutParentInput
+  ratings?: Prisma.RatingCreateNestedManyWithoutPatientInput
+}
+
+export type PatientUncheckedCreateWithoutVisitsInput = {
+  id?: number
+  userId: number
+  name: string
+  age: number
+  ageClassification: $Enums.AgeClassification
+  weight?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  height?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  gender: $Enums.Gender
+  smoking?: boolean
+  pregnancyWarning?: boolean
+  lactation?: boolean
+  profileCompleteness?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  prescriptions?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutPatientInput
+  patientDiseases?: Prisma.PatientDiseaseUncheckedCreateNestedManyWithoutPatientInput
+  medicalHistories?: Prisma.MedicalHistoryUncheckedCreateNestedManyWithoutPatientInput
+  familyHistories?: Prisma.FamilyHistoryUncheckedCreateNestedManyWithoutPatientInput
+  lifestyle?: Prisma.LifestyleUncheckedCreateNestedOneWithoutPatientInput
+  allergies?: Prisma.AllergyUncheckedCreateNestedManyWithoutPatientInput
+  patientDoctors?: Prisma.PatientDoctorUncheckedCreateNestedManyWithoutPatientInput
+  consultations?: Prisma.ConsultationUncheckedCreateNestedManyWithoutPatientInput
+  appointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutPatientInput
+  medicalReports?: Prisma.MedicalReportUncheckedCreateNestedManyWithoutPatientInput
+  shareLinks?: Prisma.PatientShareLinkUncheckedCreateNestedManyWithoutPatientInput
+  adverseReactions?: Prisma.AdverseDrugReactionUncheckedCreateNestedManyWithoutPatientInput
+  childrenProfiles?: Prisma.ChildProfileUncheckedCreateNestedManyWithoutParentInput
+  ratings?: Prisma.RatingUncheckedCreateNestedManyWithoutPatientInput
+}
+
+export type PatientCreateOrConnectWithoutVisitsInput = {
+  where: Prisma.PatientWhereUniqueInput
+  create: Prisma.XOR<Prisma.PatientCreateWithoutVisitsInput, Prisma.PatientUncheckedCreateWithoutVisitsInput>
+}
+
+export type PatientUpsertWithoutVisitsInput = {
+  update: Prisma.XOR<Prisma.PatientUpdateWithoutVisitsInput, Prisma.PatientUncheckedUpdateWithoutVisitsInput>
+  create: Prisma.XOR<Prisma.PatientCreateWithoutVisitsInput, Prisma.PatientUncheckedCreateWithoutVisitsInput>
+  where?: Prisma.PatientWhereInput
+}
+
+export type PatientUpdateToOneWithWhereWithoutVisitsInput = {
+  where?: Prisma.PatientWhereInput
+  data: Prisma.XOR<Prisma.PatientUpdateWithoutVisitsInput, Prisma.PatientUncheckedUpdateWithoutVisitsInput>
+}
+
+export type PatientUpdateWithoutVisitsInput = {
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  age?: Prisma.IntFieldUpdateOperationsInput | number
+  ageClassification?: Prisma.EnumAgeClassificationFieldUpdateOperationsInput | $Enums.AgeClassification
+  weight?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  height?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender
+  smoking?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pregnancyWarning?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  lactation?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  profileCompleteness?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  user?: Prisma.UserUpdateOneRequiredWithoutPatientNestedInput
+  prescriptions?: Prisma.PrescriptionUpdateManyWithoutPatientNestedInput
+  patientDiseases?: Prisma.PatientDiseaseUpdateManyWithoutPatientNestedInput
+  medicalHistories?: Prisma.MedicalHistoryUpdateManyWithoutPatientNestedInput
+  familyHistories?: Prisma.FamilyHistoryUpdateManyWithoutPatientNestedInput
+  lifestyle?: Prisma.LifestyleUpdateOneWithoutPatientNestedInput
+  allergies?: Prisma.AllergyUpdateManyWithoutPatientNestedInput
+  patientDoctors?: Prisma.PatientDoctorUpdateManyWithoutPatientNestedInput
+  consultations?: Prisma.ConsultationUpdateManyWithoutPatientNestedInput
+  appointments?: Prisma.AppointmentUpdateManyWithoutPatientNestedInput
+  medicalReports?: Prisma.MedicalReportUpdateManyWithoutPatientNestedInput
+  shareLinks?: Prisma.PatientShareLinkUpdateManyWithoutPatientNestedInput
+  adverseReactions?: Prisma.AdverseDrugReactionUpdateManyWithoutPatientNestedInput
+  childrenProfiles?: Prisma.ChildProfileUpdateManyWithoutParentNestedInput
+  ratings?: Prisma.RatingUpdateManyWithoutPatientNestedInput
+}
+
+export type PatientUncheckedUpdateWithoutVisitsInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  userId?: Prisma.IntFieldUpdateOperationsInput | number
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  age?: Prisma.IntFieldUpdateOperationsInput | number
+  ageClassification?: Prisma.EnumAgeClassificationFieldUpdateOperationsInput | $Enums.AgeClassification
+  weight?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  height?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender
+  smoking?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pregnancyWarning?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  lactation?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  profileCompleteness?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  prescriptions?: Prisma.PrescriptionUncheckedUpdateManyWithoutPatientNestedInput
+  patientDiseases?: Prisma.PatientDiseaseUncheckedUpdateManyWithoutPatientNestedInput
+  medicalHistories?: Prisma.MedicalHistoryUncheckedUpdateManyWithoutPatientNestedInput
+  familyHistories?: Prisma.FamilyHistoryUncheckedUpdateManyWithoutPatientNestedInput
+  lifestyle?: Prisma.LifestyleUncheckedUpdateOneWithoutPatientNestedInput
+  allergies?: Prisma.AllergyUncheckedUpdateManyWithoutPatientNestedInput
+  patientDoctors?: Prisma.PatientDoctorUncheckedUpdateManyWithoutPatientNestedInput
+  consultations?: Prisma.ConsultationUncheckedUpdateManyWithoutPatientNestedInput
+  appointments?: Prisma.AppointmentUncheckedUpdateManyWithoutPatientNestedInput
+  medicalReports?: Prisma.MedicalReportUncheckedUpdateManyWithoutPatientNestedInput
+  shareLinks?: Prisma.PatientShareLinkUncheckedUpdateManyWithoutPatientNestedInput
+  adverseReactions?: Prisma.AdverseDrugReactionUncheckedUpdateManyWithoutPatientNestedInput
+  childrenProfiles?: Prisma.ChildProfileUncheckedUpdateManyWithoutParentNestedInput
+  ratings?: Prisma.RatingUncheckedUpdateManyWithoutPatientNestedInput
 }
 
 
@@ -2031,6 +3251,12 @@ export type PatientCountOutputType = {
   patientDoctors: number
   consultations: number
   appointments: number
+  medicalReports: number
+  shareLinks: number
+  adverseReactions: number
+  childrenProfiles: number
+  ratings: number
+  visits: number
 }
 
 export type PatientCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -2042,6 +3268,12 @@ export type PatientCountOutputTypeSelect<ExtArgs extends runtime.Types.Extension
   patientDoctors?: boolean | PatientCountOutputTypeCountPatientDoctorsArgs
   consultations?: boolean | PatientCountOutputTypeCountConsultationsArgs
   appointments?: boolean | PatientCountOutputTypeCountAppointmentsArgs
+  medicalReports?: boolean | PatientCountOutputTypeCountMedicalReportsArgs
+  shareLinks?: boolean | PatientCountOutputTypeCountShareLinksArgs
+  adverseReactions?: boolean | PatientCountOutputTypeCountAdverseReactionsArgs
+  childrenProfiles?: boolean | PatientCountOutputTypeCountChildrenProfilesArgs
+  ratings?: boolean | PatientCountOutputTypeCountRatingsArgs
+  visits?: boolean | PatientCountOutputTypeCountVisitsArgs
 }
 
 /**
@@ -2110,6 +3342,48 @@ export type PatientCountOutputTypeCountAppointmentsArgs<ExtArgs extends runtime.
   where?: Prisma.AppointmentWhereInput
 }
 
+/**
+ * PatientCountOutputType without action
+ */
+export type PatientCountOutputTypeCountMedicalReportsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.MedicalReportWhereInput
+}
+
+/**
+ * PatientCountOutputType without action
+ */
+export type PatientCountOutputTypeCountShareLinksArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.PatientShareLinkWhereInput
+}
+
+/**
+ * PatientCountOutputType without action
+ */
+export type PatientCountOutputTypeCountAdverseReactionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.AdverseDrugReactionWhereInput
+}
+
+/**
+ * PatientCountOutputType without action
+ */
+export type PatientCountOutputTypeCountChildrenProfilesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ChildProfileWhereInput
+}
+
+/**
+ * PatientCountOutputType without action
+ */
+export type PatientCountOutputTypeCountRatingsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.RatingWhereInput
+}
+
+/**
+ * PatientCountOutputType without action
+ */
+export type PatientCountOutputTypeCountVisitsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.VisitWhereInput
+}
+
 
 export type PatientSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -2137,6 +3411,12 @@ export type PatientSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   patientDoctors?: boolean | Prisma.Patient$patientDoctorsArgs<ExtArgs>
   consultations?: boolean | Prisma.Patient$consultationsArgs<ExtArgs>
   appointments?: boolean | Prisma.Patient$appointmentsArgs<ExtArgs>
+  medicalReports?: boolean | Prisma.Patient$medicalReportsArgs<ExtArgs>
+  shareLinks?: boolean | Prisma.Patient$shareLinksArgs<ExtArgs>
+  adverseReactions?: boolean | Prisma.Patient$adverseReactionsArgs<ExtArgs>
+  childrenProfiles?: boolean | Prisma.Patient$childrenProfilesArgs<ExtArgs>
+  ratings?: boolean | Prisma.Patient$ratingsArgs<ExtArgs>
+  visits?: boolean | Prisma.Patient$visitsArgs<ExtArgs>
   _count?: boolean | Prisma.PatientCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["patient"]>
 
@@ -2208,6 +3488,12 @@ export type PatientInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs
   patientDoctors?: boolean | Prisma.Patient$patientDoctorsArgs<ExtArgs>
   consultations?: boolean | Prisma.Patient$consultationsArgs<ExtArgs>
   appointments?: boolean | Prisma.Patient$appointmentsArgs<ExtArgs>
+  medicalReports?: boolean | Prisma.Patient$medicalReportsArgs<ExtArgs>
+  shareLinks?: boolean | Prisma.Patient$shareLinksArgs<ExtArgs>
+  adverseReactions?: boolean | Prisma.Patient$adverseReactionsArgs<ExtArgs>
+  childrenProfiles?: boolean | Prisma.Patient$childrenProfilesArgs<ExtArgs>
+  ratings?: boolean | Prisma.Patient$ratingsArgs<ExtArgs>
+  visits?: boolean | Prisma.Patient$visitsArgs<ExtArgs>
   _count?: boolean | Prisma.PatientCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type PatientIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -2230,6 +3516,12 @@ export type $PatientPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     patientDoctors: Prisma.$PatientDoctorPayload<ExtArgs>[]
     consultations: Prisma.$ConsultationPayload<ExtArgs>[]
     appointments: Prisma.$AppointmentPayload<ExtArgs>[]
+    medicalReports: Prisma.$MedicalReportPayload<ExtArgs>[]
+    shareLinks: Prisma.$PatientShareLinkPayload<ExtArgs>[]
+    adverseReactions: Prisma.$AdverseDrugReactionPayload<ExtArgs>[]
+    childrenProfiles: Prisma.$ChildProfilePayload<ExtArgs>[]
+    ratings: Prisma.$RatingPayload<ExtArgs>[]
+    visits: Prisma.$VisitPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: number
@@ -2651,6 +3943,12 @@ export interface Prisma__PatientClient<T, Null = never, ExtArgs extends runtime.
   patientDoctors<T extends Prisma.Patient$patientDoctorsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Patient$patientDoctorsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PatientDoctorPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   consultations<T extends Prisma.Patient$consultationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Patient$consultationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ConsultationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   appointments<T extends Prisma.Patient$appointmentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Patient$appointmentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AppointmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  medicalReports<T extends Prisma.Patient$medicalReportsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Patient$medicalReportsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MedicalReportPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  shareLinks<T extends Prisma.Patient$shareLinksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Patient$shareLinksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PatientShareLinkPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  adverseReactions<T extends Prisma.Patient$adverseReactionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Patient$adverseReactionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AdverseDrugReactionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  childrenProfiles<T extends Prisma.Patient$childrenProfilesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Patient$childrenProfilesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ChildProfilePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  ratings<T extends Prisma.Patient$ratingsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Patient$ratingsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RatingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  visits<T extends Prisma.Patient$visitsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Patient$visitsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$VisitPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3299,6 +4597,150 @@ export type Patient$appointmentsArgs<ExtArgs extends runtime.Types.Extensions.In
   take?: number
   skip?: number
   distinct?: Prisma.AppointmentScalarFieldEnum | Prisma.AppointmentScalarFieldEnum[]
+}
+
+/**
+ * Patient.medicalReports
+ */
+export type Patient$medicalReportsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the MedicalReport
+   */
+  select?: Prisma.MedicalReportSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the MedicalReport
+   */
+  omit?: Prisma.MedicalReportOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.MedicalReportInclude<ExtArgs> | null
+  where?: Prisma.MedicalReportWhereInput
+  orderBy?: Prisma.MedicalReportOrderByWithRelationInput | Prisma.MedicalReportOrderByWithRelationInput[]
+  cursor?: Prisma.MedicalReportWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.MedicalReportScalarFieldEnum | Prisma.MedicalReportScalarFieldEnum[]
+}
+
+/**
+ * Patient.shareLinks
+ */
+export type Patient$shareLinksArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PatientShareLink
+   */
+  select?: Prisma.PatientShareLinkSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the PatientShareLink
+   */
+  omit?: Prisma.PatientShareLinkOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PatientShareLinkInclude<ExtArgs> | null
+  where?: Prisma.PatientShareLinkWhereInput
+  orderBy?: Prisma.PatientShareLinkOrderByWithRelationInput | Prisma.PatientShareLinkOrderByWithRelationInput[]
+  cursor?: Prisma.PatientShareLinkWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.PatientShareLinkScalarFieldEnum | Prisma.PatientShareLinkScalarFieldEnum[]
+}
+
+/**
+ * Patient.adverseReactions
+ */
+export type Patient$adverseReactionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the AdverseDrugReaction
+   */
+  select?: Prisma.AdverseDrugReactionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the AdverseDrugReaction
+   */
+  omit?: Prisma.AdverseDrugReactionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.AdverseDrugReactionInclude<ExtArgs> | null
+  where?: Prisma.AdverseDrugReactionWhereInput
+  orderBy?: Prisma.AdverseDrugReactionOrderByWithRelationInput | Prisma.AdverseDrugReactionOrderByWithRelationInput[]
+  cursor?: Prisma.AdverseDrugReactionWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.AdverseDrugReactionScalarFieldEnum | Prisma.AdverseDrugReactionScalarFieldEnum[]
+}
+
+/**
+ * Patient.childrenProfiles
+ */
+export type Patient$childrenProfilesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ChildProfile
+   */
+  select?: Prisma.ChildProfileSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ChildProfile
+   */
+  omit?: Prisma.ChildProfileOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ChildProfileInclude<ExtArgs> | null
+  where?: Prisma.ChildProfileWhereInput
+  orderBy?: Prisma.ChildProfileOrderByWithRelationInput | Prisma.ChildProfileOrderByWithRelationInput[]
+  cursor?: Prisma.ChildProfileWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ChildProfileScalarFieldEnum | Prisma.ChildProfileScalarFieldEnum[]
+}
+
+/**
+ * Patient.ratings
+ */
+export type Patient$ratingsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Rating
+   */
+  select?: Prisma.RatingSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Rating
+   */
+  omit?: Prisma.RatingOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.RatingInclude<ExtArgs> | null
+  where?: Prisma.RatingWhereInput
+  orderBy?: Prisma.RatingOrderByWithRelationInput | Prisma.RatingOrderByWithRelationInput[]
+  cursor?: Prisma.RatingWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.RatingScalarFieldEnum | Prisma.RatingScalarFieldEnum[]
+}
+
+/**
+ * Patient.visits
+ */
+export type Patient$visitsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Visit
+   */
+  select?: Prisma.VisitSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Visit
+   */
+  omit?: Prisma.VisitOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.VisitInclude<ExtArgs> | null
+  where?: Prisma.VisitWhereInput
+  orderBy?: Prisma.VisitOrderByWithRelationInput | Prisma.VisitOrderByWithRelationInput[]
+  cursor?: Prisma.VisitWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.VisitScalarFieldEnum | Prisma.VisitScalarFieldEnum[]
 }
 
 /**

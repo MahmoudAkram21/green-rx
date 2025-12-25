@@ -33,7 +33,7 @@ export * from "./enums.js"
  * const users = await prisma.user.findMany()
  * ```
  * 
- * Read more in our [docs](https://www.prisma.io/docs/reference/tools-and-interfaces/prisma-client).
+ * Read more in our [docs](https://pris.ly/d/client).
  */
 export const PrismaClient = $Class.getPrismaClientClass()
 export type PrismaClient<LogOpts extends Prisma.LogLevel = never, OmitOpts extends Prisma.PrismaClientOptions["omit"] = Prisma.PrismaClientOptions["omit"], ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = $Class.PrismaClient<LogOpts, OmitOpts, ExtArgs>
@@ -179,3 +179,58 @@ export type AuditLog = Prisma.AuditLogModel
  * 
  */
 export type Session = Prisma.SessionModel
+/**
+ * Model Pharmacist
+ * 
+ */
+export type Pharmacist = Prisma.PharmacistModel
+/**
+ * Model MedicalReport
+ * 
+ */
+export type MedicalReport = Prisma.MedicalReportModel
+/**
+ * Model PatientShareLink
+ * 
+ */
+export type PatientShareLink = Prisma.PatientShareLinkModel
+/**
+ * Model AdverseDrugReaction
+ * 
+ */
+export type AdverseDrugReaction = Prisma.AdverseDrugReactionModel
+/**
+ * Model ChildProfile
+ * 
+ */
+export type ChildProfile = Prisma.ChildProfileModel
+/**
+ * Model Rating
+ * 
+ */
+export type Rating = Prisma.RatingModel
+/**
+ * Model Visit
+ * 
+ */
+export type Visit = Prisma.VisitModel
+/**
+ * Model ContraindicationTermMapping
+ * 
+ */
+export type ContraindicationTermMapping = Prisma.ContraindicationTermMappingModel
+/**
+ * Model BatchHistory
+ * 
+ */
+export type BatchHistory = Prisma.BatchHistoryModel
+/**
+ * Model ImportHistory
+ * 
+ */
+export type ImportHistory = Prisma.ImportHistoryModel
+/**
+ * Model ExportHistory
+ * 
+ */
+export type ExportHistory = Prisma.ExportHistoryModel

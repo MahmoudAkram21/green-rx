@@ -63,6 +63,9 @@ export type PrescriptionMinAggregateOutputType = {
   currentRefillCount: number | null
   notes: string | null
   version: number | null
+  pdfUrl: string | null
+  isSharedViaApp: boolean | null
+  isAddedToProfile: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
   deletedAt: Date | null
@@ -85,6 +88,9 @@ export type PrescriptionMaxAggregateOutputType = {
   currentRefillCount: number | null
   notes: string | null
   version: number | null
+  pdfUrl: string | null
+  isSharedViaApp: boolean | null
+  isAddedToProfile: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
   deletedAt: Date | null
@@ -107,6 +113,10 @@ export type PrescriptionCountAggregateOutputType = {
   currentRefillCount: number
   notes: number
   version: number
+  pdfUrl: number
+  isSharedViaApp: number
+  sharedVia: number
+  isAddedToProfile: number
   createdAt: number
   updatedAt: number
   deletedAt: number
@@ -151,6 +161,9 @@ export type PrescriptionMinAggregateInputType = {
   currentRefillCount?: true
   notes?: true
   version?: true
+  pdfUrl?: true
+  isSharedViaApp?: true
+  isAddedToProfile?: true
   createdAt?: true
   updatedAt?: true
   deletedAt?: true
@@ -173,6 +186,9 @@ export type PrescriptionMaxAggregateInputType = {
   currentRefillCount?: true
   notes?: true
   version?: true
+  pdfUrl?: true
+  isSharedViaApp?: true
+  isAddedToProfile?: true
   createdAt?: true
   updatedAt?: true
   deletedAt?: true
@@ -195,6 +211,10 @@ export type PrescriptionCountAggregateInputType = {
   currentRefillCount?: true
   notes?: true
   version?: true
+  pdfUrl?: true
+  isSharedViaApp?: true
+  sharedVia?: true
+  isAddedToProfile?: true
   createdAt?: true
   updatedAt?: true
   deletedAt?: true
@@ -304,6 +324,10 @@ export type PrescriptionGroupByOutputType = {
   currentRefillCount: number
   notes: string | null
   version: number
+  pdfUrl: string | null
+  isSharedViaApp: boolean
+  sharedVia: runtime.JsonValue | null
+  isAddedToProfile: boolean
   createdAt: Date
   updatedAt: Date
   deletedAt: Date | null
@@ -349,6 +373,10 @@ export type PrescriptionWhereInput = {
   currentRefillCount?: Prisma.IntFilter<"Prescription"> | number
   notes?: Prisma.StringNullableFilter<"Prescription"> | string | null
   version?: Prisma.IntFilter<"Prescription"> | number
+  pdfUrl?: Prisma.StringNullableFilter<"Prescription"> | string | null
+  isSharedViaApp?: Prisma.BoolFilter<"Prescription"> | boolean
+  sharedVia?: Prisma.JsonNullableFilter<"Prescription">
+  isAddedToProfile?: Prisma.BoolFilter<"Prescription"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Prescription"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Prescription"> | Date | string
   deletedAt?: Prisma.DateTimeNullableFilter<"Prescription"> | Date | string | null
@@ -376,6 +404,10 @@ export type PrescriptionOrderByWithRelationInput = {
   currentRefillCount?: Prisma.SortOrder
   notes?: Prisma.SortOrderInput | Prisma.SortOrder
   version?: Prisma.SortOrder
+  pdfUrl?: Prisma.SortOrderInput | Prisma.SortOrder
+  isSharedViaApp?: Prisma.SortOrder
+  sharedVia?: Prisma.SortOrderInput | Prisma.SortOrder
+  isAddedToProfile?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -406,6 +438,10 @@ export type PrescriptionWhereUniqueInput = Prisma.AtLeast<{
   currentRefillCount?: Prisma.IntFilter<"Prescription"> | number
   notes?: Prisma.StringNullableFilter<"Prescription"> | string | null
   version?: Prisma.IntFilter<"Prescription"> | number
+  pdfUrl?: Prisma.StringNullableFilter<"Prescription"> | string | null
+  isSharedViaApp?: Prisma.BoolFilter<"Prescription"> | boolean
+  sharedVia?: Prisma.JsonNullableFilter<"Prescription">
+  isAddedToProfile?: Prisma.BoolFilter<"Prescription"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Prescription"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Prescription"> | Date | string
   deletedAt?: Prisma.DateTimeNullableFilter<"Prescription"> | Date | string | null
@@ -433,6 +469,10 @@ export type PrescriptionOrderByWithAggregationInput = {
   currentRefillCount?: Prisma.SortOrder
   notes?: Prisma.SortOrderInput | Prisma.SortOrder
   version?: Prisma.SortOrder
+  pdfUrl?: Prisma.SortOrderInput | Prisma.SortOrder
+  isSharedViaApp?: Prisma.SortOrder
+  sharedVia?: Prisma.SortOrderInput | Prisma.SortOrder
+  isAddedToProfile?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -463,6 +503,10 @@ export type PrescriptionScalarWhereWithAggregatesInput = {
   currentRefillCount?: Prisma.IntWithAggregatesFilter<"Prescription"> | number
   notes?: Prisma.StringNullableWithAggregatesFilter<"Prescription"> | string | null
   version?: Prisma.IntWithAggregatesFilter<"Prescription"> | number
+  pdfUrl?: Prisma.StringNullableWithAggregatesFilter<"Prescription"> | string | null
+  isSharedViaApp?: Prisma.BoolWithAggregatesFilter<"Prescription"> | boolean
+  sharedVia?: Prisma.JsonNullableWithAggregatesFilter<"Prescription">
+  isAddedToProfile?: Prisma.BoolWithAggregatesFilter<"Prescription"> | boolean
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Prescription"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Prescription"> | Date | string
   deletedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Prescription"> | Date | string | null
@@ -481,6 +525,10 @@ export type PrescriptionCreateInput = {
   currentRefillCount?: number
   notes?: string | null
   version?: number
+  pdfUrl?: string | null
+  isSharedViaApp?: boolean
+  sharedVia?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  isAddedToProfile?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -508,6 +556,10 @@ export type PrescriptionUncheckedCreateInput = {
   currentRefillCount?: number
   notes?: string | null
   version?: number
+  pdfUrl?: string | null
+  isSharedViaApp?: boolean
+  sharedVia?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  isAddedToProfile?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -528,6 +580,10 @@ export type PrescriptionUpdateInput = {
   currentRefillCount?: Prisma.IntFieldUpdateOperationsInput | number
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   version?: Prisma.IntFieldUpdateOperationsInput | number
+  pdfUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isSharedViaApp?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  sharedVia?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  isAddedToProfile?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -555,6 +611,10 @@ export type PrescriptionUncheckedUpdateInput = {
   currentRefillCount?: Prisma.IntFieldUpdateOperationsInput | number
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   version?: Prisma.IntFieldUpdateOperationsInput | number
+  pdfUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isSharedViaApp?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  sharedVia?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  isAddedToProfile?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -579,6 +639,10 @@ export type PrescriptionCreateManyInput = {
   currentRefillCount?: number
   notes?: string | null
   version?: number
+  pdfUrl?: string | null
+  isSharedViaApp?: boolean
+  sharedVia?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  isAddedToProfile?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -597,6 +661,10 @@ export type PrescriptionUpdateManyMutationInput = {
   currentRefillCount?: Prisma.IntFieldUpdateOperationsInput | number
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   version?: Prisma.IntFieldUpdateOperationsInput | number
+  pdfUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isSharedViaApp?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  sharedVia?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  isAddedToProfile?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -619,6 +687,10 @@ export type PrescriptionUncheckedUpdateManyInput = {
   currentRefillCount?: Prisma.IntFieldUpdateOperationsInput | number
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   version?: Prisma.IntFieldUpdateOperationsInput | number
+  pdfUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isSharedViaApp?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  sharedVia?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  isAddedToProfile?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -651,6 +723,10 @@ export type PrescriptionCountOrderByAggregateInput = {
   currentRefillCount?: Prisma.SortOrder
   notes?: Prisma.SortOrder
   version?: Prisma.SortOrder
+  pdfUrl?: Prisma.SortOrder
+  isSharedViaApp?: Prisma.SortOrder
+  sharedVia?: Prisma.SortOrder
+  isAddedToProfile?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrder
@@ -683,6 +759,9 @@ export type PrescriptionMaxOrderByAggregateInput = {
   currentRefillCount?: Prisma.SortOrder
   notes?: Prisma.SortOrder
   version?: Prisma.SortOrder
+  pdfUrl?: Prisma.SortOrder
+  isSharedViaApp?: Prisma.SortOrder
+  isAddedToProfile?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrder
@@ -705,6 +784,9 @@ export type PrescriptionMinOrderByAggregateInput = {
   currentRefillCount?: Prisma.SortOrder
   notes?: Prisma.SortOrder
   version?: Prisma.SortOrder
+  pdfUrl?: Prisma.SortOrder
+  isSharedViaApp?: Prisma.SortOrder
+  isAddedToProfile?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrder
@@ -896,6 +978,10 @@ export type PrescriptionCreateWithoutPatientInput = {
   currentRefillCount?: number
   notes?: string | null
   version?: number
+  pdfUrl?: string | null
+  isSharedViaApp?: boolean
+  sharedVia?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  isAddedToProfile?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -921,6 +1007,10 @@ export type PrescriptionUncheckedCreateWithoutPatientInput = {
   currentRefillCount?: number
   notes?: string | null
   version?: number
+  pdfUrl?: string | null
+  isSharedViaApp?: boolean
+  sharedVia?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  isAddedToProfile?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -974,6 +1064,10 @@ export type PrescriptionScalarWhereInput = {
   currentRefillCount?: Prisma.IntFilter<"Prescription"> | number
   notes?: Prisma.StringNullableFilter<"Prescription"> | string | null
   version?: Prisma.IntFilter<"Prescription"> | number
+  pdfUrl?: Prisma.StringNullableFilter<"Prescription"> | string | null
+  isSharedViaApp?: Prisma.BoolFilter<"Prescription"> | boolean
+  sharedVia?: Prisma.JsonNullableFilter<"Prescription">
+  isAddedToProfile?: Prisma.BoolFilter<"Prescription"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Prescription"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Prescription"> | Date | string
   deletedAt?: Prisma.DateTimeNullableFilter<"Prescription"> | Date | string | null
@@ -992,6 +1086,10 @@ export type PrescriptionCreateWithoutDoctorInput = {
   currentRefillCount?: number
   notes?: string | null
   version?: number
+  pdfUrl?: string | null
+  isSharedViaApp?: boolean
+  sharedVia?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  isAddedToProfile?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -1017,6 +1115,10 @@ export type PrescriptionUncheckedCreateWithoutDoctorInput = {
   currentRefillCount?: number
   notes?: string | null
   version?: number
+  pdfUrl?: string | null
+  isSharedViaApp?: boolean
+  sharedVia?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  isAddedToProfile?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -1063,6 +1165,10 @@ export type PrescriptionCreateWithoutTradeNameInput = {
   currentRefillCount?: number
   notes?: string | null
   version?: number
+  pdfUrl?: string | null
+  isSharedViaApp?: boolean
+  sharedVia?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  isAddedToProfile?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -1088,6 +1194,10 @@ export type PrescriptionUncheckedCreateWithoutTradeNameInput = {
   currentRefillCount?: number
   notes?: string | null
   version?: number
+  pdfUrl?: string | null
+  isSharedViaApp?: boolean
+  sharedVia?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  isAddedToProfile?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -1134,6 +1244,10 @@ export type PrescriptionCreateWithoutPrescriptionVersionsInput = {
   currentRefillCount?: number
   notes?: string | null
   version?: number
+  pdfUrl?: string | null
+  isSharedViaApp?: boolean
+  sharedVia?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  isAddedToProfile?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -1160,6 +1274,10 @@ export type PrescriptionUncheckedCreateWithoutPrescriptionVersionsInput = {
   currentRefillCount?: number
   notes?: string | null
   version?: number
+  pdfUrl?: string | null
+  isSharedViaApp?: boolean
+  sharedVia?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  isAddedToProfile?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -1195,6 +1313,10 @@ export type PrescriptionUpdateWithoutPrescriptionVersionsInput = {
   currentRefillCount?: Prisma.IntFieldUpdateOperationsInput | number
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   version?: Prisma.IntFieldUpdateOperationsInput | number
+  pdfUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isSharedViaApp?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  sharedVia?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  isAddedToProfile?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1221,6 +1343,10 @@ export type PrescriptionUncheckedUpdateWithoutPrescriptionVersionsInput = {
   currentRefillCount?: Prisma.IntFieldUpdateOperationsInput | number
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   version?: Prisma.IntFieldUpdateOperationsInput | number
+  pdfUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isSharedViaApp?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  sharedVia?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  isAddedToProfile?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1240,6 +1366,10 @@ export type PrescriptionCreateWithoutDrugInteractionAlertsInput = {
   currentRefillCount?: number
   notes?: string | null
   version?: number
+  pdfUrl?: string | null
+  isSharedViaApp?: boolean
+  sharedVia?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  isAddedToProfile?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -1266,6 +1396,10 @@ export type PrescriptionUncheckedCreateWithoutDrugInteractionAlertsInput = {
   currentRefillCount?: number
   notes?: string | null
   version?: number
+  pdfUrl?: string | null
+  isSharedViaApp?: boolean
+  sharedVia?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  isAddedToProfile?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -1301,6 +1435,10 @@ export type PrescriptionUpdateWithoutDrugInteractionAlertsInput = {
   currentRefillCount?: Prisma.IntFieldUpdateOperationsInput | number
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   version?: Prisma.IntFieldUpdateOperationsInput | number
+  pdfUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isSharedViaApp?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  sharedVia?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  isAddedToProfile?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1327,6 +1465,10 @@ export type PrescriptionUncheckedUpdateWithoutDrugInteractionAlertsInput = {
   currentRefillCount?: Prisma.IntFieldUpdateOperationsInput | number
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   version?: Prisma.IntFieldUpdateOperationsInput | number
+  pdfUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isSharedViaApp?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  sharedVia?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  isAddedToProfile?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1349,6 +1491,10 @@ export type PrescriptionCreateManyPatientInput = {
   currentRefillCount?: number
   notes?: string | null
   version?: number
+  pdfUrl?: string | null
+  isSharedViaApp?: boolean
+  sharedVia?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  isAddedToProfile?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -1367,6 +1513,10 @@ export type PrescriptionUpdateWithoutPatientInput = {
   currentRefillCount?: Prisma.IntFieldUpdateOperationsInput | number
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   version?: Prisma.IntFieldUpdateOperationsInput | number
+  pdfUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isSharedViaApp?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  sharedVia?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  isAddedToProfile?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1392,6 +1542,10 @@ export type PrescriptionUncheckedUpdateWithoutPatientInput = {
   currentRefillCount?: Prisma.IntFieldUpdateOperationsInput | number
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   version?: Prisma.IntFieldUpdateOperationsInput | number
+  pdfUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isSharedViaApp?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  sharedVia?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  isAddedToProfile?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1415,6 +1569,10 @@ export type PrescriptionUncheckedUpdateManyWithoutPatientInput = {
   currentRefillCount?: Prisma.IntFieldUpdateOperationsInput | number
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   version?: Prisma.IntFieldUpdateOperationsInput | number
+  pdfUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isSharedViaApp?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  sharedVia?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  isAddedToProfile?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1436,6 +1594,10 @@ export type PrescriptionCreateManyDoctorInput = {
   currentRefillCount?: number
   notes?: string | null
   version?: number
+  pdfUrl?: string | null
+  isSharedViaApp?: boolean
+  sharedVia?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  isAddedToProfile?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -1454,6 +1616,10 @@ export type PrescriptionUpdateWithoutDoctorInput = {
   currentRefillCount?: Prisma.IntFieldUpdateOperationsInput | number
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   version?: Prisma.IntFieldUpdateOperationsInput | number
+  pdfUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isSharedViaApp?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  sharedVia?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  isAddedToProfile?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1479,6 +1645,10 @@ export type PrescriptionUncheckedUpdateWithoutDoctorInput = {
   currentRefillCount?: Prisma.IntFieldUpdateOperationsInput | number
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   version?: Prisma.IntFieldUpdateOperationsInput | number
+  pdfUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isSharedViaApp?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  sharedVia?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  isAddedToProfile?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1502,6 +1672,10 @@ export type PrescriptionUncheckedUpdateManyWithoutDoctorInput = {
   currentRefillCount?: Prisma.IntFieldUpdateOperationsInput | number
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   version?: Prisma.IntFieldUpdateOperationsInput | number
+  pdfUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isSharedViaApp?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  sharedVia?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  isAddedToProfile?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1523,6 +1697,10 @@ export type PrescriptionCreateManyTradeNameInput = {
   currentRefillCount?: number
   notes?: string | null
   version?: number
+  pdfUrl?: string | null
+  isSharedViaApp?: boolean
+  sharedVia?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  isAddedToProfile?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -1541,6 +1719,10 @@ export type PrescriptionUpdateWithoutTradeNameInput = {
   currentRefillCount?: Prisma.IntFieldUpdateOperationsInput | number
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   version?: Prisma.IntFieldUpdateOperationsInput | number
+  pdfUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isSharedViaApp?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  sharedVia?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  isAddedToProfile?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1566,6 +1748,10 @@ export type PrescriptionUncheckedUpdateWithoutTradeNameInput = {
   currentRefillCount?: Prisma.IntFieldUpdateOperationsInput | number
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   version?: Prisma.IntFieldUpdateOperationsInput | number
+  pdfUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isSharedViaApp?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  sharedVia?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  isAddedToProfile?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1589,6 +1775,10 @@ export type PrescriptionUncheckedUpdateManyWithoutTradeNameInput = {
   currentRefillCount?: Prisma.IntFieldUpdateOperationsInput | number
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   version?: Prisma.IntFieldUpdateOperationsInput | number
+  pdfUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isSharedViaApp?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  sharedVia?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  isAddedToProfile?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1651,6 +1841,10 @@ export type PrescriptionSelect<ExtArgs extends runtime.Types.Extensions.Internal
   currentRefillCount?: boolean
   notes?: boolean
   version?: boolean
+  pdfUrl?: boolean
+  isSharedViaApp?: boolean
+  sharedVia?: boolean
+  isAddedToProfile?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   deletedAt?: boolean
@@ -1679,6 +1873,10 @@ export type PrescriptionSelectCreateManyAndReturn<ExtArgs extends runtime.Types.
   currentRefillCount?: boolean
   notes?: boolean
   version?: boolean
+  pdfUrl?: boolean
+  isSharedViaApp?: boolean
+  sharedVia?: boolean
+  isAddedToProfile?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   deletedAt?: boolean
@@ -1704,6 +1902,10 @@ export type PrescriptionSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.
   currentRefillCount?: boolean
   notes?: boolean
   version?: boolean
+  pdfUrl?: boolean
+  isSharedViaApp?: boolean
+  sharedVia?: boolean
+  isAddedToProfile?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   deletedAt?: boolean
@@ -1729,12 +1931,16 @@ export type PrescriptionSelectScalar = {
   currentRefillCount?: boolean
   notes?: boolean
   version?: boolean
+  pdfUrl?: boolean
+  isSharedViaApp?: boolean
+  sharedVia?: boolean
+  isAddedToProfile?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   deletedAt?: boolean
 }
 
-export type PrescriptionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "doctorId" | "patientId" | "tradeNameId" | "status" | "prescriptionDate" | "validFrom" | "validUntil" | "dosage" | "frequency" | "duration" | "instructions" | "maxRefills" | "currentRefillCount" | "notes" | "version" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["prescription"]>
+export type PrescriptionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "doctorId" | "patientId" | "tradeNameId" | "status" | "prescriptionDate" | "validFrom" | "validUntil" | "dosage" | "frequency" | "duration" | "instructions" | "maxRefills" | "currentRefillCount" | "notes" | "version" | "pdfUrl" | "isSharedViaApp" | "sharedVia" | "isAddedToProfile" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["prescription"]>
 export type PrescriptionInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   doctor?: boolean | Prisma.DoctorDefaultArgs<ExtArgs>
   patient?: boolean | Prisma.PatientDefaultArgs<ExtArgs>
@@ -1780,6 +1986,10 @@ export type $PrescriptionPayload<ExtArgs extends runtime.Types.Extensions.Intern
     currentRefillCount: number
     notes: string | null
     version: number
+    pdfUrl: string | null
+    isSharedViaApp: boolean
+    sharedVia: runtime.JsonValue | null
+    isAddedToProfile: boolean
     createdAt: Date
     updatedAt: Date
     deletedAt: Date | null
@@ -2227,6 +2437,10 @@ export interface PrescriptionFieldRefs {
   readonly currentRefillCount: Prisma.FieldRef<"Prescription", 'Int'>
   readonly notes: Prisma.FieldRef<"Prescription", 'String'>
   readonly version: Prisma.FieldRef<"Prescription", 'Int'>
+  readonly pdfUrl: Prisma.FieldRef<"Prescription", 'String'>
+  readonly isSharedViaApp: Prisma.FieldRef<"Prescription", 'Boolean'>
+  readonly sharedVia: Prisma.FieldRef<"Prescription", 'Json'>
+  readonly isAddedToProfile: Prisma.FieldRef<"Prescription", 'Boolean'>
   readonly createdAt: Prisma.FieldRef<"Prescription", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Prescription", 'DateTime'>
   readonly deletedAt: Prisma.FieldRef<"Prescription", 'DateTime'>

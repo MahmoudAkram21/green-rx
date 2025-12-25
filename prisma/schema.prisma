@@ -3,7 +3,7 @@
 
 generator client {
   provider = "prisma-client"
-  output   = "../generated/prisma/client"
+  output   = "../src/generated/client"
 }
 
 datasource db {
@@ -17,6 +17,7 @@ datasource db {
 enum UserRole {
   Patient
   Doctor
+  Pharmacist
   Admin
   Company
   SuperAdmin
@@ -116,10 +117,53 @@ enum PaymentStatus {
 }
 
 enum WarningSeverity {
+  Info
   Low
   Medium
   High
   Critical
+}
+
+enum WarningRuleType {
+  BLOCK_ACTIVE_SUBSTANCE
+  WARN_ACTIVE_SUBSTANCE
+  REQUIRE_MONITORING
+  ADJUST_DOSAGE
+  BLOCK_DRUG_CLASS
+  REQUIRE_SPECIALIST_APPROVAL
+}
+
+enum SuggestionStatus {
+  Pending
+  Approved
+  Rejected
+}
+
+enum ADRSeverity {
+  Mild
+  Moderate
+  Severe
+  LifeThreatening
+}
+
+enum RatingType {
+  Doctor
+  Pharmacist
+}
+
+enum ReportType {
+  LabTest
+  Imaging
+  Consultation
+  Procedure
+  Other
+}
+
+enum VisitType {
+  FirstVisit
+  FollowUp
+  Emergency
+  Consultation
 }
 
 // ============================================
@@ -142,12 +186,18 @@ model User {
   deletedAt              DateTime?
 
   // Relations
-  subscription  Subscription?
-  patient       Patient?
-  doctor        Doctor?
-  notifications Notification[]
-  auditLogs     AuditLog[]
-  sessions      Session[]
+  subscription        Subscription?
+  patient             Patient?
+  doctor              Doctor?
+  pharmacist          Pharmacist?
+  notifications       Notification[]
+  auditLogs           AuditLog[]
+  sessions            Session[]
+  importHistory       ImportHistory[]      @relation("ImportHistory")
+  exportHistory       ExportHistory[]      @relation("ExportHistory")
+  uploadedReports     MedicalReport[]      @relation("UploadedReports")
+  diseaseWarningRules DiseaseWarningRule[]
+  reviewedSuggestions MedicineSuggestion[] @relation("SuggestionReviewer")
 
   @@index([role])
   @@index([deletedAt])
@@ -240,7 +290,7 @@ model Patient {
   deletedAt           DateTime?
 
   // Relations
-  user             User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user             User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
   prescriptions    Prescription[]
   patientDiseases  PatientDisease[]
   medicalHistories MedicalHistory[]
@@ -250,6 +300,12 @@ model Patient {
   patientDoctors   PatientDoctor[]
   consultations    Consultation[]
   appointments     Appointment[]
+  medicalReports   MedicalReport[]
+  shareLinks       PatientShareLink[]
+  adverseReactions AdverseDrugReaction[]
+  childrenProfiles ChildProfile[]        @relation("ParentChildren")
+  ratings          Rating[]
+  visits           Visit[]
 
   @@index([age])
   @@index([ageClassification])
@@ -257,37 +313,43 @@ model Patient {
 }
 
 model MedicalHistory {
-  id            Int           @id @default(autoincrement())
+  id            Int             @id @default(autoincrement())
   patientId     Int
-  condition     String
+  diseaseId     Int
   diagnosisDate DateTime?
+  severity      DiseaseSeverity
   treatment     String?
   status        DiseaseStatus
   notes         String?
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
 
   // Relations
   patient Patient @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  disease Disease @relation(fields: [diseaseId], references: [id], onDelete: Cascade)
 
   @@index([patientId])
+  @@index([diseaseId])
   @@index([status])
   @@map("medical_histories")
 }
 
 model FamilyHistory {
-  id        Int      @id @default(autoincrement())
+  id        Int             @id @default(autoincrement())
   patientId Int
   relation  String // e.g., "Father", "Mother", "Sibling"
-  condition String
+  diseaseId Int
+  severity  DiseaseSeverity
   notes     String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
 
   // Relations
   patient Patient @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  disease Disease @relation(fields: [diseaseId], references: [id], onDelete: Cascade)
 
   @@index([patientId])
+  @@index([diseaseId])
   @@map("family_histories")
 }
 
@@ -334,23 +396,38 @@ model Allergy {
 // ============================================
 
 model Doctor {
-  id             Int       @id @default(autoincrement())
-  userId         Int       @unique
-  name           String
-  licenseNumber  String    @unique
-  specialization String
-  isVerified     Boolean   @default(false)
-  verifiedAt     DateTime?
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
-  deletedAt      DateTime?
+  id                Int       @id @default(autoincrement())
+  userId            Int       @unique
+  name              String
+  licenseNumber     String    @unique
+  specialization    String
+  phoneNumber       String?
+  address           String?
+  city              String?
+  latitude          Decimal?  @db.Decimal(10, 8)
+  longitude         Decimal?  @db.Decimal(11, 8)
+  consultationFee   Decimal?  @db.Decimal(8, 2)
+  workingHours      Json?
+  averageRating     Decimal?  @db.Decimal(3, 2)
+  totalRatings      Int       @default(0)
+  isVerified        Boolean   @default(false)
+  verifiedAt        DateTime?
+  verifiedBy        Int? // Admin user ID who verified
+  verificationNotes String?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  deletedAt         DateTime?
 
   // Relations
-  user           User            @relation(fields: [userId], references: [id], onDelete: Cascade)
-  prescriptions  Prescription[]
-  patientDoctors PatientDoctor[]
-  consultations  Consultation[]
-  appointments   Appointment[]
+  user                User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  prescriptions       Prescription[]
+  patientDoctors      PatientDoctor[]
+  consultations       Consultation[]
+  appointments        Appointment[]
+  ratings             Rating[]
+  visits              Visit[]
+  patientShareLinks   PatientShareLink[]
+  medicineSuggestions MedicineSuggestion[]
 
   @@index([specialization])
   @@map("doctors")
@@ -431,12 +508,21 @@ model Disease {
   severity    DiseaseSeverity
   description String?
   isActive    Boolean         @default(true)
-  createdAt   DateTime        @default(now())
-  updatedAt   DateTime        @updatedAt
+
+  // Warning Configuration Fields
+  requiresSpecialHandling Boolean @default(false)
+  warningMessage          String?
+  warningConfig           Json?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // Relations
   diseaseActiveSubstanceWarnings DiseaseActiveSubstanceWarning[]
+  diseaseWarningRules            DiseaseWarningRule[]
   patientDiseases                PatientDisease[]
+  medicalHistories               MedicalHistory[]
+  familyHistories                FamilyHistory[]
 
   @@index([severity])
   @@map("diseases")
@@ -460,6 +546,32 @@ model PatientDisease {
   @@index([patientId, diseaseId])
   @@index([status])
   @@map("patient_diseases")
+}
+
+model DiseaseWarningRule {
+  id                      Int             @id @default(autoincrement())
+  diseaseId               Int
+  ruleType                WarningRuleType
+  targetActiveSubstanceId Int?
+  targetDrugClass         String?
+  severity                WarningSeverity
+  warningMessage          String
+  autoBlock               Boolean         @default(false)
+  requiresOverride        Boolean         @default(false)
+  requiredMonitoring      String?
+  createdBy               Int
+  createdAt               DateTime        @default(now())
+  updatedAt               DateTime        @updatedAt
+
+  // Relations
+  disease         Disease          @relation(fields: [diseaseId], references: [id], onDelete: Cascade)
+  activeSubstance ActiveSubstance? @relation(fields: [targetActiveSubstanceId], references: [id])
+  creator         User             @relation(fields: [createdBy], references: [id])
+
+  @@index([diseaseId])
+  @@index([ruleType])
+  @@index([severity])
+  @@map("disease_warning_rules")
 }
 
 // ============================================
@@ -672,8 +784,10 @@ model ActiveSubstance {
   // Relations
   tradeNames                     TradeName[]
   diseaseActiveSubstanceWarnings DiseaseActiveSubstanceWarning[]
+  diseaseWarningRules            DiseaseWarningRule[]
   medicineAlternatives           MedicineAlternative[]           @relation("PrimarySubstance")
   alternativeTo                  MedicineAlternative[]           @relation("AlternativeSubstance")
+  adverseReactions               AdverseDrugReaction[]
 
   @@index([activeSubstance])
   @@index([isActive])
@@ -741,6 +855,8 @@ model TradeName {
   prescriptions                Prescription[]
   contractingCompanyTradeNames ContractingCompanyTradeName[]
   drugInteractionAlerts        DrugInteractionAlert[]
+  batchHistories               BatchHistory[]
+  adverseReactions             AdverseDrugReaction[]
 
   @@index([title])
   @@index([activeSubstanceId])
@@ -761,6 +877,7 @@ model Company {
   // Relations
   tradeNames           TradeName[]
   contractingCompanies ContractingCompany[]
+  adverseReactions     AdverseDrugReaction[]
 
   @@map("companies")
 }
@@ -818,6 +935,10 @@ model Prescription {
   currentRefillCount Int                @default(0)
   notes              String?
   version            Int                @default(1)
+  pdfUrl             String? // Generated prescription PDF
+  isSharedViaApp     Boolean            @default(false)
+  sharedVia          Json? // Array of sharing methods ["WhatsApp", "Email", etc.]
+  isAddedToProfile   Boolean            @default(false) // If patient added to concomitant drugs
   createdAt          DateTime           @default(now())
   updatedAt          DateTime           @updatedAt
   deletedAt          DateTime?
@@ -941,4 +1062,317 @@ model Session {
   @@index([userId])
   @@index([expiresAt])
   @@map("sessions")
+}
+
+// ============================================
+// PHARMACIST (New User Type)
+// ============================================
+
+model Pharmacist {
+  id                Int       @id @default(autoincrement())
+  userId            Int       @unique
+  name              String
+  licenseNumber     String    @unique
+  pharmacyName      String?
+  phoneNumber       String?
+  address           String?
+  city              String?
+  isVerified        Boolean   @default(false)
+  verifiedAt        DateTime?
+  verifiedBy        Int? // Admin user ID who verified
+  verificationNotes String?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  deletedAt         DateTime?
+
+  // Relations
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  ratings Rating[]
+
+  @@index([isVerified])
+  @@index([licenseNumber])
+  @@map("pharmacists")
+}
+
+// ============================================
+// MEDICAL REPORTS UPLOAD
+// ============================================
+
+model MedicalReport {
+  id         Int         @id @default(autoincrement())
+  patientId  Int
+  uploadedBy Int // userId of uploader (patient, doctor, or pharmacist)
+  fileName   String
+  fileUrl    String
+  fileType   String // pdf, jpg, png, etc.
+  fileSize   Int? // in bytes
+  reportType ReportType?
+  reportDate DateTime?
+  notes      String?
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+
+  // Relations
+  patient  Patient @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  uploader User    @relation("UploadedReports", fields: [uploadedBy], references: [id])
+
+  @@index([patientId])
+  @@index([uploadedBy])
+  @@index([reportDate])
+  @@map("medical_reports")
+}
+
+// ============================================
+// PATIENT PROFILE SHARING
+// ============================================
+
+model PatientShareLink {
+  id             Int       @id @default(autoincrement())
+  patientId      Int
+  doctorId       Int? // Doctor who has access via this link
+  shareToken     String    @unique
+  expiresAt      DateTime?
+  isActive       Boolean   @default(true)
+  accessCount    Int       @default(0)
+  lastAccessedAt DateTime?
+  createdAt      DateTime  @default(now())
+
+  // Relations
+  patient Patient @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  doctor  Doctor? @relation(fields: [doctorId], references: [id], onDelete: SetNull)
+
+  @@index([shareToken])
+  @@index([expiresAt])
+  @@index([doctorId])
+  @@map("patient_share_links")
+}
+
+// ============================================
+// ADVERSE DRUG REACTION REPORTING
+// ============================================
+
+model AdverseDrugReaction {
+  id                Int         @id @default(autoincrement())
+  patientId         Int? // Nullable if anonymous
+  tradeNameId       Int
+  companyId         Int
+  activeSubstanceId Int?
+  severity          ADRSeverity
+  reaction          String // Description of reaction
+  startDate         DateTime
+  endDate           DateTime?
+  isAnonymous       Boolean     @default(false)
+  reportedToEDA     Boolean     @default(false) // Egyptian Drug Authority
+  edaReferenceNum   String?
+  status            String      @default("Submitted") // Submitted, UnderReview, Closed
+  adminNotes        String?
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+
+  // Relations
+  patient         Patient?         @relation(fields: [patientId], references: [id], onDelete: SetNull)
+  tradeName       TradeName        @relation(fields: [tradeNameId], references: [id])
+  company         Company          @relation(fields: [companyId], references: [id])
+  activeSubstance ActiveSubstance? @relation(fields: [activeSubstanceId], references: [id])
+
+  @@index([companyId])
+  @@index([status])
+  @@index([severity])
+  @@map("adverse_drug_reactions")
+}
+
+// ============================================
+// CHILDREN PROFILES
+// ============================================
+
+model ChildProfile {
+  id                Int               @id @default(autoincrement())
+  parentPatientId   Int
+  name              String
+  dateOfBirth       DateTime
+  gender            Gender
+  weight            Decimal?          @db.Decimal(5, 2)
+  height            Decimal?          @db.Decimal(5, 2)
+  ageClassification AgeClassification
+  allergies         Json? // Array of allergy objects
+  diseases          Json? // Array of disease objects
+  medicalHistory    Json?
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+
+  // Relations
+  parent Patient @relation("ParentChildren", fields: [parentPatientId], references: [id], onDelete: Cascade)
+
+  @@index([parentPatientId])
+  @@map("child_profiles")
+}
+
+// ============================================
+// RATING SYSTEM
+// ============================================
+
+model Rating {
+  id           Int        @id @default(autoincrement())
+  patientId    Int
+  doctorId     Int? // Optional - either this or pharmacistId will be set
+  pharmacistId Int? // Optional - either this or doctorId will be set
+  ratedType    RatingType
+  rating       Int // 1-5 stars
+  review       String?
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  // Relations
+  patient    Patient     @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  doctor     Doctor?     @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  pharmacist Pharmacist? @relation(fields: [pharmacistId], references: [id], onDelete: Cascade)
+
+  @@index([doctorId])
+  @@index([pharmacistId])
+  @@index([patientId])
+  @@index([rating])
+  @@map("ratings")
+}
+
+// ============================================
+// VISIT TRACKING
+// ============================================
+
+model Visit {
+  id            Int       @id @default(autoincrement())
+  patientId     Int
+  doctorId      Int
+  visitDate     DateTime
+  visitType     VisitType @default(FollowUp)
+  isNewVisit    Boolean   @default(true) // first time patient sees this doctor
+  isArchived    Boolean   @default(false)
+  archivedAt    DateTime?
+  diagnosis     String?
+  treatmentPlan String?
+  notes         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relations
+  patient Patient @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  doctor  Doctor  @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+
+  @@index([doctorId])
+  @@index([patientId])
+  @@index([visitDate])
+  @@index([isArchived])
+  @@map("visits")
+}
+
+// ============================================
+// CONTRAINDICATION TERM MAPPING
+// ============================================
+
+model ContraindicationTermMapping {
+  id               Int      @id @default(autoincrement())
+  standardTerm     String
+  alternativeTerms Json // array of string variants
+  category         String // "Organ", "Population", "Condition"
+  warningFieldName String // which ActiveSubstance field to check (e.g., "hepaticWarning")
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@index([standardTerm])
+  @@map("contraindication_term_mappings")
+}
+
+// ============================================
+// BATCH TRACKING
+// ============================================
+
+model BatchHistory {
+  id                Int       @id @default(autoincrement())
+  tradeNameId       Int
+  batchNumber       String
+  manufacturingDate DateTime
+  expiryDate        DateTime
+  quantity          Int?
+  isRecalled        Boolean   @default(false)
+  recallReason      String?
+  recallDate        DateTime?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  // Relations
+  tradeName TradeName @relation(fields: [tradeNameId], references: [id], onDelete: Cascade)
+
+  @@index([batchNumber])
+  @@index([tradeNameId])
+  @@index([expiryDate])
+  @@map("batch_histories")
+}
+
+// ============================================
+// IMPORT/EXPORT HISTORY
+// ============================================
+
+model ImportHistory {
+  id             Int      @id @default(autoincrement())
+  fileName       String
+  fileSize       Int // in bytes
+  fileType       String // 'xlsx', 'csv'
+  totalRows      Int
+  successfulRows Int
+  failedRows     Int
+  skippedRows    Int      @default(0)
+  importedBy     Int
+  importDate     DateTime @default(now())
+  errors         Json? // Array of error objects
+  executionTime  Int? // in milliseconds
+
+  // Relations
+  importer User @relation("ImportHistory", fields: [importedBy], references: [id])
+
+  @@index([importedBy])
+  @@index([importDate])
+  @@map("import_history")
+}
+
+// ============================================
+// MEDICINE SUGGESTION
+// ============================================
+
+model MedicineSuggestion {
+  id              Int              @id @default(autoincrement())
+  doctorId        Int
+  tradeName       String
+  activeSubstance String
+  concentration   String?
+  dosageForm      String?
+  manufacturer    String?
+  reason          String // Why doctor needs this medicine
+  status          SuggestionStatus @default(Pending)
+  reviewedBy      Int?
+  reviewNotes     String?
+  createdAt       DateTime         @default(now())
+  reviewedAt      DateTime?
+
+  // Relations
+  doctor   Doctor @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  reviewer User?  @relation("SuggestionReviewer", fields: [reviewedBy], references: [id])
+
+  @@index([doctorId])
+  @@index([status])
+  @@map("medicine_suggestions")
+}
+
+model ExportHistory {
+  id           Int      @id @default(autoincrement())
+  format       String // 'xlsx', 'csv'
+  totalRecords Int
+  filters      Json? // Applied filters
+  exportedBy   Int
+  exportDate   DateTime @default(now())
+
+  // Relations
+  user User @relation("ExportHistory", fields: [exportedBy], references: [id])
+
+  @@index([exportedBy])
+  @@index([exportDate])
+  @@map("export_histories")
 }

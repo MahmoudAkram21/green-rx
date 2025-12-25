@@ -14,7 +14,7 @@ const validateRequest = (schema: ValidationSchema) => {
         details: error.details.map(detail => detail.message)
       });
     }
-    next();
+    return next();
   };
 };
 

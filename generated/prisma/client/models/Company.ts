@@ -230,6 +230,7 @@ export type CompanyWhereInput = {
   deletedAt?: Prisma.DateTimeNullableFilter<"Company"> | Date | string | null
   tradeNames?: Prisma.TradeNameListRelationFilter
   contractingCompanies?: Prisma.ContractingCompanyListRelationFilter
+  adverseReactions?: Prisma.AdverseDrugReactionListRelationFilter
 }
 
 export type CompanyOrderByWithRelationInput = {
@@ -242,6 +243,7 @@ export type CompanyOrderByWithRelationInput = {
   deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   tradeNames?: Prisma.TradeNameOrderByRelationAggregateInput
   contractingCompanies?: Prisma.ContractingCompanyOrderByRelationAggregateInput
+  adverseReactions?: Prisma.AdverseDrugReactionOrderByRelationAggregateInput
 }
 
 export type CompanyWhereUniqueInput = Prisma.AtLeast<{
@@ -257,6 +259,7 @@ export type CompanyWhereUniqueInput = Prisma.AtLeast<{
   deletedAt?: Prisma.DateTimeNullableFilter<"Company"> | Date | string | null
   tradeNames?: Prisma.TradeNameListRelationFilter
   contractingCompanies?: Prisma.ContractingCompanyListRelationFilter
+  adverseReactions?: Prisma.AdverseDrugReactionListRelationFilter
 }, "id" | "name">
 
 export type CompanyOrderByWithAggregationInput = {
@@ -296,6 +299,7 @@ export type CompanyCreateInput = {
   deletedAt?: Date | string | null
   tradeNames?: Prisma.TradeNameCreateNestedManyWithoutCompanyInput
   contractingCompanies?: Prisma.ContractingCompanyCreateNestedManyWithoutCompanyInput
+  adverseReactions?: Prisma.AdverseDrugReactionCreateNestedManyWithoutCompanyInput
 }
 
 export type CompanyUncheckedCreateInput = {
@@ -308,6 +312,7 @@ export type CompanyUncheckedCreateInput = {
   deletedAt?: Date | string | null
   tradeNames?: Prisma.TradeNameUncheckedCreateNestedManyWithoutCompanyInput
   contractingCompanies?: Prisma.ContractingCompanyUncheckedCreateNestedManyWithoutCompanyInput
+  adverseReactions?: Prisma.AdverseDrugReactionUncheckedCreateNestedManyWithoutCompanyInput
 }
 
 export type CompanyUpdateInput = {
@@ -319,6 +324,7 @@ export type CompanyUpdateInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   tradeNames?: Prisma.TradeNameUpdateManyWithoutCompanyNestedInput
   contractingCompanies?: Prisma.ContractingCompanyUpdateManyWithoutCompanyNestedInput
+  adverseReactions?: Prisma.AdverseDrugReactionUpdateManyWithoutCompanyNestedInput
 }
 
 export type CompanyUncheckedUpdateInput = {
@@ -331,6 +337,7 @@ export type CompanyUncheckedUpdateInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   tradeNames?: Prisma.TradeNameUncheckedUpdateManyWithoutCompanyNestedInput
   contractingCompanies?: Prisma.ContractingCompanyUncheckedUpdateManyWithoutCompanyNestedInput
+  adverseReactions?: Prisma.AdverseDrugReactionUncheckedUpdateManyWithoutCompanyNestedInput
 }
 
 export type CompanyCreateManyInput = {
@@ -431,6 +438,20 @@ export type CompanyUpdateOneRequiredWithoutContractingCompaniesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.CompanyUpdateToOneWithWhereWithoutContractingCompaniesInput, Prisma.CompanyUpdateWithoutContractingCompaniesInput>, Prisma.CompanyUncheckedUpdateWithoutContractingCompaniesInput>
 }
 
+export type CompanyCreateNestedOneWithoutAdverseReactionsInput = {
+  create?: Prisma.XOR<Prisma.CompanyCreateWithoutAdverseReactionsInput, Prisma.CompanyUncheckedCreateWithoutAdverseReactionsInput>
+  connectOrCreate?: Prisma.CompanyCreateOrConnectWithoutAdverseReactionsInput
+  connect?: Prisma.CompanyWhereUniqueInput
+}
+
+export type CompanyUpdateOneRequiredWithoutAdverseReactionsNestedInput = {
+  create?: Prisma.XOR<Prisma.CompanyCreateWithoutAdverseReactionsInput, Prisma.CompanyUncheckedCreateWithoutAdverseReactionsInput>
+  connectOrCreate?: Prisma.CompanyCreateOrConnectWithoutAdverseReactionsInput
+  upsert?: Prisma.CompanyUpsertWithoutAdverseReactionsInput
+  connect?: Prisma.CompanyWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.CompanyUpdateToOneWithWhereWithoutAdverseReactionsInput, Prisma.CompanyUpdateWithoutAdverseReactionsInput>, Prisma.CompanyUncheckedUpdateWithoutAdverseReactionsInput>
+}
+
 export type CompanyCreateWithoutTradeNamesInput = {
   name: string
   contactInfo?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -439,6 +460,7 @@ export type CompanyCreateWithoutTradeNamesInput = {
   updatedAt?: Date | string
   deletedAt?: Date | string | null
   contractingCompanies?: Prisma.ContractingCompanyCreateNestedManyWithoutCompanyInput
+  adverseReactions?: Prisma.AdverseDrugReactionCreateNestedManyWithoutCompanyInput
 }
 
 export type CompanyUncheckedCreateWithoutTradeNamesInput = {
@@ -450,6 +472,7 @@ export type CompanyUncheckedCreateWithoutTradeNamesInput = {
   updatedAt?: Date | string
   deletedAt?: Date | string | null
   contractingCompanies?: Prisma.ContractingCompanyUncheckedCreateNestedManyWithoutCompanyInput
+  adverseReactions?: Prisma.AdverseDrugReactionUncheckedCreateNestedManyWithoutCompanyInput
 }
 
 export type CompanyCreateOrConnectWithoutTradeNamesInput = {
@@ -476,6 +499,7 @@ export type CompanyUpdateWithoutTradeNamesInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   contractingCompanies?: Prisma.ContractingCompanyUpdateManyWithoutCompanyNestedInput
+  adverseReactions?: Prisma.AdverseDrugReactionUpdateManyWithoutCompanyNestedInput
 }
 
 export type CompanyUncheckedUpdateWithoutTradeNamesInput = {
@@ -487,6 +511,7 @@ export type CompanyUncheckedUpdateWithoutTradeNamesInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   contractingCompanies?: Prisma.ContractingCompanyUncheckedUpdateManyWithoutCompanyNestedInput
+  adverseReactions?: Prisma.AdverseDrugReactionUncheckedUpdateManyWithoutCompanyNestedInput
 }
 
 export type CompanyCreateWithoutContractingCompaniesInput = {
@@ -497,6 +522,7 @@ export type CompanyCreateWithoutContractingCompaniesInput = {
   updatedAt?: Date | string
   deletedAt?: Date | string | null
   tradeNames?: Prisma.TradeNameCreateNestedManyWithoutCompanyInput
+  adverseReactions?: Prisma.AdverseDrugReactionCreateNestedManyWithoutCompanyInput
 }
 
 export type CompanyUncheckedCreateWithoutContractingCompaniesInput = {
@@ -508,6 +534,7 @@ export type CompanyUncheckedCreateWithoutContractingCompaniesInput = {
   updatedAt?: Date | string
   deletedAt?: Date | string | null
   tradeNames?: Prisma.TradeNameUncheckedCreateNestedManyWithoutCompanyInput
+  adverseReactions?: Prisma.AdverseDrugReactionUncheckedCreateNestedManyWithoutCompanyInput
 }
 
 export type CompanyCreateOrConnectWithoutContractingCompaniesInput = {
@@ -534,6 +561,7 @@ export type CompanyUpdateWithoutContractingCompaniesInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   tradeNames?: Prisma.TradeNameUpdateManyWithoutCompanyNestedInput
+  adverseReactions?: Prisma.AdverseDrugReactionUpdateManyWithoutCompanyNestedInput
 }
 
 export type CompanyUncheckedUpdateWithoutContractingCompaniesInput = {
@@ -545,6 +573,69 @@ export type CompanyUncheckedUpdateWithoutContractingCompaniesInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   tradeNames?: Prisma.TradeNameUncheckedUpdateManyWithoutCompanyNestedInput
+  adverseReactions?: Prisma.AdverseDrugReactionUncheckedUpdateManyWithoutCompanyNestedInput
+}
+
+export type CompanyCreateWithoutAdverseReactionsInput = {
+  name: string
+  contactInfo?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  isActive?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  tradeNames?: Prisma.TradeNameCreateNestedManyWithoutCompanyInput
+  contractingCompanies?: Prisma.ContractingCompanyCreateNestedManyWithoutCompanyInput
+}
+
+export type CompanyUncheckedCreateWithoutAdverseReactionsInput = {
+  id?: number
+  name: string
+  contactInfo?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  isActive?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  tradeNames?: Prisma.TradeNameUncheckedCreateNestedManyWithoutCompanyInput
+  contractingCompanies?: Prisma.ContractingCompanyUncheckedCreateNestedManyWithoutCompanyInput
+}
+
+export type CompanyCreateOrConnectWithoutAdverseReactionsInput = {
+  where: Prisma.CompanyWhereUniqueInput
+  create: Prisma.XOR<Prisma.CompanyCreateWithoutAdverseReactionsInput, Prisma.CompanyUncheckedCreateWithoutAdverseReactionsInput>
+}
+
+export type CompanyUpsertWithoutAdverseReactionsInput = {
+  update: Prisma.XOR<Prisma.CompanyUpdateWithoutAdverseReactionsInput, Prisma.CompanyUncheckedUpdateWithoutAdverseReactionsInput>
+  create: Prisma.XOR<Prisma.CompanyCreateWithoutAdverseReactionsInput, Prisma.CompanyUncheckedCreateWithoutAdverseReactionsInput>
+  where?: Prisma.CompanyWhereInput
+}
+
+export type CompanyUpdateToOneWithWhereWithoutAdverseReactionsInput = {
+  where?: Prisma.CompanyWhereInput
+  data: Prisma.XOR<Prisma.CompanyUpdateWithoutAdverseReactionsInput, Prisma.CompanyUncheckedUpdateWithoutAdverseReactionsInput>
+}
+
+export type CompanyUpdateWithoutAdverseReactionsInput = {
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  contactInfo?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  tradeNames?: Prisma.TradeNameUpdateManyWithoutCompanyNestedInput
+  contractingCompanies?: Prisma.ContractingCompanyUpdateManyWithoutCompanyNestedInput
+}
+
+export type CompanyUncheckedUpdateWithoutAdverseReactionsInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  contactInfo?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  tradeNames?: Prisma.TradeNameUncheckedUpdateManyWithoutCompanyNestedInput
+  contractingCompanies?: Prisma.ContractingCompanyUncheckedUpdateManyWithoutCompanyNestedInput
 }
 
 
@@ -555,11 +646,13 @@ export type CompanyUncheckedUpdateWithoutContractingCompaniesInput = {
 export type CompanyCountOutputType = {
   tradeNames: number
   contractingCompanies: number
+  adverseReactions: number
 }
 
 export type CompanyCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   tradeNames?: boolean | CompanyCountOutputTypeCountTradeNamesArgs
   contractingCompanies?: boolean | CompanyCountOutputTypeCountContractingCompaniesArgs
+  adverseReactions?: boolean | CompanyCountOutputTypeCountAdverseReactionsArgs
 }
 
 /**
@@ -586,6 +679,13 @@ export type CompanyCountOutputTypeCountContractingCompaniesArgs<ExtArgs extends 
   where?: Prisma.ContractingCompanyWhereInput
 }
 
+/**
+ * CompanyCountOutputType without action
+ */
+export type CompanyCountOutputTypeCountAdverseReactionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.AdverseDrugReactionWhereInput
+}
+
 
 export type CompanySelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -597,6 +697,7 @@ export type CompanySelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   deletedAt?: boolean
   tradeNames?: boolean | Prisma.Company$tradeNamesArgs<ExtArgs>
   contractingCompanies?: boolean | Prisma.Company$contractingCompaniesArgs<ExtArgs>
+  adverseReactions?: boolean | Prisma.Company$adverseReactionsArgs<ExtArgs>
   _count?: boolean | Prisma.CompanyCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["company"]>
 
@@ -634,6 +735,7 @@ export type CompanyOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
 export type CompanyInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   tradeNames?: boolean | Prisma.Company$tradeNamesArgs<ExtArgs>
   contractingCompanies?: boolean | Prisma.Company$contractingCompaniesArgs<ExtArgs>
+  adverseReactions?: boolean | Prisma.Company$adverseReactionsArgs<ExtArgs>
   _count?: boolean | Prisma.CompanyCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type CompanyIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -644,6 +746,7 @@ export type $CompanyPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
   objects: {
     tradeNames: Prisma.$TradeNamePayload<ExtArgs>[]
     contractingCompanies: Prisma.$ContractingCompanyPayload<ExtArgs>[]
+    adverseReactions: Prisma.$AdverseDrugReactionPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: number
@@ -1049,6 +1152,7 @@ export interface Prisma__CompanyClient<T, Null = never, ExtArgs extends runtime.
   readonly [Symbol.toStringTag]: "PrismaPromise"
   tradeNames<T extends Prisma.Company$tradeNamesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Company$tradeNamesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TradeNamePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   contractingCompanies<T extends Prisma.Company$contractingCompaniesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Company$contractingCompaniesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ContractingCompanyPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  adverseReactions<T extends Prisma.Company$adverseReactionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Company$adverseReactionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AdverseDrugReactionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1518,6 +1622,30 @@ export type Company$contractingCompaniesArgs<ExtArgs extends runtime.Types.Exten
   take?: number
   skip?: number
   distinct?: Prisma.ContractingCompanyScalarFieldEnum | Prisma.ContractingCompanyScalarFieldEnum[]
+}
+
+/**
+ * Company.adverseReactions
+ */
+export type Company$adverseReactionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the AdverseDrugReaction
+   */
+  select?: Prisma.AdverseDrugReactionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the AdverseDrugReaction
+   */
+  omit?: Prisma.AdverseDrugReactionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.AdverseDrugReactionInclude<ExtArgs> | null
+  where?: Prisma.AdverseDrugReactionWhereInput
+  orderBy?: Prisma.AdverseDrugReactionOrderByWithRelationInput | Prisma.AdverseDrugReactionOrderByWithRelationInput[]
+  cursor?: Prisma.AdverseDrugReactionWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.AdverseDrugReactionScalarFieldEnum | Prisma.AdverseDrugReactionScalarFieldEnum[]
 }
 
 /**

@@ -283,9 +283,13 @@ export type UserWhereInput = {
   subscription?: Prisma.XOR<Prisma.SubscriptionNullableScalarRelationFilter, Prisma.SubscriptionWhereInput> | null
   patient?: Prisma.XOR<Prisma.PatientNullableScalarRelationFilter, Prisma.PatientWhereInput> | null
   doctor?: Prisma.XOR<Prisma.DoctorNullableScalarRelationFilter, Prisma.DoctorWhereInput> | null
+  pharmacist?: Prisma.XOR<Prisma.PharmacistNullableScalarRelationFilter, Prisma.PharmacistWhereInput> | null
   notifications?: Prisma.NotificationListRelationFilter
   auditLogs?: Prisma.AuditLogListRelationFilter
   sessions?: Prisma.SessionListRelationFilter
+  importHistory?: Prisma.ImportHistoryListRelationFilter
+  exportHistory?: Prisma.ExportHistoryListRelationFilter
+  uploadedReports?: Prisma.MedicalReportListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
@@ -305,9 +309,13 @@ export type UserOrderByWithRelationInput = {
   subscription?: Prisma.SubscriptionOrderByWithRelationInput
   patient?: Prisma.PatientOrderByWithRelationInput
   doctor?: Prisma.DoctorOrderByWithRelationInput
+  pharmacist?: Prisma.PharmacistOrderByWithRelationInput
   notifications?: Prisma.NotificationOrderByRelationAggregateInput
   auditLogs?: Prisma.AuditLogOrderByRelationAggregateInput
   sessions?: Prisma.SessionOrderByRelationAggregateInput
+  importHistory?: Prisma.ImportHistoryOrderByRelationAggregateInput
+  exportHistory?: Prisma.ExportHistoryOrderByRelationAggregateInput
+  uploadedReports?: Prisma.MedicalReportOrderByRelationAggregateInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -330,9 +338,13 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   subscription?: Prisma.XOR<Prisma.SubscriptionNullableScalarRelationFilter, Prisma.SubscriptionWhereInput> | null
   patient?: Prisma.XOR<Prisma.PatientNullableScalarRelationFilter, Prisma.PatientWhereInput> | null
   doctor?: Prisma.XOR<Prisma.DoctorNullableScalarRelationFilter, Prisma.DoctorWhereInput> | null
+  pharmacist?: Prisma.XOR<Prisma.PharmacistNullableScalarRelationFilter, Prisma.PharmacistWhereInput> | null
   notifications?: Prisma.NotificationListRelationFilter
   auditLogs?: Prisma.AuditLogListRelationFilter
   sessions?: Prisma.SessionListRelationFilter
+  importHistory?: Prisma.ImportHistoryListRelationFilter
+  exportHistory?: Prisma.ExportHistoryListRelationFilter
+  uploadedReports?: Prisma.MedicalReportListRelationFilter
 }, "id" | "email">
 
 export type UserOrderByWithAggregationInput = {
@@ -391,9 +403,13 @@ export type UserCreateInput = {
   subscription?: Prisma.SubscriptionCreateNestedOneWithoutUserInput
   patient?: Prisma.PatientCreateNestedOneWithoutUserInput
   doctor?: Prisma.DoctorCreateNestedOneWithoutUserInput
+  pharmacist?: Prisma.PharmacistCreateNestedOneWithoutUserInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutUserInput
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  importHistory?: Prisma.ImportHistoryCreateNestedManyWithoutUserInput
+  exportHistory?: Prisma.ExportHistoryCreateNestedManyWithoutUserInput
+  uploadedReports?: Prisma.MedicalReportCreateNestedManyWithoutUploaderInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -413,9 +429,13 @@ export type UserUncheckedCreateInput = {
   subscription?: Prisma.SubscriptionUncheckedCreateNestedOneWithoutUserInput
   patient?: Prisma.PatientUncheckedCreateNestedOneWithoutUserInput
   doctor?: Prisma.DoctorUncheckedCreateNestedOneWithoutUserInput
+  pharmacist?: Prisma.PharmacistUncheckedCreateNestedOneWithoutUserInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutUserInput
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  importHistory?: Prisma.ImportHistoryUncheckedCreateNestedManyWithoutUserInput
+  exportHistory?: Prisma.ExportHistoryUncheckedCreateNestedManyWithoutUserInput
+  uploadedReports?: Prisma.MedicalReportUncheckedCreateNestedManyWithoutUploaderInput
 }
 
 export type UserUpdateInput = {
@@ -434,9 +454,13 @@ export type UserUpdateInput = {
   subscription?: Prisma.SubscriptionUpdateOneWithoutUserNestedInput
   patient?: Prisma.PatientUpdateOneWithoutUserNestedInput
   doctor?: Prisma.DoctorUpdateOneWithoutUserNestedInput
+  pharmacist?: Prisma.PharmacistUpdateOneWithoutUserNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
   auditLogs?: Prisma.AuditLogUpdateManyWithoutUserNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  importHistory?: Prisma.ImportHistoryUpdateManyWithoutUserNestedInput
+  exportHistory?: Prisma.ExportHistoryUpdateManyWithoutUserNestedInput
+  uploadedReports?: Prisma.MedicalReportUpdateManyWithoutUploaderNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -456,9 +480,13 @@ export type UserUncheckedUpdateInput = {
   subscription?: Prisma.SubscriptionUncheckedUpdateOneWithoutUserNestedInput
   patient?: Prisma.PatientUncheckedUpdateOneWithoutUserNestedInput
   doctor?: Prisma.DoctorUncheckedUpdateOneWithoutUserNestedInput
+  pharmacist?: Prisma.PharmacistUncheckedUpdateOneWithoutUserNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutUserNestedInput
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  importHistory?: Prisma.ImportHistoryUncheckedUpdateManyWithoutUserNestedInput
+  exportHistory?: Prisma.ExportHistoryUncheckedUpdateManyWithoutUserNestedInput
+  uploadedReports?: Prisma.MedicalReportUncheckedUpdateManyWithoutUploaderNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -692,6 +720,62 @@ export type UserUpdateOneRequiredWithoutSessionsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutSessionsInput, Prisma.UserUpdateWithoutSessionsInput>, Prisma.UserUncheckedUpdateWithoutSessionsInput>
 }
 
+export type UserCreateNestedOneWithoutPharmacistInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutPharmacistInput, Prisma.UserUncheckedCreateWithoutPharmacistInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutPharmacistInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutPharmacistNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutPharmacistInput, Prisma.UserUncheckedCreateWithoutPharmacistInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutPharmacistInput
+  upsert?: Prisma.UserUpsertWithoutPharmacistInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutPharmacistInput, Prisma.UserUpdateWithoutPharmacistInput>, Prisma.UserUncheckedUpdateWithoutPharmacistInput>
+}
+
+export type UserCreateNestedOneWithoutUploadedReportsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutUploadedReportsInput, Prisma.UserUncheckedCreateWithoutUploadedReportsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutUploadedReportsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutUploadedReportsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutUploadedReportsInput, Prisma.UserUncheckedCreateWithoutUploadedReportsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutUploadedReportsInput
+  upsert?: Prisma.UserUpsertWithoutUploadedReportsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutUploadedReportsInput, Prisma.UserUpdateWithoutUploadedReportsInput>, Prisma.UserUncheckedUpdateWithoutUploadedReportsInput>
+}
+
+export type UserCreateNestedOneWithoutImportHistoryInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutImportHistoryInput, Prisma.UserUncheckedCreateWithoutImportHistoryInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutImportHistoryInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutImportHistoryNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutImportHistoryInput, Prisma.UserUncheckedCreateWithoutImportHistoryInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutImportHistoryInput
+  upsert?: Prisma.UserUpsertWithoutImportHistoryInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutImportHistoryInput, Prisma.UserUpdateWithoutImportHistoryInput>, Prisma.UserUncheckedUpdateWithoutImportHistoryInput>
+}
+
+export type UserCreateNestedOneWithoutExportHistoryInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutExportHistoryInput, Prisma.UserUncheckedCreateWithoutExportHistoryInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutExportHistoryInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutExportHistoryNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutExportHistoryInput, Prisma.UserUncheckedCreateWithoutExportHistoryInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutExportHistoryInput
+  upsert?: Prisma.UserUpsertWithoutExportHistoryInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutExportHistoryInput, Prisma.UserUpdateWithoutExportHistoryInput>, Prisma.UserUncheckedUpdateWithoutExportHistoryInput>
+}
+
 export type UserCreateWithoutSubscriptionInput = {
   email: string
   passwordHash: string
@@ -707,9 +791,13 @@ export type UserCreateWithoutSubscriptionInput = {
   deletedAt?: Date | string | null
   patient?: Prisma.PatientCreateNestedOneWithoutUserInput
   doctor?: Prisma.DoctorCreateNestedOneWithoutUserInput
+  pharmacist?: Prisma.PharmacistCreateNestedOneWithoutUserInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutUserInput
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  importHistory?: Prisma.ImportHistoryCreateNestedManyWithoutUserInput
+  exportHistory?: Prisma.ExportHistoryCreateNestedManyWithoutUserInput
+  uploadedReports?: Prisma.MedicalReportCreateNestedManyWithoutUploaderInput
 }
 
 export type UserUncheckedCreateWithoutSubscriptionInput = {
@@ -728,9 +816,13 @@ export type UserUncheckedCreateWithoutSubscriptionInput = {
   deletedAt?: Date | string | null
   patient?: Prisma.PatientUncheckedCreateNestedOneWithoutUserInput
   doctor?: Prisma.DoctorUncheckedCreateNestedOneWithoutUserInput
+  pharmacist?: Prisma.PharmacistUncheckedCreateNestedOneWithoutUserInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutUserInput
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  importHistory?: Prisma.ImportHistoryUncheckedCreateNestedManyWithoutUserInput
+  exportHistory?: Prisma.ExportHistoryUncheckedCreateNestedManyWithoutUserInput
+  uploadedReports?: Prisma.MedicalReportUncheckedCreateNestedManyWithoutUploaderInput
 }
 
 export type UserCreateOrConnectWithoutSubscriptionInput = {
@@ -764,9 +856,13 @@ export type UserUpdateWithoutSubscriptionInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   patient?: Prisma.PatientUpdateOneWithoutUserNestedInput
   doctor?: Prisma.DoctorUpdateOneWithoutUserNestedInput
+  pharmacist?: Prisma.PharmacistUpdateOneWithoutUserNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
   auditLogs?: Prisma.AuditLogUpdateManyWithoutUserNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  importHistory?: Prisma.ImportHistoryUpdateManyWithoutUserNestedInput
+  exportHistory?: Prisma.ExportHistoryUpdateManyWithoutUserNestedInput
+  uploadedReports?: Prisma.MedicalReportUpdateManyWithoutUploaderNestedInput
 }
 
 export type UserUncheckedUpdateWithoutSubscriptionInput = {
@@ -785,9 +881,13 @@ export type UserUncheckedUpdateWithoutSubscriptionInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   patient?: Prisma.PatientUncheckedUpdateOneWithoutUserNestedInput
   doctor?: Prisma.DoctorUncheckedUpdateOneWithoutUserNestedInput
+  pharmacist?: Prisma.PharmacistUncheckedUpdateOneWithoutUserNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutUserNestedInput
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  importHistory?: Prisma.ImportHistoryUncheckedUpdateManyWithoutUserNestedInput
+  exportHistory?: Prisma.ExportHistoryUncheckedUpdateManyWithoutUserNestedInput
+  uploadedReports?: Prisma.MedicalReportUncheckedUpdateManyWithoutUploaderNestedInput
 }
 
 export type UserCreateWithoutPatientInput = {
@@ -805,9 +905,13 @@ export type UserCreateWithoutPatientInput = {
   deletedAt?: Date | string | null
   subscription?: Prisma.SubscriptionCreateNestedOneWithoutUserInput
   doctor?: Prisma.DoctorCreateNestedOneWithoutUserInput
+  pharmacist?: Prisma.PharmacistCreateNestedOneWithoutUserInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutUserInput
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  importHistory?: Prisma.ImportHistoryCreateNestedManyWithoutUserInput
+  exportHistory?: Prisma.ExportHistoryCreateNestedManyWithoutUserInput
+  uploadedReports?: Prisma.MedicalReportCreateNestedManyWithoutUploaderInput
 }
 
 export type UserUncheckedCreateWithoutPatientInput = {
@@ -826,9 +930,13 @@ export type UserUncheckedCreateWithoutPatientInput = {
   deletedAt?: Date | string | null
   subscription?: Prisma.SubscriptionUncheckedCreateNestedOneWithoutUserInput
   doctor?: Prisma.DoctorUncheckedCreateNestedOneWithoutUserInput
+  pharmacist?: Prisma.PharmacistUncheckedCreateNestedOneWithoutUserInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutUserInput
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  importHistory?: Prisma.ImportHistoryUncheckedCreateNestedManyWithoutUserInput
+  exportHistory?: Prisma.ExportHistoryUncheckedCreateNestedManyWithoutUserInput
+  uploadedReports?: Prisma.MedicalReportUncheckedCreateNestedManyWithoutUploaderInput
 }
 
 export type UserCreateOrConnectWithoutPatientInput = {
@@ -862,9 +970,13 @@ export type UserUpdateWithoutPatientInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   subscription?: Prisma.SubscriptionUpdateOneWithoutUserNestedInput
   doctor?: Prisma.DoctorUpdateOneWithoutUserNestedInput
+  pharmacist?: Prisma.PharmacistUpdateOneWithoutUserNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
   auditLogs?: Prisma.AuditLogUpdateManyWithoutUserNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  importHistory?: Prisma.ImportHistoryUpdateManyWithoutUserNestedInput
+  exportHistory?: Prisma.ExportHistoryUpdateManyWithoutUserNestedInput
+  uploadedReports?: Prisma.MedicalReportUpdateManyWithoutUploaderNestedInput
 }
 
 export type UserUncheckedUpdateWithoutPatientInput = {
@@ -883,9 +995,13 @@ export type UserUncheckedUpdateWithoutPatientInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   subscription?: Prisma.SubscriptionUncheckedUpdateOneWithoutUserNestedInput
   doctor?: Prisma.DoctorUncheckedUpdateOneWithoutUserNestedInput
+  pharmacist?: Prisma.PharmacistUncheckedUpdateOneWithoutUserNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutUserNestedInput
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  importHistory?: Prisma.ImportHistoryUncheckedUpdateManyWithoutUserNestedInput
+  exportHistory?: Prisma.ExportHistoryUncheckedUpdateManyWithoutUserNestedInput
+  uploadedReports?: Prisma.MedicalReportUncheckedUpdateManyWithoutUploaderNestedInput
 }
 
 export type UserCreateWithoutDoctorInput = {
@@ -903,9 +1019,13 @@ export type UserCreateWithoutDoctorInput = {
   deletedAt?: Date | string | null
   subscription?: Prisma.SubscriptionCreateNestedOneWithoutUserInput
   patient?: Prisma.PatientCreateNestedOneWithoutUserInput
+  pharmacist?: Prisma.PharmacistCreateNestedOneWithoutUserInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutUserInput
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  importHistory?: Prisma.ImportHistoryCreateNestedManyWithoutUserInput
+  exportHistory?: Prisma.ExportHistoryCreateNestedManyWithoutUserInput
+  uploadedReports?: Prisma.MedicalReportCreateNestedManyWithoutUploaderInput
 }
 
 export type UserUncheckedCreateWithoutDoctorInput = {
@@ -924,9 +1044,13 @@ export type UserUncheckedCreateWithoutDoctorInput = {
   deletedAt?: Date | string | null
   subscription?: Prisma.SubscriptionUncheckedCreateNestedOneWithoutUserInput
   patient?: Prisma.PatientUncheckedCreateNestedOneWithoutUserInput
+  pharmacist?: Prisma.PharmacistUncheckedCreateNestedOneWithoutUserInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutUserInput
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  importHistory?: Prisma.ImportHistoryUncheckedCreateNestedManyWithoutUserInput
+  exportHistory?: Prisma.ExportHistoryUncheckedCreateNestedManyWithoutUserInput
+  uploadedReports?: Prisma.MedicalReportUncheckedCreateNestedManyWithoutUploaderInput
 }
 
 export type UserCreateOrConnectWithoutDoctorInput = {
@@ -960,9 +1084,13 @@ export type UserUpdateWithoutDoctorInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   subscription?: Prisma.SubscriptionUpdateOneWithoutUserNestedInput
   patient?: Prisma.PatientUpdateOneWithoutUserNestedInput
+  pharmacist?: Prisma.PharmacistUpdateOneWithoutUserNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
   auditLogs?: Prisma.AuditLogUpdateManyWithoutUserNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  importHistory?: Prisma.ImportHistoryUpdateManyWithoutUserNestedInput
+  exportHistory?: Prisma.ExportHistoryUpdateManyWithoutUserNestedInput
+  uploadedReports?: Prisma.MedicalReportUpdateManyWithoutUploaderNestedInput
 }
 
 export type UserUncheckedUpdateWithoutDoctorInput = {
@@ -981,9 +1109,13 @@ export type UserUncheckedUpdateWithoutDoctorInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   subscription?: Prisma.SubscriptionUncheckedUpdateOneWithoutUserNestedInput
   patient?: Prisma.PatientUncheckedUpdateOneWithoutUserNestedInput
+  pharmacist?: Prisma.PharmacistUncheckedUpdateOneWithoutUserNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutUserNestedInput
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  importHistory?: Prisma.ImportHistoryUncheckedUpdateManyWithoutUserNestedInput
+  exportHistory?: Prisma.ExportHistoryUncheckedUpdateManyWithoutUserNestedInput
+  uploadedReports?: Prisma.MedicalReportUncheckedUpdateManyWithoutUploaderNestedInput
 }
 
 export type UserCreateWithoutNotificationsInput = {
@@ -1002,8 +1134,12 @@ export type UserCreateWithoutNotificationsInput = {
   subscription?: Prisma.SubscriptionCreateNestedOneWithoutUserInput
   patient?: Prisma.PatientCreateNestedOneWithoutUserInput
   doctor?: Prisma.DoctorCreateNestedOneWithoutUserInput
+  pharmacist?: Prisma.PharmacistCreateNestedOneWithoutUserInput
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutUserInput
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  importHistory?: Prisma.ImportHistoryCreateNestedManyWithoutUserInput
+  exportHistory?: Prisma.ExportHistoryCreateNestedManyWithoutUserInput
+  uploadedReports?: Prisma.MedicalReportCreateNestedManyWithoutUploaderInput
 }
 
 export type UserUncheckedCreateWithoutNotificationsInput = {
@@ -1023,8 +1159,12 @@ export type UserUncheckedCreateWithoutNotificationsInput = {
   subscription?: Prisma.SubscriptionUncheckedCreateNestedOneWithoutUserInput
   patient?: Prisma.PatientUncheckedCreateNestedOneWithoutUserInput
   doctor?: Prisma.DoctorUncheckedCreateNestedOneWithoutUserInput
+  pharmacist?: Prisma.PharmacistUncheckedCreateNestedOneWithoutUserInput
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutUserInput
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  importHistory?: Prisma.ImportHistoryUncheckedCreateNestedManyWithoutUserInput
+  exportHistory?: Prisma.ExportHistoryUncheckedCreateNestedManyWithoutUserInput
+  uploadedReports?: Prisma.MedicalReportUncheckedCreateNestedManyWithoutUploaderInput
 }
 
 export type UserCreateOrConnectWithoutNotificationsInput = {
@@ -1059,8 +1199,12 @@ export type UserUpdateWithoutNotificationsInput = {
   subscription?: Prisma.SubscriptionUpdateOneWithoutUserNestedInput
   patient?: Prisma.PatientUpdateOneWithoutUserNestedInput
   doctor?: Prisma.DoctorUpdateOneWithoutUserNestedInput
+  pharmacist?: Prisma.PharmacistUpdateOneWithoutUserNestedInput
   auditLogs?: Prisma.AuditLogUpdateManyWithoutUserNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  importHistory?: Prisma.ImportHistoryUpdateManyWithoutUserNestedInput
+  exportHistory?: Prisma.ExportHistoryUpdateManyWithoutUserNestedInput
+  uploadedReports?: Prisma.MedicalReportUpdateManyWithoutUploaderNestedInput
 }
 
 export type UserUncheckedUpdateWithoutNotificationsInput = {
@@ -1080,8 +1224,12 @@ export type UserUncheckedUpdateWithoutNotificationsInput = {
   subscription?: Prisma.SubscriptionUncheckedUpdateOneWithoutUserNestedInput
   patient?: Prisma.PatientUncheckedUpdateOneWithoutUserNestedInput
   doctor?: Prisma.DoctorUncheckedUpdateOneWithoutUserNestedInput
+  pharmacist?: Prisma.PharmacistUncheckedUpdateOneWithoutUserNestedInput
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutUserNestedInput
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  importHistory?: Prisma.ImportHistoryUncheckedUpdateManyWithoutUserNestedInput
+  exportHistory?: Prisma.ExportHistoryUncheckedUpdateManyWithoutUserNestedInput
+  uploadedReports?: Prisma.MedicalReportUncheckedUpdateManyWithoutUploaderNestedInput
 }
 
 export type UserCreateWithoutAuditLogsInput = {
@@ -1100,8 +1248,12 @@ export type UserCreateWithoutAuditLogsInput = {
   subscription?: Prisma.SubscriptionCreateNestedOneWithoutUserInput
   patient?: Prisma.PatientCreateNestedOneWithoutUserInput
   doctor?: Prisma.DoctorCreateNestedOneWithoutUserInput
+  pharmacist?: Prisma.PharmacistCreateNestedOneWithoutUserInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  importHistory?: Prisma.ImportHistoryCreateNestedManyWithoutUserInput
+  exportHistory?: Prisma.ExportHistoryCreateNestedManyWithoutUserInput
+  uploadedReports?: Prisma.MedicalReportCreateNestedManyWithoutUploaderInput
 }
 
 export type UserUncheckedCreateWithoutAuditLogsInput = {
@@ -1121,8 +1273,12 @@ export type UserUncheckedCreateWithoutAuditLogsInput = {
   subscription?: Prisma.SubscriptionUncheckedCreateNestedOneWithoutUserInput
   patient?: Prisma.PatientUncheckedCreateNestedOneWithoutUserInput
   doctor?: Prisma.DoctorUncheckedCreateNestedOneWithoutUserInput
+  pharmacist?: Prisma.PharmacistUncheckedCreateNestedOneWithoutUserInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  importHistory?: Prisma.ImportHistoryUncheckedCreateNestedManyWithoutUserInput
+  exportHistory?: Prisma.ExportHistoryUncheckedCreateNestedManyWithoutUserInput
+  uploadedReports?: Prisma.MedicalReportUncheckedCreateNestedManyWithoutUploaderInput
 }
 
 export type UserCreateOrConnectWithoutAuditLogsInput = {
@@ -1157,8 +1313,12 @@ export type UserUpdateWithoutAuditLogsInput = {
   subscription?: Prisma.SubscriptionUpdateOneWithoutUserNestedInput
   patient?: Prisma.PatientUpdateOneWithoutUserNestedInput
   doctor?: Prisma.DoctorUpdateOneWithoutUserNestedInput
+  pharmacist?: Prisma.PharmacistUpdateOneWithoutUserNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  importHistory?: Prisma.ImportHistoryUpdateManyWithoutUserNestedInput
+  exportHistory?: Prisma.ExportHistoryUpdateManyWithoutUserNestedInput
+  uploadedReports?: Prisma.MedicalReportUpdateManyWithoutUploaderNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAuditLogsInput = {
@@ -1178,8 +1338,12 @@ export type UserUncheckedUpdateWithoutAuditLogsInput = {
   subscription?: Prisma.SubscriptionUncheckedUpdateOneWithoutUserNestedInput
   patient?: Prisma.PatientUncheckedUpdateOneWithoutUserNestedInput
   doctor?: Prisma.DoctorUncheckedUpdateOneWithoutUserNestedInput
+  pharmacist?: Prisma.PharmacistUncheckedUpdateOneWithoutUserNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  importHistory?: Prisma.ImportHistoryUncheckedUpdateManyWithoutUserNestedInput
+  exportHistory?: Prisma.ExportHistoryUncheckedUpdateManyWithoutUserNestedInput
+  uploadedReports?: Prisma.MedicalReportUncheckedUpdateManyWithoutUploaderNestedInput
 }
 
 export type UserCreateWithoutSessionsInput = {
@@ -1198,8 +1362,12 @@ export type UserCreateWithoutSessionsInput = {
   subscription?: Prisma.SubscriptionCreateNestedOneWithoutUserInput
   patient?: Prisma.PatientCreateNestedOneWithoutUserInput
   doctor?: Prisma.DoctorCreateNestedOneWithoutUserInput
+  pharmacist?: Prisma.PharmacistCreateNestedOneWithoutUserInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutUserInput
+  importHistory?: Prisma.ImportHistoryCreateNestedManyWithoutUserInput
+  exportHistory?: Prisma.ExportHistoryCreateNestedManyWithoutUserInput
+  uploadedReports?: Prisma.MedicalReportCreateNestedManyWithoutUploaderInput
 }
 
 export type UserUncheckedCreateWithoutSessionsInput = {
@@ -1219,8 +1387,12 @@ export type UserUncheckedCreateWithoutSessionsInput = {
   subscription?: Prisma.SubscriptionUncheckedCreateNestedOneWithoutUserInput
   patient?: Prisma.PatientUncheckedCreateNestedOneWithoutUserInput
   doctor?: Prisma.DoctorUncheckedCreateNestedOneWithoutUserInput
+  pharmacist?: Prisma.PharmacistUncheckedCreateNestedOneWithoutUserInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutUserInput
+  importHistory?: Prisma.ImportHistoryUncheckedCreateNestedManyWithoutUserInput
+  exportHistory?: Prisma.ExportHistoryUncheckedCreateNestedManyWithoutUserInput
+  uploadedReports?: Prisma.MedicalReportUncheckedCreateNestedManyWithoutUploaderInput
 }
 
 export type UserCreateOrConnectWithoutSessionsInput = {
@@ -1255,8 +1427,12 @@ export type UserUpdateWithoutSessionsInput = {
   subscription?: Prisma.SubscriptionUpdateOneWithoutUserNestedInput
   patient?: Prisma.PatientUpdateOneWithoutUserNestedInput
   doctor?: Prisma.DoctorUpdateOneWithoutUserNestedInput
+  pharmacist?: Prisma.PharmacistUpdateOneWithoutUserNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
   auditLogs?: Prisma.AuditLogUpdateManyWithoutUserNestedInput
+  importHistory?: Prisma.ImportHistoryUpdateManyWithoutUserNestedInput
+  exportHistory?: Prisma.ExportHistoryUpdateManyWithoutUserNestedInput
+  uploadedReports?: Prisma.MedicalReportUpdateManyWithoutUploaderNestedInput
 }
 
 export type UserUncheckedUpdateWithoutSessionsInput = {
@@ -1276,8 +1452,468 @@ export type UserUncheckedUpdateWithoutSessionsInput = {
   subscription?: Prisma.SubscriptionUncheckedUpdateOneWithoutUserNestedInput
   patient?: Prisma.PatientUncheckedUpdateOneWithoutUserNestedInput
   doctor?: Prisma.DoctorUncheckedUpdateOneWithoutUserNestedInput
+  pharmacist?: Prisma.PharmacistUncheckedUpdateOneWithoutUserNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutUserNestedInput
+  importHistory?: Prisma.ImportHistoryUncheckedUpdateManyWithoutUserNestedInput
+  exportHistory?: Prisma.ExportHistoryUncheckedUpdateManyWithoutUserNestedInput
+  uploadedReports?: Prisma.MedicalReportUncheckedUpdateManyWithoutUploaderNestedInput
+}
+
+export type UserCreateWithoutPharmacistInput = {
+  email: string
+  passwordHash: string
+  role: $Enums.UserRole
+  emailVerified?: boolean
+  emailVerificationToken?: string | null
+  passwordResetToken?: string | null
+  passwordResetExpires?: Date | string | null
+  isActive?: boolean
+  lastLoginAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  subscription?: Prisma.SubscriptionCreateNestedOneWithoutUserInput
+  patient?: Prisma.PatientCreateNestedOneWithoutUserInput
+  doctor?: Prisma.DoctorCreateNestedOneWithoutUserInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  importHistory?: Prisma.ImportHistoryCreateNestedManyWithoutUserInput
+  exportHistory?: Prisma.ExportHistoryCreateNestedManyWithoutUserInput
+  uploadedReports?: Prisma.MedicalReportCreateNestedManyWithoutUploaderInput
+}
+
+export type UserUncheckedCreateWithoutPharmacistInput = {
+  id?: number
+  email: string
+  passwordHash: string
+  role: $Enums.UserRole
+  emailVerified?: boolean
+  emailVerificationToken?: string | null
+  passwordResetToken?: string | null
+  passwordResetExpires?: Date | string | null
+  isActive?: boolean
+  lastLoginAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  subscription?: Prisma.SubscriptionUncheckedCreateNestedOneWithoutUserInput
+  patient?: Prisma.PatientUncheckedCreateNestedOneWithoutUserInput
+  doctor?: Prisma.DoctorUncheckedCreateNestedOneWithoutUserInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  importHistory?: Prisma.ImportHistoryUncheckedCreateNestedManyWithoutUserInput
+  exportHistory?: Prisma.ExportHistoryUncheckedCreateNestedManyWithoutUserInput
+  uploadedReports?: Prisma.MedicalReportUncheckedCreateNestedManyWithoutUploaderInput
+}
+
+export type UserCreateOrConnectWithoutPharmacistInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutPharmacistInput, Prisma.UserUncheckedCreateWithoutPharmacistInput>
+}
+
+export type UserUpsertWithoutPharmacistInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutPharmacistInput, Prisma.UserUncheckedUpdateWithoutPharmacistInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutPharmacistInput, Prisma.UserUncheckedCreateWithoutPharmacistInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutPharmacistInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutPharmacistInput, Prisma.UserUncheckedUpdateWithoutPharmacistInput>
+}
+
+export type UserUpdateWithoutPharmacistInput = {
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  emailVerificationToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  subscription?: Prisma.SubscriptionUpdateOneWithoutUserNestedInput
+  patient?: Prisma.PatientUpdateOneWithoutUserNestedInput
+  doctor?: Prisma.DoctorUpdateOneWithoutUserNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  importHistory?: Prisma.ImportHistoryUpdateManyWithoutUserNestedInput
+  exportHistory?: Prisma.ExportHistoryUpdateManyWithoutUserNestedInput
+  uploadedReports?: Prisma.MedicalReportUpdateManyWithoutUploaderNestedInput
+}
+
+export type UserUncheckedUpdateWithoutPharmacistInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  emailVerificationToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  subscription?: Prisma.SubscriptionUncheckedUpdateOneWithoutUserNestedInput
+  patient?: Prisma.PatientUncheckedUpdateOneWithoutUserNestedInput
+  doctor?: Prisma.DoctorUncheckedUpdateOneWithoutUserNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  importHistory?: Prisma.ImportHistoryUncheckedUpdateManyWithoutUserNestedInput
+  exportHistory?: Prisma.ExportHistoryUncheckedUpdateManyWithoutUserNestedInput
+  uploadedReports?: Prisma.MedicalReportUncheckedUpdateManyWithoutUploaderNestedInput
+}
+
+export type UserCreateWithoutUploadedReportsInput = {
+  email: string
+  passwordHash: string
+  role: $Enums.UserRole
+  emailVerified?: boolean
+  emailVerificationToken?: string | null
+  passwordResetToken?: string | null
+  passwordResetExpires?: Date | string | null
+  isActive?: boolean
+  lastLoginAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  subscription?: Prisma.SubscriptionCreateNestedOneWithoutUserInput
+  patient?: Prisma.PatientCreateNestedOneWithoutUserInput
+  doctor?: Prisma.DoctorCreateNestedOneWithoutUserInput
+  pharmacist?: Prisma.PharmacistCreateNestedOneWithoutUserInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  importHistory?: Prisma.ImportHistoryCreateNestedManyWithoutUserInput
+  exportHistory?: Prisma.ExportHistoryCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutUploadedReportsInput = {
+  id?: number
+  email: string
+  passwordHash: string
+  role: $Enums.UserRole
+  emailVerified?: boolean
+  emailVerificationToken?: string | null
+  passwordResetToken?: string | null
+  passwordResetExpires?: Date | string | null
+  isActive?: boolean
+  lastLoginAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  subscription?: Prisma.SubscriptionUncheckedCreateNestedOneWithoutUserInput
+  patient?: Prisma.PatientUncheckedCreateNestedOneWithoutUserInput
+  doctor?: Prisma.DoctorUncheckedCreateNestedOneWithoutUserInput
+  pharmacist?: Prisma.PharmacistUncheckedCreateNestedOneWithoutUserInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  importHistory?: Prisma.ImportHistoryUncheckedCreateNestedManyWithoutUserInput
+  exportHistory?: Prisma.ExportHistoryUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutUploadedReportsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutUploadedReportsInput, Prisma.UserUncheckedCreateWithoutUploadedReportsInput>
+}
+
+export type UserUpsertWithoutUploadedReportsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutUploadedReportsInput, Prisma.UserUncheckedUpdateWithoutUploadedReportsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutUploadedReportsInput, Prisma.UserUncheckedCreateWithoutUploadedReportsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutUploadedReportsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutUploadedReportsInput, Prisma.UserUncheckedUpdateWithoutUploadedReportsInput>
+}
+
+export type UserUpdateWithoutUploadedReportsInput = {
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  emailVerificationToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  subscription?: Prisma.SubscriptionUpdateOneWithoutUserNestedInput
+  patient?: Prisma.PatientUpdateOneWithoutUserNestedInput
+  doctor?: Prisma.DoctorUpdateOneWithoutUserNestedInput
+  pharmacist?: Prisma.PharmacistUpdateOneWithoutUserNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  importHistory?: Prisma.ImportHistoryUpdateManyWithoutUserNestedInput
+  exportHistory?: Prisma.ExportHistoryUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutUploadedReportsInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  emailVerificationToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  subscription?: Prisma.SubscriptionUncheckedUpdateOneWithoutUserNestedInput
+  patient?: Prisma.PatientUncheckedUpdateOneWithoutUserNestedInput
+  doctor?: Prisma.DoctorUncheckedUpdateOneWithoutUserNestedInput
+  pharmacist?: Prisma.PharmacistUncheckedUpdateOneWithoutUserNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  importHistory?: Prisma.ImportHistoryUncheckedUpdateManyWithoutUserNestedInput
+  exportHistory?: Prisma.ExportHistoryUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserCreateWithoutImportHistoryInput = {
+  email: string
+  passwordHash: string
+  role: $Enums.UserRole
+  emailVerified?: boolean
+  emailVerificationToken?: string | null
+  passwordResetToken?: string | null
+  passwordResetExpires?: Date | string | null
+  isActive?: boolean
+  lastLoginAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  subscription?: Prisma.SubscriptionCreateNestedOneWithoutUserInput
+  patient?: Prisma.PatientCreateNestedOneWithoutUserInput
+  doctor?: Prisma.DoctorCreateNestedOneWithoutUserInput
+  pharmacist?: Prisma.PharmacistCreateNestedOneWithoutUserInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  exportHistory?: Prisma.ExportHistoryCreateNestedManyWithoutUserInput
+  uploadedReports?: Prisma.MedicalReportCreateNestedManyWithoutUploaderInput
+}
+
+export type UserUncheckedCreateWithoutImportHistoryInput = {
+  id?: number
+  email: string
+  passwordHash: string
+  role: $Enums.UserRole
+  emailVerified?: boolean
+  emailVerificationToken?: string | null
+  passwordResetToken?: string | null
+  passwordResetExpires?: Date | string | null
+  isActive?: boolean
+  lastLoginAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  subscription?: Prisma.SubscriptionUncheckedCreateNestedOneWithoutUserInput
+  patient?: Prisma.PatientUncheckedCreateNestedOneWithoutUserInput
+  doctor?: Prisma.DoctorUncheckedCreateNestedOneWithoutUserInput
+  pharmacist?: Prisma.PharmacistUncheckedCreateNestedOneWithoutUserInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  exportHistory?: Prisma.ExportHistoryUncheckedCreateNestedManyWithoutUserInput
+  uploadedReports?: Prisma.MedicalReportUncheckedCreateNestedManyWithoutUploaderInput
+}
+
+export type UserCreateOrConnectWithoutImportHistoryInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutImportHistoryInput, Prisma.UserUncheckedCreateWithoutImportHistoryInput>
+}
+
+export type UserUpsertWithoutImportHistoryInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutImportHistoryInput, Prisma.UserUncheckedUpdateWithoutImportHistoryInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutImportHistoryInput, Prisma.UserUncheckedCreateWithoutImportHistoryInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutImportHistoryInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutImportHistoryInput, Prisma.UserUncheckedUpdateWithoutImportHistoryInput>
+}
+
+export type UserUpdateWithoutImportHistoryInput = {
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  emailVerificationToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  subscription?: Prisma.SubscriptionUpdateOneWithoutUserNestedInput
+  patient?: Prisma.PatientUpdateOneWithoutUserNestedInput
+  doctor?: Prisma.DoctorUpdateOneWithoutUserNestedInput
+  pharmacist?: Prisma.PharmacistUpdateOneWithoutUserNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  exportHistory?: Prisma.ExportHistoryUpdateManyWithoutUserNestedInput
+  uploadedReports?: Prisma.MedicalReportUpdateManyWithoutUploaderNestedInput
+}
+
+export type UserUncheckedUpdateWithoutImportHistoryInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  emailVerificationToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  subscription?: Prisma.SubscriptionUncheckedUpdateOneWithoutUserNestedInput
+  patient?: Prisma.PatientUncheckedUpdateOneWithoutUserNestedInput
+  doctor?: Prisma.DoctorUncheckedUpdateOneWithoutUserNestedInput
+  pharmacist?: Prisma.PharmacistUncheckedUpdateOneWithoutUserNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  exportHistory?: Prisma.ExportHistoryUncheckedUpdateManyWithoutUserNestedInput
+  uploadedReports?: Prisma.MedicalReportUncheckedUpdateManyWithoutUploaderNestedInput
+}
+
+export type UserCreateWithoutExportHistoryInput = {
+  email: string
+  passwordHash: string
+  role: $Enums.UserRole
+  emailVerified?: boolean
+  emailVerificationToken?: string | null
+  passwordResetToken?: string | null
+  passwordResetExpires?: Date | string | null
+  isActive?: boolean
+  lastLoginAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  subscription?: Prisma.SubscriptionCreateNestedOneWithoutUserInput
+  patient?: Prisma.PatientCreateNestedOneWithoutUserInput
+  doctor?: Prisma.DoctorCreateNestedOneWithoutUserInput
+  pharmacist?: Prisma.PharmacistCreateNestedOneWithoutUserInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  importHistory?: Prisma.ImportHistoryCreateNestedManyWithoutUserInput
+  uploadedReports?: Prisma.MedicalReportCreateNestedManyWithoutUploaderInput
+}
+
+export type UserUncheckedCreateWithoutExportHistoryInput = {
+  id?: number
+  email: string
+  passwordHash: string
+  role: $Enums.UserRole
+  emailVerified?: boolean
+  emailVerificationToken?: string | null
+  passwordResetToken?: string | null
+  passwordResetExpires?: Date | string | null
+  isActive?: boolean
+  lastLoginAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  subscription?: Prisma.SubscriptionUncheckedCreateNestedOneWithoutUserInput
+  patient?: Prisma.PatientUncheckedCreateNestedOneWithoutUserInput
+  doctor?: Prisma.DoctorUncheckedCreateNestedOneWithoutUserInput
+  pharmacist?: Prisma.PharmacistUncheckedCreateNestedOneWithoutUserInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  importHistory?: Prisma.ImportHistoryUncheckedCreateNestedManyWithoutUserInput
+  uploadedReports?: Prisma.MedicalReportUncheckedCreateNestedManyWithoutUploaderInput
+}
+
+export type UserCreateOrConnectWithoutExportHistoryInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutExportHistoryInput, Prisma.UserUncheckedCreateWithoutExportHistoryInput>
+}
+
+export type UserUpsertWithoutExportHistoryInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutExportHistoryInput, Prisma.UserUncheckedUpdateWithoutExportHistoryInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutExportHistoryInput, Prisma.UserUncheckedCreateWithoutExportHistoryInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutExportHistoryInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutExportHistoryInput, Prisma.UserUncheckedUpdateWithoutExportHistoryInput>
+}
+
+export type UserUpdateWithoutExportHistoryInput = {
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  emailVerificationToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  subscription?: Prisma.SubscriptionUpdateOneWithoutUserNestedInput
+  patient?: Prisma.PatientUpdateOneWithoutUserNestedInput
+  doctor?: Prisma.DoctorUpdateOneWithoutUserNestedInput
+  pharmacist?: Prisma.PharmacistUpdateOneWithoutUserNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  importHistory?: Prisma.ImportHistoryUpdateManyWithoutUserNestedInput
+  uploadedReports?: Prisma.MedicalReportUpdateManyWithoutUploaderNestedInput
+}
+
+export type UserUncheckedUpdateWithoutExportHistoryInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  emailVerificationToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  subscription?: Prisma.SubscriptionUncheckedUpdateOneWithoutUserNestedInput
+  patient?: Prisma.PatientUncheckedUpdateOneWithoutUserNestedInput
+  doctor?: Prisma.DoctorUncheckedUpdateOneWithoutUserNestedInput
+  pharmacist?: Prisma.PharmacistUncheckedUpdateOneWithoutUserNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  importHistory?: Prisma.ImportHistoryUncheckedUpdateManyWithoutUserNestedInput
+  uploadedReports?: Prisma.MedicalReportUncheckedUpdateManyWithoutUploaderNestedInput
 }
 
 
@@ -1289,12 +1925,18 @@ export type UserCountOutputType = {
   notifications: number
   auditLogs: number
   sessions: number
+  importHistory: number
+  exportHistory: number
+  uploadedReports: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   notifications?: boolean | UserCountOutputTypeCountNotificationsArgs
   auditLogs?: boolean | UserCountOutputTypeCountAuditLogsArgs
   sessions?: boolean | UserCountOutputTypeCountSessionsArgs
+  importHistory?: boolean | UserCountOutputTypeCountImportHistoryArgs
+  exportHistory?: boolean | UserCountOutputTypeCountExportHistoryArgs
+  uploadedReports?: boolean | UserCountOutputTypeCountUploadedReportsArgs
 }
 
 /**
@@ -1328,6 +1970,27 @@ export type UserCountOutputTypeCountSessionsArgs<ExtArgs extends runtime.Types.E
   where?: Prisma.SessionWhereInput
 }
 
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountImportHistoryArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ImportHistoryWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountExportHistoryArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ExportHistoryWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountUploadedReportsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.MedicalReportWhereInput
+}
+
 
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1346,9 +2009,13 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   subscription?: boolean | Prisma.User$subscriptionArgs<ExtArgs>
   patient?: boolean | Prisma.User$patientArgs<ExtArgs>
   doctor?: boolean | Prisma.User$doctorArgs<ExtArgs>
+  pharmacist?: boolean | Prisma.User$pharmacistArgs<ExtArgs>
   notifications?: boolean | Prisma.User$notificationsArgs<ExtArgs>
   auditLogs?: boolean | Prisma.User$auditLogsArgs<ExtArgs>
   sessions?: boolean | Prisma.User$sessionsArgs<ExtArgs>
+  importHistory?: boolean | Prisma.User$importHistoryArgs<ExtArgs>
+  exportHistory?: boolean | Prisma.User$exportHistoryArgs<ExtArgs>
+  uploadedReports?: boolean | Prisma.User$uploadedReportsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -1405,9 +2072,13 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   subscription?: boolean | Prisma.User$subscriptionArgs<ExtArgs>
   patient?: boolean | Prisma.User$patientArgs<ExtArgs>
   doctor?: boolean | Prisma.User$doctorArgs<ExtArgs>
+  pharmacist?: boolean | Prisma.User$pharmacistArgs<ExtArgs>
   notifications?: boolean | Prisma.User$notificationsArgs<ExtArgs>
   auditLogs?: boolean | Prisma.User$auditLogsArgs<ExtArgs>
   sessions?: boolean | Prisma.User$sessionsArgs<ExtArgs>
+  importHistory?: boolean | Prisma.User$importHistoryArgs<ExtArgs>
+  exportHistory?: boolean | Prisma.User$exportHistoryArgs<ExtArgs>
+  uploadedReports?: boolean | Prisma.User$uploadedReportsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -1419,9 +2090,13 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     subscription: Prisma.$SubscriptionPayload<ExtArgs> | null
     patient: Prisma.$PatientPayload<ExtArgs> | null
     doctor: Prisma.$DoctorPayload<ExtArgs> | null
+    pharmacist: Prisma.$PharmacistPayload<ExtArgs> | null
     notifications: Prisma.$NotificationPayload<ExtArgs>[]
     auditLogs: Prisma.$AuditLogPayload<ExtArgs>[]
     sessions: Prisma.$SessionPayload<ExtArgs>[]
+    importHistory: Prisma.$ImportHistoryPayload<ExtArgs>[]
+    exportHistory: Prisma.$ExportHistoryPayload<ExtArgs>[]
+    uploadedReports: Prisma.$MedicalReportPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: number
@@ -1834,9 +2509,13 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   subscription<T extends Prisma.User$subscriptionArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$subscriptionArgs<ExtArgs>>): Prisma.Prisma__SubscriptionClient<runtime.Types.Result.GetResult<Prisma.$SubscriptionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   patient<T extends Prisma.User$patientArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$patientArgs<ExtArgs>>): Prisma.Prisma__PatientClient<runtime.Types.Result.GetResult<Prisma.$PatientPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   doctor<T extends Prisma.User$doctorArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$doctorArgs<ExtArgs>>): Prisma.Prisma__DoctorClient<runtime.Types.Result.GetResult<Prisma.$DoctorPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  pharmacist<T extends Prisma.User$pharmacistArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$pharmacistArgs<ExtArgs>>): Prisma.Prisma__PharmacistClient<runtime.Types.Result.GetResult<Prisma.$PharmacistPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   notifications<T extends Prisma.User$notificationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$notificationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   auditLogs<T extends Prisma.User$auditLogsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$auditLogsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AuditLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   sessions<T extends Prisma.User$sessionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$sessionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  importHistory<T extends Prisma.User$importHistoryArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$importHistoryArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ImportHistoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  exportHistory<T extends Prisma.User$exportHistoryArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$exportHistoryArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ExportHistoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  uploadedReports<T extends Prisma.User$uploadedReportsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$uploadedReportsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MedicalReportPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2324,6 +3003,25 @@ export type User$doctorArgs<ExtArgs extends runtime.Types.Extensions.InternalArg
 }
 
 /**
+ * User.pharmacist
+ */
+export type User$pharmacistArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Pharmacist
+   */
+  select?: Prisma.PharmacistSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Pharmacist
+   */
+  omit?: Prisma.PharmacistOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PharmacistInclude<ExtArgs> | null
+  where?: Prisma.PharmacistWhereInput
+}
+
+/**
  * User.notifications
  */
 export type User$notificationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -2393,6 +3091,78 @@ export type User$sessionsArgs<ExtArgs extends runtime.Types.Extensions.InternalA
   take?: number
   skip?: number
   distinct?: Prisma.SessionScalarFieldEnum | Prisma.SessionScalarFieldEnum[]
+}
+
+/**
+ * User.importHistory
+ */
+export type User$importHistoryArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ImportHistory
+   */
+  select?: Prisma.ImportHistorySelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ImportHistory
+   */
+  omit?: Prisma.ImportHistoryOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ImportHistoryInclude<ExtArgs> | null
+  where?: Prisma.ImportHistoryWhereInput
+  orderBy?: Prisma.ImportHistoryOrderByWithRelationInput | Prisma.ImportHistoryOrderByWithRelationInput[]
+  cursor?: Prisma.ImportHistoryWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ImportHistoryScalarFieldEnum | Prisma.ImportHistoryScalarFieldEnum[]
+}
+
+/**
+ * User.exportHistory
+ */
+export type User$exportHistoryArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ExportHistory
+   */
+  select?: Prisma.ExportHistorySelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ExportHistory
+   */
+  omit?: Prisma.ExportHistoryOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ExportHistoryInclude<ExtArgs> | null
+  where?: Prisma.ExportHistoryWhereInput
+  orderBy?: Prisma.ExportHistoryOrderByWithRelationInput | Prisma.ExportHistoryOrderByWithRelationInput[]
+  cursor?: Prisma.ExportHistoryWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ExportHistoryScalarFieldEnum | Prisma.ExportHistoryScalarFieldEnum[]
+}
+
+/**
+ * User.uploadedReports
+ */
+export type User$uploadedReportsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the MedicalReport
+   */
+  select?: Prisma.MedicalReportSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the MedicalReport
+   */
+  omit?: Prisma.MedicalReportOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.MedicalReportInclude<ExtArgs> | null
+  where?: Prisma.MedicalReportWhereInput
+  orderBy?: Prisma.MedicalReportOrderByWithRelationInput | Prisma.MedicalReportOrderByWithRelationInput[]
+  cursor?: Prisma.MedicalReportWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.MedicalReportScalarFieldEnum | Prisma.MedicalReportScalarFieldEnum[]
 }
 
 /**

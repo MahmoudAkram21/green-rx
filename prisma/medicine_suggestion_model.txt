@@ -1,0 +1,24 @@
+// Medicine Suggestion Model - add this at the end of schema before closing
+model MedicineSuggestion {
+  id                  Int              @id @default(autoincrement())
+  doctorId            Int
+  tradeName           String
+  activeSubstance     String
+  concentration       String?
+  dosageForm          String?
+  manufacturer        String?
+  reason              String           // Why doctor needs this medicine
+  status              SuggestionStatus @default(Pending)
+  reviewedBy          Int?
+  reviewNotes         String?
+  createdAt           DateTime         @default(now())
+  reviewedAt          DateTime?
+
+  // Relations
+  doctor   Doctor @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  reviewer User?  @relation("SuggestionReviewer", fields: [reviewedBy], references: [id])
+
+  @@index([doctorId])
+  @@index([status])
+  @@map("medicine_suggestions")
+}

@@ -1152,6 +1152,7 @@ export type ActiveSubstanceWhereInput = {
   diseaseActiveSubstanceWarnings?: Prisma.DiseaseActiveSubstanceWarningListRelationFilter
   medicineAlternatives?: Prisma.MedicineAlternativeListRelationFilter
   alternativeTo?: Prisma.MedicineAlternativeListRelationFilter
+  adverseReactions?: Prisma.AdverseDrugReactionListRelationFilter
 }
 
 export type ActiveSubstanceOrderByWithRelationInput = {
@@ -1348,6 +1349,7 @@ export type ActiveSubstanceOrderByWithRelationInput = {
   diseaseActiveSubstanceWarnings?: Prisma.DiseaseActiveSubstanceWarningOrderByRelationAggregateInput
   medicineAlternatives?: Prisma.MedicineAlternativeOrderByRelationAggregateInput
   alternativeTo?: Prisma.MedicineAlternativeOrderByRelationAggregateInput
+  adverseReactions?: Prisma.AdverseDrugReactionOrderByRelationAggregateInput
 }
 
 export type ActiveSubstanceWhereUniqueInput = Prisma.AtLeast<{
@@ -1547,6 +1549,7 @@ export type ActiveSubstanceWhereUniqueInput = Prisma.AtLeast<{
   diseaseActiveSubstanceWarnings?: Prisma.DiseaseActiveSubstanceWarningListRelationFilter
   medicineAlternatives?: Prisma.MedicineAlternativeListRelationFilter
   alternativeTo?: Prisma.MedicineAlternativeListRelationFilter
+  adverseReactions?: Prisma.AdverseDrugReactionListRelationFilter
 }, "id">
 
 export type ActiveSubstanceOrderByWithAggregationInput = {
@@ -2134,6 +2137,7 @@ export type ActiveSubstanceCreateInput = {
   diseaseActiveSubstanceWarnings?: Prisma.DiseaseActiveSubstanceWarningCreateNestedManyWithoutActiveSubstanceInput
   medicineAlternatives?: Prisma.MedicineAlternativeCreateNestedManyWithoutActiveSubstanceInput
   alternativeTo?: Prisma.MedicineAlternativeCreateNestedManyWithoutAlternativeActiveSubstanceInput
+  adverseReactions?: Prisma.AdverseDrugReactionCreateNestedManyWithoutActiveSubstanceInput
 }
 
 export type ActiveSubstanceUncheckedCreateInput = {
@@ -2330,6 +2334,7 @@ export type ActiveSubstanceUncheckedCreateInput = {
   diseaseActiveSubstanceWarnings?: Prisma.DiseaseActiveSubstanceWarningUncheckedCreateNestedManyWithoutActiveSubstanceInput
   medicineAlternatives?: Prisma.MedicineAlternativeUncheckedCreateNestedManyWithoutActiveSubstanceInput
   alternativeTo?: Prisma.MedicineAlternativeUncheckedCreateNestedManyWithoutAlternativeActiveSubstanceInput
+  adverseReactions?: Prisma.AdverseDrugReactionUncheckedCreateNestedManyWithoutActiveSubstanceInput
 }
 
 export type ActiveSubstanceUpdateInput = {
@@ -2525,6 +2530,7 @@ export type ActiveSubstanceUpdateInput = {
   diseaseActiveSubstanceWarnings?: Prisma.DiseaseActiveSubstanceWarningUpdateManyWithoutActiveSubstanceNestedInput
   medicineAlternatives?: Prisma.MedicineAlternativeUpdateManyWithoutActiveSubstanceNestedInput
   alternativeTo?: Prisma.MedicineAlternativeUpdateManyWithoutAlternativeActiveSubstanceNestedInput
+  adverseReactions?: Prisma.AdverseDrugReactionUpdateManyWithoutActiveSubstanceNestedInput
 }
 
 export type ActiveSubstanceUncheckedUpdateInput = {
@@ -2721,6 +2727,7 @@ export type ActiveSubstanceUncheckedUpdateInput = {
   diseaseActiveSubstanceWarnings?: Prisma.DiseaseActiveSubstanceWarningUncheckedUpdateManyWithoutActiveSubstanceNestedInput
   medicineAlternatives?: Prisma.MedicineAlternativeUncheckedUpdateManyWithoutActiveSubstanceNestedInput
   alternativeTo?: Prisma.MedicineAlternativeUncheckedUpdateManyWithoutAlternativeActiveSubstanceNestedInput
+  adverseReactions?: Prisma.AdverseDrugReactionUncheckedUpdateManyWithoutActiveSubstanceNestedInput
 }
 
 export type ActiveSubstanceCreateManyInput = {
@@ -3617,6 +3624,11 @@ export type ActiveSubstanceScalarRelationFilter = {
   isNot?: Prisma.ActiveSubstanceWhereInput
 }
 
+export type ActiveSubstanceNullableScalarRelationFilter = {
+  is?: Prisma.ActiveSubstanceWhereInput | null
+  isNot?: Prisma.ActiveSubstanceWhereInput | null
+}
+
 export type ActiveSubstanceCreateNestedOneWithoutDiseaseActiveSubstanceWarningsInput = {
   create?: Prisma.XOR<Prisma.ActiveSubstanceCreateWithoutDiseaseActiveSubstanceWarningsInput, Prisma.ActiveSubstanceUncheckedCreateWithoutDiseaseActiveSubstanceWarningsInput>
   connectOrCreate?: Prisma.ActiveSubstanceCreateOrConnectWithoutDiseaseActiveSubstanceWarningsInput
@@ -3671,6 +3683,22 @@ export type ActiveSubstanceUpdateOneRequiredWithoutTradeNamesNestedInput = {
   upsert?: Prisma.ActiveSubstanceUpsertWithoutTradeNamesInput
   connect?: Prisma.ActiveSubstanceWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.ActiveSubstanceUpdateToOneWithWhereWithoutTradeNamesInput, Prisma.ActiveSubstanceUpdateWithoutTradeNamesInput>, Prisma.ActiveSubstanceUncheckedUpdateWithoutTradeNamesInput>
+}
+
+export type ActiveSubstanceCreateNestedOneWithoutAdverseReactionsInput = {
+  create?: Prisma.XOR<Prisma.ActiveSubstanceCreateWithoutAdverseReactionsInput, Prisma.ActiveSubstanceUncheckedCreateWithoutAdverseReactionsInput>
+  connectOrCreate?: Prisma.ActiveSubstanceCreateOrConnectWithoutAdverseReactionsInput
+  connect?: Prisma.ActiveSubstanceWhereUniqueInput
+}
+
+export type ActiveSubstanceUpdateOneWithoutAdverseReactionsNestedInput = {
+  create?: Prisma.XOR<Prisma.ActiveSubstanceCreateWithoutAdverseReactionsInput, Prisma.ActiveSubstanceUncheckedCreateWithoutAdverseReactionsInput>
+  connectOrCreate?: Prisma.ActiveSubstanceCreateOrConnectWithoutAdverseReactionsInput
+  upsert?: Prisma.ActiveSubstanceUpsertWithoutAdverseReactionsInput
+  disconnect?: Prisma.ActiveSubstanceWhereInput | boolean
+  delete?: Prisma.ActiveSubstanceWhereInput | boolean
+  connect?: Prisma.ActiveSubstanceWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ActiveSubstanceUpdateToOneWithWhereWithoutAdverseReactionsInput, Prisma.ActiveSubstanceUpdateWithoutAdverseReactionsInput>, Prisma.ActiveSubstanceUncheckedUpdateWithoutAdverseReactionsInput>
 }
 
 export type ActiveSubstanceCreateWithoutDiseaseActiveSubstanceWarningsInput = {
@@ -3865,6 +3893,7 @@ export type ActiveSubstanceCreateWithoutDiseaseActiveSubstanceWarningsInput = {
   tradeNames?: Prisma.TradeNameCreateNestedManyWithoutActiveSubstanceInput
   medicineAlternatives?: Prisma.MedicineAlternativeCreateNestedManyWithoutActiveSubstanceInput
   alternativeTo?: Prisma.MedicineAlternativeCreateNestedManyWithoutAlternativeActiveSubstanceInput
+  adverseReactions?: Prisma.AdverseDrugReactionCreateNestedManyWithoutActiveSubstanceInput
 }
 
 export type ActiveSubstanceUncheckedCreateWithoutDiseaseActiveSubstanceWarningsInput = {
@@ -4060,6 +4089,7 @@ export type ActiveSubstanceUncheckedCreateWithoutDiseaseActiveSubstanceWarningsI
   tradeNames?: Prisma.TradeNameUncheckedCreateNestedManyWithoutActiveSubstanceInput
   medicineAlternatives?: Prisma.MedicineAlternativeUncheckedCreateNestedManyWithoutActiveSubstanceInput
   alternativeTo?: Prisma.MedicineAlternativeUncheckedCreateNestedManyWithoutAlternativeActiveSubstanceInput
+  adverseReactions?: Prisma.AdverseDrugReactionUncheckedCreateNestedManyWithoutActiveSubstanceInput
 }
 
 export type ActiveSubstanceCreateOrConnectWithoutDiseaseActiveSubstanceWarningsInput = {
@@ -4270,6 +4300,7 @@ export type ActiveSubstanceUpdateWithoutDiseaseActiveSubstanceWarningsInput = {
   tradeNames?: Prisma.TradeNameUpdateManyWithoutActiveSubstanceNestedInput
   medicineAlternatives?: Prisma.MedicineAlternativeUpdateManyWithoutActiveSubstanceNestedInput
   alternativeTo?: Prisma.MedicineAlternativeUpdateManyWithoutAlternativeActiveSubstanceNestedInput
+  adverseReactions?: Prisma.AdverseDrugReactionUpdateManyWithoutActiveSubstanceNestedInput
 }
 
 export type ActiveSubstanceUncheckedUpdateWithoutDiseaseActiveSubstanceWarningsInput = {
@@ -4465,6 +4496,7 @@ export type ActiveSubstanceUncheckedUpdateWithoutDiseaseActiveSubstanceWarningsI
   tradeNames?: Prisma.TradeNameUncheckedUpdateManyWithoutActiveSubstanceNestedInput
   medicineAlternatives?: Prisma.MedicineAlternativeUncheckedUpdateManyWithoutActiveSubstanceNestedInput
   alternativeTo?: Prisma.MedicineAlternativeUncheckedUpdateManyWithoutAlternativeActiveSubstanceNestedInput
+  adverseReactions?: Prisma.AdverseDrugReactionUncheckedUpdateManyWithoutActiveSubstanceNestedInput
 }
 
 export type ActiveSubstanceCreateWithoutMedicineAlternativesInput = {
@@ -4659,6 +4691,7 @@ export type ActiveSubstanceCreateWithoutMedicineAlternativesInput = {
   tradeNames?: Prisma.TradeNameCreateNestedManyWithoutActiveSubstanceInput
   diseaseActiveSubstanceWarnings?: Prisma.DiseaseActiveSubstanceWarningCreateNestedManyWithoutActiveSubstanceInput
   alternativeTo?: Prisma.MedicineAlternativeCreateNestedManyWithoutAlternativeActiveSubstanceInput
+  adverseReactions?: Prisma.AdverseDrugReactionCreateNestedManyWithoutActiveSubstanceInput
 }
 
 export type ActiveSubstanceUncheckedCreateWithoutMedicineAlternativesInput = {
@@ -4854,6 +4887,7 @@ export type ActiveSubstanceUncheckedCreateWithoutMedicineAlternativesInput = {
   tradeNames?: Prisma.TradeNameUncheckedCreateNestedManyWithoutActiveSubstanceInput
   diseaseActiveSubstanceWarnings?: Prisma.DiseaseActiveSubstanceWarningUncheckedCreateNestedManyWithoutActiveSubstanceInput
   alternativeTo?: Prisma.MedicineAlternativeUncheckedCreateNestedManyWithoutAlternativeActiveSubstanceInput
+  adverseReactions?: Prisma.AdverseDrugReactionUncheckedCreateNestedManyWithoutActiveSubstanceInput
 }
 
 export type ActiveSubstanceCreateOrConnectWithoutMedicineAlternativesInput = {
@@ -5053,6 +5087,7 @@ export type ActiveSubstanceCreateWithoutAlternativeToInput = {
   tradeNames?: Prisma.TradeNameCreateNestedManyWithoutActiveSubstanceInput
   diseaseActiveSubstanceWarnings?: Prisma.DiseaseActiveSubstanceWarningCreateNestedManyWithoutActiveSubstanceInput
   medicineAlternatives?: Prisma.MedicineAlternativeCreateNestedManyWithoutActiveSubstanceInput
+  adverseReactions?: Prisma.AdverseDrugReactionCreateNestedManyWithoutActiveSubstanceInput
 }
 
 export type ActiveSubstanceUncheckedCreateWithoutAlternativeToInput = {
@@ -5248,6 +5283,7 @@ export type ActiveSubstanceUncheckedCreateWithoutAlternativeToInput = {
   tradeNames?: Prisma.TradeNameUncheckedCreateNestedManyWithoutActiveSubstanceInput
   diseaseActiveSubstanceWarnings?: Prisma.DiseaseActiveSubstanceWarningUncheckedCreateNestedManyWithoutActiveSubstanceInput
   medicineAlternatives?: Prisma.MedicineAlternativeUncheckedCreateNestedManyWithoutActiveSubstanceInput
+  adverseReactions?: Prisma.AdverseDrugReactionUncheckedCreateNestedManyWithoutActiveSubstanceInput
 }
 
 export type ActiveSubstanceCreateOrConnectWithoutAlternativeToInput = {
@@ -5458,6 +5494,7 @@ export type ActiveSubstanceUpdateWithoutMedicineAlternativesInput = {
   tradeNames?: Prisma.TradeNameUpdateManyWithoutActiveSubstanceNestedInput
   diseaseActiveSubstanceWarnings?: Prisma.DiseaseActiveSubstanceWarningUpdateManyWithoutActiveSubstanceNestedInput
   alternativeTo?: Prisma.MedicineAlternativeUpdateManyWithoutAlternativeActiveSubstanceNestedInput
+  adverseReactions?: Prisma.AdverseDrugReactionUpdateManyWithoutActiveSubstanceNestedInput
 }
 
 export type ActiveSubstanceUncheckedUpdateWithoutMedicineAlternativesInput = {
@@ -5653,6 +5690,7 @@ export type ActiveSubstanceUncheckedUpdateWithoutMedicineAlternativesInput = {
   tradeNames?: Prisma.TradeNameUncheckedUpdateManyWithoutActiveSubstanceNestedInput
   diseaseActiveSubstanceWarnings?: Prisma.DiseaseActiveSubstanceWarningUncheckedUpdateManyWithoutActiveSubstanceNestedInput
   alternativeTo?: Prisma.MedicineAlternativeUncheckedUpdateManyWithoutAlternativeActiveSubstanceNestedInput
+  adverseReactions?: Prisma.AdverseDrugReactionUncheckedUpdateManyWithoutActiveSubstanceNestedInput
 }
 
 export type ActiveSubstanceUpsertWithoutAlternativeToInput = {
@@ -5858,6 +5896,7 @@ export type ActiveSubstanceUpdateWithoutAlternativeToInput = {
   tradeNames?: Prisma.TradeNameUpdateManyWithoutActiveSubstanceNestedInput
   diseaseActiveSubstanceWarnings?: Prisma.DiseaseActiveSubstanceWarningUpdateManyWithoutActiveSubstanceNestedInput
   medicineAlternatives?: Prisma.MedicineAlternativeUpdateManyWithoutActiveSubstanceNestedInput
+  adverseReactions?: Prisma.AdverseDrugReactionUpdateManyWithoutActiveSubstanceNestedInput
 }
 
 export type ActiveSubstanceUncheckedUpdateWithoutAlternativeToInput = {
@@ -6053,6 +6092,7 @@ export type ActiveSubstanceUncheckedUpdateWithoutAlternativeToInput = {
   tradeNames?: Prisma.TradeNameUncheckedUpdateManyWithoutActiveSubstanceNestedInput
   diseaseActiveSubstanceWarnings?: Prisma.DiseaseActiveSubstanceWarningUncheckedUpdateManyWithoutActiveSubstanceNestedInput
   medicineAlternatives?: Prisma.MedicineAlternativeUncheckedUpdateManyWithoutActiveSubstanceNestedInput
+  adverseReactions?: Prisma.AdverseDrugReactionUncheckedUpdateManyWithoutActiveSubstanceNestedInput
 }
 
 export type ActiveSubstanceCreateWithoutTradeNamesInput = {
@@ -6247,6 +6287,7 @@ export type ActiveSubstanceCreateWithoutTradeNamesInput = {
   diseaseActiveSubstanceWarnings?: Prisma.DiseaseActiveSubstanceWarningCreateNestedManyWithoutActiveSubstanceInput
   medicineAlternatives?: Prisma.MedicineAlternativeCreateNestedManyWithoutActiveSubstanceInput
   alternativeTo?: Prisma.MedicineAlternativeCreateNestedManyWithoutAlternativeActiveSubstanceInput
+  adverseReactions?: Prisma.AdverseDrugReactionCreateNestedManyWithoutActiveSubstanceInput
 }
 
 export type ActiveSubstanceUncheckedCreateWithoutTradeNamesInput = {
@@ -6442,6 +6483,7 @@ export type ActiveSubstanceUncheckedCreateWithoutTradeNamesInput = {
   diseaseActiveSubstanceWarnings?: Prisma.DiseaseActiveSubstanceWarningUncheckedCreateNestedManyWithoutActiveSubstanceInput
   medicineAlternatives?: Prisma.MedicineAlternativeUncheckedCreateNestedManyWithoutActiveSubstanceInput
   alternativeTo?: Prisma.MedicineAlternativeUncheckedCreateNestedManyWithoutAlternativeActiveSubstanceInput
+  adverseReactions?: Prisma.AdverseDrugReactionUncheckedCreateNestedManyWithoutActiveSubstanceInput
 }
 
 export type ActiveSubstanceCreateOrConnectWithoutTradeNamesInput = {
@@ -6652,6 +6694,7 @@ export type ActiveSubstanceUpdateWithoutTradeNamesInput = {
   diseaseActiveSubstanceWarnings?: Prisma.DiseaseActiveSubstanceWarningUpdateManyWithoutActiveSubstanceNestedInput
   medicineAlternatives?: Prisma.MedicineAlternativeUpdateManyWithoutActiveSubstanceNestedInput
   alternativeTo?: Prisma.MedicineAlternativeUpdateManyWithoutAlternativeActiveSubstanceNestedInput
+  adverseReactions?: Prisma.AdverseDrugReactionUpdateManyWithoutActiveSubstanceNestedInput
 }
 
 export type ActiveSubstanceUncheckedUpdateWithoutTradeNamesInput = {
@@ -6847,6 +6890,805 @@ export type ActiveSubstanceUncheckedUpdateWithoutTradeNamesInput = {
   diseaseActiveSubstanceWarnings?: Prisma.DiseaseActiveSubstanceWarningUncheckedUpdateManyWithoutActiveSubstanceNestedInput
   medicineAlternatives?: Prisma.MedicineAlternativeUncheckedUpdateManyWithoutActiveSubstanceNestedInput
   alternativeTo?: Prisma.MedicineAlternativeUncheckedUpdateManyWithoutAlternativeActiveSubstanceNestedInput
+  adverseReactions?: Prisma.AdverseDrugReactionUncheckedUpdateManyWithoutActiveSubstanceNestedInput
+}
+
+export type ActiveSubstanceCreateWithoutAdverseReactionsInput = {
+  activeSubstance: string
+  concentration?: string | null
+  classification?: string | null
+  dosageForm?: string | null
+  indication?: string | null
+  adultDoseMaxPerDay?: string | null
+  adultDoseMgPerKg?: string | null
+  doseInKg?: string | null
+  pediatricDose?: string | null
+  glucoseContent?: string | null
+  lactoseContent?: string | null
+  fructoseContent?: string | null
+  preservativesInOcularProducts?: string | null
+  eliminationPathway?: string | null
+  contraindications?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  pregnancyWarning?: string | null
+  lactationWarning?: string | null
+  reproductiveWarningFemale?: string | null
+  reproductiveWarningMale?: string | null
+  specialPopulationChildren?: string | null
+  specialPopulationElderly?: string | null
+  ethnicAction?: string | null
+  hepaticWarning?: string | null
+  renalWarning?: string | null
+  medicationErrorWarning?: string | null
+  carcinogenicityMutagenicity?: string | null
+  gitWarning?: string | null
+  metabolismWarning?: string | null
+  pulmonaryWarning?: string | null
+  immuneSystemWarning?: string | null
+  infectionWarning?: string | null
+  bloodWarning?: string | null
+  vascularWarning?: string | null
+  electrolyteImbalanceWarning?: string | null
+  cardiacWarning?: string | null
+  psychiatricWarning?: string | null
+  nervousSystemWarning?: string | null
+  skinConnectiveTissueWarning?: string | null
+  musculoSkeletalWarning?: string | null
+  eyeDisordersWarning?: string | null
+  earDisordersWarning?: string | null
+  interactionVitaminsFood?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interactionBisphosphonates?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interactionAlcohol?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interactionMuscleRelaxant?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interactionRetinoids?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interactionCorticosteroids?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interactionXanthines?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interactionSympathomimetics?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interactionAnticholinergic?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interactionChemotherapy?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interactionAntibiotics?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interactionHormones?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interactionStatins?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interactionAntihypertensive?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interactionAntidiuretics?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interactionAntidepressant?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interactionAntidiabetic?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interactionLowBloodSugarAgents?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interactionDigoxin?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interactionAnticoagulant?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interactionNSAIDs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interactionImmunosuppressive?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interactionAntacids?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interactionUricosurics?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interactionProtectants?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interactionAntiParkinson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interactionHIVProtease?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  ironChelator?: string | null
+  interactionBloodProduct?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interactionVaccines?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interactionAnthelmintics?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interactionPDE5Inhibitors?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interferenceLabTests?: string | null
+  effectOnDriving?: string | null
+  veryCommonGIT?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryCommonBlood?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryCommonVascular?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryCommonCardiac?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryCommonMusculoskeletal?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryCommonNervousSystem?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryCommonEye?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryCommonMetabolism?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryCommonEar?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryCommonRespiratory?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryCommonSkin?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryCommonInfection?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryCommonPsychiatric?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryCommonRenal?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryCommonHepatic?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryCommonGeneral?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  commonGIT?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  commonVascular?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  commonInfections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  commonRespiratory?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  commonCardiac?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  commonBlood?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  commonSkin?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  commonEye?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  commonEar?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  commonMetabolism?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  commonGeneral?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  commonHepatobiliary?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  commonImmunity?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  commonPsychiatric?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  commonNervousSystem?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  commonRenal?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  commonMusculoskeletal?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  uncommonNervous?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  uncommonInfections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  uncommonPsychiatric?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  uncommonEye?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  uncommonRespiratory?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  uncommonSkin?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  uncommonRenal?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  uncommonHepatobiliary?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  uncommonVascular?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  uncommonGIT?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  uncommonMusculoskeletal?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  uncommonMetabolism?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  uncommonEar?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  uncommonCardiac?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  uncommonBlood?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  uncommonImmunity?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  uncommonGeneral?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  rareEar?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  rareBlood?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  rareGIT?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  rareHepatic?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  rareInfections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  rareCardiac?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  rareVascular?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  rareImmune?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  rareMetabolism?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  rareNervous?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  rareMusculoskeletal?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  rarePsychiatric?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  rareEye?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  rareRenal?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  rareSkin?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  rareRespiratory?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  rareEndocrine?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  rareGeneral?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryRareVascular?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryRareEndocrine?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryRareNervous?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryRarePsychiatric?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryRareEye?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryRareMusculoskeletal?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryRareBlood?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryRareCardiac?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryRareImmune?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryRareEar?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryRareRenal?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryRareGIT?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryRareHepatobiliary?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryRareInfections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryRareRespiratory?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryRareSkin?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryRareGeneral?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryRareMetabolism?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  unknownNervous?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  unknownMusculoskeletal?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  unknownPsychiatric?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  unknownHepatobiliary?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  unknownRenal?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  unknownSkin?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  unknownRespiratory?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  unknownImmune?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  unknownVascular?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  unknownEar?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  unknownGIT?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  unknownGeneral?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  unknownMetabolism?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  unknownEye?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  unknownBlood?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  unknownCardiac?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  unknownInfections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  unknownEndocrine?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  additiveRMM?: string | null
+  pregnancyCategory?: string | null
+  additionalMonitoring?: string | null
+  highlightedWarning?: string | null
+  version?: number
+  isActive?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  tradeNames?: Prisma.TradeNameCreateNestedManyWithoutActiveSubstanceInput
+  diseaseActiveSubstanceWarnings?: Prisma.DiseaseActiveSubstanceWarningCreateNestedManyWithoutActiveSubstanceInput
+  medicineAlternatives?: Prisma.MedicineAlternativeCreateNestedManyWithoutActiveSubstanceInput
+  alternativeTo?: Prisma.MedicineAlternativeCreateNestedManyWithoutAlternativeActiveSubstanceInput
+}
+
+export type ActiveSubstanceUncheckedCreateWithoutAdverseReactionsInput = {
+  id?: number
+  activeSubstance: string
+  concentration?: string | null
+  classification?: string | null
+  dosageForm?: string | null
+  indication?: string | null
+  adultDoseMaxPerDay?: string | null
+  adultDoseMgPerKg?: string | null
+  doseInKg?: string | null
+  pediatricDose?: string | null
+  glucoseContent?: string | null
+  lactoseContent?: string | null
+  fructoseContent?: string | null
+  preservativesInOcularProducts?: string | null
+  eliminationPathway?: string | null
+  contraindications?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  pregnancyWarning?: string | null
+  lactationWarning?: string | null
+  reproductiveWarningFemale?: string | null
+  reproductiveWarningMale?: string | null
+  specialPopulationChildren?: string | null
+  specialPopulationElderly?: string | null
+  ethnicAction?: string | null
+  hepaticWarning?: string | null
+  renalWarning?: string | null
+  medicationErrorWarning?: string | null
+  carcinogenicityMutagenicity?: string | null
+  gitWarning?: string | null
+  metabolismWarning?: string | null
+  pulmonaryWarning?: string | null
+  immuneSystemWarning?: string | null
+  infectionWarning?: string | null
+  bloodWarning?: string | null
+  vascularWarning?: string | null
+  electrolyteImbalanceWarning?: string | null
+  cardiacWarning?: string | null
+  psychiatricWarning?: string | null
+  nervousSystemWarning?: string | null
+  skinConnectiveTissueWarning?: string | null
+  musculoSkeletalWarning?: string | null
+  eyeDisordersWarning?: string | null
+  earDisordersWarning?: string | null
+  interactionVitaminsFood?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interactionBisphosphonates?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interactionAlcohol?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interactionMuscleRelaxant?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interactionRetinoids?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interactionCorticosteroids?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interactionXanthines?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interactionSympathomimetics?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interactionAnticholinergic?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interactionChemotherapy?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interactionAntibiotics?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interactionHormones?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interactionStatins?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interactionAntihypertensive?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interactionAntidiuretics?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interactionAntidepressant?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interactionAntidiabetic?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interactionLowBloodSugarAgents?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interactionDigoxin?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interactionAnticoagulant?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interactionNSAIDs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interactionImmunosuppressive?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interactionAntacids?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interactionUricosurics?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interactionProtectants?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interactionAntiParkinson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interactionHIVProtease?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  ironChelator?: string | null
+  interactionBloodProduct?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interactionVaccines?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interactionAnthelmintics?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interactionPDE5Inhibitors?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interferenceLabTests?: string | null
+  effectOnDriving?: string | null
+  veryCommonGIT?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryCommonBlood?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryCommonVascular?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryCommonCardiac?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryCommonMusculoskeletal?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryCommonNervousSystem?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryCommonEye?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryCommonMetabolism?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryCommonEar?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryCommonRespiratory?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryCommonSkin?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryCommonInfection?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryCommonPsychiatric?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryCommonRenal?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryCommonHepatic?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryCommonGeneral?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  commonGIT?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  commonVascular?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  commonInfections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  commonRespiratory?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  commonCardiac?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  commonBlood?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  commonSkin?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  commonEye?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  commonEar?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  commonMetabolism?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  commonGeneral?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  commonHepatobiliary?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  commonImmunity?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  commonPsychiatric?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  commonNervousSystem?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  commonRenal?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  commonMusculoskeletal?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  uncommonNervous?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  uncommonInfections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  uncommonPsychiatric?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  uncommonEye?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  uncommonRespiratory?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  uncommonSkin?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  uncommonRenal?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  uncommonHepatobiliary?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  uncommonVascular?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  uncommonGIT?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  uncommonMusculoskeletal?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  uncommonMetabolism?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  uncommonEar?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  uncommonCardiac?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  uncommonBlood?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  uncommonImmunity?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  uncommonGeneral?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  rareEar?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  rareBlood?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  rareGIT?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  rareHepatic?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  rareInfections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  rareCardiac?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  rareVascular?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  rareImmune?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  rareMetabolism?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  rareNervous?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  rareMusculoskeletal?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  rarePsychiatric?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  rareEye?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  rareRenal?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  rareSkin?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  rareRespiratory?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  rareEndocrine?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  rareGeneral?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryRareVascular?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryRareEndocrine?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryRareNervous?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryRarePsychiatric?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryRareEye?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryRareMusculoskeletal?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryRareBlood?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryRareCardiac?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryRareImmune?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryRareEar?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryRareRenal?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryRareGIT?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryRareHepatobiliary?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryRareInfections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryRareRespiratory?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryRareSkin?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryRareGeneral?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryRareMetabolism?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  unknownNervous?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  unknownMusculoskeletal?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  unknownPsychiatric?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  unknownHepatobiliary?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  unknownRenal?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  unknownSkin?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  unknownRespiratory?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  unknownImmune?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  unknownVascular?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  unknownEar?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  unknownGIT?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  unknownGeneral?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  unknownMetabolism?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  unknownEye?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  unknownBlood?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  unknownCardiac?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  unknownInfections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  unknownEndocrine?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  additiveRMM?: string | null
+  pregnancyCategory?: string | null
+  additionalMonitoring?: string | null
+  highlightedWarning?: string | null
+  version?: number
+  isActive?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  tradeNames?: Prisma.TradeNameUncheckedCreateNestedManyWithoutActiveSubstanceInput
+  diseaseActiveSubstanceWarnings?: Prisma.DiseaseActiveSubstanceWarningUncheckedCreateNestedManyWithoutActiveSubstanceInput
+  medicineAlternatives?: Prisma.MedicineAlternativeUncheckedCreateNestedManyWithoutActiveSubstanceInput
+  alternativeTo?: Prisma.MedicineAlternativeUncheckedCreateNestedManyWithoutAlternativeActiveSubstanceInput
+}
+
+export type ActiveSubstanceCreateOrConnectWithoutAdverseReactionsInput = {
+  where: Prisma.ActiveSubstanceWhereUniqueInput
+  create: Prisma.XOR<Prisma.ActiveSubstanceCreateWithoutAdverseReactionsInput, Prisma.ActiveSubstanceUncheckedCreateWithoutAdverseReactionsInput>
+}
+
+export type ActiveSubstanceUpsertWithoutAdverseReactionsInput = {
+  update: Prisma.XOR<Prisma.ActiveSubstanceUpdateWithoutAdverseReactionsInput, Prisma.ActiveSubstanceUncheckedUpdateWithoutAdverseReactionsInput>
+  create: Prisma.XOR<Prisma.ActiveSubstanceCreateWithoutAdverseReactionsInput, Prisma.ActiveSubstanceUncheckedCreateWithoutAdverseReactionsInput>
+  where?: Prisma.ActiveSubstanceWhereInput
+}
+
+export type ActiveSubstanceUpdateToOneWithWhereWithoutAdverseReactionsInput = {
+  where?: Prisma.ActiveSubstanceWhereInput
+  data: Prisma.XOR<Prisma.ActiveSubstanceUpdateWithoutAdverseReactionsInput, Prisma.ActiveSubstanceUncheckedUpdateWithoutAdverseReactionsInput>
+}
+
+export type ActiveSubstanceUpdateWithoutAdverseReactionsInput = {
+  activeSubstance?: Prisma.StringFieldUpdateOperationsInput | string
+  concentration?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  classification?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dosageForm?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  indication?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adultDoseMaxPerDay?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adultDoseMgPerKg?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  doseInKg?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pediatricDose?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  glucoseContent?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lactoseContent?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fructoseContent?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  preservativesInOcularProducts?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  eliminationPathway?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contraindications?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  pregnancyWarning?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lactationWarning?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reproductiveWarningFemale?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reproductiveWarningMale?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  specialPopulationChildren?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  specialPopulationElderly?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ethnicAction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hepaticWarning?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  renalWarning?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  medicationErrorWarning?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  carcinogenicityMutagenicity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gitWarning?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  metabolismWarning?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pulmonaryWarning?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  immuneSystemWarning?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  infectionWarning?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bloodWarning?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  vascularWarning?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  electrolyteImbalanceWarning?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cardiacWarning?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  psychiatricWarning?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nervousSystemWarning?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  skinConnectiveTissueWarning?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  musculoSkeletalWarning?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  eyeDisordersWarning?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  earDisordersWarning?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  interactionVitaminsFood?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interactionBisphosphonates?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interactionAlcohol?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interactionMuscleRelaxant?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interactionRetinoids?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interactionCorticosteroids?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interactionXanthines?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interactionSympathomimetics?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interactionAnticholinergic?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interactionChemotherapy?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interactionAntibiotics?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interactionHormones?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interactionStatins?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interactionAntihypertensive?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interactionAntidiuretics?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interactionAntidepressant?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interactionAntidiabetic?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interactionLowBloodSugarAgents?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interactionDigoxin?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interactionAnticoagulant?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interactionNSAIDs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interactionImmunosuppressive?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interactionAntacids?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interactionUricosurics?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interactionProtectants?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interactionAntiParkinson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interactionHIVProtease?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  ironChelator?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  interactionBloodProduct?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interactionVaccines?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interactionAnthelmintics?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interactionPDE5Inhibitors?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interferenceLabTests?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  effectOnDriving?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  veryCommonGIT?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryCommonBlood?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryCommonVascular?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryCommonCardiac?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryCommonMusculoskeletal?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryCommonNervousSystem?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryCommonEye?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryCommonMetabolism?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryCommonEar?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryCommonRespiratory?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryCommonSkin?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryCommonInfection?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryCommonPsychiatric?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryCommonRenal?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryCommonHepatic?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryCommonGeneral?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  commonGIT?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  commonVascular?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  commonInfections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  commonRespiratory?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  commonCardiac?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  commonBlood?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  commonSkin?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  commonEye?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  commonEar?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  commonMetabolism?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  commonGeneral?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  commonHepatobiliary?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  commonImmunity?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  commonPsychiatric?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  commonNervousSystem?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  commonRenal?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  commonMusculoskeletal?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  uncommonNervous?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  uncommonInfections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  uncommonPsychiatric?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  uncommonEye?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  uncommonRespiratory?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  uncommonSkin?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  uncommonRenal?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  uncommonHepatobiliary?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  uncommonVascular?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  uncommonGIT?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  uncommonMusculoskeletal?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  uncommonMetabolism?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  uncommonEar?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  uncommonCardiac?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  uncommonBlood?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  uncommonImmunity?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  uncommonGeneral?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  rareEar?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  rareBlood?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  rareGIT?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  rareHepatic?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  rareInfections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  rareCardiac?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  rareVascular?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  rareImmune?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  rareMetabolism?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  rareNervous?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  rareMusculoskeletal?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  rarePsychiatric?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  rareEye?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  rareRenal?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  rareSkin?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  rareRespiratory?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  rareEndocrine?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  rareGeneral?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryRareVascular?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryRareEndocrine?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryRareNervous?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryRarePsychiatric?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryRareEye?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryRareMusculoskeletal?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryRareBlood?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryRareCardiac?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryRareImmune?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryRareEar?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryRareRenal?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryRareGIT?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryRareHepatobiliary?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryRareInfections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryRareRespiratory?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryRareSkin?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryRareGeneral?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryRareMetabolism?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  unknownNervous?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  unknownMusculoskeletal?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  unknownPsychiatric?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  unknownHepatobiliary?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  unknownRenal?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  unknownSkin?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  unknownRespiratory?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  unknownImmune?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  unknownVascular?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  unknownEar?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  unknownGIT?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  unknownGeneral?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  unknownMetabolism?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  unknownEye?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  unknownBlood?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  unknownCardiac?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  unknownInfections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  unknownEndocrine?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  additiveRMM?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pregnancyCategory?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  additionalMonitoring?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  highlightedWarning?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  version?: Prisma.IntFieldUpdateOperationsInput | number
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  tradeNames?: Prisma.TradeNameUpdateManyWithoutActiveSubstanceNestedInput
+  diseaseActiveSubstanceWarnings?: Prisma.DiseaseActiveSubstanceWarningUpdateManyWithoutActiveSubstanceNestedInput
+  medicineAlternatives?: Prisma.MedicineAlternativeUpdateManyWithoutActiveSubstanceNestedInput
+  alternativeTo?: Prisma.MedicineAlternativeUpdateManyWithoutAlternativeActiveSubstanceNestedInput
+}
+
+export type ActiveSubstanceUncheckedUpdateWithoutAdverseReactionsInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  activeSubstance?: Prisma.StringFieldUpdateOperationsInput | string
+  concentration?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  classification?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dosageForm?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  indication?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adultDoseMaxPerDay?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adultDoseMgPerKg?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  doseInKg?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pediatricDose?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  glucoseContent?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lactoseContent?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fructoseContent?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  preservativesInOcularProducts?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  eliminationPathway?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contraindications?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  pregnancyWarning?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lactationWarning?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reproductiveWarningFemale?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reproductiveWarningMale?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  specialPopulationChildren?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  specialPopulationElderly?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ethnicAction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hepaticWarning?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  renalWarning?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  medicationErrorWarning?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  carcinogenicityMutagenicity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gitWarning?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  metabolismWarning?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pulmonaryWarning?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  immuneSystemWarning?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  infectionWarning?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bloodWarning?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  vascularWarning?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  electrolyteImbalanceWarning?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cardiacWarning?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  psychiatricWarning?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nervousSystemWarning?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  skinConnectiveTissueWarning?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  musculoSkeletalWarning?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  eyeDisordersWarning?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  earDisordersWarning?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  interactionVitaminsFood?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interactionBisphosphonates?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interactionAlcohol?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interactionMuscleRelaxant?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interactionRetinoids?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interactionCorticosteroids?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interactionXanthines?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interactionSympathomimetics?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interactionAnticholinergic?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interactionChemotherapy?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interactionAntibiotics?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interactionHormones?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interactionStatins?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interactionAntihypertensive?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interactionAntidiuretics?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interactionAntidepressant?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interactionAntidiabetic?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interactionLowBloodSugarAgents?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interactionDigoxin?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interactionAnticoagulant?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interactionNSAIDs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interactionImmunosuppressive?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interactionAntacids?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interactionUricosurics?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interactionProtectants?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interactionAntiParkinson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interactionHIVProtease?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  ironChelator?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  interactionBloodProduct?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interactionVaccines?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interactionAnthelmintics?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interactionPDE5Inhibitors?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  interferenceLabTests?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  effectOnDriving?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  veryCommonGIT?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryCommonBlood?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryCommonVascular?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryCommonCardiac?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryCommonMusculoskeletal?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryCommonNervousSystem?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryCommonEye?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryCommonMetabolism?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryCommonEar?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryCommonRespiratory?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryCommonSkin?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryCommonInfection?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryCommonPsychiatric?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryCommonRenal?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryCommonHepatic?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryCommonGeneral?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  commonGIT?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  commonVascular?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  commonInfections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  commonRespiratory?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  commonCardiac?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  commonBlood?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  commonSkin?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  commonEye?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  commonEar?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  commonMetabolism?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  commonGeneral?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  commonHepatobiliary?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  commonImmunity?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  commonPsychiatric?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  commonNervousSystem?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  commonRenal?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  commonMusculoskeletal?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  uncommonNervous?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  uncommonInfections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  uncommonPsychiatric?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  uncommonEye?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  uncommonRespiratory?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  uncommonSkin?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  uncommonRenal?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  uncommonHepatobiliary?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  uncommonVascular?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  uncommonGIT?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  uncommonMusculoskeletal?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  uncommonMetabolism?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  uncommonEar?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  uncommonCardiac?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  uncommonBlood?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  uncommonImmunity?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  uncommonGeneral?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  rareEar?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  rareBlood?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  rareGIT?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  rareHepatic?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  rareInfections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  rareCardiac?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  rareVascular?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  rareImmune?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  rareMetabolism?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  rareNervous?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  rareMusculoskeletal?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  rarePsychiatric?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  rareEye?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  rareRenal?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  rareSkin?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  rareRespiratory?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  rareEndocrine?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  rareGeneral?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryRareVascular?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryRareEndocrine?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryRareNervous?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryRarePsychiatric?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryRareEye?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryRareMusculoskeletal?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryRareBlood?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryRareCardiac?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryRareImmune?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryRareEar?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryRareRenal?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryRareGIT?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryRareHepatobiliary?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryRareInfections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryRareRespiratory?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryRareSkin?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryRareGeneral?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  veryRareMetabolism?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  unknownNervous?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  unknownMusculoskeletal?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  unknownPsychiatric?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  unknownHepatobiliary?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  unknownRenal?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  unknownSkin?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  unknownRespiratory?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  unknownImmune?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  unknownVascular?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  unknownEar?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  unknownGIT?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  unknownGeneral?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  unknownMetabolism?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  unknownEye?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  unknownBlood?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  unknownCardiac?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  unknownInfections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  unknownEndocrine?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  additiveRMM?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pregnancyCategory?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  additionalMonitoring?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  highlightedWarning?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  version?: Prisma.IntFieldUpdateOperationsInput | number
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  tradeNames?: Prisma.TradeNameUncheckedUpdateManyWithoutActiveSubstanceNestedInput
+  diseaseActiveSubstanceWarnings?: Prisma.DiseaseActiveSubstanceWarningUncheckedUpdateManyWithoutActiveSubstanceNestedInput
+  medicineAlternatives?: Prisma.MedicineAlternativeUncheckedUpdateManyWithoutActiveSubstanceNestedInput
+  alternativeTo?: Prisma.MedicineAlternativeUncheckedUpdateManyWithoutAlternativeActiveSubstanceNestedInput
 }
 
 
@@ -6859,6 +7701,7 @@ export type ActiveSubstanceCountOutputType = {
   diseaseActiveSubstanceWarnings: number
   medicineAlternatives: number
   alternativeTo: number
+  adverseReactions: number
 }
 
 export type ActiveSubstanceCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -6866,6 +7709,7 @@ export type ActiveSubstanceCountOutputTypeSelect<ExtArgs extends runtime.Types.E
   diseaseActiveSubstanceWarnings?: boolean | ActiveSubstanceCountOutputTypeCountDiseaseActiveSubstanceWarningsArgs
   medicineAlternatives?: boolean | ActiveSubstanceCountOutputTypeCountMedicineAlternativesArgs
   alternativeTo?: boolean | ActiveSubstanceCountOutputTypeCountAlternativeToArgs
+  adverseReactions?: boolean | ActiveSubstanceCountOutputTypeCountAdverseReactionsArgs
 }
 
 /**
@@ -6904,6 +7748,13 @@ export type ActiveSubstanceCountOutputTypeCountMedicineAlternativesArgs<ExtArgs 
  */
 export type ActiveSubstanceCountOutputTypeCountAlternativeToArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.MedicineAlternativeWhereInput
+}
+
+/**
+ * ActiveSubstanceCountOutputType without action
+ */
+export type ActiveSubstanceCountOutputTypeCountAdverseReactionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.AdverseDrugReactionWhereInput
 }
 
 
@@ -7101,6 +7952,7 @@ export type ActiveSubstanceSelect<ExtArgs extends runtime.Types.Extensions.Inter
   diseaseActiveSubstanceWarnings?: boolean | Prisma.ActiveSubstance$diseaseActiveSubstanceWarningsArgs<ExtArgs>
   medicineAlternatives?: boolean | Prisma.ActiveSubstance$medicineAlternativesArgs<ExtArgs>
   alternativeTo?: boolean | Prisma.ActiveSubstance$alternativeToArgs<ExtArgs>
+  adverseReactions?: boolean | Prisma.ActiveSubstance$adverseReactionsArgs<ExtArgs>
   _count?: boolean | Prisma.ActiveSubstanceCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["activeSubstance"]>
 
@@ -7686,6 +8538,7 @@ export type ActiveSubstanceInclude<ExtArgs extends runtime.Types.Extensions.Inte
   diseaseActiveSubstanceWarnings?: boolean | Prisma.ActiveSubstance$diseaseActiveSubstanceWarningsArgs<ExtArgs>
   medicineAlternatives?: boolean | Prisma.ActiveSubstance$medicineAlternativesArgs<ExtArgs>
   alternativeTo?: boolean | Prisma.ActiveSubstance$alternativeToArgs<ExtArgs>
+  adverseReactions?: boolean | Prisma.ActiveSubstance$adverseReactionsArgs<ExtArgs>
   _count?: boolean | Prisma.ActiveSubstanceCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type ActiveSubstanceIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -7698,6 +8551,7 @@ export type $ActiveSubstancePayload<ExtArgs extends runtime.Types.Extensions.Int
     diseaseActiveSubstanceWarnings: Prisma.$DiseaseActiveSubstanceWarningPayload<ExtArgs>[]
     medicineAlternatives: Prisma.$MedicineAlternativePayload<ExtArgs>[]
     alternativeTo: Prisma.$MedicineAlternativePayload<ExtArgs>[]
+    adverseReactions: Prisma.$AdverseDrugReactionPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: number
@@ -8287,6 +9141,7 @@ export interface Prisma__ActiveSubstanceClient<T, Null = never, ExtArgs extends 
   diseaseActiveSubstanceWarnings<T extends Prisma.ActiveSubstance$diseaseActiveSubstanceWarningsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ActiveSubstance$diseaseActiveSubstanceWarningsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DiseaseActiveSubstanceWarningPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   medicineAlternatives<T extends Prisma.ActiveSubstance$medicineAlternativesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ActiveSubstance$medicineAlternativesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MedicineAlternativePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   alternativeTo<T extends Prisma.ActiveSubstance$alternativeToArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ActiveSubstance$alternativeToArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MedicineAlternativePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  adverseReactions<T extends Prisma.ActiveSubstance$adverseReactionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ActiveSubstance$adverseReactionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AdverseDrugReactionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -8986,6 +9841,30 @@ export type ActiveSubstance$alternativeToArgs<ExtArgs extends runtime.Types.Exte
   take?: number
   skip?: number
   distinct?: Prisma.MedicineAlternativeScalarFieldEnum | Prisma.MedicineAlternativeScalarFieldEnum[]
+}
+
+/**
+ * ActiveSubstance.adverseReactions
+ */
+export type ActiveSubstance$adverseReactionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the AdverseDrugReaction
+   */
+  select?: Prisma.AdverseDrugReactionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the AdverseDrugReaction
+   */
+  omit?: Prisma.AdverseDrugReactionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.AdverseDrugReactionInclude<ExtArgs> | null
+  where?: Prisma.AdverseDrugReactionWhereInput
+  orderBy?: Prisma.AdverseDrugReactionOrderByWithRelationInput | Prisma.AdverseDrugReactionOrderByWithRelationInput[]
+  cursor?: Prisma.AdverseDrugReactionWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.AdverseDrugReactionScalarFieldEnum | Prisma.AdverseDrugReactionScalarFieldEnum[]
 }
 
 /**

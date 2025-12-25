@@ -1,0 +1,2161 @@
+import type * as runtime from "@prisma/client/runtime/client";
+import type * as $Enums from "../enums.js";
+import type * as Prisma from "../internal/prismaNamespace.js";
+/**
+ * Model AdverseDrugReaction
+ *
+ */
+export type AdverseDrugReactionModel = runtime.Types.Result.DefaultSelection<Prisma.$AdverseDrugReactionPayload>;
+export type AggregateAdverseDrugReaction = {
+    _count: AdverseDrugReactionCountAggregateOutputType | null;
+    _avg: AdverseDrugReactionAvgAggregateOutputType | null;
+    _sum: AdverseDrugReactionSumAggregateOutputType | null;
+    _min: AdverseDrugReactionMinAggregateOutputType | null;
+    _max: AdverseDrugReactionMaxAggregateOutputType | null;
+};
+export type AdverseDrugReactionAvgAggregateOutputType = {
+    id: number | null;
+    patientId: number | null;
+    tradeNameId: number | null;
+    companyId: number | null;
+    activeSubstanceId: number | null;
+};
+export type AdverseDrugReactionSumAggregateOutputType = {
+    id: number | null;
+    patientId: number | null;
+    tradeNameId: number | null;
+    companyId: number | null;
+    activeSubstanceId: number | null;
+};
+export type AdverseDrugReactionMinAggregateOutputType = {
+    id: number | null;
+    patientId: number | null;
+    tradeNameId: number | null;
+    companyId: number | null;
+    activeSubstanceId: number | null;
+    severity: $Enums.ADRSeverity | null;
+    reaction: string | null;
+    startDate: Date | null;
+    endDate: Date | null;
+    isAnonymous: boolean | null;
+    reportedToEDA: boolean | null;
+    edaReferenceNum: string | null;
+    status: string | null;
+    adminNotes: string | null;
+    createdAt: Date | null;
+    updatedAt: Date | null;
+};
+export type AdverseDrugReactionMaxAggregateOutputType = {
+    id: number | null;
+    patientId: number | null;
+    tradeNameId: number | null;
+    companyId: number | null;
+    activeSubstanceId: number | null;
+    severity: $Enums.ADRSeverity | null;
+    reaction: string | null;
+    startDate: Date | null;
+    endDate: Date | null;
+    isAnonymous: boolean | null;
+    reportedToEDA: boolean | null;
+    edaReferenceNum: string | null;
+    status: string | null;
+    adminNotes: string | null;
+    createdAt: Date | null;
+    updatedAt: Date | null;
+};
+export type AdverseDrugReactionCountAggregateOutputType = {
+    id: number;
+    patientId: number;
+    tradeNameId: number;
+    companyId: number;
+    activeSubstanceId: number;
+    severity: number;
+    reaction: number;
+    startDate: number;
+    endDate: number;
+    isAnonymous: number;
+    reportedToEDA: number;
+    edaReferenceNum: number;
+    status: number;
+    adminNotes: number;
+    createdAt: number;
+    updatedAt: number;
+    _all: number;
+};
+export type AdverseDrugReactionAvgAggregateInputType = {
+    id?: true;
+    patientId?: true;
+    tradeNameId?: true;
+    companyId?: true;
+    activeSubstanceId?: true;
+};
+export type AdverseDrugReactionSumAggregateInputType = {
+    id?: true;
+    patientId?: true;
+    tradeNameId?: true;
+    companyId?: true;
+    activeSubstanceId?: true;
+};
+export type AdverseDrugReactionMinAggregateInputType = {
+    id?: true;
+    patientId?: true;
+    tradeNameId?: true;
+    companyId?: true;
+    activeSubstanceId?: true;
+    severity?: true;
+    reaction?: true;
+    startDate?: true;
+    endDate?: true;
+    isAnonymous?: true;
+    reportedToEDA?: true;
+    edaReferenceNum?: true;
+    status?: true;
+    adminNotes?: true;
+    createdAt?: true;
+    updatedAt?: true;
+};
+export type AdverseDrugReactionMaxAggregateInputType = {
+    id?: true;
+    patientId?: true;
+    tradeNameId?: true;
+    companyId?: true;
+    activeSubstanceId?: true;
+    severity?: true;
+    reaction?: true;
+    startDate?: true;
+    endDate?: true;
+    isAnonymous?: true;
+    reportedToEDA?: true;
+    edaReferenceNum?: true;
+    status?: true;
+    adminNotes?: true;
+    createdAt?: true;
+    updatedAt?: true;
+};
+export type AdverseDrugReactionCountAggregateInputType = {
+    id?: true;
+    patientId?: true;
+    tradeNameId?: true;
+    companyId?: true;
+    activeSubstanceId?: true;
+    severity?: true;
+    reaction?: true;
+    startDate?: true;
+    endDate?: true;
+    isAnonymous?: true;
+    reportedToEDA?: true;
+    edaReferenceNum?: true;
+    status?: true;
+    adminNotes?: true;
+    createdAt?: true;
+    updatedAt?: true;
+    _all?: true;
+};
+export type AdverseDrugReactionAggregateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Filter which AdverseDrugReaction to aggregate.
+     */
+    where?: Prisma.AdverseDrugReactionWhereInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of AdverseDrugReactions to fetch.
+     */
+    orderBy?: Prisma.AdverseDrugReactionOrderByWithRelationInput | Prisma.AdverseDrugReactionOrderByWithRelationInput[];
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the start position
+     */
+    cursor?: Prisma.AdverseDrugReactionWhereUniqueInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` AdverseDrugReactions from the position of the cursor.
+     */
+    take?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` AdverseDrugReactions.
+     */
+    skip?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Count returned AdverseDrugReactions
+    **/
+    _count?: true | AdverseDrugReactionCountAggregateInputType;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Select which fields to average
+    **/
+    _avg?: AdverseDrugReactionAvgAggregateInputType;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Select which fields to sum
+    **/
+    _sum?: AdverseDrugReactionSumAggregateInputType;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Select which fields to find the minimum value
+    **/
+    _min?: AdverseDrugReactionMinAggregateInputType;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Select which fields to find the maximum value
+    **/
+    _max?: AdverseDrugReactionMaxAggregateInputType;
+};
+export type GetAdverseDrugReactionAggregateType<T extends AdverseDrugReactionAggregateArgs> = {
+    [P in keyof T & keyof AggregateAdverseDrugReaction]: P extends '_count' | 'count' ? T[P] extends true ? number : Prisma.GetScalarType<T[P], AggregateAdverseDrugReaction[P]> : Prisma.GetScalarType<T[P], AggregateAdverseDrugReaction[P]>;
+};
+export type AdverseDrugReactionGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    where?: Prisma.AdverseDrugReactionWhereInput;
+    orderBy?: Prisma.AdverseDrugReactionOrderByWithAggregationInput | Prisma.AdverseDrugReactionOrderByWithAggregationInput[];
+    by: Prisma.AdverseDrugReactionScalarFieldEnum[] | Prisma.AdverseDrugReactionScalarFieldEnum;
+    having?: Prisma.AdverseDrugReactionScalarWhereWithAggregatesInput;
+    take?: number;
+    skip?: number;
+    _count?: AdverseDrugReactionCountAggregateInputType | true;
+    _avg?: AdverseDrugReactionAvgAggregateInputType;
+    _sum?: AdverseDrugReactionSumAggregateInputType;
+    _min?: AdverseDrugReactionMinAggregateInputType;
+    _max?: AdverseDrugReactionMaxAggregateInputType;
+};
+export type AdverseDrugReactionGroupByOutputType = {
+    id: number;
+    patientId: number | null;
+    tradeNameId: number;
+    companyId: number;
+    activeSubstanceId: number | null;
+    severity: $Enums.ADRSeverity;
+    reaction: string;
+    startDate: Date;
+    endDate: Date | null;
+    isAnonymous: boolean;
+    reportedToEDA: boolean;
+    edaReferenceNum: string | null;
+    status: string;
+    adminNotes: string | null;
+    createdAt: Date;
+    updatedAt: Date;
+    _count: AdverseDrugReactionCountAggregateOutputType | null;
+    _avg: AdverseDrugReactionAvgAggregateOutputType | null;
+    _sum: AdverseDrugReactionSumAggregateOutputType | null;
+    _min: AdverseDrugReactionMinAggregateOutputType | null;
+    _max: AdverseDrugReactionMaxAggregateOutputType | null;
+};
+type GetAdverseDrugReactionGroupByPayload<T extends AdverseDrugReactionGroupByArgs> = Prisma.PrismaPromise<Array<Prisma.PickEnumerable<AdverseDrugReactionGroupByOutputType, T['by']> & {
+    [P in ((keyof T) & (keyof AdverseDrugReactionGroupByOutputType))]: P extends '_count' ? T[P] extends boolean ? number : Prisma.GetScalarType<T[P], AdverseDrugReactionGroupByOutputType[P]> : Prisma.GetScalarType<T[P], AdverseDrugReactionGroupByOutputType[P]>;
+}>>;
+export type AdverseDrugReactionWhereInput = {
+    AND?: Prisma.AdverseDrugReactionWhereInput | Prisma.AdverseDrugReactionWhereInput[];
+    OR?: Prisma.AdverseDrugReactionWhereInput[];
+    NOT?: Prisma.AdverseDrugReactionWhereInput | Prisma.AdverseDrugReactionWhereInput[];
+    id?: Prisma.IntFilter<"AdverseDrugReaction"> | number;
+    patientId?: Prisma.IntNullableFilter<"AdverseDrugReaction"> | number | null;
+    tradeNameId?: Prisma.IntFilter<"AdverseDrugReaction"> | number;
+    companyId?: Prisma.IntFilter<"AdverseDrugReaction"> | number;
+    activeSubstanceId?: Prisma.IntNullableFilter<"AdverseDrugReaction"> | number | null;
+    severity?: Prisma.EnumADRSeverityFilter<"AdverseDrugReaction"> | $Enums.ADRSeverity;
+    reaction?: Prisma.StringFilter<"AdverseDrugReaction"> | string;
+    startDate?: Prisma.DateTimeFilter<"AdverseDrugReaction"> | Date | string;
+    endDate?: Prisma.DateTimeNullableFilter<"AdverseDrugReaction"> | Date | string | null;
+    isAnonymous?: Prisma.BoolFilter<"AdverseDrugReaction"> | boolean;
+    reportedToEDA?: Prisma.BoolFilter<"AdverseDrugReaction"> | boolean;
+    edaReferenceNum?: Prisma.StringNullableFilter<"AdverseDrugReaction"> | string | null;
+    status?: Prisma.StringFilter<"AdverseDrugReaction"> | string;
+    adminNotes?: Prisma.StringNullableFilter<"AdverseDrugReaction"> | string | null;
+    createdAt?: Prisma.DateTimeFilter<"AdverseDrugReaction"> | Date | string;
+    updatedAt?: Prisma.DateTimeFilter<"AdverseDrugReaction"> | Date | string;
+    patient?: Prisma.XOR<Prisma.PatientNullableScalarRelationFilter, Prisma.PatientWhereInput> | null;
+    tradeName?: Prisma.XOR<Prisma.TradeNameScalarRelationFilter, Prisma.TradeNameWhereInput>;
+    company?: Prisma.XOR<Prisma.CompanyScalarRelationFilter, Prisma.CompanyWhereInput>;
+    activeSubstance?: Prisma.XOR<Prisma.ActiveSubstanceNullableScalarRelationFilter, Prisma.ActiveSubstanceWhereInput> | null;
+};
+export type AdverseDrugReactionOrderByWithRelationInput = {
+    id?: Prisma.SortOrder;
+    patientId?: Prisma.SortOrderInput | Prisma.SortOrder;
+    tradeNameId?: Prisma.SortOrder;
+    companyId?: Prisma.SortOrder;
+    activeSubstanceId?: Prisma.SortOrderInput | Prisma.SortOrder;
+    severity?: Prisma.SortOrder;
+    reaction?: Prisma.SortOrder;
+    startDate?: Prisma.SortOrder;
+    endDate?: Prisma.SortOrderInput | Prisma.SortOrder;
+    isAnonymous?: Prisma.SortOrder;
+    reportedToEDA?: Prisma.SortOrder;
+    edaReferenceNum?: Prisma.SortOrderInput | Prisma.SortOrder;
+    status?: Prisma.SortOrder;
+    adminNotes?: Prisma.SortOrderInput | Prisma.SortOrder;
+    createdAt?: Prisma.SortOrder;
+    updatedAt?: Prisma.SortOrder;
+    patient?: Prisma.PatientOrderByWithRelationInput;
+    tradeName?: Prisma.TradeNameOrderByWithRelationInput;
+    company?: Prisma.CompanyOrderByWithRelationInput;
+    activeSubstance?: Prisma.ActiveSubstanceOrderByWithRelationInput;
+};
+export type AdverseDrugReactionWhereUniqueInput = Prisma.AtLeast<{
+    id?: number;
+    AND?: Prisma.AdverseDrugReactionWhereInput | Prisma.AdverseDrugReactionWhereInput[];
+    OR?: Prisma.AdverseDrugReactionWhereInput[];
+    NOT?: Prisma.AdverseDrugReactionWhereInput | Prisma.AdverseDrugReactionWhereInput[];
+    patientId?: Prisma.IntNullableFilter<"AdverseDrugReaction"> | number | null;
+    tradeNameId?: Prisma.IntFilter<"AdverseDrugReaction"> | number;
+    companyId?: Prisma.IntFilter<"AdverseDrugReaction"> | number;
+    activeSubstanceId?: Prisma.IntNullableFilter<"AdverseDrugReaction"> | number | null;
+    severity?: Prisma.EnumADRSeverityFilter<"AdverseDrugReaction"> | $Enums.ADRSeverity;
+    reaction?: Prisma.StringFilter<"AdverseDrugReaction"> | string;
+    startDate?: Prisma.DateTimeFilter<"AdverseDrugReaction"> | Date | string;
+    endDate?: Prisma.DateTimeNullableFilter<"AdverseDrugReaction"> | Date | string | null;
+    isAnonymous?: Prisma.BoolFilter<"AdverseDrugReaction"> | boolean;
+    reportedToEDA?: Prisma.BoolFilter<"AdverseDrugReaction"> | boolean;
+    edaReferenceNum?: Prisma.StringNullableFilter<"AdverseDrugReaction"> | string | null;
+    status?: Prisma.StringFilter<"AdverseDrugReaction"> | string;
+    adminNotes?: Prisma.StringNullableFilter<"AdverseDrugReaction"> | string | null;
+    createdAt?: Prisma.DateTimeFilter<"AdverseDrugReaction"> | Date | string;
+    updatedAt?: Prisma.DateTimeFilter<"AdverseDrugReaction"> | Date | string;
+    patient?: Prisma.XOR<Prisma.PatientNullableScalarRelationFilter, Prisma.PatientWhereInput> | null;
+    tradeName?: Prisma.XOR<Prisma.TradeNameScalarRelationFilter, Prisma.TradeNameWhereInput>;
+    company?: Prisma.XOR<Prisma.CompanyScalarRelationFilter, Prisma.CompanyWhereInput>;
+    activeSubstance?: Prisma.XOR<Prisma.ActiveSubstanceNullableScalarRelationFilter, Prisma.ActiveSubstanceWhereInput> | null;
+}, "id">;
+export type AdverseDrugReactionOrderByWithAggregationInput = {
+    id?: Prisma.SortOrder;
+    patientId?: Prisma.SortOrderInput | Prisma.SortOrder;
+    tradeNameId?: Prisma.SortOrder;
+    companyId?: Prisma.SortOrder;
+    activeSubstanceId?: Prisma.SortOrderInput | Prisma.SortOrder;
+    severity?: Prisma.SortOrder;
+    reaction?: Prisma.SortOrder;
+    startDate?: Prisma.SortOrder;
+    endDate?: Prisma.SortOrderInput | Prisma.SortOrder;
+    isAnonymous?: Prisma.SortOrder;
+    reportedToEDA?: Prisma.SortOrder;
+    edaReferenceNum?: Prisma.SortOrderInput | Prisma.SortOrder;
+    status?: Prisma.SortOrder;
+    adminNotes?: Prisma.SortOrderInput | Prisma.SortOrder;
+    createdAt?: Prisma.SortOrder;
+    updatedAt?: Prisma.SortOrder;
+    _count?: Prisma.AdverseDrugReactionCountOrderByAggregateInput;
+    _avg?: Prisma.AdverseDrugReactionAvgOrderByAggregateInput;
+    _max?: Prisma.AdverseDrugReactionMaxOrderByAggregateInput;
+    _min?: Prisma.AdverseDrugReactionMinOrderByAggregateInput;
+    _sum?: Prisma.AdverseDrugReactionSumOrderByAggregateInput;
+};
+export type AdverseDrugReactionScalarWhereWithAggregatesInput = {
+    AND?: Prisma.AdverseDrugReactionScalarWhereWithAggregatesInput | Prisma.AdverseDrugReactionScalarWhereWithAggregatesInput[];
+    OR?: Prisma.AdverseDrugReactionScalarWhereWithAggregatesInput[];
+    NOT?: Prisma.AdverseDrugReactionScalarWhereWithAggregatesInput | Prisma.AdverseDrugReactionScalarWhereWithAggregatesInput[];
+    id?: Prisma.IntWithAggregatesFilter<"AdverseDrugReaction"> | number;
+    patientId?: Prisma.IntNullableWithAggregatesFilter<"AdverseDrugReaction"> | number | null;
+    tradeNameId?: Prisma.IntWithAggregatesFilter<"AdverseDrugReaction"> | number;
+    companyId?: Prisma.IntWithAggregatesFilter<"AdverseDrugReaction"> | number;
+    activeSubstanceId?: Prisma.IntNullableWithAggregatesFilter<"AdverseDrugReaction"> | number | null;
+    severity?: Prisma.EnumADRSeverityWithAggregatesFilter<"AdverseDrugReaction"> | $Enums.ADRSeverity;
+    reaction?: Prisma.StringWithAggregatesFilter<"AdverseDrugReaction"> | string;
+    startDate?: Prisma.DateTimeWithAggregatesFilter<"AdverseDrugReaction"> | Date | string;
+    endDate?: Prisma.DateTimeNullableWithAggregatesFilter<"AdverseDrugReaction"> | Date | string | null;
+    isAnonymous?: Prisma.BoolWithAggregatesFilter<"AdverseDrugReaction"> | boolean;
+    reportedToEDA?: Prisma.BoolWithAggregatesFilter<"AdverseDrugReaction"> | boolean;
+    edaReferenceNum?: Prisma.StringNullableWithAggregatesFilter<"AdverseDrugReaction"> | string | null;
+    status?: Prisma.StringWithAggregatesFilter<"AdverseDrugReaction"> | string;
+    adminNotes?: Prisma.StringNullableWithAggregatesFilter<"AdverseDrugReaction"> | string | null;
+    createdAt?: Prisma.DateTimeWithAggregatesFilter<"AdverseDrugReaction"> | Date | string;
+    updatedAt?: Prisma.DateTimeWithAggregatesFilter<"AdverseDrugReaction"> | Date | string;
+};
+export type AdverseDrugReactionCreateInput = {
+    severity: $Enums.ADRSeverity;
+    reaction: string;
+    startDate: Date | string;
+    endDate?: Date | string | null;
+    isAnonymous?: boolean;
+    reportedToEDA?: boolean;
+    edaReferenceNum?: string | null;
+    status?: string;
+    adminNotes?: string | null;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+    patient?: Prisma.PatientCreateNestedOneWithoutAdverseReactionsInput;
+    tradeName: Prisma.TradeNameCreateNestedOneWithoutAdverseReactionsInput;
+    company: Prisma.CompanyCreateNestedOneWithoutAdverseReactionsInput;
+    activeSubstance?: Prisma.ActiveSubstanceCreateNestedOneWithoutAdverseReactionsInput;
+};
+export type AdverseDrugReactionUncheckedCreateInput = {
+    id?: number;
+    patientId?: number | null;
+    tradeNameId: number;
+    companyId: number;
+    activeSubstanceId?: number | null;
+    severity: $Enums.ADRSeverity;
+    reaction: string;
+    startDate: Date | string;
+    endDate?: Date | string | null;
+    isAnonymous?: boolean;
+    reportedToEDA?: boolean;
+    edaReferenceNum?: string | null;
+    status?: string;
+    adminNotes?: string | null;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+};
+export type AdverseDrugReactionUpdateInput = {
+    severity?: Prisma.EnumADRSeverityFieldUpdateOperationsInput | $Enums.ADRSeverity;
+    reaction?: Prisma.StringFieldUpdateOperationsInput | string;
+    startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    isAnonymous?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    reportedToEDA?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    edaReferenceNum?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    status?: Prisma.StringFieldUpdateOperationsInput | string;
+    adminNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    patient?: Prisma.PatientUpdateOneWithoutAdverseReactionsNestedInput;
+    tradeName?: Prisma.TradeNameUpdateOneRequiredWithoutAdverseReactionsNestedInput;
+    company?: Prisma.CompanyUpdateOneRequiredWithoutAdverseReactionsNestedInput;
+    activeSubstance?: Prisma.ActiveSubstanceUpdateOneWithoutAdverseReactionsNestedInput;
+};
+export type AdverseDrugReactionUncheckedUpdateInput = {
+    id?: Prisma.IntFieldUpdateOperationsInput | number;
+    patientId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
+    tradeNameId?: Prisma.IntFieldUpdateOperationsInput | number;
+    companyId?: Prisma.IntFieldUpdateOperationsInput | number;
+    activeSubstanceId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
+    severity?: Prisma.EnumADRSeverityFieldUpdateOperationsInput | $Enums.ADRSeverity;
+    reaction?: Prisma.StringFieldUpdateOperationsInput | string;
+    startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    isAnonymous?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    reportedToEDA?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    edaReferenceNum?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    status?: Prisma.StringFieldUpdateOperationsInput | string;
+    adminNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+};
+export type AdverseDrugReactionCreateManyInput = {
+    id?: number;
+    patientId?: number | null;
+    tradeNameId: number;
+    companyId: number;
+    activeSubstanceId?: number | null;
+    severity: $Enums.ADRSeverity;
+    reaction: string;
+    startDate: Date | string;
+    endDate?: Date | string | null;
+    isAnonymous?: boolean;
+    reportedToEDA?: boolean;
+    edaReferenceNum?: string | null;
+    status?: string;
+    adminNotes?: string | null;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+};
+export type AdverseDrugReactionUpdateManyMutationInput = {
+    severity?: Prisma.EnumADRSeverityFieldUpdateOperationsInput | $Enums.ADRSeverity;
+    reaction?: Prisma.StringFieldUpdateOperationsInput | string;
+    startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    isAnonymous?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    reportedToEDA?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    edaReferenceNum?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    status?: Prisma.StringFieldUpdateOperationsInput | string;
+    adminNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+};
+export type AdverseDrugReactionUncheckedUpdateManyInput = {
+    id?: Prisma.IntFieldUpdateOperationsInput | number;
+    patientId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
+    tradeNameId?: Prisma.IntFieldUpdateOperationsInput | number;
+    companyId?: Prisma.IntFieldUpdateOperationsInput | number;
+    activeSubstanceId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
+    severity?: Prisma.EnumADRSeverityFieldUpdateOperationsInput | $Enums.ADRSeverity;
+    reaction?: Prisma.StringFieldUpdateOperationsInput | string;
+    startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    isAnonymous?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    reportedToEDA?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    edaReferenceNum?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    status?: Prisma.StringFieldUpdateOperationsInput | string;
+    adminNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+};
+export type AdverseDrugReactionListRelationFilter = {
+    every?: Prisma.AdverseDrugReactionWhereInput;
+    some?: Prisma.AdverseDrugReactionWhereInput;
+    none?: Prisma.AdverseDrugReactionWhereInput;
+};
+export type AdverseDrugReactionOrderByRelationAggregateInput = {
+    _count?: Prisma.SortOrder;
+};
+export type AdverseDrugReactionCountOrderByAggregateInput = {
+    id?: Prisma.SortOrder;
+    patientId?: Prisma.SortOrder;
+    tradeNameId?: Prisma.SortOrder;
+    companyId?: Prisma.SortOrder;
+    activeSubstanceId?: Prisma.SortOrder;
+    severity?: Prisma.SortOrder;
+    reaction?: Prisma.SortOrder;
+    startDate?: Prisma.SortOrder;
+    endDate?: Prisma.SortOrder;
+    isAnonymous?: Prisma.SortOrder;
+    reportedToEDA?: Prisma.SortOrder;
+    edaReferenceNum?: Prisma.SortOrder;
+    status?: Prisma.SortOrder;
+    adminNotes?: Prisma.SortOrder;
+    createdAt?: Prisma.SortOrder;
+    updatedAt?: Prisma.SortOrder;
+};
+export type AdverseDrugReactionAvgOrderByAggregateInput = {
+    id?: Prisma.SortOrder;
+    patientId?: Prisma.SortOrder;
+    tradeNameId?: Prisma.SortOrder;
+    companyId?: Prisma.SortOrder;
+    activeSubstanceId?: Prisma.SortOrder;
+};
+export type AdverseDrugReactionMaxOrderByAggregateInput = {
+    id?: Prisma.SortOrder;
+    patientId?: Prisma.SortOrder;
+    tradeNameId?: Prisma.SortOrder;
+    companyId?: Prisma.SortOrder;
+    activeSubstanceId?: Prisma.SortOrder;
+    severity?: Prisma.SortOrder;
+    reaction?: Prisma.SortOrder;
+    startDate?: Prisma.SortOrder;
+    endDate?: Prisma.SortOrder;
+    isAnonymous?: Prisma.SortOrder;
+    reportedToEDA?: Prisma.SortOrder;
+    edaReferenceNum?: Prisma.SortOrder;
+    status?: Prisma.SortOrder;
+    adminNotes?: Prisma.SortOrder;
+    createdAt?: Prisma.SortOrder;
+    updatedAt?: Prisma.SortOrder;
+};
+export type AdverseDrugReactionMinOrderByAggregateInput = {
+    id?: Prisma.SortOrder;
+    patientId?: Prisma.SortOrder;
+    tradeNameId?: Prisma.SortOrder;
+    companyId?: Prisma.SortOrder;
+    activeSubstanceId?: Prisma.SortOrder;
+    severity?: Prisma.SortOrder;
+    reaction?: Prisma.SortOrder;
+    startDate?: Prisma.SortOrder;
+    endDate?: Prisma.SortOrder;
+    isAnonymous?: Prisma.SortOrder;
+    reportedToEDA?: Prisma.SortOrder;
+    edaReferenceNum?: Prisma.SortOrder;
+    status?: Prisma.SortOrder;
+    adminNotes?: Prisma.SortOrder;
+    createdAt?: Prisma.SortOrder;
+    updatedAt?: Prisma.SortOrder;
+};
+export type AdverseDrugReactionSumOrderByAggregateInput = {
+    id?: Prisma.SortOrder;
+    patientId?: Prisma.SortOrder;
+    tradeNameId?: Prisma.SortOrder;
+    companyId?: Prisma.SortOrder;
+    activeSubstanceId?: Prisma.SortOrder;
+};
+export type AdverseDrugReactionCreateNestedManyWithoutPatientInput = {
+    create?: Prisma.XOR<Prisma.AdverseDrugReactionCreateWithoutPatientInput, Prisma.AdverseDrugReactionUncheckedCreateWithoutPatientInput> | Prisma.AdverseDrugReactionCreateWithoutPatientInput[] | Prisma.AdverseDrugReactionUncheckedCreateWithoutPatientInput[];
+    connectOrCreate?: Prisma.AdverseDrugReactionCreateOrConnectWithoutPatientInput | Prisma.AdverseDrugReactionCreateOrConnectWithoutPatientInput[];
+    createMany?: Prisma.AdverseDrugReactionCreateManyPatientInputEnvelope;
+    connect?: Prisma.AdverseDrugReactionWhereUniqueInput | Prisma.AdverseDrugReactionWhereUniqueInput[];
+};
+export type AdverseDrugReactionUncheckedCreateNestedManyWithoutPatientInput = {
+    create?: Prisma.XOR<Prisma.AdverseDrugReactionCreateWithoutPatientInput, Prisma.AdverseDrugReactionUncheckedCreateWithoutPatientInput> | Prisma.AdverseDrugReactionCreateWithoutPatientInput[] | Prisma.AdverseDrugReactionUncheckedCreateWithoutPatientInput[];
+    connectOrCreate?: Prisma.AdverseDrugReactionCreateOrConnectWithoutPatientInput | Prisma.AdverseDrugReactionCreateOrConnectWithoutPatientInput[];
+    createMany?: Prisma.AdverseDrugReactionCreateManyPatientInputEnvelope;
+    connect?: Prisma.AdverseDrugReactionWhereUniqueInput | Prisma.AdverseDrugReactionWhereUniqueInput[];
+};
+export type AdverseDrugReactionUpdateManyWithoutPatientNestedInput = {
+    create?: Prisma.XOR<Prisma.AdverseDrugReactionCreateWithoutPatientInput, Prisma.AdverseDrugReactionUncheckedCreateWithoutPatientInput> | Prisma.AdverseDrugReactionCreateWithoutPatientInput[] | Prisma.AdverseDrugReactionUncheckedCreateWithoutPatientInput[];
+    connectOrCreate?: Prisma.AdverseDrugReactionCreateOrConnectWithoutPatientInput | Prisma.AdverseDrugReactionCreateOrConnectWithoutPatientInput[];
+    upsert?: Prisma.AdverseDrugReactionUpsertWithWhereUniqueWithoutPatientInput | Prisma.AdverseDrugReactionUpsertWithWhereUniqueWithoutPatientInput[];
+    createMany?: Prisma.AdverseDrugReactionCreateManyPatientInputEnvelope;
+    set?: Prisma.AdverseDrugReactionWhereUniqueInput | Prisma.AdverseDrugReactionWhereUniqueInput[];
+    disconnect?: Prisma.AdverseDrugReactionWhereUniqueInput | Prisma.AdverseDrugReactionWhereUniqueInput[];
+    delete?: Prisma.AdverseDrugReactionWhereUniqueInput | Prisma.AdverseDrugReactionWhereUniqueInput[];
+    connect?: Prisma.AdverseDrugReactionWhereUniqueInput | Prisma.AdverseDrugReactionWhereUniqueInput[];
+    update?: Prisma.AdverseDrugReactionUpdateWithWhereUniqueWithoutPatientInput | Prisma.AdverseDrugReactionUpdateWithWhereUniqueWithoutPatientInput[];
+    updateMany?: Prisma.AdverseDrugReactionUpdateManyWithWhereWithoutPatientInput | Prisma.AdverseDrugReactionUpdateManyWithWhereWithoutPatientInput[];
+    deleteMany?: Prisma.AdverseDrugReactionScalarWhereInput | Prisma.AdverseDrugReactionScalarWhereInput[];
+};
+export type AdverseDrugReactionUncheckedUpdateManyWithoutPatientNestedInput = {
+    create?: Prisma.XOR<Prisma.AdverseDrugReactionCreateWithoutPatientInput, Prisma.AdverseDrugReactionUncheckedCreateWithoutPatientInput> | Prisma.AdverseDrugReactionCreateWithoutPatientInput[] | Prisma.AdverseDrugReactionUncheckedCreateWithoutPatientInput[];
+    connectOrCreate?: Prisma.AdverseDrugReactionCreateOrConnectWithoutPatientInput | Prisma.AdverseDrugReactionCreateOrConnectWithoutPatientInput[];
+    upsert?: Prisma.AdverseDrugReactionUpsertWithWhereUniqueWithoutPatientInput | Prisma.AdverseDrugReactionUpsertWithWhereUniqueWithoutPatientInput[];
+    createMany?: Prisma.AdverseDrugReactionCreateManyPatientInputEnvelope;
+    set?: Prisma.AdverseDrugReactionWhereUniqueInput | Prisma.AdverseDrugReactionWhereUniqueInput[];
+    disconnect?: Prisma.AdverseDrugReactionWhereUniqueInput | Prisma.AdverseDrugReactionWhereUniqueInput[];
+    delete?: Prisma.AdverseDrugReactionWhereUniqueInput | Prisma.AdverseDrugReactionWhereUniqueInput[];
+    connect?: Prisma.AdverseDrugReactionWhereUniqueInput | Prisma.AdverseDrugReactionWhereUniqueInput[];
+    update?: Prisma.AdverseDrugReactionUpdateWithWhereUniqueWithoutPatientInput | Prisma.AdverseDrugReactionUpdateWithWhereUniqueWithoutPatientInput[];
+    updateMany?: Prisma.AdverseDrugReactionUpdateManyWithWhereWithoutPatientInput | Prisma.AdverseDrugReactionUpdateManyWithWhereWithoutPatientInput[];
+    deleteMany?: Prisma.AdverseDrugReactionScalarWhereInput | Prisma.AdverseDrugReactionScalarWhereInput[];
+};
+export type AdverseDrugReactionCreateNestedManyWithoutActiveSubstanceInput = {
+    create?: Prisma.XOR<Prisma.AdverseDrugReactionCreateWithoutActiveSubstanceInput, Prisma.AdverseDrugReactionUncheckedCreateWithoutActiveSubstanceInput> | Prisma.AdverseDrugReactionCreateWithoutActiveSubstanceInput[] | Prisma.AdverseDrugReactionUncheckedCreateWithoutActiveSubstanceInput[];
+    connectOrCreate?: Prisma.AdverseDrugReactionCreateOrConnectWithoutActiveSubstanceInput | Prisma.AdverseDrugReactionCreateOrConnectWithoutActiveSubstanceInput[];
+    createMany?: Prisma.AdverseDrugReactionCreateManyActiveSubstanceInputEnvelope;
+    connect?: Prisma.AdverseDrugReactionWhereUniqueInput | Prisma.AdverseDrugReactionWhereUniqueInput[];
+};
+export type AdverseDrugReactionUncheckedCreateNestedManyWithoutActiveSubstanceInput = {
+    create?: Prisma.XOR<Prisma.AdverseDrugReactionCreateWithoutActiveSubstanceInput, Prisma.AdverseDrugReactionUncheckedCreateWithoutActiveSubstanceInput> | Prisma.AdverseDrugReactionCreateWithoutActiveSubstanceInput[] | Prisma.AdverseDrugReactionUncheckedCreateWithoutActiveSubstanceInput[];
+    connectOrCreate?: Prisma.AdverseDrugReactionCreateOrConnectWithoutActiveSubstanceInput | Prisma.AdverseDrugReactionCreateOrConnectWithoutActiveSubstanceInput[];
+    createMany?: Prisma.AdverseDrugReactionCreateManyActiveSubstanceInputEnvelope;
+    connect?: Prisma.AdverseDrugReactionWhereUniqueInput | Prisma.AdverseDrugReactionWhereUniqueInput[];
+};
+export type AdverseDrugReactionUpdateManyWithoutActiveSubstanceNestedInput = {
+    create?: Prisma.XOR<Prisma.AdverseDrugReactionCreateWithoutActiveSubstanceInput, Prisma.AdverseDrugReactionUncheckedCreateWithoutActiveSubstanceInput> | Prisma.AdverseDrugReactionCreateWithoutActiveSubstanceInput[] | Prisma.AdverseDrugReactionUncheckedCreateWithoutActiveSubstanceInput[];
+    connectOrCreate?: Prisma.AdverseDrugReactionCreateOrConnectWithoutActiveSubstanceInput | Prisma.AdverseDrugReactionCreateOrConnectWithoutActiveSubstanceInput[];
+    upsert?: Prisma.AdverseDrugReactionUpsertWithWhereUniqueWithoutActiveSubstanceInput | Prisma.AdverseDrugReactionUpsertWithWhereUniqueWithoutActiveSubstanceInput[];
+    createMany?: Prisma.AdverseDrugReactionCreateManyActiveSubstanceInputEnvelope;
+    set?: Prisma.AdverseDrugReactionWhereUniqueInput | Prisma.AdverseDrugReactionWhereUniqueInput[];
+    disconnect?: Prisma.AdverseDrugReactionWhereUniqueInput | Prisma.AdverseDrugReactionWhereUniqueInput[];
+    delete?: Prisma.AdverseDrugReactionWhereUniqueInput | Prisma.AdverseDrugReactionWhereUniqueInput[];
+    connect?: Prisma.AdverseDrugReactionWhereUniqueInput | Prisma.AdverseDrugReactionWhereUniqueInput[];
+    update?: Prisma.AdverseDrugReactionUpdateWithWhereUniqueWithoutActiveSubstanceInput | Prisma.AdverseDrugReactionUpdateWithWhereUniqueWithoutActiveSubstanceInput[];
+    updateMany?: Prisma.AdverseDrugReactionUpdateManyWithWhereWithoutActiveSubstanceInput | Prisma.AdverseDrugReactionUpdateManyWithWhereWithoutActiveSubstanceInput[];
+    deleteMany?: Prisma.AdverseDrugReactionScalarWhereInput | Prisma.AdverseDrugReactionScalarWhereInput[];
+};
+export type AdverseDrugReactionUncheckedUpdateManyWithoutActiveSubstanceNestedInput = {
+    create?: Prisma.XOR<Prisma.AdverseDrugReactionCreateWithoutActiveSubstanceInput, Prisma.AdverseDrugReactionUncheckedCreateWithoutActiveSubstanceInput> | Prisma.AdverseDrugReactionCreateWithoutActiveSubstanceInput[] | Prisma.AdverseDrugReactionUncheckedCreateWithoutActiveSubstanceInput[];
+    connectOrCreate?: Prisma.AdverseDrugReactionCreateOrConnectWithoutActiveSubstanceInput | Prisma.AdverseDrugReactionCreateOrConnectWithoutActiveSubstanceInput[];
+    upsert?: Prisma.AdverseDrugReactionUpsertWithWhereUniqueWithoutActiveSubstanceInput | Prisma.AdverseDrugReactionUpsertWithWhereUniqueWithoutActiveSubstanceInput[];
+    createMany?: Prisma.AdverseDrugReactionCreateManyActiveSubstanceInputEnvelope;
+    set?: Prisma.AdverseDrugReactionWhereUniqueInput | Prisma.AdverseDrugReactionWhereUniqueInput[];
+    disconnect?: Prisma.AdverseDrugReactionWhereUniqueInput | Prisma.AdverseDrugReactionWhereUniqueInput[];
+    delete?: Prisma.AdverseDrugReactionWhereUniqueInput | Prisma.AdverseDrugReactionWhereUniqueInput[];
+    connect?: Prisma.AdverseDrugReactionWhereUniqueInput | Prisma.AdverseDrugReactionWhereUniqueInput[];
+    update?: Prisma.AdverseDrugReactionUpdateWithWhereUniqueWithoutActiveSubstanceInput | Prisma.AdverseDrugReactionUpdateWithWhereUniqueWithoutActiveSubstanceInput[];
+    updateMany?: Prisma.AdverseDrugReactionUpdateManyWithWhereWithoutActiveSubstanceInput | Prisma.AdverseDrugReactionUpdateManyWithWhereWithoutActiveSubstanceInput[];
+    deleteMany?: Prisma.AdverseDrugReactionScalarWhereInput | Prisma.AdverseDrugReactionScalarWhereInput[];
+};
+export type AdverseDrugReactionCreateNestedManyWithoutTradeNameInput = {
+    create?: Prisma.XOR<Prisma.AdverseDrugReactionCreateWithoutTradeNameInput, Prisma.AdverseDrugReactionUncheckedCreateWithoutTradeNameInput> | Prisma.AdverseDrugReactionCreateWithoutTradeNameInput[] | Prisma.AdverseDrugReactionUncheckedCreateWithoutTradeNameInput[];
+    connectOrCreate?: Prisma.AdverseDrugReactionCreateOrConnectWithoutTradeNameInput | Prisma.AdverseDrugReactionCreateOrConnectWithoutTradeNameInput[];
+    createMany?: Prisma.AdverseDrugReactionCreateManyTradeNameInputEnvelope;
+    connect?: Prisma.AdverseDrugReactionWhereUniqueInput | Prisma.AdverseDrugReactionWhereUniqueInput[];
+};
+export type AdverseDrugReactionUncheckedCreateNestedManyWithoutTradeNameInput = {
+    create?: Prisma.XOR<Prisma.AdverseDrugReactionCreateWithoutTradeNameInput, Prisma.AdverseDrugReactionUncheckedCreateWithoutTradeNameInput> | Prisma.AdverseDrugReactionCreateWithoutTradeNameInput[] | Prisma.AdverseDrugReactionUncheckedCreateWithoutTradeNameInput[];
+    connectOrCreate?: Prisma.AdverseDrugReactionCreateOrConnectWithoutTradeNameInput | Prisma.AdverseDrugReactionCreateOrConnectWithoutTradeNameInput[];
+    createMany?: Prisma.AdverseDrugReactionCreateManyTradeNameInputEnvelope;
+    connect?: Prisma.AdverseDrugReactionWhereUniqueInput | Prisma.AdverseDrugReactionWhereUniqueInput[];
+};
+export type AdverseDrugReactionUpdateManyWithoutTradeNameNestedInput = {
+    create?: Prisma.XOR<Prisma.AdverseDrugReactionCreateWithoutTradeNameInput, Prisma.AdverseDrugReactionUncheckedCreateWithoutTradeNameInput> | Prisma.AdverseDrugReactionCreateWithoutTradeNameInput[] | Prisma.AdverseDrugReactionUncheckedCreateWithoutTradeNameInput[];
+    connectOrCreate?: Prisma.AdverseDrugReactionCreateOrConnectWithoutTradeNameInput | Prisma.AdverseDrugReactionCreateOrConnectWithoutTradeNameInput[];
+    upsert?: Prisma.AdverseDrugReactionUpsertWithWhereUniqueWithoutTradeNameInput | Prisma.AdverseDrugReactionUpsertWithWhereUniqueWithoutTradeNameInput[];
+    createMany?: Prisma.AdverseDrugReactionCreateManyTradeNameInputEnvelope;
+    set?: Prisma.AdverseDrugReactionWhereUniqueInput | Prisma.AdverseDrugReactionWhereUniqueInput[];
+    disconnect?: Prisma.AdverseDrugReactionWhereUniqueInput | Prisma.AdverseDrugReactionWhereUniqueInput[];
+    delete?: Prisma.AdverseDrugReactionWhereUniqueInput | Prisma.AdverseDrugReactionWhereUniqueInput[];
+    connect?: Prisma.AdverseDrugReactionWhereUniqueInput | Prisma.AdverseDrugReactionWhereUniqueInput[];
+    update?: Prisma.AdverseDrugReactionUpdateWithWhereUniqueWithoutTradeNameInput | Prisma.AdverseDrugReactionUpdateWithWhereUniqueWithoutTradeNameInput[];
+    updateMany?: Prisma.AdverseDrugReactionUpdateManyWithWhereWithoutTradeNameInput | Prisma.AdverseDrugReactionUpdateManyWithWhereWithoutTradeNameInput[];
+    deleteMany?: Prisma.AdverseDrugReactionScalarWhereInput | Prisma.AdverseDrugReactionScalarWhereInput[];
+};
+export type AdverseDrugReactionUncheckedUpdateManyWithoutTradeNameNestedInput = {
+    create?: Prisma.XOR<Prisma.AdverseDrugReactionCreateWithoutTradeNameInput, Prisma.AdverseDrugReactionUncheckedCreateWithoutTradeNameInput> | Prisma.AdverseDrugReactionCreateWithoutTradeNameInput[] | Prisma.AdverseDrugReactionUncheckedCreateWithoutTradeNameInput[];
+    connectOrCreate?: Prisma.AdverseDrugReactionCreateOrConnectWithoutTradeNameInput | Prisma.AdverseDrugReactionCreateOrConnectWithoutTradeNameInput[];
+    upsert?: Prisma.AdverseDrugReactionUpsertWithWhereUniqueWithoutTradeNameInput | Prisma.AdverseDrugReactionUpsertWithWhereUniqueWithoutTradeNameInput[];
+    createMany?: Prisma.AdverseDrugReactionCreateManyTradeNameInputEnvelope;
+    set?: Prisma.AdverseDrugReactionWhereUniqueInput | Prisma.AdverseDrugReactionWhereUniqueInput[];
+    disconnect?: Prisma.AdverseDrugReactionWhereUniqueInput | Prisma.AdverseDrugReactionWhereUniqueInput[];
+    delete?: Prisma.AdverseDrugReactionWhereUniqueInput | Prisma.AdverseDrugReactionWhereUniqueInput[];
+    connect?: Prisma.AdverseDrugReactionWhereUniqueInput | Prisma.AdverseDrugReactionWhereUniqueInput[];
+    update?: Prisma.AdverseDrugReactionUpdateWithWhereUniqueWithoutTradeNameInput | Prisma.AdverseDrugReactionUpdateWithWhereUniqueWithoutTradeNameInput[];
+    updateMany?: Prisma.AdverseDrugReactionUpdateManyWithWhereWithoutTradeNameInput | Prisma.AdverseDrugReactionUpdateManyWithWhereWithoutTradeNameInput[];
+    deleteMany?: Prisma.AdverseDrugReactionScalarWhereInput | Prisma.AdverseDrugReactionScalarWhereInput[];
+};
+export type AdverseDrugReactionCreateNestedManyWithoutCompanyInput = {
+    create?: Prisma.XOR<Prisma.AdverseDrugReactionCreateWithoutCompanyInput, Prisma.AdverseDrugReactionUncheckedCreateWithoutCompanyInput> | Prisma.AdverseDrugReactionCreateWithoutCompanyInput[] | Prisma.AdverseDrugReactionUncheckedCreateWithoutCompanyInput[];
+    connectOrCreate?: Prisma.AdverseDrugReactionCreateOrConnectWithoutCompanyInput | Prisma.AdverseDrugReactionCreateOrConnectWithoutCompanyInput[];
+    createMany?: Prisma.AdverseDrugReactionCreateManyCompanyInputEnvelope;
+    connect?: Prisma.AdverseDrugReactionWhereUniqueInput | Prisma.AdverseDrugReactionWhereUniqueInput[];
+};
+export type AdverseDrugReactionUncheckedCreateNestedManyWithoutCompanyInput = {
+    create?: Prisma.XOR<Prisma.AdverseDrugReactionCreateWithoutCompanyInput, Prisma.AdverseDrugReactionUncheckedCreateWithoutCompanyInput> | Prisma.AdverseDrugReactionCreateWithoutCompanyInput[] | Prisma.AdverseDrugReactionUncheckedCreateWithoutCompanyInput[];
+    connectOrCreate?: Prisma.AdverseDrugReactionCreateOrConnectWithoutCompanyInput | Prisma.AdverseDrugReactionCreateOrConnectWithoutCompanyInput[];
+    createMany?: Prisma.AdverseDrugReactionCreateManyCompanyInputEnvelope;
+    connect?: Prisma.AdverseDrugReactionWhereUniqueInput | Prisma.AdverseDrugReactionWhereUniqueInput[];
+};
+export type AdverseDrugReactionUpdateManyWithoutCompanyNestedInput = {
+    create?: Prisma.XOR<Prisma.AdverseDrugReactionCreateWithoutCompanyInput, Prisma.AdverseDrugReactionUncheckedCreateWithoutCompanyInput> | Prisma.AdverseDrugReactionCreateWithoutCompanyInput[] | Prisma.AdverseDrugReactionUncheckedCreateWithoutCompanyInput[];
+    connectOrCreate?: Prisma.AdverseDrugReactionCreateOrConnectWithoutCompanyInput | Prisma.AdverseDrugReactionCreateOrConnectWithoutCompanyInput[];
+    upsert?: Prisma.AdverseDrugReactionUpsertWithWhereUniqueWithoutCompanyInput | Prisma.AdverseDrugReactionUpsertWithWhereUniqueWithoutCompanyInput[];
+    createMany?: Prisma.AdverseDrugReactionCreateManyCompanyInputEnvelope;
+    set?: Prisma.AdverseDrugReactionWhereUniqueInput | Prisma.AdverseDrugReactionWhereUniqueInput[];
+    disconnect?: Prisma.AdverseDrugReactionWhereUniqueInput | Prisma.AdverseDrugReactionWhereUniqueInput[];
+    delete?: Prisma.AdverseDrugReactionWhereUniqueInput | Prisma.AdverseDrugReactionWhereUniqueInput[];
+    connect?: Prisma.AdverseDrugReactionWhereUniqueInput | Prisma.AdverseDrugReactionWhereUniqueInput[];
+    update?: Prisma.AdverseDrugReactionUpdateWithWhereUniqueWithoutCompanyInput | Prisma.AdverseDrugReactionUpdateWithWhereUniqueWithoutCompanyInput[];
+    updateMany?: Prisma.AdverseDrugReactionUpdateManyWithWhereWithoutCompanyInput | Prisma.AdverseDrugReactionUpdateManyWithWhereWithoutCompanyInput[];
+    deleteMany?: Prisma.AdverseDrugReactionScalarWhereInput | Prisma.AdverseDrugReactionScalarWhereInput[];
+};
+export type AdverseDrugReactionUncheckedUpdateManyWithoutCompanyNestedInput = {
+    create?: Prisma.XOR<Prisma.AdverseDrugReactionCreateWithoutCompanyInput, Prisma.AdverseDrugReactionUncheckedCreateWithoutCompanyInput> | Prisma.AdverseDrugReactionCreateWithoutCompanyInput[] | Prisma.AdverseDrugReactionUncheckedCreateWithoutCompanyInput[];
+    connectOrCreate?: Prisma.AdverseDrugReactionCreateOrConnectWithoutCompanyInput | Prisma.AdverseDrugReactionCreateOrConnectWithoutCompanyInput[];
+    upsert?: Prisma.AdverseDrugReactionUpsertWithWhereUniqueWithoutCompanyInput | Prisma.AdverseDrugReactionUpsertWithWhereUniqueWithoutCompanyInput[];
+    createMany?: Prisma.AdverseDrugReactionCreateManyCompanyInputEnvelope;
+    set?: Prisma.AdverseDrugReactionWhereUniqueInput | Prisma.AdverseDrugReactionWhereUniqueInput[];
+    disconnect?: Prisma.AdverseDrugReactionWhereUniqueInput | Prisma.AdverseDrugReactionWhereUniqueInput[];
+    delete?: Prisma.AdverseDrugReactionWhereUniqueInput | Prisma.AdverseDrugReactionWhereUniqueInput[];
+    connect?: Prisma.AdverseDrugReactionWhereUniqueInput | Prisma.AdverseDrugReactionWhereUniqueInput[];
+    update?: Prisma.AdverseDrugReactionUpdateWithWhereUniqueWithoutCompanyInput | Prisma.AdverseDrugReactionUpdateWithWhereUniqueWithoutCompanyInput[];
+    updateMany?: Prisma.AdverseDrugReactionUpdateManyWithWhereWithoutCompanyInput | Prisma.AdverseDrugReactionUpdateManyWithWhereWithoutCompanyInput[];
+    deleteMany?: Prisma.AdverseDrugReactionScalarWhereInput | Prisma.AdverseDrugReactionScalarWhereInput[];
+};
+export type EnumADRSeverityFieldUpdateOperationsInput = {
+    set?: $Enums.ADRSeverity;
+};
+export type AdverseDrugReactionCreateWithoutPatientInput = {
+    severity: $Enums.ADRSeverity;
+    reaction: string;
+    startDate: Date | string;
+    endDate?: Date | string | null;
+    isAnonymous?: boolean;
+    reportedToEDA?: boolean;
+    edaReferenceNum?: string | null;
+    status?: string;
+    adminNotes?: string | null;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+    tradeName: Prisma.TradeNameCreateNestedOneWithoutAdverseReactionsInput;
+    company: Prisma.CompanyCreateNestedOneWithoutAdverseReactionsInput;
+    activeSubstance?: Prisma.ActiveSubstanceCreateNestedOneWithoutAdverseReactionsInput;
+};
+export type AdverseDrugReactionUncheckedCreateWithoutPatientInput = {
+    id?: number;
+    tradeNameId: number;
+    companyId: number;
+    activeSubstanceId?: number | null;
+    severity: $Enums.ADRSeverity;
+    reaction: string;
+    startDate: Date | string;
+    endDate?: Date | string | null;
+    isAnonymous?: boolean;
+    reportedToEDA?: boolean;
+    edaReferenceNum?: string | null;
+    status?: string;
+    adminNotes?: string | null;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+};
+export type AdverseDrugReactionCreateOrConnectWithoutPatientInput = {
+    where: Prisma.AdverseDrugReactionWhereUniqueInput;
+    create: Prisma.XOR<Prisma.AdverseDrugReactionCreateWithoutPatientInput, Prisma.AdverseDrugReactionUncheckedCreateWithoutPatientInput>;
+};
+export type AdverseDrugReactionCreateManyPatientInputEnvelope = {
+    data: Prisma.AdverseDrugReactionCreateManyPatientInput | Prisma.AdverseDrugReactionCreateManyPatientInput[];
+    skipDuplicates?: boolean;
+};
+export type AdverseDrugReactionUpsertWithWhereUniqueWithoutPatientInput = {
+    where: Prisma.AdverseDrugReactionWhereUniqueInput;
+    update: Prisma.XOR<Prisma.AdverseDrugReactionUpdateWithoutPatientInput, Prisma.AdverseDrugReactionUncheckedUpdateWithoutPatientInput>;
+    create: Prisma.XOR<Prisma.AdverseDrugReactionCreateWithoutPatientInput, Prisma.AdverseDrugReactionUncheckedCreateWithoutPatientInput>;
+};
+export type AdverseDrugReactionUpdateWithWhereUniqueWithoutPatientInput = {
+    where: Prisma.AdverseDrugReactionWhereUniqueInput;
+    data: Prisma.XOR<Prisma.AdverseDrugReactionUpdateWithoutPatientInput, Prisma.AdverseDrugReactionUncheckedUpdateWithoutPatientInput>;
+};
+export type AdverseDrugReactionUpdateManyWithWhereWithoutPatientInput = {
+    where: Prisma.AdverseDrugReactionScalarWhereInput;
+    data: Prisma.XOR<Prisma.AdverseDrugReactionUpdateManyMutationInput, Prisma.AdverseDrugReactionUncheckedUpdateManyWithoutPatientInput>;
+};
+export type AdverseDrugReactionScalarWhereInput = {
+    AND?: Prisma.AdverseDrugReactionScalarWhereInput | Prisma.AdverseDrugReactionScalarWhereInput[];
+    OR?: Prisma.AdverseDrugReactionScalarWhereInput[];
+    NOT?: Prisma.AdverseDrugReactionScalarWhereInput | Prisma.AdverseDrugReactionScalarWhereInput[];
+    id?: Prisma.IntFilter<"AdverseDrugReaction"> | number;
+    patientId?: Prisma.IntNullableFilter<"AdverseDrugReaction"> | number | null;
+    tradeNameId?: Prisma.IntFilter<"AdverseDrugReaction"> | number;
+    companyId?: Prisma.IntFilter<"AdverseDrugReaction"> | number;
+    activeSubstanceId?: Prisma.IntNullableFilter<"AdverseDrugReaction"> | number | null;
+    severity?: Prisma.EnumADRSeverityFilter<"AdverseDrugReaction"> | $Enums.ADRSeverity;
+    reaction?: Prisma.StringFilter<"AdverseDrugReaction"> | string;
+    startDate?: Prisma.DateTimeFilter<"AdverseDrugReaction"> | Date | string;
+    endDate?: Prisma.DateTimeNullableFilter<"AdverseDrugReaction"> | Date | string | null;
+    isAnonymous?: Prisma.BoolFilter<"AdverseDrugReaction"> | boolean;
+    reportedToEDA?: Prisma.BoolFilter<"AdverseDrugReaction"> | boolean;
+    edaReferenceNum?: Prisma.StringNullableFilter<"AdverseDrugReaction"> | string | null;
+    status?: Prisma.StringFilter<"AdverseDrugReaction"> | string;
+    adminNotes?: Prisma.StringNullableFilter<"AdverseDrugReaction"> | string | null;
+    createdAt?: Prisma.DateTimeFilter<"AdverseDrugReaction"> | Date | string;
+    updatedAt?: Prisma.DateTimeFilter<"AdverseDrugReaction"> | Date | string;
+};
+export type AdverseDrugReactionCreateWithoutActiveSubstanceInput = {
+    severity: $Enums.ADRSeverity;
+    reaction: string;
+    startDate: Date | string;
+    endDate?: Date | string | null;
+    isAnonymous?: boolean;
+    reportedToEDA?: boolean;
+    edaReferenceNum?: string | null;
+    status?: string;
+    adminNotes?: string | null;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+    patient?: Prisma.PatientCreateNestedOneWithoutAdverseReactionsInput;
+    tradeName: Prisma.TradeNameCreateNestedOneWithoutAdverseReactionsInput;
+    company: Prisma.CompanyCreateNestedOneWithoutAdverseReactionsInput;
+};
+export type AdverseDrugReactionUncheckedCreateWithoutActiveSubstanceInput = {
+    id?: number;
+    patientId?: number | null;
+    tradeNameId: number;
+    companyId: number;
+    severity: $Enums.ADRSeverity;
+    reaction: string;
+    startDate: Date | string;
+    endDate?: Date | string | null;
+    isAnonymous?: boolean;
+    reportedToEDA?: boolean;
+    edaReferenceNum?: string | null;
+    status?: string;
+    adminNotes?: string | null;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+};
+export type AdverseDrugReactionCreateOrConnectWithoutActiveSubstanceInput = {
+    where: Prisma.AdverseDrugReactionWhereUniqueInput;
+    create: Prisma.XOR<Prisma.AdverseDrugReactionCreateWithoutActiveSubstanceInput, Prisma.AdverseDrugReactionUncheckedCreateWithoutActiveSubstanceInput>;
+};
+export type AdverseDrugReactionCreateManyActiveSubstanceInputEnvelope = {
+    data: Prisma.AdverseDrugReactionCreateManyActiveSubstanceInput | Prisma.AdverseDrugReactionCreateManyActiveSubstanceInput[];
+    skipDuplicates?: boolean;
+};
+export type AdverseDrugReactionUpsertWithWhereUniqueWithoutActiveSubstanceInput = {
+    where: Prisma.AdverseDrugReactionWhereUniqueInput;
+    update: Prisma.XOR<Prisma.AdverseDrugReactionUpdateWithoutActiveSubstanceInput, Prisma.AdverseDrugReactionUncheckedUpdateWithoutActiveSubstanceInput>;
+    create: Prisma.XOR<Prisma.AdverseDrugReactionCreateWithoutActiveSubstanceInput, Prisma.AdverseDrugReactionUncheckedCreateWithoutActiveSubstanceInput>;
+};
+export type AdverseDrugReactionUpdateWithWhereUniqueWithoutActiveSubstanceInput = {
+    where: Prisma.AdverseDrugReactionWhereUniqueInput;
+    data: Prisma.XOR<Prisma.AdverseDrugReactionUpdateWithoutActiveSubstanceInput, Prisma.AdverseDrugReactionUncheckedUpdateWithoutActiveSubstanceInput>;
+};
+export type AdverseDrugReactionUpdateManyWithWhereWithoutActiveSubstanceInput = {
+    where: Prisma.AdverseDrugReactionScalarWhereInput;
+    data: Prisma.XOR<Prisma.AdverseDrugReactionUpdateManyMutationInput, Prisma.AdverseDrugReactionUncheckedUpdateManyWithoutActiveSubstanceInput>;
+};
+export type AdverseDrugReactionCreateWithoutTradeNameInput = {
+    severity: $Enums.ADRSeverity;
+    reaction: string;
+    startDate: Date | string;
+    endDate?: Date | string | null;
+    isAnonymous?: boolean;
+    reportedToEDA?: boolean;
+    edaReferenceNum?: string | null;
+    status?: string;
+    adminNotes?: string | null;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+    patient?: Prisma.PatientCreateNestedOneWithoutAdverseReactionsInput;
+    company: Prisma.CompanyCreateNestedOneWithoutAdverseReactionsInput;
+    activeSubstance?: Prisma.ActiveSubstanceCreateNestedOneWithoutAdverseReactionsInput;
+};
+export type AdverseDrugReactionUncheckedCreateWithoutTradeNameInput = {
+    id?: number;
+    patientId?: number | null;
+    companyId: number;
+    activeSubstanceId?: number | null;
+    severity: $Enums.ADRSeverity;
+    reaction: string;
+    startDate: Date | string;
+    endDate?: Date | string | null;
+    isAnonymous?: boolean;
+    reportedToEDA?: boolean;
+    edaReferenceNum?: string | null;
+    status?: string;
+    adminNotes?: string | null;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+};
+export type AdverseDrugReactionCreateOrConnectWithoutTradeNameInput = {
+    where: Prisma.AdverseDrugReactionWhereUniqueInput;
+    create: Prisma.XOR<Prisma.AdverseDrugReactionCreateWithoutTradeNameInput, Prisma.AdverseDrugReactionUncheckedCreateWithoutTradeNameInput>;
+};
+export type AdverseDrugReactionCreateManyTradeNameInputEnvelope = {
+    data: Prisma.AdverseDrugReactionCreateManyTradeNameInput | Prisma.AdverseDrugReactionCreateManyTradeNameInput[];
+    skipDuplicates?: boolean;
+};
+export type AdverseDrugReactionUpsertWithWhereUniqueWithoutTradeNameInput = {
+    where: Prisma.AdverseDrugReactionWhereUniqueInput;
+    update: Prisma.XOR<Prisma.AdverseDrugReactionUpdateWithoutTradeNameInput, Prisma.AdverseDrugReactionUncheckedUpdateWithoutTradeNameInput>;
+    create: Prisma.XOR<Prisma.AdverseDrugReactionCreateWithoutTradeNameInput, Prisma.AdverseDrugReactionUncheckedCreateWithoutTradeNameInput>;
+};
+export type AdverseDrugReactionUpdateWithWhereUniqueWithoutTradeNameInput = {
+    where: Prisma.AdverseDrugReactionWhereUniqueInput;
+    data: Prisma.XOR<Prisma.AdverseDrugReactionUpdateWithoutTradeNameInput, Prisma.AdverseDrugReactionUncheckedUpdateWithoutTradeNameInput>;
+};
+export type AdverseDrugReactionUpdateManyWithWhereWithoutTradeNameInput = {
+    where: Prisma.AdverseDrugReactionScalarWhereInput;
+    data: Prisma.XOR<Prisma.AdverseDrugReactionUpdateManyMutationInput, Prisma.AdverseDrugReactionUncheckedUpdateManyWithoutTradeNameInput>;
+};
+export type AdverseDrugReactionCreateWithoutCompanyInput = {
+    severity: $Enums.ADRSeverity;
+    reaction: string;
+    startDate: Date | string;
+    endDate?: Date | string | null;
+    isAnonymous?: boolean;
+    reportedToEDA?: boolean;
+    edaReferenceNum?: string | null;
+    status?: string;
+    adminNotes?: string | null;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+    patient?: Prisma.PatientCreateNestedOneWithoutAdverseReactionsInput;
+    tradeName: Prisma.TradeNameCreateNestedOneWithoutAdverseReactionsInput;
+    activeSubstance?: Prisma.ActiveSubstanceCreateNestedOneWithoutAdverseReactionsInput;
+};
+export type AdverseDrugReactionUncheckedCreateWithoutCompanyInput = {
+    id?: number;
+    patientId?: number | null;
+    tradeNameId: number;
+    activeSubstanceId?: number | null;
+    severity: $Enums.ADRSeverity;
+    reaction: string;
+    startDate: Date | string;
+    endDate?: Date | string | null;
+    isAnonymous?: boolean;
+    reportedToEDA?: boolean;
+    edaReferenceNum?: string | null;
+    status?: string;
+    adminNotes?: string | null;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+};
+export type AdverseDrugReactionCreateOrConnectWithoutCompanyInput = {
+    where: Prisma.AdverseDrugReactionWhereUniqueInput;
+    create: Prisma.XOR<Prisma.AdverseDrugReactionCreateWithoutCompanyInput, Prisma.AdverseDrugReactionUncheckedCreateWithoutCompanyInput>;
+};
+export type AdverseDrugReactionCreateManyCompanyInputEnvelope = {
+    data: Prisma.AdverseDrugReactionCreateManyCompanyInput | Prisma.AdverseDrugReactionCreateManyCompanyInput[];
+    skipDuplicates?: boolean;
+};
+export type AdverseDrugReactionUpsertWithWhereUniqueWithoutCompanyInput = {
+    where: Prisma.AdverseDrugReactionWhereUniqueInput;
+    update: Prisma.XOR<Prisma.AdverseDrugReactionUpdateWithoutCompanyInput, Prisma.AdverseDrugReactionUncheckedUpdateWithoutCompanyInput>;
+    create: Prisma.XOR<Prisma.AdverseDrugReactionCreateWithoutCompanyInput, Prisma.AdverseDrugReactionUncheckedCreateWithoutCompanyInput>;
+};
+export type AdverseDrugReactionUpdateWithWhereUniqueWithoutCompanyInput = {
+    where: Prisma.AdverseDrugReactionWhereUniqueInput;
+    data: Prisma.XOR<Prisma.AdverseDrugReactionUpdateWithoutCompanyInput, Prisma.AdverseDrugReactionUncheckedUpdateWithoutCompanyInput>;
+};
+export type AdverseDrugReactionUpdateManyWithWhereWithoutCompanyInput = {
+    where: Prisma.AdverseDrugReactionScalarWhereInput;
+    data: Prisma.XOR<Prisma.AdverseDrugReactionUpdateManyMutationInput, Prisma.AdverseDrugReactionUncheckedUpdateManyWithoutCompanyInput>;
+};
+export type AdverseDrugReactionCreateManyPatientInput = {
+    id?: number;
+    tradeNameId: number;
+    companyId: number;
+    activeSubstanceId?: number | null;
+    severity: $Enums.ADRSeverity;
+    reaction: string;
+    startDate: Date | string;
+    endDate?: Date | string | null;
+    isAnonymous?: boolean;
+    reportedToEDA?: boolean;
+    edaReferenceNum?: string | null;
+    status?: string;
+    adminNotes?: string | null;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+};
+export type AdverseDrugReactionUpdateWithoutPatientInput = {
+    severity?: Prisma.EnumADRSeverityFieldUpdateOperationsInput | $Enums.ADRSeverity;
+    reaction?: Prisma.StringFieldUpdateOperationsInput | string;
+    startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    isAnonymous?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    reportedToEDA?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    edaReferenceNum?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    status?: Prisma.StringFieldUpdateOperationsInput | string;
+    adminNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    tradeName?: Prisma.TradeNameUpdateOneRequiredWithoutAdverseReactionsNestedInput;
+    company?: Prisma.CompanyUpdateOneRequiredWithoutAdverseReactionsNestedInput;
+    activeSubstance?: Prisma.ActiveSubstanceUpdateOneWithoutAdverseReactionsNestedInput;
+};
+export type AdverseDrugReactionUncheckedUpdateWithoutPatientInput = {
+    id?: Prisma.IntFieldUpdateOperationsInput | number;
+    tradeNameId?: Prisma.IntFieldUpdateOperationsInput | number;
+    companyId?: Prisma.IntFieldUpdateOperationsInput | number;
+    activeSubstanceId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
+    severity?: Prisma.EnumADRSeverityFieldUpdateOperationsInput | $Enums.ADRSeverity;
+    reaction?: Prisma.StringFieldUpdateOperationsInput | string;
+    startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    isAnonymous?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    reportedToEDA?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    edaReferenceNum?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    status?: Prisma.StringFieldUpdateOperationsInput | string;
+    adminNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+};
+export type AdverseDrugReactionUncheckedUpdateManyWithoutPatientInput = {
+    id?: Prisma.IntFieldUpdateOperationsInput | number;
+    tradeNameId?: Prisma.IntFieldUpdateOperationsInput | number;
+    companyId?: Prisma.IntFieldUpdateOperationsInput | number;
+    activeSubstanceId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
+    severity?: Prisma.EnumADRSeverityFieldUpdateOperationsInput | $Enums.ADRSeverity;
+    reaction?: Prisma.StringFieldUpdateOperationsInput | string;
+    startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    isAnonymous?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    reportedToEDA?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    edaReferenceNum?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    status?: Prisma.StringFieldUpdateOperationsInput | string;
+    adminNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+};
+export type AdverseDrugReactionCreateManyActiveSubstanceInput = {
+    id?: number;
+    patientId?: number | null;
+    tradeNameId: number;
+    companyId: number;
+    severity: $Enums.ADRSeverity;
+    reaction: string;
+    startDate: Date | string;
+    endDate?: Date | string | null;
+    isAnonymous?: boolean;
+    reportedToEDA?: boolean;
+    edaReferenceNum?: string | null;
+    status?: string;
+    adminNotes?: string | null;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+};
+export type AdverseDrugReactionUpdateWithoutActiveSubstanceInput = {
+    severity?: Prisma.EnumADRSeverityFieldUpdateOperationsInput | $Enums.ADRSeverity;
+    reaction?: Prisma.StringFieldUpdateOperationsInput | string;
+    startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    isAnonymous?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    reportedToEDA?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    edaReferenceNum?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    status?: Prisma.StringFieldUpdateOperationsInput | string;
+    adminNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    patient?: Prisma.PatientUpdateOneWithoutAdverseReactionsNestedInput;
+    tradeName?: Prisma.TradeNameUpdateOneRequiredWithoutAdverseReactionsNestedInput;
+    company?: Prisma.CompanyUpdateOneRequiredWithoutAdverseReactionsNestedInput;
+};
+export type AdverseDrugReactionUncheckedUpdateWithoutActiveSubstanceInput = {
+    id?: Prisma.IntFieldUpdateOperationsInput | number;
+    patientId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
+    tradeNameId?: Prisma.IntFieldUpdateOperationsInput | number;
+    companyId?: Prisma.IntFieldUpdateOperationsInput | number;
+    severity?: Prisma.EnumADRSeverityFieldUpdateOperationsInput | $Enums.ADRSeverity;
+    reaction?: Prisma.StringFieldUpdateOperationsInput | string;
+    startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    isAnonymous?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    reportedToEDA?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    edaReferenceNum?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    status?: Prisma.StringFieldUpdateOperationsInput | string;
+    adminNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+};
+export type AdverseDrugReactionUncheckedUpdateManyWithoutActiveSubstanceInput = {
+    id?: Prisma.IntFieldUpdateOperationsInput | number;
+    patientId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
+    tradeNameId?: Prisma.IntFieldUpdateOperationsInput | number;
+    companyId?: Prisma.IntFieldUpdateOperationsInput | number;
+    severity?: Prisma.EnumADRSeverityFieldUpdateOperationsInput | $Enums.ADRSeverity;
+    reaction?: Prisma.StringFieldUpdateOperationsInput | string;
+    startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    isAnonymous?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    reportedToEDA?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    edaReferenceNum?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    status?: Prisma.StringFieldUpdateOperationsInput | string;
+    adminNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+};
+export type AdverseDrugReactionCreateManyTradeNameInput = {
+    id?: number;
+    patientId?: number | null;
+    companyId: number;
+    activeSubstanceId?: number | null;
+    severity: $Enums.ADRSeverity;
+    reaction: string;
+    startDate: Date | string;
+    endDate?: Date | string | null;
+    isAnonymous?: boolean;
+    reportedToEDA?: boolean;
+    edaReferenceNum?: string | null;
+    status?: string;
+    adminNotes?: string | null;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+};
+export type AdverseDrugReactionUpdateWithoutTradeNameInput = {
+    severity?: Prisma.EnumADRSeverityFieldUpdateOperationsInput | $Enums.ADRSeverity;
+    reaction?: Prisma.StringFieldUpdateOperationsInput | string;
+    startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    isAnonymous?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    reportedToEDA?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    edaReferenceNum?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    status?: Prisma.StringFieldUpdateOperationsInput | string;
+    adminNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    patient?: Prisma.PatientUpdateOneWithoutAdverseReactionsNestedInput;
+    company?: Prisma.CompanyUpdateOneRequiredWithoutAdverseReactionsNestedInput;
+    activeSubstance?: Prisma.ActiveSubstanceUpdateOneWithoutAdverseReactionsNestedInput;
+};
+export type AdverseDrugReactionUncheckedUpdateWithoutTradeNameInput = {
+    id?: Prisma.IntFieldUpdateOperationsInput | number;
+    patientId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
+    companyId?: Prisma.IntFieldUpdateOperationsInput | number;
+    activeSubstanceId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
+    severity?: Prisma.EnumADRSeverityFieldUpdateOperationsInput | $Enums.ADRSeverity;
+    reaction?: Prisma.StringFieldUpdateOperationsInput | string;
+    startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    isAnonymous?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    reportedToEDA?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    edaReferenceNum?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    status?: Prisma.StringFieldUpdateOperationsInput | string;
+    adminNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+};
+export type AdverseDrugReactionUncheckedUpdateManyWithoutTradeNameInput = {
+    id?: Prisma.IntFieldUpdateOperationsInput | number;
+    patientId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
+    companyId?: Prisma.IntFieldUpdateOperationsInput | number;
+    activeSubstanceId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
+    severity?: Prisma.EnumADRSeverityFieldUpdateOperationsInput | $Enums.ADRSeverity;
+    reaction?: Prisma.StringFieldUpdateOperationsInput | string;
+    startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    isAnonymous?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    reportedToEDA?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    edaReferenceNum?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    status?: Prisma.StringFieldUpdateOperationsInput | string;
+    adminNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+};
+export type AdverseDrugReactionCreateManyCompanyInput = {
+    id?: number;
+    patientId?: number | null;
+    tradeNameId: number;
+    activeSubstanceId?: number | null;
+    severity: $Enums.ADRSeverity;
+    reaction: string;
+    startDate: Date | string;
+    endDate?: Date | string | null;
+    isAnonymous?: boolean;
+    reportedToEDA?: boolean;
+    edaReferenceNum?: string | null;
+    status?: string;
+    adminNotes?: string | null;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+};
+export type AdverseDrugReactionUpdateWithoutCompanyInput = {
+    severity?: Prisma.EnumADRSeverityFieldUpdateOperationsInput | $Enums.ADRSeverity;
+    reaction?: Prisma.StringFieldUpdateOperationsInput | string;
+    startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    isAnonymous?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    reportedToEDA?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    edaReferenceNum?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    status?: Prisma.StringFieldUpdateOperationsInput | string;
+    adminNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    patient?: Prisma.PatientUpdateOneWithoutAdverseReactionsNestedInput;
+    tradeName?: Prisma.TradeNameUpdateOneRequiredWithoutAdverseReactionsNestedInput;
+    activeSubstance?: Prisma.ActiveSubstanceUpdateOneWithoutAdverseReactionsNestedInput;
+};
+export type AdverseDrugReactionUncheckedUpdateWithoutCompanyInput = {
+    id?: Prisma.IntFieldUpdateOperationsInput | number;
+    patientId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
+    tradeNameId?: Prisma.IntFieldUpdateOperationsInput | number;
+    activeSubstanceId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
+    severity?: Prisma.EnumADRSeverityFieldUpdateOperationsInput | $Enums.ADRSeverity;
+    reaction?: Prisma.StringFieldUpdateOperationsInput | string;
+    startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    isAnonymous?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    reportedToEDA?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    edaReferenceNum?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    status?: Prisma.StringFieldUpdateOperationsInput | string;
+    adminNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+};
+export type AdverseDrugReactionUncheckedUpdateManyWithoutCompanyInput = {
+    id?: Prisma.IntFieldUpdateOperationsInput | number;
+    patientId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
+    tradeNameId?: Prisma.IntFieldUpdateOperationsInput | number;
+    activeSubstanceId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
+    severity?: Prisma.EnumADRSeverityFieldUpdateOperationsInput | $Enums.ADRSeverity;
+    reaction?: Prisma.StringFieldUpdateOperationsInput | string;
+    startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    isAnonymous?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    reportedToEDA?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    edaReferenceNum?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    status?: Prisma.StringFieldUpdateOperationsInput | string;
+    adminNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+};
+export type AdverseDrugReactionSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+    id?: boolean;
+    patientId?: boolean;
+    tradeNameId?: boolean;
+    companyId?: boolean;
+    activeSubstanceId?: boolean;
+    severity?: boolean;
+    reaction?: boolean;
+    startDate?: boolean;
+    endDate?: boolean;
+    isAnonymous?: boolean;
+    reportedToEDA?: boolean;
+    edaReferenceNum?: boolean;
+    status?: boolean;
+    adminNotes?: boolean;
+    createdAt?: boolean;
+    updatedAt?: boolean;
+    patient?: boolean | Prisma.AdverseDrugReaction$patientArgs<ExtArgs>;
+    tradeName?: boolean | Prisma.TradeNameDefaultArgs<ExtArgs>;
+    company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>;
+    activeSubstance?: boolean | Prisma.AdverseDrugReaction$activeSubstanceArgs<ExtArgs>;
+}, ExtArgs["result"]["adverseDrugReaction"]>;
+export type AdverseDrugReactionSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+    id?: boolean;
+    patientId?: boolean;
+    tradeNameId?: boolean;
+    companyId?: boolean;
+    activeSubstanceId?: boolean;
+    severity?: boolean;
+    reaction?: boolean;
+    startDate?: boolean;
+    endDate?: boolean;
+    isAnonymous?: boolean;
+    reportedToEDA?: boolean;
+    edaReferenceNum?: boolean;
+    status?: boolean;
+    adminNotes?: boolean;
+    createdAt?: boolean;
+    updatedAt?: boolean;
+    patient?: boolean | Prisma.AdverseDrugReaction$patientArgs<ExtArgs>;
+    tradeName?: boolean | Prisma.TradeNameDefaultArgs<ExtArgs>;
+    company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>;
+    activeSubstance?: boolean | Prisma.AdverseDrugReaction$activeSubstanceArgs<ExtArgs>;
+}, ExtArgs["result"]["adverseDrugReaction"]>;
+export type AdverseDrugReactionSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+    id?: boolean;
+    patientId?: boolean;
+    tradeNameId?: boolean;
+    companyId?: boolean;
+    activeSubstanceId?: boolean;
+    severity?: boolean;
+    reaction?: boolean;
+    startDate?: boolean;
+    endDate?: boolean;
+    isAnonymous?: boolean;
+    reportedToEDA?: boolean;
+    edaReferenceNum?: boolean;
+    status?: boolean;
+    adminNotes?: boolean;
+    createdAt?: boolean;
+    updatedAt?: boolean;
+    patient?: boolean | Prisma.AdverseDrugReaction$patientArgs<ExtArgs>;
+    tradeName?: boolean | Prisma.TradeNameDefaultArgs<ExtArgs>;
+    company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>;
+    activeSubstance?: boolean | Prisma.AdverseDrugReaction$activeSubstanceArgs<ExtArgs>;
+}, ExtArgs["result"]["adverseDrugReaction"]>;
+export type AdverseDrugReactionSelectScalar = {
+    id?: boolean;
+    patientId?: boolean;
+    tradeNameId?: boolean;
+    companyId?: boolean;
+    activeSubstanceId?: boolean;
+    severity?: boolean;
+    reaction?: boolean;
+    startDate?: boolean;
+    endDate?: boolean;
+    isAnonymous?: boolean;
+    reportedToEDA?: boolean;
+    edaReferenceNum?: boolean;
+    status?: boolean;
+    adminNotes?: boolean;
+    createdAt?: boolean;
+    updatedAt?: boolean;
+};
+export type AdverseDrugReactionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "patientId" | "tradeNameId" | "companyId" | "activeSubstanceId" | "severity" | "reaction" | "startDate" | "endDate" | "isAnonymous" | "reportedToEDA" | "edaReferenceNum" | "status" | "adminNotes" | "createdAt" | "updatedAt", ExtArgs["result"]["adverseDrugReaction"]>;
+export type AdverseDrugReactionInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    patient?: boolean | Prisma.AdverseDrugReaction$patientArgs<ExtArgs>;
+    tradeName?: boolean | Prisma.TradeNameDefaultArgs<ExtArgs>;
+    company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>;
+    activeSubstance?: boolean | Prisma.AdverseDrugReaction$activeSubstanceArgs<ExtArgs>;
+};
+export type AdverseDrugReactionIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    patient?: boolean | Prisma.AdverseDrugReaction$patientArgs<ExtArgs>;
+    tradeName?: boolean | Prisma.TradeNameDefaultArgs<ExtArgs>;
+    company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>;
+    activeSubstance?: boolean | Prisma.AdverseDrugReaction$activeSubstanceArgs<ExtArgs>;
+};
+export type AdverseDrugReactionIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    patient?: boolean | Prisma.AdverseDrugReaction$patientArgs<ExtArgs>;
+    tradeName?: boolean | Prisma.TradeNameDefaultArgs<ExtArgs>;
+    company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>;
+    activeSubstance?: boolean | Prisma.AdverseDrugReaction$activeSubstanceArgs<ExtArgs>;
+};
+export type $AdverseDrugReactionPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    name: "AdverseDrugReaction";
+    objects: {
+        patient: Prisma.$PatientPayload<ExtArgs> | null;
+        tradeName: Prisma.$TradeNamePayload<ExtArgs>;
+        company: Prisma.$CompanyPayload<ExtArgs>;
+        activeSubstance: Prisma.$ActiveSubstancePayload<ExtArgs> | null;
+    };
+    scalars: runtime.Types.Extensions.GetPayloadResult<{
+        id: number;
+        patientId: number | null;
+        tradeNameId: number;
+        companyId: number;
+        activeSubstanceId: number | null;
+        severity: $Enums.ADRSeverity;
+        reaction: string;
+        startDate: Date;
+        endDate: Date | null;
+        isAnonymous: boolean;
+        reportedToEDA: boolean;
+        edaReferenceNum: string | null;
+        status: string;
+        adminNotes: string | null;
+        createdAt: Date;
+        updatedAt: Date;
+    }, ExtArgs["result"]["adverseDrugReaction"]>;
+    composites: {};
+};
+export type AdverseDrugReactionGetPayload<S extends boolean | null | undefined | AdverseDrugReactionDefaultArgs> = runtime.Types.Result.GetResult<Prisma.$AdverseDrugReactionPayload, S>;
+export type AdverseDrugReactionCountArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = Omit<AdverseDrugReactionFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+    select?: AdverseDrugReactionCountAggregateInputType | true;
+};
+export interface AdverseDrugReactionDelegate<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: {
+        types: Prisma.TypeMap<ExtArgs>['model']['AdverseDrugReaction'];
+        meta: {
+            name: 'AdverseDrugReaction';
+        };
+    };
+    /**
+     * Find zero or one AdverseDrugReaction that matches the filter.
+     * @param {AdverseDrugReactionFindUniqueArgs} args - Arguments to find a AdverseDrugReaction
+     * @example
+     * // Get one AdverseDrugReaction
+     * const adverseDrugReaction = await prisma.adverseDrugReaction.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends AdverseDrugReactionFindUniqueArgs>(args: Prisma.SelectSubset<T, AdverseDrugReactionFindUniqueArgs<ExtArgs>>): Prisma.Prisma__AdverseDrugReactionClient<runtime.Types.Result.GetResult<Prisma.$AdverseDrugReactionPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>;
+    /**
+     * Find one AdverseDrugReaction that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {AdverseDrugReactionFindUniqueOrThrowArgs} args - Arguments to find a AdverseDrugReaction
+     * @example
+     * // Get one AdverseDrugReaction
+     * const adverseDrugReaction = await prisma.adverseDrugReaction.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends AdverseDrugReactionFindUniqueOrThrowArgs>(args: Prisma.SelectSubset<T, AdverseDrugReactionFindUniqueOrThrowArgs<ExtArgs>>): Prisma.Prisma__AdverseDrugReactionClient<runtime.Types.Result.GetResult<Prisma.$AdverseDrugReactionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
+    /**
+     * Find the first AdverseDrugReaction that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AdverseDrugReactionFindFirstArgs} args - Arguments to find a AdverseDrugReaction
+     * @example
+     * // Get one AdverseDrugReaction
+     * const adverseDrugReaction = await prisma.adverseDrugReaction.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends AdverseDrugReactionFindFirstArgs>(args?: Prisma.SelectSubset<T, AdverseDrugReactionFindFirstArgs<ExtArgs>>): Prisma.Prisma__AdverseDrugReactionClient<runtime.Types.Result.GetResult<Prisma.$AdverseDrugReactionPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>;
+    /**
+     * Find the first AdverseDrugReaction that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AdverseDrugReactionFindFirstOrThrowArgs} args - Arguments to find a AdverseDrugReaction
+     * @example
+     * // Get one AdverseDrugReaction
+     * const adverseDrugReaction = await prisma.adverseDrugReaction.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends AdverseDrugReactionFindFirstOrThrowArgs>(args?: Prisma.SelectSubset<T, AdverseDrugReactionFindFirstOrThrowArgs<ExtArgs>>): Prisma.Prisma__AdverseDrugReactionClient<runtime.Types.Result.GetResult<Prisma.$AdverseDrugReactionPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
+    /**
+     * Find zero or more AdverseDrugReactions that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AdverseDrugReactionFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all AdverseDrugReactions
+     * const adverseDrugReactions = await prisma.adverseDrugReaction.findMany()
+     *
+     * // Get first 10 AdverseDrugReactions
+     * const adverseDrugReactions = await prisma.adverseDrugReaction.findMany({ take: 10 })
+     *
+     * // Only select the `id`
+     * const adverseDrugReactionWithIdOnly = await prisma.adverseDrugReaction.findMany({ select: { id: true } })
+     *
+     */
+    findMany<T extends AdverseDrugReactionFindManyArgs>(args?: Prisma.SelectSubset<T, AdverseDrugReactionFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AdverseDrugReactionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>;
+    /**
+     * Create a AdverseDrugReaction.
+     * @param {AdverseDrugReactionCreateArgs} args - Arguments to create a AdverseDrugReaction.
+     * @example
+     * // Create one AdverseDrugReaction
+     * const AdverseDrugReaction = await prisma.adverseDrugReaction.create({
+     *   data: {
+     *     // ... data to create a AdverseDrugReaction
+     *   }
+     * })
+     *
+     */
+    create<T extends AdverseDrugReactionCreateArgs>(args: Prisma.SelectSubset<T, AdverseDrugReactionCreateArgs<ExtArgs>>): Prisma.Prisma__AdverseDrugReactionClient<runtime.Types.Result.GetResult<Prisma.$AdverseDrugReactionPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
+    /**
+     * Create many AdverseDrugReactions.
+     * @param {AdverseDrugReactionCreateManyArgs} args - Arguments to create many AdverseDrugReactions.
+     * @example
+     * // Create many AdverseDrugReactions
+     * const adverseDrugReaction = await prisma.adverseDrugReaction.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *
+     */
+    createMany<T extends AdverseDrugReactionCreateManyArgs>(args?: Prisma.SelectSubset<T, AdverseDrugReactionCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>;
+    /**
+     * Create many AdverseDrugReactions and returns the data saved in the database.
+     * @param {AdverseDrugReactionCreateManyAndReturnArgs} args - Arguments to create many AdverseDrugReactions.
+     * @example
+     * // Create many AdverseDrugReactions
+     * const adverseDrugReaction = await prisma.adverseDrugReaction.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *
+     * // Create many AdverseDrugReactions and only return the `id`
+     * const adverseDrugReactionWithIdOnly = await prisma.adverseDrugReaction.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     *
+     */
+    createManyAndReturn<T extends AdverseDrugReactionCreateManyAndReturnArgs>(args?: Prisma.SelectSubset<T, AdverseDrugReactionCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AdverseDrugReactionPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>;
+    /**
+     * Delete a AdverseDrugReaction.
+     * @param {AdverseDrugReactionDeleteArgs} args - Arguments to delete one AdverseDrugReaction.
+     * @example
+     * // Delete one AdverseDrugReaction
+     * const AdverseDrugReaction = await prisma.adverseDrugReaction.delete({
+     *   where: {
+     *     // ... filter to delete one AdverseDrugReaction
+     *   }
+     * })
+     *
+     */
+    delete<T extends AdverseDrugReactionDeleteArgs>(args: Prisma.SelectSubset<T, AdverseDrugReactionDeleteArgs<ExtArgs>>): Prisma.Prisma__AdverseDrugReactionClient<runtime.Types.Result.GetResult<Prisma.$AdverseDrugReactionPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
+    /**
+     * Update one AdverseDrugReaction.
+     * @param {AdverseDrugReactionUpdateArgs} args - Arguments to update one AdverseDrugReaction.
+     * @example
+     * // Update one AdverseDrugReaction
+     * const adverseDrugReaction = await prisma.adverseDrugReaction.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     *
+     */
+    update<T extends AdverseDrugReactionUpdateArgs>(args: Prisma.SelectSubset<T, AdverseDrugReactionUpdateArgs<ExtArgs>>): Prisma.Prisma__AdverseDrugReactionClient<runtime.Types.Result.GetResult<Prisma.$AdverseDrugReactionPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
+    /**
+     * Delete zero or more AdverseDrugReactions.
+     * @param {AdverseDrugReactionDeleteManyArgs} args - Arguments to filter AdverseDrugReactions to delete.
+     * @example
+     * // Delete a few AdverseDrugReactions
+     * const { count } = await prisma.adverseDrugReaction.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     *
+     */
+    deleteMany<T extends AdverseDrugReactionDeleteManyArgs>(args?: Prisma.SelectSubset<T, AdverseDrugReactionDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>;
+    /**
+     * Update zero or more AdverseDrugReactions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AdverseDrugReactionUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many AdverseDrugReactions
+     * const adverseDrugReaction = await prisma.adverseDrugReaction.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     *
+     */
+    updateMany<T extends AdverseDrugReactionUpdateManyArgs>(args: Prisma.SelectSubset<T, AdverseDrugReactionUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>;
+    /**
+     * Update zero or more AdverseDrugReactions and returns the data updated in the database.
+     * @param {AdverseDrugReactionUpdateManyAndReturnArgs} args - Arguments to update many AdverseDrugReactions.
+     * @example
+     * // Update many AdverseDrugReactions
+     * const adverseDrugReaction = await prisma.adverseDrugReaction.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *
+     * // Update zero or more AdverseDrugReactions and only return the `id`
+     * const adverseDrugReactionWithIdOnly = await prisma.adverseDrugReaction.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     *
+     */
+    updateManyAndReturn<T extends AdverseDrugReactionUpdateManyAndReturnArgs>(args: Prisma.SelectSubset<T, AdverseDrugReactionUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AdverseDrugReactionPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>;
+    /**
+     * Create or update one AdverseDrugReaction.
+     * @param {AdverseDrugReactionUpsertArgs} args - Arguments to update or create a AdverseDrugReaction.
+     * @example
+     * // Update or create a AdverseDrugReaction
+     * const adverseDrugReaction = await prisma.adverseDrugReaction.upsert({
+     *   create: {
+     *     // ... data to create a AdverseDrugReaction
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the AdverseDrugReaction we want to update
+     *   }
+     * })
+     */
+    upsert<T extends AdverseDrugReactionUpsertArgs>(args: Prisma.SelectSubset<T, AdverseDrugReactionUpsertArgs<ExtArgs>>): Prisma.Prisma__AdverseDrugReactionClient<runtime.Types.Result.GetResult<Prisma.$AdverseDrugReactionPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
+    /**
+     * Count the number of AdverseDrugReactions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AdverseDrugReactionCountArgs} args - Arguments to filter AdverseDrugReactions to count.
+     * @example
+     * // Count the number of AdverseDrugReactions
+     * const count = await prisma.adverseDrugReaction.count({
+     *   where: {
+     *     // ... the filter for the AdverseDrugReactions we want to count
+     *   }
+     * })
+    **/
+    count<T extends AdverseDrugReactionCountArgs>(args?: Prisma.Subset<T, AdverseDrugReactionCountArgs>): Prisma.PrismaPromise<T extends runtime.Types.Utils.Record<'select', any> ? T['select'] extends true ? number : Prisma.GetScalarType<T['select'], AdverseDrugReactionCountAggregateOutputType> : number>;
+    /**
+     * Allows you to perform aggregations operations on a AdverseDrugReaction.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AdverseDrugReactionAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends AdverseDrugReactionAggregateArgs>(args: Prisma.Subset<T, AdverseDrugReactionAggregateArgs>): Prisma.PrismaPromise<GetAdverseDrugReactionAggregateType<T>>;
+    /**
+     * Group by AdverseDrugReaction.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AdverseDrugReactionGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     *
+    **/
+    groupBy<T extends AdverseDrugReactionGroupByArgs, HasSelectOrTake extends Prisma.Or<Prisma.Extends<'skip', Prisma.Keys<T>>, Prisma.Extends<'take', Prisma.Keys<T>>>, OrderByArg extends Prisma.True extends HasSelectOrTake ? {
+        orderBy: AdverseDrugReactionGroupByArgs['orderBy'];
+    } : {
+        orderBy?: AdverseDrugReactionGroupByArgs['orderBy'];
+    }, OrderFields extends Prisma.ExcludeUnderscoreKeys<Prisma.Keys<Prisma.MaybeTupleToUnion<T['orderBy']>>>, ByFields extends Prisma.MaybeTupleToUnion<T['by']>, ByValid extends Prisma.Has<ByFields, OrderFields>, HavingFields extends Prisma.GetHavingFields<T['having']>, HavingValid extends Prisma.Has<ByFields, HavingFields>, ByEmpty extends T['by'] extends never[] ? Prisma.True : Prisma.False, InputErrors extends ByEmpty extends Prisma.True ? `Error: "by" must not be empty.` : HavingValid extends Prisma.False ? {
+        [P in HavingFields]: P extends ByFields ? never : P extends string ? `Error: Field "${P}" used in "having" needs to be provided in "by".` : [
+            Error,
+            'Field ',
+            P,
+            ` in "having" needs to be provided in "by"`
+        ];
+    }[HavingFields] : 'take' extends Prisma.Keys<T> ? 'orderBy' extends Prisma.Keys<T> ? ByValid extends Prisma.True ? {} : {
+        [P in OrderFields]: P extends ByFields ? never : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+    }[OrderFields] : 'Error: If you provide "take", you also need to provide "orderBy"' : 'skip' extends Prisma.Keys<T> ? 'orderBy' extends Prisma.Keys<T> ? ByValid extends Prisma.True ? {} : {
+        [P in OrderFields]: P extends ByFields ? never : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+    }[OrderFields] : 'Error: If you provide "skip", you also need to provide "orderBy"' : ByValid extends Prisma.True ? {} : {
+        [P in OrderFields]: P extends ByFields ? never : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+    }[OrderFields]>(args: Prisma.SubsetIntersection<T, AdverseDrugReactionGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetAdverseDrugReactionGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>;
+    /**
+     * Fields of the AdverseDrugReaction model
+     */
+    readonly fields: AdverseDrugReactionFieldRefs;
+}
+/**
+ * The delegate class that acts as a "Promise-like" for AdverseDrugReaction.
+ * Why is this prefixed with `Prisma__`?
+ * Because we want to prevent naming conflicts as mentioned in
+ * https://github.com/prisma/prisma-client-js/issues/707
+ */
+export interface Prisma__AdverseDrugReactionClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise";
+    patient<T extends Prisma.AdverseDrugReaction$patientArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AdverseDrugReaction$patientArgs<ExtArgs>>): Prisma.Prisma__PatientClient<runtime.Types.Result.GetResult<Prisma.$PatientPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>;
+    tradeName<T extends Prisma.TradeNameDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TradeNameDefaultArgs<ExtArgs>>): Prisma.Prisma__TradeNameClient<runtime.Types.Result.GetResult<Prisma.$TradeNamePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>;
+    company<T extends Prisma.CompanyDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CompanyDefaultArgs<ExtArgs>>): Prisma.Prisma__CompanyClient<runtime.Types.Result.GetResult<Prisma.$CompanyPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>;
+    activeSubstance<T extends Prisma.AdverseDrugReaction$activeSubstanceArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AdverseDrugReaction$activeSubstanceArgs<ExtArgs>>): Prisma.Prisma__ActiveSubstanceClient<runtime.Types.Result.GetResult<Prisma.$ActiveSubstancePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>;
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): runtime.Types.Utils.JsPromise<TResult1 | TResult2>;
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): runtime.Types.Utils.JsPromise<T | TResult>;
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): runtime.Types.Utils.JsPromise<T>;
+}
+/**
+ * Fields of the AdverseDrugReaction model
+ */
+export interface AdverseDrugReactionFieldRefs {
+    readonly id: Prisma.FieldRef<"AdverseDrugReaction", 'Int'>;
+    readonly patientId: Prisma.FieldRef<"AdverseDrugReaction", 'Int'>;
+    readonly tradeNameId: Prisma.FieldRef<"AdverseDrugReaction", 'Int'>;
+    readonly companyId: Prisma.FieldRef<"AdverseDrugReaction", 'Int'>;
+    readonly activeSubstanceId: Prisma.FieldRef<"AdverseDrugReaction", 'Int'>;
+    readonly severity: Prisma.FieldRef<"AdverseDrugReaction", 'ADRSeverity'>;
+    readonly reaction: Prisma.FieldRef<"AdverseDrugReaction", 'String'>;
+    readonly startDate: Prisma.FieldRef<"AdverseDrugReaction", 'DateTime'>;
+    readonly endDate: Prisma.FieldRef<"AdverseDrugReaction", 'DateTime'>;
+    readonly isAnonymous: Prisma.FieldRef<"AdverseDrugReaction", 'Boolean'>;
+    readonly reportedToEDA: Prisma.FieldRef<"AdverseDrugReaction", 'Boolean'>;
+    readonly edaReferenceNum: Prisma.FieldRef<"AdverseDrugReaction", 'String'>;
+    readonly status: Prisma.FieldRef<"AdverseDrugReaction", 'String'>;
+    readonly adminNotes: Prisma.FieldRef<"AdverseDrugReaction", 'String'>;
+    readonly createdAt: Prisma.FieldRef<"AdverseDrugReaction", 'DateTime'>;
+    readonly updatedAt: Prisma.FieldRef<"AdverseDrugReaction", 'DateTime'>;
+}
+/**
+ * AdverseDrugReaction findUnique
+ */
+export type AdverseDrugReactionFindUniqueArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AdverseDrugReaction
+     */
+    select?: Prisma.AdverseDrugReactionSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the AdverseDrugReaction
+     */
+    omit?: Prisma.AdverseDrugReactionOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: Prisma.AdverseDrugReactionInclude<ExtArgs> | null;
+    /**
+     * Filter, which AdverseDrugReaction to fetch.
+     */
+    where: Prisma.AdverseDrugReactionWhereUniqueInput;
+};
+/**
+ * AdverseDrugReaction findUniqueOrThrow
+ */
+export type AdverseDrugReactionFindUniqueOrThrowArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AdverseDrugReaction
+     */
+    select?: Prisma.AdverseDrugReactionSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the AdverseDrugReaction
+     */
+    omit?: Prisma.AdverseDrugReactionOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: Prisma.AdverseDrugReactionInclude<ExtArgs> | null;
+    /**
+     * Filter, which AdverseDrugReaction to fetch.
+     */
+    where: Prisma.AdverseDrugReactionWhereUniqueInput;
+};
+/**
+ * AdverseDrugReaction findFirst
+ */
+export type AdverseDrugReactionFindFirstArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AdverseDrugReaction
+     */
+    select?: Prisma.AdverseDrugReactionSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the AdverseDrugReaction
+     */
+    omit?: Prisma.AdverseDrugReactionOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: Prisma.AdverseDrugReactionInclude<ExtArgs> | null;
+    /**
+     * Filter, which AdverseDrugReaction to fetch.
+     */
+    where?: Prisma.AdverseDrugReactionWhereInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of AdverseDrugReactions to fetch.
+     */
+    orderBy?: Prisma.AdverseDrugReactionOrderByWithRelationInput | Prisma.AdverseDrugReactionOrderByWithRelationInput[];
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the position for searching for AdverseDrugReactions.
+     */
+    cursor?: Prisma.AdverseDrugReactionWhereUniqueInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` AdverseDrugReactions from the position of the cursor.
+     */
+    take?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` AdverseDrugReactions.
+     */
+    skip?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     *
+     * Filter by unique combinations of AdverseDrugReactions.
+     */
+    distinct?: Prisma.AdverseDrugReactionScalarFieldEnum | Prisma.AdverseDrugReactionScalarFieldEnum[];
+};
+/**
+ * AdverseDrugReaction findFirstOrThrow
+ */
+export type AdverseDrugReactionFindFirstOrThrowArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AdverseDrugReaction
+     */
+    select?: Prisma.AdverseDrugReactionSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the AdverseDrugReaction
+     */
+    omit?: Prisma.AdverseDrugReactionOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: Prisma.AdverseDrugReactionInclude<ExtArgs> | null;
+    /**
+     * Filter, which AdverseDrugReaction to fetch.
+     */
+    where?: Prisma.AdverseDrugReactionWhereInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of AdverseDrugReactions to fetch.
+     */
+    orderBy?: Prisma.AdverseDrugReactionOrderByWithRelationInput | Prisma.AdverseDrugReactionOrderByWithRelationInput[];
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the position for searching for AdverseDrugReactions.
+     */
+    cursor?: Prisma.AdverseDrugReactionWhereUniqueInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` AdverseDrugReactions from the position of the cursor.
+     */
+    take?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` AdverseDrugReactions.
+     */
+    skip?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     *
+     * Filter by unique combinations of AdverseDrugReactions.
+     */
+    distinct?: Prisma.AdverseDrugReactionScalarFieldEnum | Prisma.AdverseDrugReactionScalarFieldEnum[];
+};
+/**
+ * AdverseDrugReaction findMany
+ */
+export type AdverseDrugReactionFindManyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AdverseDrugReaction
+     */
+    select?: Prisma.AdverseDrugReactionSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the AdverseDrugReaction
+     */
+    omit?: Prisma.AdverseDrugReactionOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: Prisma.AdverseDrugReactionInclude<ExtArgs> | null;
+    /**
+     * Filter, which AdverseDrugReactions to fetch.
+     */
+    where?: Prisma.AdverseDrugReactionWhereInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of AdverseDrugReactions to fetch.
+     */
+    orderBy?: Prisma.AdverseDrugReactionOrderByWithRelationInput | Prisma.AdverseDrugReactionOrderByWithRelationInput[];
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the position for listing AdverseDrugReactions.
+     */
+    cursor?: Prisma.AdverseDrugReactionWhereUniqueInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` AdverseDrugReactions from the position of the cursor.
+     */
+    take?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` AdverseDrugReactions.
+     */
+    skip?: number;
+    distinct?: Prisma.AdverseDrugReactionScalarFieldEnum | Prisma.AdverseDrugReactionScalarFieldEnum[];
+};
+/**
+ * AdverseDrugReaction create
+ */
+export type AdverseDrugReactionCreateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AdverseDrugReaction
+     */
+    select?: Prisma.AdverseDrugReactionSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the AdverseDrugReaction
+     */
+    omit?: Prisma.AdverseDrugReactionOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: Prisma.AdverseDrugReactionInclude<ExtArgs> | null;
+    /**
+     * The data needed to create a AdverseDrugReaction.
+     */
+    data: Prisma.XOR<Prisma.AdverseDrugReactionCreateInput, Prisma.AdverseDrugReactionUncheckedCreateInput>;
+};
+/**
+ * AdverseDrugReaction createMany
+ */
+export type AdverseDrugReactionCreateManyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many AdverseDrugReactions.
+     */
+    data: Prisma.AdverseDrugReactionCreateManyInput | Prisma.AdverseDrugReactionCreateManyInput[];
+    skipDuplicates?: boolean;
+};
+/**
+ * AdverseDrugReaction createManyAndReturn
+ */
+export type AdverseDrugReactionCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AdverseDrugReaction
+     */
+    select?: Prisma.AdverseDrugReactionSelectCreateManyAndReturn<ExtArgs> | null;
+    /**
+     * Omit specific fields from the AdverseDrugReaction
+     */
+    omit?: Prisma.AdverseDrugReactionOmit<ExtArgs> | null;
+    /**
+     * The data used to create many AdverseDrugReactions.
+     */
+    data: Prisma.AdverseDrugReactionCreateManyInput | Prisma.AdverseDrugReactionCreateManyInput[];
+    skipDuplicates?: boolean;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: Prisma.AdverseDrugReactionIncludeCreateManyAndReturn<ExtArgs> | null;
+};
+/**
+ * AdverseDrugReaction update
+ */
+export type AdverseDrugReactionUpdateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AdverseDrugReaction
+     */
+    select?: Prisma.AdverseDrugReactionSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the AdverseDrugReaction
+     */
+    omit?: Prisma.AdverseDrugReactionOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: Prisma.AdverseDrugReactionInclude<ExtArgs> | null;
+    /**
+     * The data needed to update a AdverseDrugReaction.
+     */
+    data: Prisma.XOR<Prisma.AdverseDrugReactionUpdateInput, Prisma.AdverseDrugReactionUncheckedUpdateInput>;
+    /**
+     * Choose, which AdverseDrugReaction to update.
+     */
+    where: Prisma.AdverseDrugReactionWhereUniqueInput;
+};
+/**
+ * AdverseDrugReaction updateMany
+ */
+export type AdverseDrugReactionUpdateManyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * The data used to update AdverseDrugReactions.
+     */
+    data: Prisma.XOR<Prisma.AdverseDrugReactionUpdateManyMutationInput, Prisma.AdverseDrugReactionUncheckedUpdateManyInput>;
+    /**
+     * Filter which AdverseDrugReactions to update
+     */
+    where?: Prisma.AdverseDrugReactionWhereInput;
+    /**
+     * Limit how many AdverseDrugReactions to update.
+     */
+    limit?: number;
+};
+/**
+ * AdverseDrugReaction updateManyAndReturn
+ */
+export type AdverseDrugReactionUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AdverseDrugReaction
+     */
+    select?: Prisma.AdverseDrugReactionSelectUpdateManyAndReturn<ExtArgs> | null;
+    /**
+     * Omit specific fields from the AdverseDrugReaction
+     */
+    omit?: Prisma.AdverseDrugReactionOmit<ExtArgs> | null;
+    /**
+     * The data used to update AdverseDrugReactions.
+     */
+    data: Prisma.XOR<Prisma.AdverseDrugReactionUpdateManyMutationInput, Prisma.AdverseDrugReactionUncheckedUpdateManyInput>;
+    /**
+     * Filter which AdverseDrugReactions to update
+     */
+    where?: Prisma.AdverseDrugReactionWhereInput;
+    /**
+     * Limit how many AdverseDrugReactions to update.
+     */
+    limit?: number;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: Prisma.AdverseDrugReactionIncludeUpdateManyAndReturn<ExtArgs> | null;
+};
+/**
+ * AdverseDrugReaction upsert
+ */
+export type AdverseDrugReactionUpsertArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AdverseDrugReaction
+     */
+    select?: Prisma.AdverseDrugReactionSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the AdverseDrugReaction
+     */
+    omit?: Prisma.AdverseDrugReactionOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: Prisma.AdverseDrugReactionInclude<ExtArgs> | null;
+    /**
+     * The filter to search for the AdverseDrugReaction to update in case it exists.
+     */
+    where: Prisma.AdverseDrugReactionWhereUniqueInput;
+    /**
+     * In case the AdverseDrugReaction found by the `where` argument doesn't exist, create a new AdverseDrugReaction with this data.
+     */
+    create: Prisma.XOR<Prisma.AdverseDrugReactionCreateInput, Prisma.AdverseDrugReactionUncheckedCreateInput>;
+    /**
+     * In case the AdverseDrugReaction was found with the provided `where` argument, update it with this data.
+     */
+    update: Prisma.XOR<Prisma.AdverseDrugReactionUpdateInput, Prisma.AdverseDrugReactionUncheckedUpdateInput>;
+};
+/**
+ * AdverseDrugReaction delete
+ */
+export type AdverseDrugReactionDeleteArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AdverseDrugReaction
+     */
+    select?: Prisma.AdverseDrugReactionSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the AdverseDrugReaction
+     */
+    omit?: Prisma.AdverseDrugReactionOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: Prisma.AdverseDrugReactionInclude<ExtArgs> | null;
+    /**
+     * Filter which AdverseDrugReaction to delete.
+     */
+    where: Prisma.AdverseDrugReactionWhereUniqueInput;
+};
+/**
+ * AdverseDrugReaction deleteMany
+ */
+export type AdverseDrugReactionDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Filter which AdverseDrugReactions to delete
+     */
+    where?: Prisma.AdverseDrugReactionWhereInput;
+    /**
+     * Limit how many AdverseDrugReactions to delete.
+     */
+    limit?: number;
+};
+/**
+ * AdverseDrugReaction.patient
+ */
+export type AdverseDrugReaction$patientArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Patient
+     */
+    select?: Prisma.PatientSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the Patient
+     */
+    omit?: Prisma.PatientOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: Prisma.PatientInclude<ExtArgs> | null;
+    where?: Prisma.PatientWhereInput;
+};
+/**
+ * AdverseDrugReaction.activeSubstance
+ */
+export type AdverseDrugReaction$activeSubstanceArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ActiveSubstance
+     */
+    select?: Prisma.ActiveSubstanceSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the ActiveSubstance
+     */
+    omit?: Prisma.ActiveSubstanceOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: Prisma.ActiveSubstanceInclude<ExtArgs> | null;
+    where?: Prisma.ActiveSubstanceWhereInput;
+};
+/**
+ * AdverseDrugReaction without action
+ */
+export type AdverseDrugReactionDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AdverseDrugReaction
+     */
+    select?: Prisma.AdverseDrugReactionSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the AdverseDrugReaction
+     */
+    omit?: Prisma.AdverseDrugReactionOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: Prisma.AdverseDrugReactionInclude<ExtArgs> | null;
+};
+export {};
+//# sourceMappingURL=AdverseDrugReaction.d.ts.map

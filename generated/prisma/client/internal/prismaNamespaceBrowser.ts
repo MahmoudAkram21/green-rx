@@ -78,7 +78,18 @@ export const ModelName = {
   DrugInteractionAlert: 'DrugInteractionAlert',
   Notification: 'Notification',
   AuditLog: 'AuditLog',
-  Session: 'Session'
+  Session: 'Session',
+  Pharmacist: 'Pharmacist',
+  MedicalReport: 'MedicalReport',
+  PatientShareLink: 'PatientShareLink',
+  AdverseDrugReaction: 'AdverseDrugReaction',
+  ChildProfile: 'ChildProfile',
+  Rating: 'Rating',
+  Visit: 'Visit',
+  ContraindicationTermMapping: 'ContraindicationTermMapping',
+  BatchHistory: 'BatchHistory',
+  ImportHistory: 'ImportHistory',
+  ExportHistory: 'ExportHistory'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -251,8 +262,19 @@ export const DoctorScalarFieldEnum = {
   name: 'name',
   licenseNumber: 'licenseNumber',
   specialization: 'specialization',
+  phoneNumber: 'phoneNumber',
+  address: 'address',
+  city: 'city',
+  latitude: 'latitude',
+  longitude: 'longitude',
+  consultationFee: 'consultationFee',
+  workingHours: 'workingHours',
+  averageRating: 'averageRating',
+  totalRatings: 'totalRatings',
   isVerified: 'isVerified',
   verifiedAt: 'verifiedAt',
+  verifiedBy: 'verifiedBy',
+  verificationNotes: 'verificationNotes',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   deletedAt: 'deletedAt'
@@ -630,6 +652,10 @@ export const PrescriptionScalarFieldEnum = {
   currentRefillCount: 'currentRefillCount',
   notes: 'notes',
   version: 'version',
+  pdfUrl: 'pdfUrl',
+  isSharedViaApp: 'isSharedViaApp',
+  sharedVia: 'sharedVia',
+  isAddedToProfile: 'isAddedToProfile',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   deletedAt: 'deletedAt'
@@ -712,6 +738,194 @@ export const SessionScalarFieldEnum = {
 export type SessionScalarFieldEnum = (typeof SessionScalarFieldEnum)[keyof typeof SessionScalarFieldEnum]
 
 
+export const PharmacistScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  name: 'name',
+  licenseNumber: 'licenseNumber',
+  pharmacyName: 'pharmacyName',
+  phoneNumber: 'phoneNumber',
+  address: 'address',
+  city: 'city',
+  isVerified: 'isVerified',
+  verifiedAt: 'verifiedAt',
+  verifiedBy: 'verifiedBy',
+  verificationNotes: 'verificationNotes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt'
+} as const
+
+export type PharmacistScalarFieldEnum = (typeof PharmacistScalarFieldEnum)[keyof typeof PharmacistScalarFieldEnum]
+
+
+export const MedicalReportScalarFieldEnum = {
+  id: 'id',
+  patientId: 'patientId',
+  uploadedBy: 'uploadedBy',
+  fileName: 'fileName',
+  fileUrl: 'fileUrl',
+  fileType: 'fileType',
+  fileSize: 'fileSize',
+  reportType: 'reportType',
+  reportDate: 'reportDate',
+  notes: 'notes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type MedicalReportScalarFieldEnum = (typeof MedicalReportScalarFieldEnum)[keyof typeof MedicalReportScalarFieldEnum]
+
+
+export const PatientShareLinkScalarFieldEnum = {
+  id: 'id',
+  patientId: 'patientId',
+  shareToken: 'shareToken',
+  expiresAt: 'expiresAt',
+  isActive: 'isActive',
+  accessCount: 'accessCount',
+  lastAccessedAt: 'lastAccessedAt',
+  createdAt: 'createdAt'
+} as const
+
+export type PatientShareLinkScalarFieldEnum = (typeof PatientShareLinkScalarFieldEnum)[keyof typeof PatientShareLinkScalarFieldEnum]
+
+
+export const AdverseDrugReactionScalarFieldEnum = {
+  id: 'id',
+  patientId: 'patientId',
+  tradeNameId: 'tradeNameId',
+  companyId: 'companyId',
+  activeSubstanceId: 'activeSubstanceId',
+  severity: 'severity',
+  reaction: 'reaction',
+  startDate: 'startDate',
+  endDate: 'endDate',
+  isAnonymous: 'isAnonymous',
+  reportedToEDA: 'reportedToEDA',
+  edaReferenceNum: 'edaReferenceNum',
+  status: 'status',
+  adminNotes: 'adminNotes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type AdverseDrugReactionScalarFieldEnum = (typeof AdverseDrugReactionScalarFieldEnum)[keyof typeof AdverseDrugReactionScalarFieldEnum]
+
+
+export const ChildProfileScalarFieldEnum = {
+  id: 'id',
+  parentPatientId: 'parentPatientId',
+  name: 'name',
+  dateOfBirth: 'dateOfBirth',
+  gender: 'gender',
+  weight: 'weight',
+  height: 'height',
+  ageClassification: 'ageClassification',
+  allergies: 'allergies',
+  diseases: 'diseases',
+  medicalHistory: 'medicalHistory',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ChildProfileScalarFieldEnum = (typeof ChildProfileScalarFieldEnum)[keyof typeof ChildProfileScalarFieldEnum]
+
+
+export const RatingScalarFieldEnum = {
+  id: 'id',
+  patientId: 'patientId',
+  doctorId: 'doctorId',
+  pharmacistId: 'pharmacistId',
+  ratedType: 'ratedType',
+  rating: 'rating',
+  review: 'review',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type RatingScalarFieldEnum = (typeof RatingScalarFieldEnum)[keyof typeof RatingScalarFieldEnum]
+
+
+export const VisitScalarFieldEnum = {
+  id: 'id',
+  patientId: 'patientId',
+  doctorId: 'doctorId',
+  visitDate: 'visitDate',
+  visitType: 'visitType',
+  isNewVisit: 'isNewVisit',
+  isArchived: 'isArchived',
+  archivedAt: 'archivedAt',
+  diagnosis: 'diagnosis',
+  treatmentPlan: 'treatmentPlan',
+  notes: 'notes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type VisitScalarFieldEnum = (typeof VisitScalarFieldEnum)[keyof typeof VisitScalarFieldEnum]
+
+
+export const ContraindicationTermMappingScalarFieldEnum = {
+  id: 'id',
+  standardTerm: 'standardTerm',
+  alternativeTerms: 'alternativeTerms',
+  category: 'category',
+  warningFieldName: 'warningFieldName',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ContraindicationTermMappingScalarFieldEnum = (typeof ContraindicationTermMappingScalarFieldEnum)[keyof typeof ContraindicationTermMappingScalarFieldEnum]
+
+
+export const BatchHistoryScalarFieldEnum = {
+  id: 'id',
+  tradeNameId: 'tradeNameId',
+  batchNumber: 'batchNumber',
+  manufacturingDate: 'manufacturingDate',
+  expiryDate: 'expiryDate',
+  quantity: 'quantity',
+  isRecalled: 'isRecalled',
+  recallReason: 'recallReason',
+  recallDate: 'recallDate',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type BatchHistoryScalarFieldEnum = (typeof BatchHistoryScalarFieldEnum)[keyof typeof BatchHistoryScalarFieldEnum]
+
+
+export const ImportHistoryScalarFieldEnum = {
+  id: 'id',
+  fileName: 'fileName',
+  fileSize: 'fileSize',
+  fileType: 'fileType',
+  totalRows: 'totalRows',
+  successfulRows: 'successfulRows',
+  failedRows: 'failedRows',
+  skippedRows: 'skippedRows',
+  importedBy: 'importedBy',
+  importDate: 'importDate',
+  errors: 'errors',
+  executionTime: 'executionTime'
+} as const
+
+export type ImportHistoryScalarFieldEnum = (typeof ImportHistoryScalarFieldEnum)[keyof typeof ImportHistoryScalarFieldEnum]
+
+
+export const ExportHistoryScalarFieldEnum = {
+  id: 'id',
+  format: 'format',
+  totalRecords: 'totalRecords',
+  filters: 'filters',
+  exportedBy: 'exportedBy',
+  exportDate: 'exportDate'
+} as const
+
+export type ExportHistoryScalarFieldEnum = (typeof ExportHistoryScalarFieldEnum)[keyof typeof ExportHistoryScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -726,6 +940,13 @@ export const NullableJsonNullValueInput = {
 } as const
 
 export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
+
+
+export const JsonNullValueInput = {
+  JsonNull: 'JsonNull'
+} as const
+
+export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
 
 
 export const QueryMode = {

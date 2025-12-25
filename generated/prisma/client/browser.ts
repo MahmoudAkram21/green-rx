@@ -157,3 +157,58 @@ export type AuditLog = Prisma.AuditLogModel
  * 
  */
 export type Session = Prisma.SessionModel
+/**
+ * Model Pharmacist
+ * 
+ */
+export type Pharmacist = Prisma.PharmacistModel
+/**
+ * Model MedicalReport
+ * 
+ */
+export type MedicalReport = Prisma.MedicalReportModel
+/**
+ * Model PatientShareLink
+ * 
+ */
+export type PatientShareLink = Prisma.PatientShareLinkModel
+/**
+ * Model AdverseDrugReaction
+ * 
+ */
+export type AdverseDrugReaction = Prisma.AdverseDrugReactionModel
+/**
+ * Model ChildProfile
+ * 
+ */
+export type ChildProfile = Prisma.ChildProfileModel
+/**
+ * Model Rating
+ * 
+ */
+export type Rating = Prisma.RatingModel
+/**
+ * Model Visit
+ * 
+ */
+export type Visit = Prisma.VisitModel
+/**
+ * Model ContraindicationTermMapping
+ * 
+ */
+export type ContraindicationTermMapping = Prisma.ContraindicationTermMappingModel
+/**
+ * Model BatchHistory
+ * 
+ */
+export type BatchHistory = Prisma.BatchHistoryModel
+/**
+ * Model ImportHistory
+ * 
+ */
+export type ImportHistory = Prisma.ImportHistoryModel
+/**
+ * Model ExportHistory
+ * 
+ */
+export type ExportHistory = Prisma.ExportHistoryModel

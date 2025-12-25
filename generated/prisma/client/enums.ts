@@ -12,6 +12,7 @@
 export const UserRole = {
   Patient: 'Patient',
   Doctor: 'Doctor',
+  Pharmacist: 'Pharmacist',
   Admin: 'Admin',
   Company: 'Company',
   SuperAdmin: 'SuperAdmin'
@@ -160,3 +161,42 @@ export const WarningSeverity = {
 } as const
 
 export type WarningSeverity = (typeof WarningSeverity)[keyof typeof WarningSeverity]
+
+
+export const ADRSeverity = {
+  Mild: 'Mild',
+  Moderate: 'Moderate',
+  Severe: 'Severe',
+  LifeThreatening: 'LifeThreatening'
+} as const
+
+export type ADRSeverity = (typeof ADRSeverity)[keyof typeof ADRSeverity]
+
+
+export const RatingType = {
+  Doctor: 'Doctor',
+  Pharmacist: 'Pharmacist'
+} as const
+
+export type RatingType = (typeof RatingType)[keyof typeof RatingType]
+
+
+export const ReportType = {
+  LabTest: 'LabTest',
+  Imaging: 'Imaging',
+  Consultation: 'Consultation',
+  Procedure: 'Procedure',
+  Other: 'Other'
+} as const
+
+export type ReportType = (typeof ReportType)[keyof typeof ReportType]
+
+
+export const VisitType = {
+  FirstVisit: 'FirstVisit',
+  FollowUp: 'FollowUp',
+  Emergency: 'Emergency',
+  Consultation: 'Consultation'
+} as const
+
+export type VisitType = (typeof VisitType)[keyof typeof VisitType]

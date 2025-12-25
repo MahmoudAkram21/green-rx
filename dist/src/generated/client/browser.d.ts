@@ -1,0 +1,200 @@
+import * as Prisma from './internal/prismaNamespaceBrowser.js';
+export { Prisma };
+export * as $Enums from './enums.js';
+export * from './enums.js';
+/**
+ * Model User
+ *
+ */
+export type User = Prisma.UserModel;
+/**
+ * Model PricingPlan
+ *
+ */
+export type PricingPlan = Prisma.PricingPlanModel;
+/**
+ * Model Subscription
+ *
+ */
+export type Subscription = Prisma.SubscriptionModel;
+/**
+ * Model Payment
+ *
+ */
+export type Payment = Prisma.PaymentModel;
+/**
+ * Model Patient
+ *
+ */
+export type Patient = Prisma.PatientModel;
+/**
+ * Model MedicalHistory
+ *
+ */
+export type MedicalHistory = Prisma.MedicalHistoryModel;
+/**
+ * Model FamilyHistory
+ *
+ */
+export type FamilyHistory = Prisma.FamilyHistoryModel;
+/**
+ * Model Lifestyle
+ *
+ */
+export type Lifestyle = Prisma.LifestyleModel;
+/**
+ * Model Allergy
+ *
+ */
+export type Allergy = Prisma.AllergyModel;
+/**
+ * Model Doctor
+ *
+ */
+export type Doctor = Prisma.DoctorModel;
+/**
+ * Model PatientDoctor
+ *
+ */
+export type PatientDoctor = Prisma.PatientDoctorModel;
+/**
+ * Model Consultation
+ *
+ */
+export type Consultation = Prisma.ConsultationModel;
+/**
+ * Model Appointment
+ *
+ */
+export type Appointment = Prisma.AppointmentModel;
+/**
+ * Model Disease
+ *
+ */
+export type Disease = Prisma.DiseaseModel;
+/**
+ * Model PatientDisease
+ *
+ */
+export type PatientDisease = Prisma.PatientDiseaseModel;
+/**
+ * Model ActiveSubstance
+ *
+ */
+export type ActiveSubstance = Prisma.ActiveSubstanceModel;
+/**
+ * Model DiseaseActiveSubstanceWarning
+ *
+ */
+export type DiseaseActiveSubstanceWarning = Prisma.DiseaseActiveSubstanceWarningModel;
+/**
+ * Model MedicineAlternative
+ *
+ */
+export type MedicineAlternative = Prisma.MedicineAlternativeModel;
+/**
+ * Model TradeName
+ *
+ */
+export type TradeName = Prisma.TradeNameModel;
+/**
+ * Model Company
+ *
+ */
+export type Company = Prisma.CompanyModel;
+/**
+ * Model ContractingCompany
+ *
+ */
+export type ContractingCompany = Prisma.ContractingCompanyModel;
+/**
+ * Model ContractingCompanyTradeName
+ *
+ */
+export type ContractingCompanyTradeName = Prisma.ContractingCompanyTradeNameModel;
+/**
+ * Model Prescription
+ *
+ */
+export type Prescription = Prisma.PrescriptionModel;
+/**
+ * Model PrescriptionVersion
+ *
+ */
+export type PrescriptionVersion = Prisma.PrescriptionVersionModel;
+/**
+ * Model DrugInteractionAlert
+ *
+ */
+export type DrugInteractionAlert = Prisma.DrugInteractionAlertModel;
+/**
+ * Model Notification
+ *
+ */
+export type Notification = Prisma.NotificationModel;
+/**
+ * Model AuditLog
+ *
+ */
+export type AuditLog = Prisma.AuditLogModel;
+/**
+ * Model Session
+ *
+ */
+export type Session = Prisma.SessionModel;
+/**
+ * Model Pharmacist
+ *
+ */
+export type Pharmacist = Prisma.PharmacistModel;
+/**
+ * Model MedicalReport
+ *
+ */
+export type MedicalReport = Prisma.MedicalReportModel;
+/**
+ * Model PatientShareLink
+ *
+ */
+export type PatientShareLink = Prisma.PatientShareLinkModel;
+/**
+ * Model AdverseDrugReaction
+ *
+ */
+export type AdverseDrugReaction = Prisma.AdverseDrugReactionModel;
+/**
+ * Model ChildProfile
+ *
+ */
+export type ChildProfile = Prisma.ChildProfileModel;
+/**
+ * Model Rating
+ *
+ */
+export type Rating = Prisma.RatingModel;
+/**
+ * Model Visit
+ *
+ */
+export type Visit = Prisma.VisitModel;
+/**
+ * Model ContraindicationTermMapping
+ *
+ */
+export type ContraindicationTermMapping = Prisma.ContraindicationTermMappingModel;
+/**
+ * Model BatchHistory
+ *
+ */
+export type BatchHistory = Prisma.BatchHistoryModel;
+/**
+ * Model ImportHistory
+ *
+ */
+export type ImportHistory = Prisma.ImportHistoryModel;
+/**
+ * Model ExportHistory
+ *
+ */
+export type ExportHistory = Prisma.ExportHistoryModel;
+//# sourceMappingURL=browser.d.ts.map

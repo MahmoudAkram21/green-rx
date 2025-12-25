@@ -1,8 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
-import prisma from '../config/database.js';
+import { prisma } from '../lib/prisma';
 
 // Get all users
-export const getAllUsers = async (req: Request, res: Response, next: NextFunction) => {
+export const getAllUsers = async (_req: Request, res: Response, next: NextFunction) => {
   try {
     const users = await prisma.user.findMany();
     res.json(users);
@@ -20,7 +20,8 @@ export const getUserById = async (req: Request, res: Response, next: NextFunctio
     });
 
     if (!user) {
-      return res.status(404).json({ error: 'User not found' });
+      res.status(404).json({ error: 'User not found' });
+      return;
     }
 
     res.json(user);
@@ -32,20 +33,22 @@ export const getUserById = async (req: Request, res: Response, next: NextFunctio
 // Create new user
 export const createUser = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { email, name } = req.body;
+    const { email, passwordHash, role } = req.body;
 
-    if (!email) {
-      return res.status(400).json({ error: 'Email is required' });
+    if (!email || !passwordHash || !role) {
+      res.status(400).json({ error: 'Email, passwordHash, and role are required' });
+      return;
     }
 
     const user = await prisma.user.create({
-      data: { email, name }
+      data: { email, passwordHash, role, isActive: true }
     });
 
     res.status(201).json(user);
   } catch (error: any) {
     if (error.code === 'P2002') {
-      return res.status(409).json({ error: 'Email already exists' });
+      res.status(409).json({ error: 'Email already exists' });
+      return;
     }
     next(error);
   }
@@ -55,20 +58,22 @@ export const createUser = async (req: Request, res: Response, next: NextFunction
 export const updateUser = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { id } = req.params;
-    const { email, name } = req.body;
+    const { email, isActive } = req.body;
 
     const user = await prisma.user.update({
       where: { id: parseInt(id) },
-      data: { email, name }
+      data: { email, isActive }
     });
 
     res.json(user);
   } catch (error: any) {
     if (error.code === 'P2025') {
-      return res.status(404).json({ error: 'User not found' });
+      res.status(404).json({ error: 'User not found' });
+      return;
     }
     if (error.code === 'P2002') {
-      return res.status(409).json({ error: 'Email already exists' });
+      res.status(409).json({ error: 'Email already exists' });
+      return;
     }
     next(error);
   }
@@ -86,7 +91,8 @@ export const deleteUser = async (req: Request, res: Response, next: NextFunction
     res.status(204).send();
   } catch (error: any) {
     if (error.code === 'P2025') {
-      return res.status(404).json({ error: 'User not found' });
+      res.status(404).json({ error: 'User not found' });
+      return;
     }
     next(error);
   }
