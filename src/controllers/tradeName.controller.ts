@@ -1,21 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { z } from 'zod';
 import { prisma } from '../lib/prisma';
-
-// Validation Schemas
-const createTradeNameSchema = z.object({
-    title: z.string().min(1),
-    activeSubstanceId: z.number().int().positive(),
-    companyId: z.number().int().positive(),
-    batchNumber: z.string().optional(),
-    barCode: z.string().optional(),
-    warningNotification: z.string().optional(),
-    availabilityStatus: z.enum(['InStock', 'OutOfStock', 'Discontinued', 'Pending']).optional(),
-    stockQuantity: z.number().int().nonnegative().nullable().optional(),
-    expiryDate: z.string().datetime().nullable().optional()
-});
-
-const updateTradeNameSchema = createTradeNameSchema.partial();
+import { createTradeNameSchema, updateTradeNameSchema } from '../zod/tradeName.zod';
 
 // Create Trade Name
 export const createTradeName = async (req: Request, res: Response, next: NextFunction) => {

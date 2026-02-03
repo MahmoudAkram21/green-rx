@@ -1,13 +1,18 @@
-import express from 'express';
-import { register, login, refresh, logout, getMe } from '../controllers/auth.controller.js';
-import { authenticate } from '../middleware/auth.middleware.js';
-const router = express.Router();
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = __importDefault(require("express"));
+const auth_controller_1 = require("../controllers/auth.controller");
+const auth_middleware_1 = require("../middleware/auth.middleware");
+const router = express_1.default.Router();
 // Public routes
-router.post('/register', register);
-router.post('/login', login);
-router.post('/refresh', refresh);
+router.post('/register', auth_controller_1.register);
+router.post('/login', auth_controller_1.login);
+router.post('/refresh', auth_controller_1.refresh);
 // Protected routes
-router.post('/logout', authenticate, logout);
-router.get('/me', authenticate, getMe);
-export default router;
+router.post('/logout', auth_middleware_1.authenticate, auth_controller_1.logout);
+router.get('/me', auth_middleware_1.authenticate, auth_controller_1.getMe);
+exports.default = router;
 //# sourceMappingURL=auth.routes.js.map

@@ -1,3 +1,5 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 // Request validation middleware
 const validateRequest = (schema) => {
     return (req, res, next) => {
@@ -8,8 +10,8 @@ const validateRequest = (schema) => {
                 details: error.details.map(detail => detail.message)
             });
         }
-        next();
+        return next();
     };
 };
-export default validateRequest;
+exports.default = validateRequest;
 //# sourceMappingURL=validateRequest.js.map

@@ -1,3 +1,5 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 // Custom error handler middleware
 const errorHandler = (err, _req, res, _next) => {
     console.error('Error:', err);
@@ -20,5 +22,5 @@ const errorHandler = (err, _req, res, _next) => {
         ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
     });
 };
-export default errorHandler;
+exports.default = errorHandler;
 //# sourceMappingURL=errorHandler.js.map

@@ -1,19 +1,23 @@
-import prisma from '../config/database.js';
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.deleteUser = exports.updateUser = exports.createUser = exports.getUserById = exports.getAllUsers = void 0;
+const prisma_1 = require("../lib/prisma");
 // Get all users
-export const getAllUsers = async (req, res, next) => {
+const getAllUsers = async (_req, res, next) => {
     try {
-        const users = await prisma.user.findMany();
+        const users = await prisma_1.prisma.user.findMany();
         res.json(users);
     }
     catch (error) {
         next(error);
     }
 };
+exports.getAllUsers = getAllUsers;
 // Get user by ID
-export const getUserById = async (req, res, next) => {
+const getUserById = async (req, res, next) => {
     try {
         const { id } = req.params;
-        const user = await prisma.user.findUnique({
+        const user = await prisma_1.prisma.user.findUnique({
             where: { id: parseInt(id) }
         });
         if (!user) {
@@ -26,15 +30,16 @@ export const getUserById = async (req, res, next) => {
         next(error);
     }
 };
+exports.getUserById = getUserById;
 // Create new user
-export const createUser = async (req, res, next) => {
+const createUser = async (req, res, next) => {
     try {
         const { email, passwordHash, role } = req.body;
         if (!email || !passwordHash || !role) {
             res.status(400).json({ error: 'Email, passwordHash, and role are required' });
             return;
         }
-        const user = await prisma.user.create({
+        const user = await prisma_1.prisma.user.create({
             data: { email, passwordHash, role, isActive: true }
         });
         res.status(201).json(user);
@@ -47,12 +52,13 @@ export const createUser = async (req, res, next) => {
         next(error);
     }
 };
+exports.createUser = createUser;
 // Update user
-export const updateUser = async (req, res, next) => {
+const updateUser = async (req, res, next) => {
     try {
         const { id } = req.params;
         const { email, isActive } = req.body;
-        const user = await prisma.user.update({
+        const user = await prisma_1.prisma.user.update({
             where: { id: parseInt(id) },
             data: { email, isActive }
         });
@@ -70,11 +76,12 @@ export const updateUser = async (req, res, next) => {
         next(error);
     }
 };
+exports.updateUser = updateUser;
 // Delete user
-export const deleteUser = async (req, res, next) => {
+const deleteUser = async (req, res, next) => {
     try {
         const { id } = req.params;
-        await prisma.user.delete({
+        await prisma_1.prisma.user.delete({
             where: { id: parseInt(id) }
         });
         res.status(204).send();
@@ -87,4 +94,5 @@ export const deleteUser = async (req, res, next) => {
         next(error);
     }
 };
+exports.deleteUser = deleteUser;
 //# sourceMappingURL=user.controller.js.map

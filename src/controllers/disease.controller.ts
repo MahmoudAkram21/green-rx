@@ -1,24 +1,12 @@
 import { Request, Response, NextFunction } from 'express';
 import { z } from 'zod';
 import { prisma } from '../lib/prisma';
-import { WarningSeverity, DiseaseSeverity } from '../generated/client';
-
-// Validation Schemas
-const createDiseaseSchema = z.object({
-    name: z.string().min(1),
-    severity: z.nativeEnum(DiseaseSeverity),
-    description: z.string().optional()
-});
-
-const updateDiseaseSchema = createDiseaseSchema.partial();
-
-const createWarningSchema = z.object({
-    diseaseId: z.number().int().positive(),
-    activeSubstanceId: z.number().int().positive(),
-    warningFieldName: z.string().min(1),
-    warningMessage: z.string().min(1),
-    severity: z.nativeEnum(WarningSeverity)
-});
+import { DiseaseSeverity } from '../generated/client';
+import {
+    createDiseaseSchema,
+    updateDiseaseSchema,
+    createWarningSchema
+} from '../zod/disease.zod';
 
 // Create Disease
 export const createDisease = async (req: Request, res: Response, next: NextFunction) => {

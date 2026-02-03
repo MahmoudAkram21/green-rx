@@ -1,16 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { prisma } from '../lib/prisma';
-import { z } from 'zod';
-
-const visitSchema = z.object({
-    patientId: z.number(),
-    doctorId: z.number(),
-    visitDate: z.string().transform(str => new Date(str)),
-    visitType: z.enum(['FirstVisit', 'FollowUp', 'Emergency', 'Consultation']).optional(),
-    diagnosis: z.string().optional(),
-    treatmentPlan: z.string().optional(),
-    notes: z.string().optional()
-});
+import { visitSchema, updateVisitSchema } from '../zod/visit.zod';
 
 class VisitController {
     // Create a visit
@@ -159,15 +149,11 @@ class VisitController {
     async updateVisit(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const { id } = req.params;
-            const { diagnosis, treatment, notes } = req.body;
+            const data = updateVisitSchema.parse(req.body);
 
             const visit = await prisma.visit.update({
                 where: { id: Number(id) },
-                data: {
-                    diagnosis,
-                    treatmentPlan: treatment,
-                    notes
-                }
+                data
             });
 
             res.json(visit);

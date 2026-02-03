@@ -1,5 +1,5 @@
 import * as runtime from "@prisma/client/runtime/client";
-import type * as Prisma from "./prismaNamespace.js";
+import type * as Prisma from "./prismaNamespace";
 export type LogOptions<ClientOptions extends Prisma.PrismaClientOptions> = 'log' extends keyof ClientOptions ? ClientOptions['log'] extends Array<Prisma.LogLevel | Prisma.LogDefinition> ? Prisma.GetEvents<ClientOptions['log']> : never : never;
 export interface PrismaClientConstructor {
     /**
@@ -277,6 +277,17 @@ export interface PrismaClient<in LogOpts extends Prisma.LogLevel = never, in out
         omit: OmitOpts;
     }>;
     /**
+     * `prisma.diseaseWarningRule`: Exposes CRUD operations for the **DiseaseWarningRule** model.
+      * Example usage:
+      * ```ts
+      * // Fetch zero or more DiseaseWarningRules
+      * const diseaseWarningRules = await prisma.diseaseWarningRule.findMany()
+      * ```
+      */
+    get diseaseWarningRule(): Prisma.DiseaseWarningRuleDelegate<ExtArgs, {
+        omit: OmitOpts;
+    }>;
+    /**
      * `prisma.activeSubstance`: Exposes CRUD operations for the **ActiveSubstance** model.
       * Example usage:
       * ```ts
@@ -527,6 +538,17 @@ export interface PrismaClient<in LogOpts extends Prisma.LogLevel = never, in out
       * ```
       */
     get importHistory(): Prisma.ImportHistoryDelegate<ExtArgs, {
+        omit: OmitOpts;
+    }>;
+    /**
+     * `prisma.medicineSuggestion`: Exposes CRUD operations for the **MedicineSuggestion** model.
+      * Example usage:
+      * ```ts
+      * // Fetch zero or more MedicineSuggestions
+      * const medicineSuggestions = await prisma.medicineSuggestion.findMany()
+      * ```
+      */
+    get medicineSuggestion(): Prisma.MedicineSuggestionDelegate<ExtArgs, {
         omit: OmitOpts;
     }>;
     /**

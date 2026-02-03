@@ -4,23 +4,7 @@ import { prisma } from '../lib/prisma';
 import { hashPassword, comparePassword } from '../utils/password.util';
 import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from '../utils/jwt.util';
 import { UserRole } from '../generated/client';
-
-// Validation Schemas
-const registerSchema = z.object({
-    email: z.string().email(),
-    password: z.string().min(6),
-    role: z.nativeEnum(UserRole).default(UserRole.Patient),
-    name: z.string().min(2).optional() // For creating patient/doctor profile stub
-});
-
-const loginSchema = z.object({
-    email: z.string().email(),
-    password: z.string()
-});
-
-const refreshTokenSchema = z.object({
-    refreshToken: z.string()
-});
+import { registerSchema, loginSchema, refreshTokenSchema } from '../zod/auth.zod';
 
 // Register
 export const register = async (req: Request, res: Response, next: NextFunction) => {

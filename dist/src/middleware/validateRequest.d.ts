@@ -8,6 +8,6 @@ interface ValidationSchema {
         };
     };
 }
-declare const validateRequest: (schema: ValidationSchema) => (req: Request, res: Response, next: NextFunction) => Response<any, Record<string, any>> | undefined;
+declare const validateRequest: (schema: ValidationSchema) => (req: Request, res: Response, next: NextFunction) => void | Response<any, Record<string, any>>;
 export default validateRequest;
 //# sourceMappingURL=validateRequest.d.ts.map

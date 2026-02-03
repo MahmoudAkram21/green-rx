@@ -1,5 +1,5 @@
 import type * as runtime from "@prisma/client/runtime/client";
-import type * as Prisma from "../internal/prismaNamespace.js";
+import type * as Prisma from "../internal/prismaNamespace";
 /**
  * Model PatientShareLink
  *
@@ -15,16 +15,19 @@ export type AggregatePatientShareLink = {
 export type PatientShareLinkAvgAggregateOutputType = {
     id: number | null;
     patientId: number | null;
+    doctorId: number | null;
     accessCount: number | null;
 };
 export type PatientShareLinkSumAggregateOutputType = {
     id: number | null;
     patientId: number | null;
+    doctorId: number | null;
     accessCount: number | null;
 };
 export type PatientShareLinkMinAggregateOutputType = {
     id: number | null;
     patientId: number | null;
+    doctorId: number | null;
     shareToken: string | null;
     expiresAt: Date | null;
     isActive: boolean | null;
@@ -35,6 +38,7 @@ export type PatientShareLinkMinAggregateOutputType = {
 export type PatientShareLinkMaxAggregateOutputType = {
     id: number | null;
     patientId: number | null;
+    doctorId: number | null;
     shareToken: string | null;
     expiresAt: Date | null;
     isActive: boolean | null;
@@ -45,6 +49,7 @@ export type PatientShareLinkMaxAggregateOutputType = {
 export type PatientShareLinkCountAggregateOutputType = {
     id: number;
     patientId: number;
+    doctorId: number;
     shareToken: number;
     expiresAt: number;
     isActive: number;
@@ -56,16 +61,19 @@ export type PatientShareLinkCountAggregateOutputType = {
 export type PatientShareLinkAvgAggregateInputType = {
     id?: true;
     patientId?: true;
+    doctorId?: true;
     accessCount?: true;
 };
 export type PatientShareLinkSumAggregateInputType = {
     id?: true;
     patientId?: true;
+    doctorId?: true;
     accessCount?: true;
 };
 export type PatientShareLinkMinAggregateInputType = {
     id?: true;
     patientId?: true;
+    doctorId?: true;
     shareToken?: true;
     expiresAt?: true;
     isActive?: true;
@@ -76,6 +84,7 @@ export type PatientShareLinkMinAggregateInputType = {
 export type PatientShareLinkMaxAggregateInputType = {
     id?: true;
     patientId?: true;
+    doctorId?: true;
     shareToken?: true;
     expiresAt?: true;
     isActive?: true;
@@ -86,6 +95,7 @@ export type PatientShareLinkMaxAggregateInputType = {
 export type PatientShareLinkCountAggregateInputType = {
     id?: true;
     patientId?: true;
+    doctorId?: true;
     shareToken?: true;
     expiresAt?: true;
     isActive?: true;
@@ -173,6 +183,7 @@ export type PatientShareLinkGroupByArgs<ExtArgs extends runtime.Types.Extensions
 export type PatientShareLinkGroupByOutputType = {
     id: number;
     patientId: number;
+    doctorId: number | null;
     shareToken: string;
     expiresAt: Date | null;
     isActive: boolean;
@@ -194,6 +205,7 @@ export type PatientShareLinkWhereInput = {
     NOT?: Prisma.PatientShareLinkWhereInput | Prisma.PatientShareLinkWhereInput[];
     id?: Prisma.IntFilter<"PatientShareLink"> | number;
     patientId?: Prisma.IntFilter<"PatientShareLink"> | number;
+    doctorId?: Prisma.IntNullableFilter<"PatientShareLink"> | number | null;
     shareToken?: Prisma.StringFilter<"PatientShareLink"> | string;
     expiresAt?: Prisma.DateTimeNullableFilter<"PatientShareLink"> | Date | string | null;
     isActive?: Prisma.BoolFilter<"PatientShareLink"> | boolean;
@@ -201,10 +213,12 @@ export type PatientShareLinkWhereInput = {
     lastAccessedAt?: Prisma.DateTimeNullableFilter<"PatientShareLink"> | Date | string | null;
     createdAt?: Prisma.DateTimeFilter<"PatientShareLink"> | Date | string;
     patient?: Prisma.XOR<Prisma.PatientScalarRelationFilter, Prisma.PatientWhereInput>;
+    doctor?: Prisma.XOR<Prisma.DoctorNullableScalarRelationFilter, Prisma.DoctorWhereInput> | null;
 };
 export type PatientShareLinkOrderByWithRelationInput = {
     id?: Prisma.SortOrder;
     patientId?: Prisma.SortOrder;
+    doctorId?: Prisma.SortOrderInput | Prisma.SortOrder;
     shareToken?: Prisma.SortOrder;
     expiresAt?: Prisma.SortOrderInput | Prisma.SortOrder;
     isActive?: Prisma.SortOrder;
@@ -212,6 +226,7 @@ export type PatientShareLinkOrderByWithRelationInput = {
     lastAccessedAt?: Prisma.SortOrderInput | Prisma.SortOrder;
     createdAt?: Prisma.SortOrder;
     patient?: Prisma.PatientOrderByWithRelationInput;
+    doctor?: Prisma.DoctorOrderByWithRelationInput;
 };
 export type PatientShareLinkWhereUniqueInput = Prisma.AtLeast<{
     id?: number;
@@ -220,16 +235,19 @@ export type PatientShareLinkWhereUniqueInput = Prisma.AtLeast<{
     OR?: Prisma.PatientShareLinkWhereInput[];
     NOT?: Prisma.PatientShareLinkWhereInput | Prisma.PatientShareLinkWhereInput[];
     patientId?: Prisma.IntFilter<"PatientShareLink"> | number;
+    doctorId?: Prisma.IntNullableFilter<"PatientShareLink"> | number | null;
     expiresAt?: Prisma.DateTimeNullableFilter<"PatientShareLink"> | Date | string | null;
     isActive?: Prisma.BoolFilter<"PatientShareLink"> | boolean;
     accessCount?: Prisma.IntFilter<"PatientShareLink"> | number;
     lastAccessedAt?: Prisma.DateTimeNullableFilter<"PatientShareLink"> | Date | string | null;
     createdAt?: Prisma.DateTimeFilter<"PatientShareLink"> | Date | string;
     patient?: Prisma.XOR<Prisma.PatientScalarRelationFilter, Prisma.PatientWhereInput>;
+    doctor?: Prisma.XOR<Prisma.DoctorNullableScalarRelationFilter, Prisma.DoctorWhereInput> | null;
 }, "id" | "shareToken">;
 export type PatientShareLinkOrderByWithAggregationInput = {
     id?: Prisma.SortOrder;
     patientId?: Prisma.SortOrder;
+    doctorId?: Prisma.SortOrderInput | Prisma.SortOrder;
     shareToken?: Prisma.SortOrder;
     expiresAt?: Prisma.SortOrderInput | Prisma.SortOrder;
     isActive?: Prisma.SortOrder;
@@ -248,6 +266,7 @@ export type PatientShareLinkScalarWhereWithAggregatesInput = {
     NOT?: Prisma.PatientShareLinkScalarWhereWithAggregatesInput | Prisma.PatientShareLinkScalarWhereWithAggregatesInput[];
     id?: Prisma.IntWithAggregatesFilter<"PatientShareLink"> | number;
     patientId?: Prisma.IntWithAggregatesFilter<"PatientShareLink"> | number;
+    doctorId?: Prisma.IntNullableWithAggregatesFilter<"PatientShareLink"> | number | null;
     shareToken?: Prisma.StringWithAggregatesFilter<"PatientShareLink"> | string;
     expiresAt?: Prisma.DateTimeNullableWithAggregatesFilter<"PatientShareLink"> | Date | string | null;
     isActive?: Prisma.BoolWithAggregatesFilter<"PatientShareLink"> | boolean;
@@ -263,10 +282,12 @@ export type PatientShareLinkCreateInput = {
     lastAccessedAt?: Date | string | null;
     createdAt?: Date | string;
     patient: Prisma.PatientCreateNestedOneWithoutShareLinksInput;
+    doctor?: Prisma.DoctorCreateNestedOneWithoutPatientShareLinksInput;
 };
 export type PatientShareLinkUncheckedCreateInput = {
     id?: number;
     patientId: number;
+    doctorId?: number | null;
     shareToken: string;
     expiresAt?: Date | string | null;
     isActive?: boolean;
@@ -282,10 +303,12 @@ export type PatientShareLinkUpdateInput = {
     lastAccessedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     patient?: Prisma.PatientUpdateOneRequiredWithoutShareLinksNestedInput;
+    doctor?: Prisma.DoctorUpdateOneWithoutPatientShareLinksNestedInput;
 };
 export type PatientShareLinkUncheckedUpdateInput = {
     id?: Prisma.IntFieldUpdateOperationsInput | number;
     patientId?: Prisma.IntFieldUpdateOperationsInput | number;
+    doctorId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
     shareToken?: Prisma.StringFieldUpdateOperationsInput | string;
     expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
     isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean;
@@ -296,6 +319,7 @@ export type PatientShareLinkUncheckedUpdateInput = {
 export type PatientShareLinkCreateManyInput = {
     id?: number;
     patientId: number;
+    doctorId?: number | null;
     shareToken: string;
     expiresAt?: Date | string | null;
     isActive?: boolean;
@@ -314,6 +338,7 @@ export type PatientShareLinkUpdateManyMutationInput = {
 export type PatientShareLinkUncheckedUpdateManyInput = {
     id?: Prisma.IntFieldUpdateOperationsInput | number;
     patientId?: Prisma.IntFieldUpdateOperationsInput | number;
+    doctorId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
     shareToken?: Prisma.StringFieldUpdateOperationsInput | string;
     expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
     isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean;
@@ -332,6 +357,7 @@ export type PatientShareLinkOrderByRelationAggregateInput = {
 export type PatientShareLinkCountOrderByAggregateInput = {
     id?: Prisma.SortOrder;
     patientId?: Prisma.SortOrder;
+    doctorId?: Prisma.SortOrder;
     shareToken?: Prisma.SortOrder;
     expiresAt?: Prisma.SortOrder;
     isActive?: Prisma.SortOrder;
@@ -342,11 +368,13 @@ export type PatientShareLinkCountOrderByAggregateInput = {
 export type PatientShareLinkAvgOrderByAggregateInput = {
     id?: Prisma.SortOrder;
     patientId?: Prisma.SortOrder;
+    doctorId?: Prisma.SortOrder;
     accessCount?: Prisma.SortOrder;
 };
 export type PatientShareLinkMaxOrderByAggregateInput = {
     id?: Prisma.SortOrder;
     patientId?: Prisma.SortOrder;
+    doctorId?: Prisma.SortOrder;
     shareToken?: Prisma.SortOrder;
     expiresAt?: Prisma.SortOrder;
     isActive?: Prisma.SortOrder;
@@ -357,6 +385,7 @@ export type PatientShareLinkMaxOrderByAggregateInput = {
 export type PatientShareLinkMinOrderByAggregateInput = {
     id?: Prisma.SortOrder;
     patientId?: Prisma.SortOrder;
+    doctorId?: Prisma.SortOrder;
     shareToken?: Prisma.SortOrder;
     expiresAt?: Prisma.SortOrder;
     isActive?: Prisma.SortOrder;
@@ -367,6 +396,7 @@ export type PatientShareLinkMinOrderByAggregateInput = {
 export type PatientShareLinkSumOrderByAggregateInput = {
     id?: Prisma.SortOrder;
     patientId?: Prisma.SortOrder;
+    doctorId?: Prisma.SortOrder;
     accessCount?: Prisma.SortOrder;
 };
 export type PatientShareLinkCreateNestedManyWithoutPatientInput = {
@@ -407,6 +437,44 @@ export type PatientShareLinkUncheckedUpdateManyWithoutPatientNestedInput = {
     updateMany?: Prisma.PatientShareLinkUpdateManyWithWhereWithoutPatientInput | Prisma.PatientShareLinkUpdateManyWithWhereWithoutPatientInput[];
     deleteMany?: Prisma.PatientShareLinkScalarWhereInput | Prisma.PatientShareLinkScalarWhereInput[];
 };
+export type PatientShareLinkCreateNestedManyWithoutDoctorInput = {
+    create?: Prisma.XOR<Prisma.PatientShareLinkCreateWithoutDoctorInput, Prisma.PatientShareLinkUncheckedCreateWithoutDoctorInput> | Prisma.PatientShareLinkCreateWithoutDoctorInput[] | Prisma.PatientShareLinkUncheckedCreateWithoutDoctorInput[];
+    connectOrCreate?: Prisma.PatientShareLinkCreateOrConnectWithoutDoctorInput | Prisma.PatientShareLinkCreateOrConnectWithoutDoctorInput[];
+    createMany?: Prisma.PatientShareLinkCreateManyDoctorInputEnvelope;
+    connect?: Prisma.PatientShareLinkWhereUniqueInput | Prisma.PatientShareLinkWhereUniqueInput[];
+};
+export type PatientShareLinkUncheckedCreateNestedManyWithoutDoctorInput = {
+    create?: Prisma.XOR<Prisma.PatientShareLinkCreateWithoutDoctorInput, Prisma.PatientShareLinkUncheckedCreateWithoutDoctorInput> | Prisma.PatientShareLinkCreateWithoutDoctorInput[] | Prisma.PatientShareLinkUncheckedCreateWithoutDoctorInput[];
+    connectOrCreate?: Prisma.PatientShareLinkCreateOrConnectWithoutDoctorInput | Prisma.PatientShareLinkCreateOrConnectWithoutDoctorInput[];
+    createMany?: Prisma.PatientShareLinkCreateManyDoctorInputEnvelope;
+    connect?: Prisma.PatientShareLinkWhereUniqueInput | Prisma.PatientShareLinkWhereUniqueInput[];
+};
+export type PatientShareLinkUpdateManyWithoutDoctorNestedInput = {
+    create?: Prisma.XOR<Prisma.PatientShareLinkCreateWithoutDoctorInput, Prisma.PatientShareLinkUncheckedCreateWithoutDoctorInput> | Prisma.PatientShareLinkCreateWithoutDoctorInput[] | Prisma.PatientShareLinkUncheckedCreateWithoutDoctorInput[];
+    connectOrCreate?: Prisma.PatientShareLinkCreateOrConnectWithoutDoctorInput | Prisma.PatientShareLinkCreateOrConnectWithoutDoctorInput[];
+    upsert?: Prisma.PatientShareLinkUpsertWithWhereUniqueWithoutDoctorInput | Prisma.PatientShareLinkUpsertWithWhereUniqueWithoutDoctorInput[];
+    createMany?: Prisma.PatientShareLinkCreateManyDoctorInputEnvelope;
+    set?: Prisma.PatientShareLinkWhereUniqueInput | Prisma.PatientShareLinkWhereUniqueInput[];
+    disconnect?: Prisma.PatientShareLinkWhereUniqueInput | Prisma.PatientShareLinkWhereUniqueInput[];
+    delete?: Prisma.PatientShareLinkWhereUniqueInput | Prisma.PatientShareLinkWhereUniqueInput[];
+    connect?: Prisma.PatientShareLinkWhereUniqueInput | Prisma.PatientShareLinkWhereUniqueInput[];
+    update?: Prisma.PatientShareLinkUpdateWithWhereUniqueWithoutDoctorInput | Prisma.PatientShareLinkUpdateWithWhereUniqueWithoutDoctorInput[];
+    updateMany?: Prisma.PatientShareLinkUpdateManyWithWhereWithoutDoctorInput | Prisma.PatientShareLinkUpdateManyWithWhereWithoutDoctorInput[];
+    deleteMany?: Prisma.PatientShareLinkScalarWhereInput | Prisma.PatientShareLinkScalarWhereInput[];
+};
+export type PatientShareLinkUncheckedUpdateManyWithoutDoctorNestedInput = {
+    create?: Prisma.XOR<Prisma.PatientShareLinkCreateWithoutDoctorInput, Prisma.PatientShareLinkUncheckedCreateWithoutDoctorInput> | Prisma.PatientShareLinkCreateWithoutDoctorInput[] | Prisma.PatientShareLinkUncheckedCreateWithoutDoctorInput[];
+    connectOrCreate?: Prisma.PatientShareLinkCreateOrConnectWithoutDoctorInput | Prisma.PatientShareLinkCreateOrConnectWithoutDoctorInput[];
+    upsert?: Prisma.PatientShareLinkUpsertWithWhereUniqueWithoutDoctorInput | Prisma.PatientShareLinkUpsertWithWhereUniqueWithoutDoctorInput[];
+    createMany?: Prisma.PatientShareLinkCreateManyDoctorInputEnvelope;
+    set?: Prisma.PatientShareLinkWhereUniqueInput | Prisma.PatientShareLinkWhereUniqueInput[];
+    disconnect?: Prisma.PatientShareLinkWhereUniqueInput | Prisma.PatientShareLinkWhereUniqueInput[];
+    delete?: Prisma.PatientShareLinkWhereUniqueInput | Prisma.PatientShareLinkWhereUniqueInput[];
+    connect?: Prisma.PatientShareLinkWhereUniqueInput | Prisma.PatientShareLinkWhereUniqueInput[];
+    update?: Prisma.PatientShareLinkUpdateWithWhereUniqueWithoutDoctorInput | Prisma.PatientShareLinkUpdateWithWhereUniqueWithoutDoctorInput[];
+    updateMany?: Prisma.PatientShareLinkUpdateManyWithWhereWithoutDoctorInput | Prisma.PatientShareLinkUpdateManyWithWhereWithoutDoctorInput[];
+    deleteMany?: Prisma.PatientShareLinkScalarWhereInput | Prisma.PatientShareLinkScalarWhereInput[];
+};
 export type PatientShareLinkCreateWithoutPatientInput = {
     shareToken: string;
     expiresAt?: Date | string | null;
@@ -414,9 +482,11 @@ export type PatientShareLinkCreateWithoutPatientInput = {
     accessCount?: number;
     lastAccessedAt?: Date | string | null;
     createdAt?: Date | string;
+    doctor?: Prisma.DoctorCreateNestedOneWithoutPatientShareLinksInput;
 };
 export type PatientShareLinkUncheckedCreateWithoutPatientInput = {
     id?: number;
+    doctorId?: number | null;
     shareToken: string;
     expiresAt?: Date | string | null;
     isActive?: boolean;
@@ -451,6 +521,7 @@ export type PatientShareLinkScalarWhereInput = {
     NOT?: Prisma.PatientShareLinkScalarWhereInput | Prisma.PatientShareLinkScalarWhereInput[];
     id?: Prisma.IntFilter<"PatientShareLink"> | number;
     patientId?: Prisma.IntFilter<"PatientShareLink"> | number;
+    doctorId?: Prisma.IntNullableFilter<"PatientShareLink"> | number | null;
     shareToken?: Prisma.StringFilter<"PatientShareLink"> | string;
     expiresAt?: Prisma.DateTimeNullableFilter<"PatientShareLink"> | Date | string | null;
     isActive?: Prisma.BoolFilter<"PatientShareLink"> | boolean;
@@ -458,8 +529,49 @@ export type PatientShareLinkScalarWhereInput = {
     lastAccessedAt?: Prisma.DateTimeNullableFilter<"PatientShareLink"> | Date | string | null;
     createdAt?: Prisma.DateTimeFilter<"PatientShareLink"> | Date | string;
 };
+export type PatientShareLinkCreateWithoutDoctorInput = {
+    shareToken: string;
+    expiresAt?: Date | string | null;
+    isActive?: boolean;
+    accessCount?: number;
+    lastAccessedAt?: Date | string | null;
+    createdAt?: Date | string;
+    patient: Prisma.PatientCreateNestedOneWithoutShareLinksInput;
+};
+export type PatientShareLinkUncheckedCreateWithoutDoctorInput = {
+    id?: number;
+    patientId: number;
+    shareToken: string;
+    expiresAt?: Date | string | null;
+    isActive?: boolean;
+    accessCount?: number;
+    lastAccessedAt?: Date | string | null;
+    createdAt?: Date | string;
+};
+export type PatientShareLinkCreateOrConnectWithoutDoctorInput = {
+    where: Prisma.PatientShareLinkWhereUniqueInput;
+    create: Prisma.XOR<Prisma.PatientShareLinkCreateWithoutDoctorInput, Prisma.PatientShareLinkUncheckedCreateWithoutDoctorInput>;
+};
+export type PatientShareLinkCreateManyDoctorInputEnvelope = {
+    data: Prisma.PatientShareLinkCreateManyDoctorInput | Prisma.PatientShareLinkCreateManyDoctorInput[];
+    skipDuplicates?: boolean;
+};
+export type PatientShareLinkUpsertWithWhereUniqueWithoutDoctorInput = {
+    where: Prisma.PatientShareLinkWhereUniqueInput;
+    update: Prisma.XOR<Prisma.PatientShareLinkUpdateWithoutDoctorInput, Prisma.PatientShareLinkUncheckedUpdateWithoutDoctorInput>;
+    create: Prisma.XOR<Prisma.PatientShareLinkCreateWithoutDoctorInput, Prisma.PatientShareLinkUncheckedCreateWithoutDoctorInput>;
+};
+export type PatientShareLinkUpdateWithWhereUniqueWithoutDoctorInput = {
+    where: Prisma.PatientShareLinkWhereUniqueInput;
+    data: Prisma.XOR<Prisma.PatientShareLinkUpdateWithoutDoctorInput, Prisma.PatientShareLinkUncheckedUpdateWithoutDoctorInput>;
+};
+export type PatientShareLinkUpdateManyWithWhereWithoutDoctorInput = {
+    where: Prisma.PatientShareLinkScalarWhereInput;
+    data: Prisma.XOR<Prisma.PatientShareLinkUpdateManyMutationInput, Prisma.PatientShareLinkUncheckedUpdateManyWithoutDoctorInput>;
+};
 export type PatientShareLinkCreateManyPatientInput = {
     id?: number;
+    doctorId?: number | null;
     shareToken: string;
     expiresAt?: Date | string | null;
     isActive?: boolean;
@@ -474,9 +586,11 @@ export type PatientShareLinkUpdateWithoutPatientInput = {
     accessCount?: Prisma.IntFieldUpdateOperationsInput | number;
     lastAccessedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    doctor?: Prisma.DoctorUpdateOneWithoutPatientShareLinksNestedInput;
 };
 export type PatientShareLinkUncheckedUpdateWithoutPatientInput = {
     id?: Prisma.IntFieldUpdateOperationsInput | number;
+    doctorId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
     shareToken?: Prisma.StringFieldUpdateOperationsInput | string;
     expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
     isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean;
@@ -486,6 +600,46 @@ export type PatientShareLinkUncheckedUpdateWithoutPatientInput = {
 };
 export type PatientShareLinkUncheckedUpdateManyWithoutPatientInput = {
     id?: Prisma.IntFieldUpdateOperationsInput | number;
+    doctorId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
+    shareToken?: Prisma.StringFieldUpdateOperationsInput | string;
+    expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    accessCount?: Prisma.IntFieldUpdateOperationsInput | number;
+    lastAccessedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+};
+export type PatientShareLinkCreateManyDoctorInput = {
+    id?: number;
+    patientId: number;
+    shareToken: string;
+    expiresAt?: Date | string | null;
+    isActive?: boolean;
+    accessCount?: number;
+    lastAccessedAt?: Date | string | null;
+    createdAt?: Date | string;
+};
+export type PatientShareLinkUpdateWithoutDoctorInput = {
+    shareToken?: Prisma.StringFieldUpdateOperationsInput | string;
+    expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    accessCount?: Prisma.IntFieldUpdateOperationsInput | number;
+    lastAccessedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    patient?: Prisma.PatientUpdateOneRequiredWithoutShareLinksNestedInput;
+};
+export type PatientShareLinkUncheckedUpdateWithoutDoctorInput = {
+    id?: Prisma.IntFieldUpdateOperationsInput | number;
+    patientId?: Prisma.IntFieldUpdateOperationsInput | number;
+    shareToken?: Prisma.StringFieldUpdateOperationsInput | string;
+    expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    accessCount?: Prisma.IntFieldUpdateOperationsInput | number;
+    lastAccessedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+};
+export type PatientShareLinkUncheckedUpdateManyWithoutDoctorInput = {
+    id?: Prisma.IntFieldUpdateOperationsInput | number;
+    patientId?: Prisma.IntFieldUpdateOperationsInput | number;
     shareToken?: Prisma.StringFieldUpdateOperationsInput | string;
     expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
     isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean;
@@ -496,6 +650,7 @@ export type PatientShareLinkUncheckedUpdateManyWithoutPatientInput = {
 export type PatientShareLinkSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
     id?: boolean;
     patientId?: boolean;
+    doctorId?: boolean;
     shareToken?: boolean;
     expiresAt?: boolean;
     isActive?: boolean;
@@ -503,10 +658,12 @@ export type PatientShareLinkSelect<ExtArgs extends runtime.Types.Extensions.Inte
     lastAccessedAt?: boolean;
     createdAt?: boolean;
     patient?: boolean | Prisma.PatientDefaultArgs<ExtArgs>;
+    doctor?: boolean | Prisma.PatientShareLink$doctorArgs<ExtArgs>;
 }, ExtArgs["result"]["patientShareLink"]>;
 export type PatientShareLinkSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
     id?: boolean;
     patientId?: boolean;
+    doctorId?: boolean;
     shareToken?: boolean;
     expiresAt?: boolean;
     isActive?: boolean;
@@ -514,10 +671,12 @@ export type PatientShareLinkSelectCreateManyAndReturn<ExtArgs extends runtime.Ty
     lastAccessedAt?: boolean;
     createdAt?: boolean;
     patient?: boolean | Prisma.PatientDefaultArgs<ExtArgs>;
+    doctor?: boolean | Prisma.PatientShareLink$doctorArgs<ExtArgs>;
 }, ExtArgs["result"]["patientShareLink"]>;
 export type PatientShareLinkSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
     id?: boolean;
     patientId?: boolean;
+    doctorId?: boolean;
     shareToken?: boolean;
     expiresAt?: boolean;
     isActive?: boolean;
@@ -525,10 +684,12 @@ export type PatientShareLinkSelectUpdateManyAndReturn<ExtArgs extends runtime.Ty
     lastAccessedAt?: boolean;
     createdAt?: boolean;
     patient?: boolean | Prisma.PatientDefaultArgs<ExtArgs>;
+    doctor?: boolean | Prisma.PatientShareLink$doctorArgs<ExtArgs>;
 }, ExtArgs["result"]["patientShareLink"]>;
 export type PatientShareLinkSelectScalar = {
     id?: boolean;
     patientId?: boolean;
+    doctorId?: boolean;
     shareToken?: boolean;
     expiresAt?: boolean;
     isActive?: boolean;
@@ -536,24 +697,29 @@ export type PatientShareLinkSelectScalar = {
     lastAccessedAt?: boolean;
     createdAt?: boolean;
 };
-export type PatientShareLinkOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "patientId" | "shareToken" | "expiresAt" | "isActive" | "accessCount" | "lastAccessedAt" | "createdAt", ExtArgs["result"]["patientShareLink"]>;
+export type PatientShareLinkOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "patientId" | "doctorId" | "shareToken" | "expiresAt" | "isActive" | "accessCount" | "lastAccessedAt" | "createdAt", ExtArgs["result"]["patientShareLink"]>;
 export type PatientShareLinkInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     patient?: boolean | Prisma.PatientDefaultArgs<ExtArgs>;
+    doctor?: boolean | Prisma.PatientShareLink$doctorArgs<ExtArgs>;
 };
 export type PatientShareLinkIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     patient?: boolean | Prisma.PatientDefaultArgs<ExtArgs>;
+    doctor?: boolean | Prisma.PatientShareLink$doctorArgs<ExtArgs>;
 };
 export type PatientShareLinkIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     patient?: boolean | Prisma.PatientDefaultArgs<ExtArgs>;
+    doctor?: boolean | Prisma.PatientShareLink$doctorArgs<ExtArgs>;
 };
 export type $PatientShareLinkPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     name: "PatientShareLink";
     objects: {
         patient: Prisma.$PatientPayload<ExtArgs>;
+        doctor: Prisma.$DoctorPayload<ExtArgs> | null;
     };
     scalars: runtime.Types.Extensions.GetPayloadResult<{
         id: number;
         patientId: number;
+        doctorId: number | null;
         shareToken: string;
         expiresAt: Date | null;
         isActive: boolean;
@@ -890,6 +1056,7 @@ export interface PatientShareLinkDelegate<ExtArgs extends runtime.Types.Extensio
 export interface Prisma__PatientShareLinkClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise";
     patient<T extends Prisma.PatientDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PatientDefaultArgs<ExtArgs>>): Prisma.Prisma__PatientClient<runtime.Types.Result.GetResult<Prisma.$PatientPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>;
+    doctor<T extends Prisma.PatientShareLink$doctorArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PatientShareLink$doctorArgs<ExtArgs>>): Prisma.Prisma__DoctorClient<runtime.Types.Result.GetResult<Prisma.$DoctorPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>;
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -917,6 +1084,7 @@ export interface Prisma__PatientShareLinkClient<T, Null = never, ExtArgs extends
 export interface PatientShareLinkFieldRefs {
     readonly id: Prisma.FieldRef<"PatientShareLink", 'Int'>;
     readonly patientId: Prisma.FieldRef<"PatientShareLink", 'Int'>;
+    readonly doctorId: Prisma.FieldRef<"PatientShareLink", 'Int'>;
     readonly shareToken: Prisma.FieldRef<"PatientShareLink", 'String'>;
     readonly expiresAt: Prisma.FieldRef<"PatientShareLink", 'DateTime'>;
     readonly isActive: Prisma.FieldRef<"PatientShareLink", 'Boolean'>;
@@ -1300,6 +1468,24 @@ export type PatientShareLinkDeleteManyArgs<ExtArgs extends runtime.Types.Extensi
      * Limit how many PatientShareLinks to delete.
      */
     limit?: number;
+};
+/**
+ * PatientShareLink.doctor
+ */
+export type PatientShareLink$doctorArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Doctor
+     */
+    select?: Prisma.DoctorSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the Doctor
+     */
+    omit?: Prisma.DoctorOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: Prisma.DoctorInclude<ExtArgs> | null;
+    where?: Prisma.DoctorWhereInput;
 };
 /**
  * PatientShareLink without action

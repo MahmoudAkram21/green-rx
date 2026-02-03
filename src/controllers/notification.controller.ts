@@ -1,13 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { prisma } from '../lib/prisma';
-import { z } from 'zod';
-
-const notificationSchema = z.object({
-    userId: z.number(),
-    type: z.enum(['PrescriptionReady', 'DrugInteraction', 'AppointmentReminder', 'SystemAlert']),
-    title: z.string(),
-    message: z.string()
-});
+import { notificationSchema } from '../zod/notification.zod';
 
 class NotificationController {
     // Create a notification

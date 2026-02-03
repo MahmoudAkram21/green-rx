@@ -1,29 +1,19 @@
-import { z } from 'zod';
-import prisma from '../config/database.js';
-import { hashPassword, comparePassword } from '../utils/password.util.js';
-import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from '../utils/jwt.util.js';
-import { UserRole } from '../generated/client';
-// Validation Schemas
-const registerSchema = z.object({
-    email: z.string().email(),
-    password: z.string().min(6),
-    role: z.nativeEnum(UserRole).default(UserRole.Patient),
-    name: z.string().min(2).optional() // For creating patient/doctor profile stub
-});
-const loginSchema = z.object({
-    email: z.string().email(),
-    password: z.string()
-});
-const refreshTokenSchema = z.object({
-    refreshToken: z.string()
-});
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.getMe = exports.logout = exports.refresh = exports.login = exports.register = void 0;
+const zod_1 = require("zod");
+const prisma_1 = require("../lib/prisma");
+const password_util_1 = require("../utils/password.util");
+const jwt_util_1 = require("../utils/jwt.util");
+const client_1 = require("../generated/client");
+const auth_zod_1 = require("../zod/auth.zod");
 // Register
-export const register = async (req, res, next) => {
+const register = async (req, res, next) => {
     try {
-        const validatedData = registerSchema.parse(req.body);
+        const validatedData = auth_zod_1.registerSchema.parse(req.body);
         const { email, password, role, name } = validatedData;
         // Check if user exists
-        const existingUser = await prisma.user.findUnique({
+        const existingUser = await prisma_1.prisma.user.findUnique({
             where: { email }
         });
         if (existingUser) {
@@ -31,9 +21,9 @@ export const register = async (req, res, next) => {
             return;
         }
         // Hash password
-        const passwordHash = await hashPassword(password);
+        const passwordHash = await (0, password_util_1.hashPassword)(password);
         // Create user in transaction to ensure profile creation if needed
-        const result = await prisma.$transaction(async (tx) => {
+        const result = await prisma_1.prisma.$transaction(async (tx) => {
             // 1. Create User
             const user = await tx.user.create({
                 data: {
@@ -44,7 +34,7 @@ export const register = async (req, res, next) => {
                 }
             });
             // 2. Create Profile based on role (optional stub)
-            if (role === UserRole.Patient && name) {
+            if (role === client_1.UserRole.Patient && name) {
                 // We need date of birth and gender ideally, but we can creating a minimal profile or skip until profile completion
                 // For now, let's just create the user. Profile completion will happen in next step.
             }
@@ -52,12 +42,12 @@ export const register = async (req, res, next) => {
         });
         // Generate tokens
         const tokenPayload = { userId: result.id, email: result.email, role: result.role };
-        const accessToken = generateAccessToken(tokenPayload);
-        const refreshToken = generateRefreshToken(tokenPayload);
+        const accessToken = (0, jwt_util_1.generateAccessToken)(tokenPayload);
+        const refreshToken = (0, jwt_util_1.generateRefreshToken)(tokenPayload);
         // Create Session
         const expiresAt = new Date();
         expiresAt.setDate(expiresAt.getDate() + 7); // 7 days
-        await prisma.session.create({
+        await prisma_1.prisma.session.create({
             data: {
                 userId: result.id,
                 token: accessToken,
@@ -75,19 +65,20 @@ export const register = async (req, res, next) => {
         });
     }
     catch (error) {
-        if (error instanceof z.ZodError) {
+        if (error instanceof zod_1.z.ZodError) {
             res.status(400).json({ error: error.issues });
             return;
         }
         next(error);
     }
 };
+exports.register = register;
 // Login
-export const login = async (req, res, next) => {
+const login = async (req, res, next) => {
     try {
-        const { email, password } = loginSchema.parse(req.body);
+        const { email, password } = auth_zod_1.loginSchema.parse(req.body);
         // Find user
-        const user = await prisma.user.findUnique({
+        const user = await prisma_1.prisma.user.findUnique({
             where: { email }
         });
         if (!user || !user.isActive) {
@@ -95,19 +86,19 @@ export const login = async (req, res, next) => {
             return;
         }
         // Verify password
-        const isPasswordValid = await comparePassword(password, user.passwordHash);
+        const isPasswordValid = await (0, password_util_1.comparePassword)(password, user.passwordHash);
         if (!isPasswordValid) {
             res.status(401).json({ error: 'Invalid credentials' });
             return;
         }
         // Generate tokens
         const tokenPayload = { userId: user.id, email: user.email, role: user.role };
-        const accessToken = generateAccessToken(tokenPayload);
-        const refreshToken = generateRefreshToken(tokenPayload);
+        const accessToken = (0, jwt_util_1.generateAccessToken)(tokenPayload);
+        const refreshToken = (0, jwt_util_1.generateRefreshToken)(tokenPayload);
         // Create Session
         const expiresAt = new Date();
         expiresAt.setDate(expiresAt.getDate() + 7); // 7 days
-        await prisma.session.create({
+        await prisma_1.prisma.session.create({
             data: {
                 userId: user.id,
                 token: accessToken,
@@ -118,7 +109,7 @@ export const login = async (req, res, next) => {
             }
         });
         // Update last login
-        await prisma.user.update({
+        await prisma_1.prisma.user.update({
             where: { id: user.id },
             data: { lastLoginAt: new Date() }
         });
@@ -130,28 +121,29 @@ export const login = async (req, res, next) => {
         });
     }
     catch (error) {
-        if (error instanceof z.ZodError) {
+        if (error instanceof zod_1.z.ZodError) {
             res.status(400).json({ error: error.issues });
             return;
         }
         next(error);
     }
 };
+exports.login = login;
 // Refresh Token
-export const refresh = async (req, res, next) => {
+const refresh = async (req, res, next) => {
     try {
-        const { refreshToken } = refreshTokenSchema.parse(req.body);
+        const { refreshToken } = auth_zod_1.refreshTokenSchema.parse(req.body);
         // Verify token
         let payload;
         try {
-            payload = verifyRefreshToken(refreshToken);
+            payload = (0, jwt_util_1.verifyRefreshToken)(refreshToken);
         }
         catch (e) {
             res.status(401).json({ error: 'Invalid refresh token' });
             return;
         }
         // Check if session exists and is valid
-        const session = await prisma.session.findUnique({
+        const session = await prisma_1.prisma.session.findUnique({
             where: { refreshToken }
         });
         if (!session || !session.isActive || session.expiresAt < new Date()) {
@@ -160,25 +152,26 @@ export const refresh = async (req, res, next) => {
         }
         // Generate new access token
         const tokenPayload = { userId: payload.userId, email: payload.email, role: payload.role };
-        const newAccessToken = generateAccessToken(tokenPayload);
+        const newAccessToken = (0, jwt_util_1.generateAccessToken)(tokenPayload);
         // Update Session with new access token (keep refresh token same or rotate it - implementing rotation is better but simple for now)
         // Let's just update the access token in session for tracking
-        await prisma.session.update({
+        await prisma_1.prisma.session.update({
             where: { id: session.id },
             data: { token: newAccessToken }
         });
         res.json({ accessToken: newAccessToken });
     }
     catch (error) {
-        if (error instanceof z.ZodError) {
+        if (error instanceof zod_1.z.ZodError) {
             res.status(400).json({ error: error.issues });
             return;
         }
         next(error);
     }
 };
+exports.refresh = refresh;
 // Logout
-export const logout = async (req, res, next) => {
+const logout = async (req, res, next) => {
     try {
         const authHeader = req.headers.authorization;
         if (authHeader && authHeader.startsWith('Bearer ')) {
@@ -192,7 +185,7 @@ export const logout = async (req, res, next) => {
             // In refresh I updated the session. So valid.
             // Try/catch in case session not found
             try {
-                await prisma.session.update({
+                await prisma_1.prisma.session.update({
                     where: { token },
                     data: { isActive: false }
                 });
@@ -207,15 +200,16 @@ export const logout = async (req, res, next) => {
         next(error);
     }
 };
+exports.logout = logout;
 // Get Current User Profile
-export const getMe = async (req, res, next) => {
+const getMe = async (req, res, next) => {
     try {
         // req.user is set by auth middleware
         if (!req.user) {
             res.status(401).json({ error: 'Not authenticated' });
             return;
         }
-        const user = await prisma.user.findUnique({
+        const user = await prisma_1.prisma.user.findUnique({
             where: { id: req.user.userId },
             select: {
                 id: true,
@@ -238,4 +232,5 @@ export const getMe = async (req, res, next) => {
         next(error);
     }
 };
+exports.getMe = getMe;
 //# sourceMappingURL=auth.controller.js.map

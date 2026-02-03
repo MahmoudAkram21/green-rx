@@ -1,5 +1,5 @@
 import type * as runtime from "@prisma/client/runtime/client";
-import type * as Prisma from "../internal/prismaNamespace.js";
+import type * as Prisma from "../internal/prismaNamespace";
 /**
  * Model ImportHistory
  *
@@ -248,7 +248,7 @@ export type ImportHistoryWhereInput = {
     importDate?: Prisma.DateTimeFilter<"ImportHistory"> | Date | string;
     errors?: Prisma.JsonNullableFilter<"ImportHistory">;
     executionTime?: Prisma.IntNullableFilter<"ImportHistory"> | number | null;
-    user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>;
+    importer?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>;
 };
 export type ImportHistoryOrderByWithRelationInput = {
     id?: Prisma.SortOrder;
@@ -263,7 +263,7 @@ export type ImportHistoryOrderByWithRelationInput = {
     importDate?: Prisma.SortOrder;
     errors?: Prisma.SortOrderInput | Prisma.SortOrder;
     executionTime?: Prisma.SortOrderInput | Prisma.SortOrder;
-    user?: Prisma.UserOrderByWithRelationInput;
+    importer?: Prisma.UserOrderByWithRelationInput;
 };
 export type ImportHistoryWhereUniqueInput = Prisma.AtLeast<{
     id?: number;
@@ -281,7 +281,7 @@ export type ImportHistoryWhereUniqueInput = Prisma.AtLeast<{
     importDate?: Prisma.DateTimeFilter<"ImportHistory"> | Date | string;
     errors?: Prisma.JsonNullableFilter<"ImportHistory">;
     executionTime?: Prisma.IntNullableFilter<"ImportHistory"> | number | null;
-    user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>;
+    importer?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>;
 }, "id">;
 export type ImportHistoryOrderByWithAggregationInput = {
     id?: Prisma.SortOrder;
@@ -330,7 +330,7 @@ export type ImportHistoryCreateInput = {
     importDate?: Date | string;
     errors?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
     executionTime?: number | null;
-    user: Prisma.UserCreateNestedOneWithoutImportHistoryInput;
+    importer: Prisma.UserCreateNestedOneWithoutImportHistoryInput;
 };
 export type ImportHistoryUncheckedCreateInput = {
     id?: number;
@@ -357,7 +357,7 @@ export type ImportHistoryUpdateInput = {
     importDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     errors?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
     executionTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
-    user?: Prisma.UserUpdateOneRequiredWithoutImportHistoryNestedInput;
+    importer?: Prisma.UserUpdateOneRequiredWithoutImportHistoryNestedInput;
 };
 export type ImportHistoryUncheckedUpdateInput = {
     id?: Prisma.IntFieldUpdateOperationsInput | number;
@@ -481,45 +481,45 @@ export type ImportHistorySumOrderByAggregateInput = {
     importedBy?: Prisma.SortOrder;
     executionTime?: Prisma.SortOrder;
 };
-export type ImportHistoryCreateNestedManyWithoutUserInput = {
-    create?: Prisma.XOR<Prisma.ImportHistoryCreateWithoutUserInput, Prisma.ImportHistoryUncheckedCreateWithoutUserInput> | Prisma.ImportHistoryCreateWithoutUserInput[] | Prisma.ImportHistoryUncheckedCreateWithoutUserInput[];
-    connectOrCreate?: Prisma.ImportHistoryCreateOrConnectWithoutUserInput | Prisma.ImportHistoryCreateOrConnectWithoutUserInput[];
-    createMany?: Prisma.ImportHistoryCreateManyUserInputEnvelope;
+export type ImportHistoryCreateNestedManyWithoutImporterInput = {
+    create?: Prisma.XOR<Prisma.ImportHistoryCreateWithoutImporterInput, Prisma.ImportHistoryUncheckedCreateWithoutImporterInput> | Prisma.ImportHistoryCreateWithoutImporterInput[] | Prisma.ImportHistoryUncheckedCreateWithoutImporterInput[];
+    connectOrCreate?: Prisma.ImportHistoryCreateOrConnectWithoutImporterInput | Prisma.ImportHistoryCreateOrConnectWithoutImporterInput[];
+    createMany?: Prisma.ImportHistoryCreateManyImporterInputEnvelope;
     connect?: Prisma.ImportHistoryWhereUniqueInput | Prisma.ImportHistoryWhereUniqueInput[];
 };
-export type ImportHistoryUncheckedCreateNestedManyWithoutUserInput = {
-    create?: Prisma.XOR<Prisma.ImportHistoryCreateWithoutUserInput, Prisma.ImportHistoryUncheckedCreateWithoutUserInput> | Prisma.ImportHistoryCreateWithoutUserInput[] | Prisma.ImportHistoryUncheckedCreateWithoutUserInput[];
-    connectOrCreate?: Prisma.ImportHistoryCreateOrConnectWithoutUserInput | Prisma.ImportHistoryCreateOrConnectWithoutUserInput[];
-    createMany?: Prisma.ImportHistoryCreateManyUserInputEnvelope;
+export type ImportHistoryUncheckedCreateNestedManyWithoutImporterInput = {
+    create?: Prisma.XOR<Prisma.ImportHistoryCreateWithoutImporterInput, Prisma.ImportHistoryUncheckedCreateWithoutImporterInput> | Prisma.ImportHistoryCreateWithoutImporterInput[] | Prisma.ImportHistoryUncheckedCreateWithoutImporterInput[];
+    connectOrCreate?: Prisma.ImportHistoryCreateOrConnectWithoutImporterInput | Prisma.ImportHistoryCreateOrConnectWithoutImporterInput[];
+    createMany?: Prisma.ImportHistoryCreateManyImporterInputEnvelope;
     connect?: Prisma.ImportHistoryWhereUniqueInput | Prisma.ImportHistoryWhereUniqueInput[];
 };
-export type ImportHistoryUpdateManyWithoutUserNestedInput = {
-    create?: Prisma.XOR<Prisma.ImportHistoryCreateWithoutUserInput, Prisma.ImportHistoryUncheckedCreateWithoutUserInput> | Prisma.ImportHistoryCreateWithoutUserInput[] | Prisma.ImportHistoryUncheckedCreateWithoutUserInput[];
-    connectOrCreate?: Prisma.ImportHistoryCreateOrConnectWithoutUserInput | Prisma.ImportHistoryCreateOrConnectWithoutUserInput[];
-    upsert?: Prisma.ImportHistoryUpsertWithWhereUniqueWithoutUserInput | Prisma.ImportHistoryUpsertWithWhereUniqueWithoutUserInput[];
-    createMany?: Prisma.ImportHistoryCreateManyUserInputEnvelope;
+export type ImportHistoryUpdateManyWithoutImporterNestedInput = {
+    create?: Prisma.XOR<Prisma.ImportHistoryCreateWithoutImporterInput, Prisma.ImportHistoryUncheckedCreateWithoutImporterInput> | Prisma.ImportHistoryCreateWithoutImporterInput[] | Prisma.ImportHistoryUncheckedCreateWithoutImporterInput[];
+    connectOrCreate?: Prisma.ImportHistoryCreateOrConnectWithoutImporterInput | Prisma.ImportHistoryCreateOrConnectWithoutImporterInput[];
+    upsert?: Prisma.ImportHistoryUpsertWithWhereUniqueWithoutImporterInput | Prisma.ImportHistoryUpsertWithWhereUniqueWithoutImporterInput[];
+    createMany?: Prisma.ImportHistoryCreateManyImporterInputEnvelope;
     set?: Prisma.ImportHistoryWhereUniqueInput | Prisma.ImportHistoryWhereUniqueInput[];
     disconnect?: Prisma.ImportHistoryWhereUniqueInput | Prisma.ImportHistoryWhereUniqueInput[];
     delete?: Prisma.ImportHistoryWhereUniqueInput | Prisma.ImportHistoryWhereUniqueInput[];
     connect?: Prisma.ImportHistoryWhereUniqueInput | Prisma.ImportHistoryWhereUniqueInput[];
-    update?: Prisma.ImportHistoryUpdateWithWhereUniqueWithoutUserInput | Prisma.ImportHistoryUpdateWithWhereUniqueWithoutUserInput[];
-    updateMany?: Prisma.ImportHistoryUpdateManyWithWhereWithoutUserInput | Prisma.ImportHistoryUpdateManyWithWhereWithoutUserInput[];
+    update?: Prisma.ImportHistoryUpdateWithWhereUniqueWithoutImporterInput | Prisma.ImportHistoryUpdateWithWhereUniqueWithoutImporterInput[];
+    updateMany?: Prisma.ImportHistoryUpdateManyWithWhereWithoutImporterInput | Prisma.ImportHistoryUpdateManyWithWhereWithoutImporterInput[];
     deleteMany?: Prisma.ImportHistoryScalarWhereInput | Prisma.ImportHistoryScalarWhereInput[];
 };
-export type ImportHistoryUncheckedUpdateManyWithoutUserNestedInput = {
-    create?: Prisma.XOR<Prisma.ImportHistoryCreateWithoutUserInput, Prisma.ImportHistoryUncheckedCreateWithoutUserInput> | Prisma.ImportHistoryCreateWithoutUserInput[] | Prisma.ImportHistoryUncheckedCreateWithoutUserInput[];
-    connectOrCreate?: Prisma.ImportHistoryCreateOrConnectWithoutUserInput | Prisma.ImportHistoryCreateOrConnectWithoutUserInput[];
-    upsert?: Prisma.ImportHistoryUpsertWithWhereUniqueWithoutUserInput | Prisma.ImportHistoryUpsertWithWhereUniqueWithoutUserInput[];
-    createMany?: Prisma.ImportHistoryCreateManyUserInputEnvelope;
+export type ImportHistoryUncheckedUpdateManyWithoutImporterNestedInput = {
+    create?: Prisma.XOR<Prisma.ImportHistoryCreateWithoutImporterInput, Prisma.ImportHistoryUncheckedCreateWithoutImporterInput> | Prisma.ImportHistoryCreateWithoutImporterInput[] | Prisma.ImportHistoryUncheckedCreateWithoutImporterInput[];
+    connectOrCreate?: Prisma.ImportHistoryCreateOrConnectWithoutImporterInput | Prisma.ImportHistoryCreateOrConnectWithoutImporterInput[];
+    upsert?: Prisma.ImportHistoryUpsertWithWhereUniqueWithoutImporterInput | Prisma.ImportHistoryUpsertWithWhereUniqueWithoutImporterInput[];
+    createMany?: Prisma.ImportHistoryCreateManyImporterInputEnvelope;
     set?: Prisma.ImportHistoryWhereUniqueInput | Prisma.ImportHistoryWhereUniqueInput[];
     disconnect?: Prisma.ImportHistoryWhereUniqueInput | Prisma.ImportHistoryWhereUniqueInput[];
     delete?: Prisma.ImportHistoryWhereUniqueInput | Prisma.ImportHistoryWhereUniqueInput[];
     connect?: Prisma.ImportHistoryWhereUniqueInput | Prisma.ImportHistoryWhereUniqueInput[];
-    update?: Prisma.ImportHistoryUpdateWithWhereUniqueWithoutUserInput | Prisma.ImportHistoryUpdateWithWhereUniqueWithoutUserInput[];
-    updateMany?: Prisma.ImportHistoryUpdateManyWithWhereWithoutUserInput | Prisma.ImportHistoryUpdateManyWithWhereWithoutUserInput[];
+    update?: Prisma.ImportHistoryUpdateWithWhereUniqueWithoutImporterInput | Prisma.ImportHistoryUpdateWithWhereUniqueWithoutImporterInput[];
+    updateMany?: Prisma.ImportHistoryUpdateManyWithWhereWithoutImporterInput | Prisma.ImportHistoryUpdateManyWithWhereWithoutImporterInput[];
     deleteMany?: Prisma.ImportHistoryScalarWhereInput | Prisma.ImportHistoryScalarWhereInput[];
 };
-export type ImportHistoryCreateWithoutUserInput = {
+export type ImportHistoryCreateWithoutImporterInput = {
     fileName: string;
     fileSize: number;
     fileType: string;
@@ -531,7 +531,7 @@ export type ImportHistoryCreateWithoutUserInput = {
     errors?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
     executionTime?: number | null;
 };
-export type ImportHistoryUncheckedCreateWithoutUserInput = {
+export type ImportHistoryUncheckedCreateWithoutImporterInput = {
     id?: number;
     fileName: string;
     fileSize: number;
@@ -544,26 +544,26 @@ export type ImportHistoryUncheckedCreateWithoutUserInput = {
     errors?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
     executionTime?: number | null;
 };
-export type ImportHistoryCreateOrConnectWithoutUserInput = {
+export type ImportHistoryCreateOrConnectWithoutImporterInput = {
     where: Prisma.ImportHistoryWhereUniqueInput;
-    create: Prisma.XOR<Prisma.ImportHistoryCreateWithoutUserInput, Prisma.ImportHistoryUncheckedCreateWithoutUserInput>;
+    create: Prisma.XOR<Prisma.ImportHistoryCreateWithoutImporterInput, Prisma.ImportHistoryUncheckedCreateWithoutImporterInput>;
 };
-export type ImportHistoryCreateManyUserInputEnvelope = {
-    data: Prisma.ImportHistoryCreateManyUserInput | Prisma.ImportHistoryCreateManyUserInput[];
+export type ImportHistoryCreateManyImporterInputEnvelope = {
+    data: Prisma.ImportHistoryCreateManyImporterInput | Prisma.ImportHistoryCreateManyImporterInput[];
     skipDuplicates?: boolean;
 };
-export type ImportHistoryUpsertWithWhereUniqueWithoutUserInput = {
+export type ImportHistoryUpsertWithWhereUniqueWithoutImporterInput = {
     where: Prisma.ImportHistoryWhereUniqueInput;
-    update: Prisma.XOR<Prisma.ImportHistoryUpdateWithoutUserInput, Prisma.ImportHistoryUncheckedUpdateWithoutUserInput>;
-    create: Prisma.XOR<Prisma.ImportHistoryCreateWithoutUserInput, Prisma.ImportHistoryUncheckedCreateWithoutUserInput>;
+    update: Prisma.XOR<Prisma.ImportHistoryUpdateWithoutImporterInput, Prisma.ImportHistoryUncheckedUpdateWithoutImporterInput>;
+    create: Prisma.XOR<Prisma.ImportHistoryCreateWithoutImporterInput, Prisma.ImportHistoryUncheckedCreateWithoutImporterInput>;
 };
-export type ImportHistoryUpdateWithWhereUniqueWithoutUserInput = {
+export type ImportHistoryUpdateWithWhereUniqueWithoutImporterInput = {
     where: Prisma.ImportHistoryWhereUniqueInput;
-    data: Prisma.XOR<Prisma.ImportHistoryUpdateWithoutUserInput, Prisma.ImportHistoryUncheckedUpdateWithoutUserInput>;
+    data: Prisma.XOR<Prisma.ImportHistoryUpdateWithoutImporterInput, Prisma.ImportHistoryUncheckedUpdateWithoutImporterInput>;
 };
-export type ImportHistoryUpdateManyWithWhereWithoutUserInput = {
+export type ImportHistoryUpdateManyWithWhereWithoutImporterInput = {
     where: Prisma.ImportHistoryScalarWhereInput;
-    data: Prisma.XOR<Prisma.ImportHistoryUpdateManyMutationInput, Prisma.ImportHistoryUncheckedUpdateManyWithoutUserInput>;
+    data: Prisma.XOR<Prisma.ImportHistoryUpdateManyMutationInput, Prisma.ImportHistoryUncheckedUpdateManyWithoutImporterInput>;
 };
 export type ImportHistoryScalarWhereInput = {
     AND?: Prisma.ImportHistoryScalarWhereInput | Prisma.ImportHistoryScalarWhereInput[];
@@ -582,7 +582,7 @@ export type ImportHistoryScalarWhereInput = {
     errors?: Prisma.JsonNullableFilter<"ImportHistory">;
     executionTime?: Prisma.IntNullableFilter<"ImportHistory"> | number | null;
 };
-export type ImportHistoryCreateManyUserInput = {
+export type ImportHistoryCreateManyImporterInput = {
     id?: number;
     fileName: string;
     fileSize: number;
@@ -595,7 +595,7 @@ export type ImportHistoryCreateManyUserInput = {
     errors?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
     executionTime?: number | null;
 };
-export type ImportHistoryUpdateWithoutUserInput = {
+export type ImportHistoryUpdateWithoutImporterInput = {
     fileName?: Prisma.StringFieldUpdateOperationsInput | string;
     fileSize?: Prisma.IntFieldUpdateOperationsInput | number;
     fileType?: Prisma.StringFieldUpdateOperationsInput | string;
@@ -607,7 +607,7 @@ export type ImportHistoryUpdateWithoutUserInput = {
     errors?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
     executionTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
 };
-export type ImportHistoryUncheckedUpdateWithoutUserInput = {
+export type ImportHistoryUncheckedUpdateWithoutImporterInput = {
     id?: Prisma.IntFieldUpdateOperationsInput | number;
     fileName?: Prisma.StringFieldUpdateOperationsInput | string;
     fileSize?: Prisma.IntFieldUpdateOperationsInput | number;
@@ -620,7 +620,7 @@ export type ImportHistoryUncheckedUpdateWithoutUserInput = {
     errors?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
     executionTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
 };
-export type ImportHistoryUncheckedUpdateManyWithoutUserInput = {
+export type ImportHistoryUncheckedUpdateManyWithoutImporterInput = {
     id?: Prisma.IntFieldUpdateOperationsInput | number;
     fileName?: Prisma.StringFieldUpdateOperationsInput | string;
     fileSize?: Prisma.IntFieldUpdateOperationsInput | number;
@@ -646,7 +646,7 @@ export type ImportHistorySelect<ExtArgs extends runtime.Types.Extensions.Interna
     importDate?: boolean;
     errors?: boolean;
     executionTime?: boolean;
-    user?: boolean | Prisma.UserDefaultArgs<ExtArgs>;
+    importer?: boolean | Prisma.UserDefaultArgs<ExtArgs>;
 }, ExtArgs["result"]["importHistory"]>;
 export type ImportHistorySelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
     id?: boolean;
@@ -661,7 +661,7 @@ export type ImportHistorySelectCreateManyAndReturn<ExtArgs extends runtime.Types
     importDate?: boolean;
     errors?: boolean;
     executionTime?: boolean;
-    user?: boolean | Prisma.UserDefaultArgs<ExtArgs>;
+    importer?: boolean | Prisma.UserDefaultArgs<ExtArgs>;
 }, ExtArgs["result"]["importHistory"]>;
 export type ImportHistorySelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
     id?: boolean;
@@ -676,7 +676,7 @@ export type ImportHistorySelectUpdateManyAndReturn<ExtArgs extends runtime.Types
     importDate?: boolean;
     errors?: boolean;
     executionTime?: boolean;
-    user?: boolean | Prisma.UserDefaultArgs<ExtArgs>;
+    importer?: boolean | Prisma.UserDefaultArgs<ExtArgs>;
 }, ExtArgs["result"]["importHistory"]>;
 export type ImportHistorySelectScalar = {
     id?: boolean;
@@ -694,18 +694,18 @@ export type ImportHistorySelectScalar = {
 };
 export type ImportHistoryOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "fileName" | "fileSize" | "fileType" | "totalRows" | "successfulRows" | "failedRows" | "skippedRows" | "importedBy" | "importDate" | "errors" | "executionTime", ExtArgs["result"]["importHistory"]>;
 export type ImportHistoryInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-    user?: boolean | Prisma.UserDefaultArgs<ExtArgs>;
+    importer?: boolean | Prisma.UserDefaultArgs<ExtArgs>;
 };
 export type ImportHistoryIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-    user?: boolean | Prisma.UserDefaultArgs<ExtArgs>;
+    importer?: boolean | Prisma.UserDefaultArgs<ExtArgs>;
 };
 export type ImportHistoryIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-    user?: boolean | Prisma.UserDefaultArgs<ExtArgs>;
+    importer?: boolean | Prisma.UserDefaultArgs<ExtArgs>;
 };
 export type $ImportHistoryPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     name: "ImportHistory";
     objects: {
-        user: Prisma.$UserPayload<ExtArgs>;
+        importer: Prisma.$UserPayload<ExtArgs>;
     };
     scalars: runtime.Types.Extensions.GetPayloadResult<{
         id: number;
@@ -1049,7 +1049,7 @@ export interface ImportHistoryDelegate<ExtArgs extends runtime.Types.Extensions.
  */
 export interface Prisma__ImportHistoryClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise";
-    user<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>;
+    importer<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>;
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.

@@ -1,18 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { prisma } from '../lib/prisma';
-import { z } from 'zod';
-
-const medicalReportSchema = z.object({
-    patientId: z.number(),
-    fileName: z.string(),
-    fileUrl: z.string(),
-    fileType: z.string(),
-    uploadedBy: z.number(),
-    reportType: z.enum(['LabTest', 'Imaging', 'Consultation', 'Procedure', 'Other']).optional(),
-    reportDate: z.string().optional(),
-    notes: z.string().optional(),
-    fileSize: z.number().optional()
-});
+import { medicalReportSchema } from '../zod/medicalReport.zod';
 
 class MedicalReportController {
     // Create medical report

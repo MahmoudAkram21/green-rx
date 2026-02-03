@@ -1,2 +1,2 @@
-export * from './client.js';
+export * from './client';
 //# sourceMappingURL=index.d.ts.map

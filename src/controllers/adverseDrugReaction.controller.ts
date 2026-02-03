@@ -1,18 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { prisma } from '../lib/prisma';
-import { z } from 'zod';
-
-const adrSchema = z.object({
-    patientId: z.number(),
-    tradeNameId: z.number(),
-    companyId: z.number(),
-    activeSubstanceId: z.number().optional(),
-    severity: z.enum(['Mild', 'Moderate', 'Severe', 'LifeThreatening']),
-    reaction: z.string(),
-    startDate: z.string().transform(str => new Date(str)),
-    endDate: z.string().transform(str => new Date(str)).optional(),
-    isAnonymous: z.boolean().optional()
-});
+import { adrSchema, updateAdrSchema } from '../zod/adverseDrugReaction.zod';
 
 class AdverseDrugReactionController {
     // Report an ADR
@@ -203,14 +191,11 @@ class AdverseDrugReactionController {
     async updateADR(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const { id } = req.params;
-            const { status, adminNotes } = req.body;
+            const data = updateAdrSchema.parse(req.body);
 
             const adr = await prisma.adverseDrugReaction.update({
                 where: { id: Number(id) },
-                data: {
-                    status,
-                    adminNotes
-                }
+                data
             });
 
             res.json(adr);

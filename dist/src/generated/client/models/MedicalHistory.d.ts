@@ -1,6 +1,6 @@
 import type * as runtime from "@prisma/client/runtime/client";
-import type * as $Enums from "../enums.js";
-import type * as Prisma from "../internal/prismaNamespace.js";
+import type * as $Enums from "../enums";
+import type * as Prisma from "../internal/prismaNamespace";
 /**
  * Model MedicalHistory
  *
@@ -16,16 +16,19 @@ export type AggregateMedicalHistory = {
 export type MedicalHistoryAvgAggregateOutputType = {
     id: number | null;
     patientId: number | null;
+    diseaseId: number | null;
 };
 export type MedicalHistorySumAggregateOutputType = {
     id: number | null;
     patientId: number | null;
+    diseaseId: number | null;
 };
 export type MedicalHistoryMinAggregateOutputType = {
     id: number | null;
     patientId: number | null;
-    condition: string | null;
+    diseaseId: number | null;
     diagnosisDate: Date | null;
+    severity: $Enums.DiseaseSeverity | null;
     treatment: string | null;
     status: $Enums.DiseaseStatus | null;
     notes: string | null;
@@ -35,8 +38,9 @@ export type MedicalHistoryMinAggregateOutputType = {
 export type MedicalHistoryMaxAggregateOutputType = {
     id: number | null;
     patientId: number | null;
-    condition: string | null;
+    diseaseId: number | null;
     diagnosisDate: Date | null;
+    severity: $Enums.DiseaseSeverity | null;
     treatment: string | null;
     status: $Enums.DiseaseStatus | null;
     notes: string | null;
@@ -46,8 +50,9 @@ export type MedicalHistoryMaxAggregateOutputType = {
 export type MedicalHistoryCountAggregateOutputType = {
     id: number;
     patientId: number;
-    condition: number;
+    diseaseId: number;
     diagnosisDate: number;
+    severity: number;
     treatment: number;
     status: number;
     notes: number;
@@ -58,16 +63,19 @@ export type MedicalHistoryCountAggregateOutputType = {
 export type MedicalHistoryAvgAggregateInputType = {
     id?: true;
     patientId?: true;
+    diseaseId?: true;
 };
 export type MedicalHistorySumAggregateInputType = {
     id?: true;
     patientId?: true;
+    diseaseId?: true;
 };
 export type MedicalHistoryMinAggregateInputType = {
     id?: true;
     patientId?: true;
-    condition?: true;
+    diseaseId?: true;
     diagnosisDate?: true;
+    severity?: true;
     treatment?: true;
     status?: true;
     notes?: true;
@@ -77,8 +85,9 @@ export type MedicalHistoryMinAggregateInputType = {
 export type MedicalHistoryMaxAggregateInputType = {
     id?: true;
     patientId?: true;
-    condition?: true;
+    diseaseId?: true;
     diagnosisDate?: true;
+    severity?: true;
     treatment?: true;
     status?: true;
     notes?: true;
@@ -88,8 +97,9 @@ export type MedicalHistoryMaxAggregateInputType = {
 export type MedicalHistoryCountAggregateInputType = {
     id?: true;
     patientId?: true;
-    condition?: true;
+    diseaseId?: true;
     diagnosisDate?: true;
+    severity?: true;
     treatment?: true;
     status?: true;
     notes?: true;
@@ -176,8 +186,9 @@ export type MedicalHistoryGroupByArgs<ExtArgs extends runtime.Types.Extensions.I
 export type MedicalHistoryGroupByOutputType = {
     id: number;
     patientId: number;
-    condition: string;
+    diseaseId: number;
     diagnosisDate: Date | null;
+    severity: $Enums.DiseaseSeverity;
     treatment: string | null;
     status: $Enums.DiseaseStatus;
     notes: string | null;
@@ -198,26 +209,30 @@ export type MedicalHistoryWhereInput = {
     NOT?: Prisma.MedicalHistoryWhereInput | Prisma.MedicalHistoryWhereInput[];
     id?: Prisma.IntFilter<"MedicalHistory"> | number;
     patientId?: Prisma.IntFilter<"MedicalHistory"> | number;
-    condition?: Prisma.StringFilter<"MedicalHistory"> | string;
+    diseaseId?: Prisma.IntFilter<"MedicalHistory"> | number;
     diagnosisDate?: Prisma.DateTimeNullableFilter<"MedicalHistory"> | Date | string | null;
+    severity?: Prisma.EnumDiseaseSeverityFilter<"MedicalHistory"> | $Enums.DiseaseSeverity;
     treatment?: Prisma.StringNullableFilter<"MedicalHistory"> | string | null;
     status?: Prisma.EnumDiseaseStatusFilter<"MedicalHistory"> | $Enums.DiseaseStatus;
     notes?: Prisma.StringNullableFilter<"MedicalHistory"> | string | null;
     createdAt?: Prisma.DateTimeFilter<"MedicalHistory"> | Date | string;
     updatedAt?: Prisma.DateTimeFilter<"MedicalHistory"> | Date | string;
     patient?: Prisma.XOR<Prisma.PatientScalarRelationFilter, Prisma.PatientWhereInput>;
+    disease?: Prisma.XOR<Prisma.DiseaseScalarRelationFilter, Prisma.DiseaseWhereInput>;
 };
 export type MedicalHistoryOrderByWithRelationInput = {
     id?: Prisma.SortOrder;
     patientId?: Prisma.SortOrder;
-    condition?: Prisma.SortOrder;
+    diseaseId?: Prisma.SortOrder;
     diagnosisDate?: Prisma.SortOrderInput | Prisma.SortOrder;
+    severity?: Prisma.SortOrder;
     treatment?: Prisma.SortOrderInput | Prisma.SortOrder;
     status?: Prisma.SortOrder;
     notes?: Prisma.SortOrderInput | Prisma.SortOrder;
     createdAt?: Prisma.SortOrder;
     updatedAt?: Prisma.SortOrder;
     patient?: Prisma.PatientOrderByWithRelationInput;
+    disease?: Prisma.DiseaseOrderByWithRelationInput;
 };
 export type MedicalHistoryWhereUniqueInput = Prisma.AtLeast<{
     id?: number;
@@ -225,20 +240,23 @@ export type MedicalHistoryWhereUniqueInput = Prisma.AtLeast<{
     OR?: Prisma.MedicalHistoryWhereInput[];
     NOT?: Prisma.MedicalHistoryWhereInput | Prisma.MedicalHistoryWhereInput[];
     patientId?: Prisma.IntFilter<"MedicalHistory"> | number;
-    condition?: Prisma.StringFilter<"MedicalHistory"> | string;
+    diseaseId?: Prisma.IntFilter<"MedicalHistory"> | number;
     diagnosisDate?: Prisma.DateTimeNullableFilter<"MedicalHistory"> | Date | string | null;
+    severity?: Prisma.EnumDiseaseSeverityFilter<"MedicalHistory"> | $Enums.DiseaseSeverity;
     treatment?: Prisma.StringNullableFilter<"MedicalHistory"> | string | null;
     status?: Prisma.EnumDiseaseStatusFilter<"MedicalHistory"> | $Enums.DiseaseStatus;
     notes?: Prisma.StringNullableFilter<"MedicalHistory"> | string | null;
     createdAt?: Prisma.DateTimeFilter<"MedicalHistory"> | Date | string;
     updatedAt?: Prisma.DateTimeFilter<"MedicalHistory"> | Date | string;
     patient?: Prisma.XOR<Prisma.PatientScalarRelationFilter, Prisma.PatientWhereInput>;
+    disease?: Prisma.XOR<Prisma.DiseaseScalarRelationFilter, Prisma.DiseaseWhereInput>;
 }, "id">;
 export type MedicalHistoryOrderByWithAggregationInput = {
     id?: Prisma.SortOrder;
     patientId?: Prisma.SortOrder;
-    condition?: Prisma.SortOrder;
+    diseaseId?: Prisma.SortOrder;
     diagnosisDate?: Prisma.SortOrderInput | Prisma.SortOrder;
+    severity?: Prisma.SortOrder;
     treatment?: Prisma.SortOrderInput | Prisma.SortOrder;
     status?: Prisma.SortOrder;
     notes?: Prisma.SortOrderInput | Prisma.SortOrder;
@@ -256,8 +274,9 @@ export type MedicalHistoryScalarWhereWithAggregatesInput = {
     NOT?: Prisma.MedicalHistoryScalarWhereWithAggregatesInput | Prisma.MedicalHistoryScalarWhereWithAggregatesInput[];
     id?: Prisma.IntWithAggregatesFilter<"MedicalHistory"> | number;
     patientId?: Prisma.IntWithAggregatesFilter<"MedicalHistory"> | number;
-    condition?: Prisma.StringWithAggregatesFilter<"MedicalHistory"> | string;
+    diseaseId?: Prisma.IntWithAggregatesFilter<"MedicalHistory"> | number;
     diagnosisDate?: Prisma.DateTimeNullableWithAggregatesFilter<"MedicalHistory"> | Date | string | null;
+    severity?: Prisma.EnumDiseaseSeverityWithAggregatesFilter<"MedicalHistory"> | $Enums.DiseaseSeverity;
     treatment?: Prisma.StringNullableWithAggregatesFilter<"MedicalHistory"> | string | null;
     status?: Prisma.EnumDiseaseStatusWithAggregatesFilter<"MedicalHistory"> | $Enums.DiseaseStatus;
     notes?: Prisma.StringNullableWithAggregatesFilter<"MedicalHistory"> | string | null;
@@ -265,20 +284,22 @@ export type MedicalHistoryScalarWhereWithAggregatesInput = {
     updatedAt?: Prisma.DateTimeWithAggregatesFilter<"MedicalHistory"> | Date | string;
 };
 export type MedicalHistoryCreateInput = {
-    condition: string;
     diagnosisDate?: Date | string | null;
+    severity: $Enums.DiseaseSeverity;
     treatment?: string | null;
     status: $Enums.DiseaseStatus;
     notes?: string | null;
     createdAt?: Date | string;
     updatedAt?: Date | string;
     patient: Prisma.PatientCreateNestedOneWithoutMedicalHistoriesInput;
+    disease: Prisma.DiseaseCreateNestedOneWithoutMedicalHistoriesInput;
 };
 export type MedicalHistoryUncheckedCreateInput = {
     id?: number;
     patientId: number;
-    condition: string;
+    diseaseId: number;
     diagnosisDate?: Date | string | null;
+    severity: $Enums.DiseaseSeverity;
     treatment?: string | null;
     status: $Enums.DiseaseStatus;
     notes?: string | null;
@@ -286,20 +307,22 @@ export type MedicalHistoryUncheckedCreateInput = {
     updatedAt?: Date | string;
 };
 export type MedicalHistoryUpdateInput = {
-    condition?: Prisma.StringFieldUpdateOperationsInput | string;
     diagnosisDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    severity?: Prisma.EnumDiseaseSeverityFieldUpdateOperationsInput | $Enums.DiseaseSeverity;
     treatment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     status?: Prisma.EnumDiseaseStatusFieldUpdateOperationsInput | $Enums.DiseaseStatus;
     notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     patient?: Prisma.PatientUpdateOneRequiredWithoutMedicalHistoriesNestedInput;
+    disease?: Prisma.DiseaseUpdateOneRequiredWithoutMedicalHistoriesNestedInput;
 };
 export type MedicalHistoryUncheckedUpdateInput = {
     id?: Prisma.IntFieldUpdateOperationsInput | number;
     patientId?: Prisma.IntFieldUpdateOperationsInput | number;
-    condition?: Prisma.StringFieldUpdateOperationsInput | string;
+    diseaseId?: Prisma.IntFieldUpdateOperationsInput | number;
     diagnosisDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    severity?: Prisma.EnumDiseaseSeverityFieldUpdateOperationsInput | $Enums.DiseaseSeverity;
     treatment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     status?: Prisma.EnumDiseaseStatusFieldUpdateOperationsInput | $Enums.DiseaseStatus;
     notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
@@ -309,8 +332,9 @@ export type MedicalHistoryUncheckedUpdateInput = {
 export type MedicalHistoryCreateManyInput = {
     id?: number;
     patientId: number;
-    condition: string;
+    diseaseId: number;
     diagnosisDate?: Date | string | null;
+    severity: $Enums.DiseaseSeverity;
     treatment?: string | null;
     status: $Enums.DiseaseStatus;
     notes?: string | null;
@@ -318,8 +342,8 @@ export type MedicalHistoryCreateManyInput = {
     updatedAt?: Date | string;
 };
 export type MedicalHistoryUpdateManyMutationInput = {
-    condition?: Prisma.StringFieldUpdateOperationsInput | string;
     diagnosisDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    severity?: Prisma.EnumDiseaseSeverityFieldUpdateOperationsInput | $Enums.DiseaseSeverity;
     treatment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     status?: Prisma.EnumDiseaseStatusFieldUpdateOperationsInput | $Enums.DiseaseStatus;
     notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
@@ -329,8 +353,9 @@ export type MedicalHistoryUpdateManyMutationInput = {
 export type MedicalHistoryUncheckedUpdateManyInput = {
     id?: Prisma.IntFieldUpdateOperationsInput | number;
     patientId?: Prisma.IntFieldUpdateOperationsInput | number;
-    condition?: Prisma.StringFieldUpdateOperationsInput | string;
+    diseaseId?: Prisma.IntFieldUpdateOperationsInput | number;
     diagnosisDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    severity?: Prisma.EnumDiseaseSeverityFieldUpdateOperationsInput | $Enums.DiseaseSeverity;
     treatment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     status?: Prisma.EnumDiseaseStatusFieldUpdateOperationsInput | $Enums.DiseaseStatus;
     notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
@@ -348,8 +373,9 @@ export type MedicalHistoryOrderByRelationAggregateInput = {
 export type MedicalHistoryCountOrderByAggregateInput = {
     id?: Prisma.SortOrder;
     patientId?: Prisma.SortOrder;
-    condition?: Prisma.SortOrder;
+    diseaseId?: Prisma.SortOrder;
     diagnosisDate?: Prisma.SortOrder;
+    severity?: Prisma.SortOrder;
     treatment?: Prisma.SortOrder;
     status?: Prisma.SortOrder;
     notes?: Prisma.SortOrder;
@@ -359,12 +385,14 @@ export type MedicalHistoryCountOrderByAggregateInput = {
 export type MedicalHistoryAvgOrderByAggregateInput = {
     id?: Prisma.SortOrder;
     patientId?: Prisma.SortOrder;
+    diseaseId?: Prisma.SortOrder;
 };
 export type MedicalHistoryMaxOrderByAggregateInput = {
     id?: Prisma.SortOrder;
     patientId?: Prisma.SortOrder;
-    condition?: Prisma.SortOrder;
+    diseaseId?: Prisma.SortOrder;
     diagnosisDate?: Prisma.SortOrder;
+    severity?: Prisma.SortOrder;
     treatment?: Prisma.SortOrder;
     status?: Prisma.SortOrder;
     notes?: Prisma.SortOrder;
@@ -374,8 +402,9 @@ export type MedicalHistoryMaxOrderByAggregateInput = {
 export type MedicalHistoryMinOrderByAggregateInput = {
     id?: Prisma.SortOrder;
     patientId?: Prisma.SortOrder;
-    condition?: Prisma.SortOrder;
+    diseaseId?: Prisma.SortOrder;
     diagnosisDate?: Prisma.SortOrder;
+    severity?: Prisma.SortOrder;
     treatment?: Prisma.SortOrder;
     status?: Prisma.SortOrder;
     notes?: Prisma.SortOrder;
@@ -385,6 +414,7 @@ export type MedicalHistoryMinOrderByAggregateInput = {
 export type MedicalHistorySumOrderByAggregateInput = {
     id?: Prisma.SortOrder;
     patientId?: Prisma.SortOrder;
+    diseaseId?: Prisma.SortOrder;
 };
 export type MedicalHistoryCreateNestedManyWithoutPatientInput = {
     create?: Prisma.XOR<Prisma.MedicalHistoryCreateWithoutPatientInput, Prisma.MedicalHistoryUncheckedCreateWithoutPatientInput> | Prisma.MedicalHistoryCreateWithoutPatientInput[] | Prisma.MedicalHistoryUncheckedCreateWithoutPatientInput[];
@@ -424,22 +454,65 @@ export type MedicalHistoryUncheckedUpdateManyWithoutPatientNestedInput = {
     updateMany?: Prisma.MedicalHistoryUpdateManyWithWhereWithoutPatientInput | Prisma.MedicalHistoryUpdateManyWithWhereWithoutPatientInput[];
     deleteMany?: Prisma.MedicalHistoryScalarWhereInput | Prisma.MedicalHistoryScalarWhereInput[];
 };
+export type EnumDiseaseSeverityFieldUpdateOperationsInput = {
+    set?: $Enums.DiseaseSeverity;
+};
 export type EnumDiseaseStatusFieldUpdateOperationsInput = {
     set?: $Enums.DiseaseStatus;
 };
+export type MedicalHistoryCreateNestedManyWithoutDiseaseInput = {
+    create?: Prisma.XOR<Prisma.MedicalHistoryCreateWithoutDiseaseInput, Prisma.MedicalHistoryUncheckedCreateWithoutDiseaseInput> | Prisma.MedicalHistoryCreateWithoutDiseaseInput[] | Prisma.MedicalHistoryUncheckedCreateWithoutDiseaseInput[];
+    connectOrCreate?: Prisma.MedicalHistoryCreateOrConnectWithoutDiseaseInput | Prisma.MedicalHistoryCreateOrConnectWithoutDiseaseInput[];
+    createMany?: Prisma.MedicalHistoryCreateManyDiseaseInputEnvelope;
+    connect?: Prisma.MedicalHistoryWhereUniqueInput | Prisma.MedicalHistoryWhereUniqueInput[];
+};
+export type MedicalHistoryUncheckedCreateNestedManyWithoutDiseaseInput = {
+    create?: Prisma.XOR<Prisma.MedicalHistoryCreateWithoutDiseaseInput, Prisma.MedicalHistoryUncheckedCreateWithoutDiseaseInput> | Prisma.MedicalHistoryCreateWithoutDiseaseInput[] | Prisma.MedicalHistoryUncheckedCreateWithoutDiseaseInput[];
+    connectOrCreate?: Prisma.MedicalHistoryCreateOrConnectWithoutDiseaseInput | Prisma.MedicalHistoryCreateOrConnectWithoutDiseaseInput[];
+    createMany?: Prisma.MedicalHistoryCreateManyDiseaseInputEnvelope;
+    connect?: Prisma.MedicalHistoryWhereUniqueInput | Prisma.MedicalHistoryWhereUniqueInput[];
+};
+export type MedicalHistoryUpdateManyWithoutDiseaseNestedInput = {
+    create?: Prisma.XOR<Prisma.MedicalHistoryCreateWithoutDiseaseInput, Prisma.MedicalHistoryUncheckedCreateWithoutDiseaseInput> | Prisma.MedicalHistoryCreateWithoutDiseaseInput[] | Prisma.MedicalHistoryUncheckedCreateWithoutDiseaseInput[];
+    connectOrCreate?: Prisma.MedicalHistoryCreateOrConnectWithoutDiseaseInput | Prisma.MedicalHistoryCreateOrConnectWithoutDiseaseInput[];
+    upsert?: Prisma.MedicalHistoryUpsertWithWhereUniqueWithoutDiseaseInput | Prisma.MedicalHistoryUpsertWithWhereUniqueWithoutDiseaseInput[];
+    createMany?: Prisma.MedicalHistoryCreateManyDiseaseInputEnvelope;
+    set?: Prisma.MedicalHistoryWhereUniqueInput | Prisma.MedicalHistoryWhereUniqueInput[];
+    disconnect?: Prisma.MedicalHistoryWhereUniqueInput | Prisma.MedicalHistoryWhereUniqueInput[];
+    delete?: Prisma.MedicalHistoryWhereUniqueInput | Prisma.MedicalHistoryWhereUniqueInput[];
+    connect?: Prisma.MedicalHistoryWhereUniqueInput | Prisma.MedicalHistoryWhereUniqueInput[];
+    update?: Prisma.MedicalHistoryUpdateWithWhereUniqueWithoutDiseaseInput | Prisma.MedicalHistoryUpdateWithWhereUniqueWithoutDiseaseInput[];
+    updateMany?: Prisma.MedicalHistoryUpdateManyWithWhereWithoutDiseaseInput | Prisma.MedicalHistoryUpdateManyWithWhereWithoutDiseaseInput[];
+    deleteMany?: Prisma.MedicalHistoryScalarWhereInput | Prisma.MedicalHistoryScalarWhereInput[];
+};
+export type MedicalHistoryUncheckedUpdateManyWithoutDiseaseNestedInput = {
+    create?: Prisma.XOR<Prisma.MedicalHistoryCreateWithoutDiseaseInput, Prisma.MedicalHistoryUncheckedCreateWithoutDiseaseInput> | Prisma.MedicalHistoryCreateWithoutDiseaseInput[] | Prisma.MedicalHistoryUncheckedCreateWithoutDiseaseInput[];
+    connectOrCreate?: Prisma.MedicalHistoryCreateOrConnectWithoutDiseaseInput | Prisma.MedicalHistoryCreateOrConnectWithoutDiseaseInput[];
+    upsert?: Prisma.MedicalHistoryUpsertWithWhereUniqueWithoutDiseaseInput | Prisma.MedicalHistoryUpsertWithWhereUniqueWithoutDiseaseInput[];
+    createMany?: Prisma.MedicalHistoryCreateManyDiseaseInputEnvelope;
+    set?: Prisma.MedicalHistoryWhereUniqueInput | Prisma.MedicalHistoryWhereUniqueInput[];
+    disconnect?: Prisma.MedicalHistoryWhereUniqueInput | Prisma.MedicalHistoryWhereUniqueInput[];
+    delete?: Prisma.MedicalHistoryWhereUniqueInput | Prisma.MedicalHistoryWhereUniqueInput[];
+    connect?: Prisma.MedicalHistoryWhereUniqueInput | Prisma.MedicalHistoryWhereUniqueInput[];
+    update?: Prisma.MedicalHistoryUpdateWithWhereUniqueWithoutDiseaseInput | Prisma.MedicalHistoryUpdateWithWhereUniqueWithoutDiseaseInput[];
+    updateMany?: Prisma.MedicalHistoryUpdateManyWithWhereWithoutDiseaseInput | Prisma.MedicalHistoryUpdateManyWithWhereWithoutDiseaseInput[];
+    deleteMany?: Prisma.MedicalHistoryScalarWhereInput | Prisma.MedicalHistoryScalarWhereInput[];
+};
 export type MedicalHistoryCreateWithoutPatientInput = {
-    condition: string;
     diagnosisDate?: Date | string | null;
+    severity: $Enums.DiseaseSeverity;
     treatment?: string | null;
     status: $Enums.DiseaseStatus;
     notes?: string | null;
     createdAt?: Date | string;
     updatedAt?: Date | string;
+    disease: Prisma.DiseaseCreateNestedOneWithoutMedicalHistoriesInput;
 };
 export type MedicalHistoryUncheckedCreateWithoutPatientInput = {
     id?: number;
-    condition: string;
+    diseaseId: number;
     diagnosisDate?: Date | string | null;
+    severity: $Enums.DiseaseSeverity;
     treatment?: string | null;
     status: $Enums.DiseaseStatus;
     notes?: string | null;
@@ -473,18 +546,62 @@ export type MedicalHistoryScalarWhereInput = {
     NOT?: Prisma.MedicalHistoryScalarWhereInput | Prisma.MedicalHistoryScalarWhereInput[];
     id?: Prisma.IntFilter<"MedicalHistory"> | number;
     patientId?: Prisma.IntFilter<"MedicalHistory"> | number;
-    condition?: Prisma.StringFilter<"MedicalHistory"> | string;
+    diseaseId?: Prisma.IntFilter<"MedicalHistory"> | number;
     diagnosisDate?: Prisma.DateTimeNullableFilter<"MedicalHistory"> | Date | string | null;
+    severity?: Prisma.EnumDiseaseSeverityFilter<"MedicalHistory"> | $Enums.DiseaseSeverity;
     treatment?: Prisma.StringNullableFilter<"MedicalHistory"> | string | null;
     status?: Prisma.EnumDiseaseStatusFilter<"MedicalHistory"> | $Enums.DiseaseStatus;
     notes?: Prisma.StringNullableFilter<"MedicalHistory"> | string | null;
     createdAt?: Prisma.DateTimeFilter<"MedicalHistory"> | Date | string;
     updatedAt?: Prisma.DateTimeFilter<"MedicalHistory"> | Date | string;
 };
+export type MedicalHistoryCreateWithoutDiseaseInput = {
+    diagnosisDate?: Date | string | null;
+    severity: $Enums.DiseaseSeverity;
+    treatment?: string | null;
+    status: $Enums.DiseaseStatus;
+    notes?: string | null;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+    patient: Prisma.PatientCreateNestedOneWithoutMedicalHistoriesInput;
+};
+export type MedicalHistoryUncheckedCreateWithoutDiseaseInput = {
+    id?: number;
+    patientId: number;
+    diagnosisDate?: Date | string | null;
+    severity: $Enums.DiseaseSeverity;
+    treatment?: string | null;
+    status: $Enums.DiseaseStatus;
+    notes?: string | null;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+};
+export type MedicalHistoryCreateOrConnectWithoutDiseaseInput = {
+    where: Prisma.MedicalHistoryWhereUniqueInput;
+    create: Prisma.XOR<Prisma.MedicalHistoryCreateWithoutDiseaseInput, Prisma.MedicalHistoryUncheckedCreateWithoutDiseaseInput>;
+};
+export type MedicalHistoryCreateManyDiseaseInputEnvelope = {
+    data: Prisma.MedicalHistoryCreateManyDiseaseInput | Prisma.MedicalHistoryCreateManyDiseaseInput[];
+    skipDuplicates?: boolean;
+};
+export type MedicalHistoryUpsertWithWhereUniqueWithoutDiseaseInput = {
+    where: Prisma.MedicalHistoryWhereUniqueInput;
+    update: Prisma.XOR<Prisma.MedicalHistoryUpdateWithoutDiseaseInput, Prisma.MedicalHistoryUncheckedUpdateWithoutDiseaseInput>;
+    create: Prisma.XOR<Prisma.MedicalHistoryCreateWithoutDiseaseInput, Prisma.MedicalHistoryUncheckedCreateWithoutDiseaseInput>;
+};
+export type MedicalHistoryUpdateWithWhereUniqueWithoutDiseaseInput = {
+    where: Prisma.MedicalHistoryWhereUniqueInput;
+    data: Prisma.XOR<Prisma.MedicalHistoryUpdateWithoutDiseaseInput, Prisma.MedicalHistoryUncheckedUpdateWithoutDiseaseInput>;
+};
+export type MedicalHistoryUpdateManyWithWhereWithoutDiseaseInput = {
+    where: Prisma.MedicalHistoryScalarWhereInput;
+    data: Prisma.XOR<Prisma.MedicalHistoryUpdateManyMutationInput, Prisma.MedicalHistoryUncheckedUpdateManyWithoutDiseaseInput>;
+};
 export type MedicalHistoryCreateManyPatientInput = {
     id?: number;
-    condition: string;
+    diseaseId: number;
     diagnosisDate?: Date | string | null;
+    severity: $Enums.DiseaseSeverity;
     treatment?: string | null;
     status: $Enums.DiseaseStatus;
     notes?: string | null;
@@ -492,18 +609,20 @@ export type MedicalHistoryCreateManyPatientInput = {
     updatedAt?: Date | string;
 };
 export type MedicalHistoryUpdateWithoutPatientInput = {
-    condition?: Prisma.StringFieldUpdateOperationsInput | string;
     diagnosisDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    severity?: Prisma.EnumDiseaseSeverityFieldUpdateOperationsInput | $Enums.DiseaseSeverity;
     treatment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     status?: Prisma.EnumDiseaseStatusFieldUpdateOperationsInput | $Enums.DiseaseStatus;
     notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    disease?: Prisma.DiseaseUpdateOneRequiredWithoutMedicalHistoriesNestedInput;
 };
 export type MedicalHistoryUncheckedUpdateWithoutPatientInput = {
     id?: Prisma.IntFieldUpdateOperationsInput | number;
-    condition?: Prisma.StringFieldUpdateOperationsInput | string;
+    diseaseId?: Prisma.IntFieldUpdateOperationsInput | number;
     diagnosisDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    severity?: Prisma.EnumDiseaseSeverityFieldUpdateOperationsInput | $Enums.DiseaseSeverity;
     treatment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     status?: Prisma.EnumDiseaseStatusFieldUpdateOperationsInput | $Enums.DiseaseStatus;
     notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
@@ -512,8 +631,52 @@ export type MedicalHistoryUncheckedUpdateWithoutPatientInput = {
 };
 export type MedicalHistoryUncheckedUpdateManyWithoutPatientInput = {
     id?: Prisma.IntFieldUpdateOperationsInput | number;
-    condition?: Prisma.StringFieldUpdateOperationsInput | string;
+    diseaseId?: Prisma.IntFieldUpdateOperationsInput | number;
     diagnosisDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    severity?: Prisma.EnumDiseaseSeverityFieldUpdateOperationsInput | $Enums.DiseaseSeverity;
+    treatment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    status?: Prisma.EnumDiseaseStatusFieldUpdateOperationsInput | $Enums.DiseaseStatus;
+    notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+};
+export type MedicalHistoryCreateManyDiseaseInput = {
+    id?: number;
+    patientId: number;
+    diagnosisDate?: Date | string | null;
+    severity: $Enums.DiseaseSeverity;
+    treatment?: string | null;
+    status: $Enums.DiseaseStatus;
+    notes?: string | null;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+};
+export type MedicalHistoryUpdateWithoutDiseaseInput = {
+    diagnosisDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    severity?: Prisma.EnumDiseaseSeverityFieldUpdateOperationsInput | $Enums.DiseaseSeverity;
+    treatment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    status?: Prisma.EnumDiseaseStatusFieldUpdateOperationsInput | $Enums.DiseaseStatus;
+    notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    patient?: Prisma.PatientUpdateOneRequiredWithoutMedicalHistoriesNestedInput;
+};
+export type MedicalHistoryUncheckedUpdateWithoutDiseaseInput = {
+    id?: Prisma.IntFieldUpdateOperationsInput | number;
+    patientId?: Prisma.IntFieldUpdateOperationsInput | number;
+    diagnosisDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    severity?: Prisma.EnumDiseaseSeverityFieldUpdateOperationsInput | $Enums.DiseaseSeverity;
+    treatment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    status?: Prisma.EnumDiseaseStatusFieldUpdateOperationsInput | $Enums.DiseaseStatus;
+    notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+};
+export type MedicalHistoryUncheckedUpdateManyWithoutDiseaseInput = {
+    id?: Prisma.IntFieldUpdateOperationsInput | number;
+    patientId?: Prisma.IntFieldUpdateOperationsInput | number;
+    diagnosisDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    severity?: Prisma.EnumDiseaseSeverityFieldUpdateOperationsInput | $Enums.DiseaseSeverity;
     treatment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     status?: Prisma.EnumDiseaseStatusFieldUpdateOperationsInput | $Enums.DiseaseStatus;
     notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
@@ -523,70 +686,82 @@ export type MedicalHistoryUncheckedUpdateManyWithoutPatientInput = {
 export type MedicalHistorySelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
     id?: boolean;
     patientId?: boolean;
-    condition?: boolean;
+    diseaseId?: boolean;
     diagnosisDate?: boolean;
+    severity?: boolean;
     treatment?: boolean;
     status?: boolean;
     notes?: boolean;
     createdAt?: boolean;
     updatedAt?: boolean;
     patient?: boolean | Prisma.PatientDefaultArgs<ExtArgs>;
+    disease?: boolean | Prisma.DiseaseDefaultArgs<ExtArgs>;
 }, ExtArgs["result"]["medicalHistory"]>;
 export type MedicalHistorySelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
     id?: boolean;
     patientId?: boolean;
-    condition?: boolean;
+    diseaseId?: boolean;
     diagnosisDate?: boolean;
+    severity?: boolean;
     treatment?: boolean;
     status?: boolean;
     notes?: boolean;
     createdAt?: boolean;
     updatedAt?: boolean;
     patient?: boolean | Prisma.PatientDefaultArgs<ExtArgs>;
+    disease?: boolean | Prisma.DiseaseDefaultArgs<ExtArgs>;
 }, ExtArgs["result"]["medicalHistory"]>;
 export type MedicalHistorySelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
     id?: boolean;
     patientId?: boolean;
-    condition?: boolean;
+    diseaseId?: boolean;
     diagnosisDate?: boolean;
+    severity?: boolean;
     treatment?: boolean;
     status?: boolean;
     notes?: boolean;
     createdAt?: boolean;
     updatedAt?: boolean;
     patient?: boolean | Prisma.PatientDefaultArgs<ExtArgs>;
+    disease?: boolean | Prisma.DiseaseDefaultArgs<ExtArgs>;
 }, ExtArgs["result"]["medicalHistory"]>;
 export type MedicalHistorySelectScalar = {
     id?: boolean;
     patientId?: boolean;
-    condition?: boolean;
+    diseaseId?: boolean;
     diagnosisDate?: boolean;
+    severity?: boolean;
     treatment?: boolean;
     status?: boolean;
     notes?: boolean;
     createdAt?: boolean;
     updatedAt?: boolean;
 };
-export type MedicalHistoryOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "patientId" | "condition" | "diagnosisDate" | "treatment" | "status" | "notes" | "createdAt" | "updatedAt", ExtArgs["result"]["medicalHistory"]>;
+export type MedicalHistoryOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "patientId" | "diseaseId" | "diagnosisDate" | "severity" | "treatment" | "status" | "notes" | "createdAt" | "updatedAt", ExtArgs["result"]["medicalHistory"]>;
 export type MedicalHistoryInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     patient?: boolean | Prisma.PatientDefaultArgs<ExtArgs>;
+    disease?: boolean | Prisma.DiseaseDefaultArgs<ExtArgs>;
 };
 export type MedicalHistoryIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     patient?: boolean | Prisma.PatientDefaultArgs<ExtArgs>;
+    disease?: boolean | Prisma.DiseaseDefaultArgs<ExtArgs>;
 };
 export type MedicalHistoryIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     patient?: boolean | Prisma.PatientDefaultArgs<ExtArgs>;
+    disease?: boolean | Prisma.DiseaseDefaultArgs<ExtArgs>;
 };
 export type $MedicalHistoryPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     name: "MedicalHistory";
     objects: {
         patient: Prisma.$PatientPayload<ExtArgs>;
+        disease: Prisma.$DiseasePayload<ExtArgs>;
     };
     scalars: runtime.Types.Extensions.GetPayloadResult<{
         id: number;
         patientId: number;
-        condition: string;
+        diseaseId: number;
         diagnosisDate: Date | null;
+        severity: $Enums.DiseaseSeverity;
         treatment: string | null;
         status: $Enums.DiseaseStatus;
         notes: string | null;
@@ -922,6 +1097,7 @@ export interface MedicalHistoryDelegate<ExtArgs extends runtime.Types.Extensions
 export interface Prisma__MedicalHistoryClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise";
     patient<T extends Prisma.PatientDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PatientDefaultArgs<ExtArgs>>): Prisma.Prisma__PatientClient<runtime.Types.Result.GetResult<Prisma.$PatientPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>;
+    disease<T extends Prisma.DiseaseDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.DiseaseDefaultArgs<ExtArgs>>): Prisma.Prisma__DiseaseClient<runtime.Types.Result.GetResult<Prisma.$DiseasePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>;
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -949,8 +1125,9 @@ export interface Prisma__MedicalHistoryClient<T, Null = never, ExtArgs extends r
 export interface MedicalHistoryFieldRefs {
     readonly id: Prisma.FieldRef<"MedicalHistory", 'Int'>;
     readonly patientId: Prisma.FieldRef<"MedicalHistory", 'Int'>;
-    readonly condition: Prisma.FieldRef<"MedicalHistory", 'String'>;
+    readonly diseaseId: Prisma.FieldRef<"MedicalHistory", 'Int'>;
     readonly diagnosisDate: Prisma.FieldRef<"MedicalHistory", 'DateTime'>;
+    readonly severity: Prisma.FieldRef<"MedicalHistory", 'DiseaseSeverity'>;
     readonly treatment: Prisma.FieldRef<"MedicalHistory", 'String'>;
     readonly status: Prisma.FieldRef<"MedicalHistory", 'DiseaseStatus'>;
     readonly notes: Prisma.FieldRef<"MedicalHistory", 'String'>;

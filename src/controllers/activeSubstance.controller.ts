@@ -1,37 +1,10 @@
 import { Request, Response, NextFunction } from "express";
 import { z } from "zod";
 import { prisma } from "../lib/prisma";
-
-// Simplified validation schema - in production, you'd have all 178 fields
-const createActiveSubstanceSchema = z.object({
-  // Core identification
-  activeSubstance: z.string().min(1),
-  concentration: z.string().optional(),
-  classification: z.string().optional(),
-  dosageForm: z.string().optional(),
-  indication: z.string().optional(),
-
-  // Company info
-  companyId: z.number().int().positive().optional(),
-
-  // Essential fields (from 178 total)
-  contraIndications: z.string().optional(),
-  sideEffects: z.string().optional(),
-  dosage: z.string().optional(),
-
-  // Warnings
-  pregnancyCategory: z.string().optional(),
-  lactationWarning: z.boolean().optional(),
-  childrenWarning: z.boolean().optional(),
-  elderlyWarning: z.boolean().optional(),
-
-  // Additional metadata
-  isControlled: z.boolean().optional(),
-  requiresPrescription: z.boolean().optional(),
-  price: z.number().positive().optional(),
-});
-
-const updateActiveSubstanceSchema = createActiveSubstanceSchema.partial();
+import {
+  createActiveSubstanceSchema,
+  updateActiveSubstanceSchema,
+} from "../zod/createActiveSubstance.zod";
 
 // Create Active Substance
 export const createActiveSubstance = async (

@@ -1,6 +1,6 @@
 import type * as runtime from "@prisma/client/runtime/client";
-import * as $Enums from "./enums.js";
-import type * as Prisma from "./internal/prismaNamespace.js";
+import * as $Enums from "./enums";
+import type * as Prisma from "./internal/prismaNamespace";
 export type IntFilter<$PrismaModel = never> = {
     equals?: number | Prisma.IntFieldRefInput<$PrismaModel>;
     in?: number[] | Prisma.ListIntFieldRefInput<$PrismaModel>;
@@ -311,11 +311,26 @@ export type EnumGenderWithAggregatesFilter<$PrismaModel = never> = {
     _min?: Prisma.NestedEnumGenderFilter<$PrismaModel>;
     _max?: Prisma.NestedEnumGenderFilter<$PrismaModel>;
 };
+export type EnumDiseaseSeverityFilter<$PrismaModel = never> = {
+    equals?: $Enums.DiseaseSeverity | Prisma.EnumDiseaseSeverityFieldRefInput<$PrismaModel>;
+    in?: $Enums.DiseaseSeverity[] | Prisma.ListEnumDiseaseSeverityFieldRefInput<$PrismaModel>;
+    notIn?: $Enums.DiseaseSeverity[] | Prisma.ListEnumDiseaseSeverityFieldRefInput<$PrismaModel>;
+    not?: Prisma.NestedEnumDiseaseSeverityFilter<$PrismaModel> | $Enums.DiseaseSeverity;
+};
 export type EnumDiseaseStatusFilter<$PrismaModel = never> = {
     equals?: $Enums.DiseaseStatus | Prisma.EnumDiseaseStatusFieldRefInput<$PrismaModel>;
     in?: $Enums.DiseaseStatus[] | Prisma.ListEnumDiseaseStatusFieldRefInput<$PrismaModel>;
     notIn?: $Enums.DiseaseStatus[] | Prisma.ListEnumDiseaseStatusFieldRefInput<$PrismaModel>;
     not?: Prisma.NestedEnumDiseaseStatusFilter<$PrismaModel> | $Enums.DiseaseStatus;
+};
+export type EnumDiseaseSeverityWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.DiseaseSeverity | Prisma.EnumDiseaseSeverityFieldRefInput<$PrismaModel>;
+    in?: $Enums.DiseaseSeverity[] | Prisma.ListEnumDiseaseSeverityFieldRefInput<$PrismaModel>;
+    notIn?: $Enums.DiseaseSeverity[] | Prisma.ListEnumDiseaseSeverityFieldRefInput<$PrismaModel>;
+    not?: Prisma.NestedEnumDiseaseSeverityWithAggregatesFilter<$PrismaModel> | $Enums.DiseaseSeverity;
+    _count?: Prisma.NestedIntFilter<$PrismaModel>;
+    _min?: Prisma.NestedEnumDiseaseSeverityFilter<$PrismaModel>;
+    _max?: Prisma.NestedEnumDiseaseSeverityFilter<$PrismaModel>;
 };
 export type EnumDiseaseStatusWithAggregatesFilter<$PrismaModel = never> = {
     equals?: $Enums.DiseaseStatus | Prisma.EnumDiseaseStatusFieldRefInput<$PrismaModel>;
@@ -396,26 +411,26 @@ export type EnumAppointmentStatusWithAggregatesFilter<$PrismaModel = never> = {
     _min?: Prisma.NestedEnumAppointmentStatusFilter<$PrismaModel>;
     _max?: Prisma.NestedEnumAppointmentStatusFilter<$PrismaModel>;
 };
-export type EnumDiseaseSeverityFilter<$PrismaModel = never> = {
-    equals?: $Enums.DiseaseSeverity | Prisma.EnumDiseaseSeverityFieldRefInput<$PrismaModel>;
-    in?: $Enums.DiseaseSeverity[] | Prisma.ListEnumDiseaseSeverityFieldRefInput<$PrismaModel>;
-    notIn?: $Enums.DiseaseSeverity[] | Prisma.ListEnumDiseaseSeverityFieldRefInput<$PrismaModel>;
-    not?: Prisma.NestedEnumDiseaseSeverityFilter<$PrismaModel> | $Enums.DiseaseSeverity;
-};
-export type EnumDiseaseSeverityWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: $Enums.DiseaseSeverity | Prisma.EnumDiseaseSeverityFieldRefInput<$PrismaModel>;
-    in?: $Enums.DiseaseSeverity[] | Prisma.ListEnumDiseaseSeverityFieldRefInput<$PrismaModel>;
-    notIn?: $Enums.DiseaseSeverity[] | Prisma.ListEnumDiseaseSeverityFieldRefInput<$PrismaModel>;
-    not?: Prisma.NestedEnumDiseaseSeverityWithAggregatesFilter<$PrismaModel> | $Enums.DiseaseSeverity;
-    _count?: Prisma.NestedIntFilter<$PrismaModel>;
-    _min?: Prisma.NestedEnumDiseaseSeverityFilter<$PrismaModel>;
-    _max?: Prisma.NestedEnumDiseaseSeverityFilter<$PrismaModel>;
+export type EnumWarningRuleTypeFilter<$PrismaModel = never> = {
+    equals?: $Enums.WarningRuleType | Prisma.EnumWarningRuleTypeFieldRefInput<$PrismaModel>;
+    in?: $Enums.WarningRuleType[] | Prisma.ListEnumWarningRuleTypeFieldRefInput<$PrismaModel>;
+    notIn?: $Enums.WarningRuleType[] | Prisma.ListEnumWarningRuleTypeFieldRefInput<$PrismaModel>;
+    not?: Prisma.NestedEnumWarningRuleTypeFilter<$PrismaModel> | $Enums.WarningRuleType;
 };
 export type EnumWarningSeverityFilter<$PrismaModel = never> = {
     equals?: $Enums.WarningSeverity | Prisma.EnumWarningSeverityFieldRefInput<$PrismaModel>;
     in?: $Enums.WarningSeverity[] | Prisma.ListEnumWarningSeverityFieldRefInput<$PrismaModel>;
     notIn?: $Enums.WarningSeverity[] | Prisma.ListEnumWarningSeverityFieldRefInput<$PrismaModel>;
     not?: Prisma.NestedEnumWarningSeverityFilter<$PrismaModel> | $Enums.WarningSeverity;
+};
+export type EnumWarningRuleTypeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.WarningRuleType | Prisma.EnumWarningRuleTypeFieldRefInput<$PrismaModel>;
+    in?: $Enums.WarningRuleType[] | Prisma.ListEnumWarningRuleTypeFieldRefInput<$PrismaModel>;
+    notIn?: $Enums.WarningRuleType[] | Prisma.ListEnumWarningRuleTypeFieldRefInput<$PrismaModel>;
+    not?: Prisma.NestedEnumWarningRuleTypeWithAggregatesFilter<$PrismaModel> | $Enums.WarningRuleType;
+    _count?: Prisma.NestedIntFilter<$PrismaModel>;
+    _min?: Prisma.NestedEnumWarningRuleTypeFilter<$PrismaModel>;
+    _max?: Prisma.NestedEnumWarningRuleTypeFilter<$PrismaModel>;
 };
 export type EnumWarningSeverityWithAggregatesFilter<$PrismaModel = never> = {
     equals?: $Enums.WarningSeverity | Prisma.EnumWarningSeverityFieldRefInput<$PrismaModel>;
@@ -582,6 +597,21 @@ export type JsonWithAggregatesFilterBase<$PrismaModel = never> = {
     _count?: Prisma.NestedIntFilter<$PrismaModel>;
     _min?: Prisma.NestedJsonFilter<$PrismaModel>;
     _max?: Prisma.NestedJsonFilter<$PrismaModel>;
+};
+export type EnumSuggestionStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.SuggestionStatus | Prisma.EnumSuggestionStatusFieldRefInput<$PrismaModel>;
+    in?: $Enums.SuggestionStatus[] | Prisma.ListEnumSuggestionStatusFieldRefInput<$PrismaModel>;
+    notIn?: $Enums.SuggestionStatus[] | Prisma.ListEnumSuggestionStatusFieldRefInput<$PrismaModel>;
+    not?: Prisma.NestedEnumSuggestionStatusFilter<$PrismaModel> | $Enums.SuggestionStatus;
+};
+export type EnumSuggestionStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.SuggestionStatus | Prisma.EnumSuggestionStatusFieldRefInput<$PrismaModel>;
+    in?: $Enums.SuggestionStatus[] | Prisma.ListEnumSuggestionStatusFieldRefInput<$PrismaModel>;
+    notIn?: $Enums.SuggestionStatus[] | Prisma.ListEnumSuggestionStatusFieldRefInput<$PrismaModel>;
+    not?: Prisma.NestedEnumSuggestionStatusWithAggregatesFilter<$PrismaModel> | $Enums.SuggestionStatus;
+    _count?: Prisma.NestedIntFilter<$PrismaModel>;
+    _min?: Prisma.NestedEnumSuggestionStatusFilter<$PrismaModel>;
+    _max?: Prisma.NestedEnumSuggestionStatusFilter<$PrismaModel>;
 };
 export type NestedIntFilter<$PrismaModel = never> = {
     equals?: number | Prisma.IntFieldRefInput<$PrismaModel>;
@@ -885,11 +915,26 @@ export type NestedEnumGenderWithAggregatesFilter<$PrismaModel = never> = {
     _min?: Prisma.NestedEnumGenderFilter<$PrismaModel>;
     _max?: Prisma.NestedEnumGenderFilter<$PrismaModel>;
 };
+export type NestedEnumDiseaseSeverityFilter<$PrismaModel = never> = {
+    equals?: $Enums.DiseaseSeverity | Prisma.EnumDiseaseSeverityFieldRefInput<$PrismaModel>;
+    in?: $Enums.DiseaseSeverity[] | Prisma.ListEnumDiseaseSeverityFieldRefInput<$PrismaModel>;
+    notIn?: $Enums.DiseaseSeverity[] | Prisma.ListEnumDiseaseSeverityFieldRefInput<$PrismaModel>;
+    not?: Prisma.NestedEnumDiseaseSeverityFilter<$PrismaModel> | $Enums.DiseaseSeverity;
+};
 export type NestedEnumDiseaseStatusFilter<$PrismaModel = never> = {
     equals?: $Enums.DiseaseStatus | Prisma.EnumDiseaseStatusFieldRefInput<$PrismaModel>;
     in?: $Enums.DiseaseStatus[] | Prisma.ListEnumDiseaseStatusFieldRefInput<$PrismaModel>;
     notIn?: $Enums.DiseaseStatus[] | Prisma.ListEnumDiseaseStatusFieldRefInput<$PrismaModel>;
     not?: Prisma.NestedEnumDiseaseStatusFilter<$PrismaModel> | $Enums.DiseaseStatus;
+};
+export type NestedEnumDiseaseSeverityWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.DiseaseSeverity | Prisma.EnumDiseaseSeverityFieldRefInput<$PrismaModel>;
+    in?: $Enums.DiseaseSeverity[] | Prisma.ListEnumDiseaseSeverityFieldRefInput<$PrismaModel>;
+    notIn?: $Enums.DiseaseSeverity[] | Prisma.ListEnumDiseaseSeverityFieldRefInput<$PrismaModel>;
+    not?: Prisma.NestedEnumDiseaseSeverityWithAggregatesFilter<$PrismaModel> | $Enums.DiseaseSeverity;
+    _count?: Prisma.NestedIntFilter<$PrismaModel>;
+    _min?: Prisma.NestedEnumDiseaseSeverityFilter<$PrismaModel>;
+    _max?: Prisma.NestedEnumDiseaseSeverityFilter<$PrismaModel>;
 };
 export type NestedEnumDiseaseStatusWithAggregatesFilter<$PrismaModel = never> = {
     equals?: $Enums.DiseaseStatus | Prisma.EnumDiseaseStatusFieldRefInput<$PrismaModel>;
@@ -970,26 +1015,26 @@ export type NestedEnumAppointmentStatusWithAggregatesFilter<$PrismaModel = never
     _min?: Prisma.NestedEnumAppointmentStatusFilter<$PrismaModel>;
     _max?: Prisma.NestedEnumAppointmentStatusFilter<$PrismaModel>;
 };
-export type NestedEnumDiseaseSeverityFilter<$PrismaModel = never> = {
-    equals?: $Enums.DiseaseSeverity | Prisma.EnumDiseaseSeverityFieldRefInput<$PrismaModel>;
-    in?: $Enums.DiseaseSeverity[] | Prisma.ListEnumDiseaseSeverityFieldRefInput<$PrismaModel>;
-    notIn?: $Enums.DiseaseSeverity[] | Prisma.ListEnumDiseaseSeverityFieldRefInput<$PrismaModel>;
-    not?: Prisma.NestedEnumDiseaseSeverityFilter<$PrismaModel> | $Enums.DiseaseSeverity;
-};
-export type NestedEnumDiseaseSeverityWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: $Enums.DiseaseSeverity | Prisma.EnumDiseaseSeverityFieldRefInput<$PrismaModel>;
-    in?: $Enums.DiseaseSeverity[] | Prisma.ListEnumDiseaseSeverityFieldRefInput<$PrismaModel>;
-    notIn?: $Enums.DiseaseSeverity[] | Prisma.ListEnumDiseaseSeverityFieldRefInput<$PrismaModel>;
-    not?: Prisma.NestedEnumDiseaseSeverityWithAggregatesFilter<$PrismaModel> | $Enums.DiseaseSeverity;
-    _count?: Prisma.NestedIntFilter<$PrismaModel>;
-    _min?: Prisma.NestedEnumDiseaseSeverityFilter<$PrismaModel>;
-    _max?: Prisma.NestedEnumDiseaseSeverityFilter<$PrismaModel>;
+export type NestedEnumWarningRuleTypeFilter<$PrismaModel = never> = {
+    equals?: $Enums.WarningRuleType | Prisma.EnumWarningRuleTypeFieldRefInput<$PrismaModel>;
+    in?: $Enums.WarningRuleType[] | Prisma.ListEnumWarningRuleTypeFieldRefInput<$PrismaModel>;
+    notIn?: $Enums.WarningRuleType[] | Prisma.ListEnumWarningRuleTypeFieldRefInput<$PrismaModel>;
+    not?: Prisma.NestedEnumWarningRuleTypeFilter<$PrismaModel> | $Enums.WarningRuleType;
 };
 export type NestedEnumWarningSeverityFilter<$PrismaModel = never> = {
     equals?: $Enums.WarningSeverity | Prisma.EnumWarningSeverityFieldRefInput<$PrismaModel>;
     in?: $Enums.WarningSeverity[] | Prisma.ListEnumWarningSeverityFieldRefInput<$PrismaModel>;
     notIn?: $Enums.WarningSeverity[] | Prisma.ListEnumWarningSeverityFieldRefInput<$PrismaModel>;
     not?: Prisma.NestedEnumWarningSeverityFilter<$PrismaModel> | $Enums.WarningSeverity;
+};
+export type NestedEnumWarningRuleTypeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.WarningRuleType | Prisma.EnumWarningRuleTypeFieldRefInput<$PrismaModel>;
+    in?: $Enums.WarningRuleType[] | Prisma.ListEnumWarningRuleTypeFieldRefInput<$PrismaModel>;
+    notIn?: $Enums.WarningRuleType[] | Prisma.ListEnumWarningRuleTypeFieldRefInput<$PrismaModel>;
+    not?: Prisma.NestedEnumWarningRuleTypeWithAggregatesFilter<$PrismaModel> | $Enums.WarningRuleType;
+    _count?: Prisma.NestedIntFilter<$PrismaModel>;
+    _min?: Prisma.NestedEnumWarningRuleTypeFilter<$PrismaModel>;
+    _max?: Prisma.NestedEnumWarningRuleTypeFilter<$PrismaModel>;
 };
 export type NestedEnumWarningSeverityWithAggregatesFilter<$PrismaModel = never> = {
     equals?: $Enums.WarningSeverity | Prisma.EnumWarningSeverityFieldRefInput<$PrismaModel>;
@@ -1136,5 +1181,20 @@ export type NestedJsonFilterBase<$PrismaModel = never> = {
     gt?: runtime.InputJsonValue | Prisma.JsonFieldRefInput<$PrismaModel>;
     gte?: runtime.InputJsonValue | Prisma.JsonFieldRefInput<$PrismaModel>;
     not?: runtime.InputJsonValue | Prisma.JsonFieldRefInput<$PrismaModel> | Prisma.JsonNullValueFilter;
+};
+export type NestedEnumSuggestionStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.SuggestionStatus | Prisma.EnumSuggestionStatusFieldRefInput<$PrismaModel>;
+    in?: $Enums.SuggestionStatus[] | Prisma.ListEnumSuggestionStatusFieldRefInput<$PrismaModel>;
+    notIn?: $Enums.SuggestionStatus[] | Prisma.ListEnumSuggestionStatusFieldRefInput<$PrismaModel>;
+    not?: Prisma.NestedEnumSuggestionStatusFilter<$PrismaModel> | $Enums.SuggestionStatus;
+};
+export type NestedEnumSuggestionStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.SuggestionStatus | Prisma.EnumSuggestionStatusFieldRefInput<$PrismaModel>;
+    in?: $Enums.SuggestionStatus[] | Prisma.ListEnumSuggestionStatusFieldRefInput<$PrismaModel>;
+    notIn?: $Enums.SuggestionStatus[] | Prisma.ListEnumSuggestionStatusFieldRefInput<$PrismaModel>;
+    not?: Prisma.NestedEnumSuggestionStatusWithAggregatesFilter<$PrismaModel> | $Enums.SuggestionStatus;
+    _count?: Prisma.NestedIntFilter<$PrismaModel>;
+    _min?: Prisma.NestedEnumSuggestionStatusFilter<$PrismaModel>;
+    _max?: Prisma.NestedEnumSuggestionStatusFilter<$PrismaModel>;
 };
 //# sourceMappingURL=commonInputTypes.d.ts.map

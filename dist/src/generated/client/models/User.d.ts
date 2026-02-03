@@ -1,6 +1,6 @@
 import type * as runtime from "@prisma/client/runtime/client";
-import type * as $Enums from "../enums.js";
-import type * as Prisma from "../internal/prismaNamespace.js";
+import type * as $Enums from "../enums";
+import type * as Prisma from "../internal/prismaNamespace";
 /**
  * Model User
  *
@@ -243,6 +243,8 @@ export type UserWhereInput = {
     importHistory?: Prisma.ImportHistoryListRelationFilter;
     exportHistory?: Prisma.ExportHistoryListRelationFilter;
     uploadedReports?: Prisma.MedicalReportListRelationFilter;
+    diseaseWarningRules?: Prisma.DiseaseWarningRuleListRelationFilter;
+    reviewedSuggestions?: Prisma.MedicineSuggestionListRelationFilter;
 };
 export type UserOrderByWithRelationInput = {
     id?: Prisma.SortOrder;
@@ -268,6 +270,8 @@ export type UserOrderByWithRelationInput = {
     importHistory?: Prisma.ImportHistoryOrderByRelationAggregateInput;
     exportHistory?: Prisma.ExportHistoryOrderByRelationAggregateInput;
     uploadedReports?: Prisma.MedicalReportOrderByRelationAggregateInput;
+    diseaseWarningRules?: Prisma.DiseaseWarningRuleOrderByRelationAggregateInput;
+    reviewedSuggestions?: Prisma.MedicineSuggestionOrderByRelationAggregateInput;
 };
 export type UserWhereUniqueInput = Prisma.AtLeast<{
     id?: number;
@@ -296,6 +300,8 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
     importHistory?: Prisma.ImportHistoryListRelationFilter;
     exportHistory?: Prisma.ExportHistoryListRelationFilter;
     uploadedReports?: Prisma.MedicalReportListRelationFilter;
+    diseaseWarningRules?: Prisma.DiseaseWarningRuleListRelationFilter;
+    reviewedSuggestions?: Prisma.MedicineSuggestionListRelationFilter;
 }, "id" | "email">;
 export type UserOrderByWithAggregationInput = {
     id?: Prisma.SortOrder;
@@ -355,9 +361,11 @@ export type UserCreateInput = {
     notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput;
     auditLogs?: Prisma.AuditLogCreateNestedManyWithoutUserInput;
     sessions?: Prisma.SessionCreateNestedManyWithoutUserInput;
-    importHistory?: Prisma.ImportHistoryCreateNestedManyWithoutUserInput;
+    importHistory?: Prisma.ImportHistoryCreateNestedManyWithoutImporterInput;
     exportHistory?: Prisma.ExportHistoryCreateNestedManyWithoutUserInput;
     uploadedReports?: Prisma.MedicalReportCreateNestedManyWithoutUploaderInput;
+    diseaseWarningRules?: Prisma.DiseaseWarningRuleCreateNestedManyWithoutCreatorInput;
+    reviewedSuggestions?: Prisma.MedicineSuggestionCreateNestedManyWithoutReviewerInput;
 };
 export type UserUncheckedCreateInput = {
     id?: number;
@@ -380,9 +388,11 @@ export type UserUncheckedCreateInput = {
     notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput;
     auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutUserInput;
     sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput;
-    importHistory?: Prisma.ImportHistoryUncheckedCreateNestedManyWithoutUserInput;
+    importHistory?: Prisma.ImportHistoryUncheckedCreateNestedManyWithoutImporterInput;
     exportHistory?: Prisma.ExportHistoryUncheckedCreateNestedManyWithoutUserInput;
     uploadedReports?: Prisma.MedicalReportUncheckedCreateNestedManyWithoutUploaderInput;
+    diseaseWarningRules?: Prisma.DiseaseWarningRuleUncheckedCreateNestedManyWithoutCreatorInput;
+    reviewedSuggestions?: Prisma.MedicineSuggestionUncheckedCreateNestedManyWithoutReviewerInput;
 };
 export type UserUpdateInput = {
     email?: Prisma.StringFieldUpdateOperationsInput | string;
@@ -404,9 +414,11 @@ export type UserUpdateInput = {
     notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput;
     auditLogs?: Prisma.AuditLogUpdateManyWithoutUserNestedInput;
     sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput;
-    importHistory?: Prisma.ImportHistoryUpdateManyWithoutUserNestedInput;
+    importHistory?: Prisma.ImportHistoryUpdateManyWithoutImporterNestedInput;
     exportHistory?: Prisma.ExportHistoryUpdateManyWithoutUserNestedInput;
     uploadedReports?: Prisma.MedicalReportUpdateManyWithoutUploaderNestedInput;
+    diseaseWarningRules?: Prisma.DiseaseWarningRuleUpdateManyWithoutCreatorNestedInput;
+    reviewedSuggestions?: Prisma.MedicineSuggestionUpdateManyWithoutReviewerNestedInput;
 };
 export type UserUncheckedUpdateInput = {
     id?: Prisma.IntFieldUpdateOperationsInput | number;
@@ -429,9 +441,11 @@ export type UserUncheckedUpdateInput = {
     notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput;
     auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutUserNestedInput;
     sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput;
-    importHistory?: Prisma.ImportHistoryUncheckedUpdateManyWithoutUserNestedInput;
+    importHistory?: Prisma.ImportHistoryUncheckedUpdateManyWithoutImporterNestedInput;
     exportHistory?: Prisma.ExportHistoryUncheckedUpdateManyWithoutUserNestedInput;
     uploadedReports?: Prisma.MedicalReportUncheckedUpdateManyWithoutUploaderNestedInput;
+    diseaseWarningRules?: Prisma.DiseaseWarningRuleUncheckedUpdateManyWithoutCreatorNestedInput;
+    reviewedSuggestions?: Prisma.MedicineSuggestionUncheckedUpdateManyWithoutReviewerNestedInput;
 };
 export type UserCreateManyInput = {
     id?: number;
@@ -597,6 +611,18 @@ export type UserUpdateOneRequiredWithoutDoctorNestedInput = {
     connect?: Prisma.UserWhereUniqueInput;
     update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutDoctorInput, Prisma.UserUpdateWithoutDoctorInput>, Prisma.UserUncheckedUpdateWithoutDoctorInput>;
 };
+export type UserCreateNestedOneWithoutDiseaseWarningRulesInput = {
+    create?: Prisma.XOR<Prisma.UserCreateWithoutDiseaseWarningRulesInput, Prisma.UserUncheckedCreateWithoutDiseaseWarningRulesInput>;
+    connectOrCreate?: Prisma.UserCreateOrConnectWithoutDiseaseWarningRulesInput;
+    connect?: Prisma.UserWhereUniqueInput;
+};
+export type UserUpdateOneRequiredWithoutDiseaseWarningRulesNestedInput = {
+    create?: Prisma.XOR<Prisma.UserCreateWithoutDiseaseWarningRulesInput, Prisma.UserUncheckedCreateWithoutDiseaseWarningRulesInput>;
+    connectOrCreate?: Prisma.UserCreateOrConnectWithoutDiseaseWarningRulesInput;
+    upsert?: Prisma.UserUpsertWithoutDiseaseWarningRulesInput;
+    connect?: Prisma.UserWhereUniqueInput;
+    update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutDiseaseWarningRulesInput, Prisma.UserUpdateWithoutDiseaseWarningRulesInput>, Prisma.UserUncheckedUpdateWithoutDiseaseWarningRulesInput>;
+};
 export type UserCreateNestedOneWithoutNotificationsInput = {
     create?: Prisma.XOR<Prisma.UserCreateWithoutNotificationsInput, Prisma.UserUncheckedCreateWithoutNotificationsInput>;
     connectOrCreate?: Prisma.UserCreateOrConnectWithoutNotificationsInput;
@@ -671,6 +697,20 @@ export type UserUpdateOneRequiredWithoutImportHistoryNestedInput = {
     connect?: Prisma.UserWhereUniqueInput;
     update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutImportHistoryInput, Prisma.UserUpdateWithoutImportHistoryInput>, Prisma.UserUncheckedUpdateWithoutImportHistoryInput>;
 };
+export type UserCreateNestedOneWithoutReviewedSuggestionsInput = {
+    create?: Prisma.XOR<Prisma.UserCreateWithoutReviewedSuggestionsInput, Prisma.UserUncheckedCreateWithoutReviewedSuggestionsInput>;
+    connectOrCreate?: Prisma.UserCreateOrConnectWithoutReviewedSuggestionsInput;
+    connect?: Prisma.UserWhereUniqueInput;
+};
+export type UserUpdateOneWithoutReviewedSuggestionsNestedInput = {
+    create?: Prisma.XOR<Prisma.UserCreateWithoutReviewedSuggestionsInput, Prisma.UserUncheckedCreateWithoutReviewedSuggestionsInput>;
+    connectOrCreate?: Prisma.UserCreateOrConnectWithoutReviewedSuggestionsInput;
+    upsert?: Prisma.UserUpsertWithoutReviewedSuggestionsInput;
+    disconnect?: Prisma.UserWhereInput | boolean;
+    delete?: Prisma.UserWhereInput | boolean;
+    connect?: Prisma.UserWhereUniqueInput;
+    update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutReviewedSuggestionsInput, Prisma.UserUpdateWithoutReviewedSuggestionsInput>, Prisma.UserUncheckedUpdateWithoutReviewedSuggestionsInput>;
+};
 export type UserCreateNestedOneWithoutExportHistoryInput = {
     create?: Prisma.XOR<Prisma.UserCreateWithoutExportHistoryInput, Prisma.UserUncheckedCreateWithoutExportHistoryInput>;
     connectOrCreate?: Prisma.UserCreateOrConnectWithoutExportHistoryInput;
@@ -702,9 +742,11 @@ export type UserCreateWithoutSubscriptionInput = {
     notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput;
     auditLogs?: Prisma.AuditLogCreateNestedManyWithoutUserInput;
     sessions?: Prisma.SessionCreateNestedManyWithoutUserInput;
-    importHistory?: Prisma.ImportHistoryCreateNestedManyWithoutUserInput;
+    importHistory?: Prisma.ImportHistoryCreateNestedManyWithoutImporterInput;
     exportHistory?: Prisma.ExportHistoryCreateNestedManyWithoutUserInput;
     uploadedReports?: Prisma.MedicalReportCreateNestedManyWithoutUploaderInput;
+    diseaseWarningRules?: Prisma.DiseaseWarningRuleCreateNestedManyWithoutCreatorInput;
+    reviewedSuggestions?: Prisma.MedicineSuggestionCreateNestedManyWithoutReviewerInput;
 };
 export type UserUncheckedCreateWithoutSubscriptionInput = {
     id?: number;
@@ -726,9 +768,11 @@ export type UserUncheckedCreateWithoutSubscriptionInput = {
     notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput;
     auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutUserInput;
     sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput;
-    importHistory?: Prisma.ImportHistoryUncheckedCreateNestedManyWithoutUserInput;
+    importHistory?: Prisma.ImportHistoryUncheckedCreateNestedManyWithoutImporterInput;
     exportHistory?: Prisma.ExportHistoryUncheckedCreateNestedManyWithoutUserInput;
     uploadedReports?: Prisma.MedicalReportUncheckedCreateNestedManyWithoutUploaderInput;
+    diseaseWarningRules?: Prisma.DiseaseWarningRuleUncheckedCreateNestedManyWithoutCreatorInput;
+    reviewedSuggestions?: Prisma.MedicineSuggestionUncheckedCreateNestedManyWithoutReviewerInput;
 };
 export type UserCreateOrConnectWithoutSubscriptionInput = {
     where: Prisma.UserWhereUniqueInput;
@@ -762,9 +806,11 @@ export type UserUpdateWithoutSubscriptionInput = {
     notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput;
     auditLogs?: Prisma.AuditLogUpdateManyWithoutUserNestedInput;
     sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput;
-    importHistory?: Prisma.ImportHistoryUpdateManyWithoutUserNestedInput;
+    importHistory?: Prisma.ImportHistoryUpdateManyWithoutImporterNestedInput;
     exportHistory?: Prisma.ExportHistoryUpdateManyWithoutUserNestedInput;
     uploadedReports?: Prisma.MedicalReportUpdateManyWithoutUploaderNestedInput;
+    diseaseWarningRules?: Prisma.DiseaseWarningRuleUpdateManyWithoutCreatorNestedInput;
+    reviewedSuggestions?: Prisma.MedicineSuggestionUpdateManyWithoutReviewerNestedInput;
 };
 export type UserUncheckedUpdateWithoutSubscriptionInput = {
     id?: Prisma.IntFieldUpdateOperationsInput | number;
@@ -786,9 +832,11 @@ export type UserUncheckedUpdateWithoutSubscriptionInput = {
     notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput;
     auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutUserNestedInput;
     sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput;
-    importHistory?: Prisma.ImportHistoryUncheckedUpdateManyWithoutUserNestedInput;
+    importHistory?: Prisma.ImportHistoryUncheckedUpdateManyWithoutImporterNestedInput;
     exportHistory?: Prisma.ExportHistoryUncheckedUpdateManyWithoutUserNestedInput;
     uploadedReports?: Prisma.MedicalReportUncheckedUpdateManyWithoutUploaderNestedInput;
+    diseaseWarningRules?: Prisma.DiseaseWarningRuleUncheckedUpdateManyWithoutCreatorNestedInput;
+    reviewedSuggestions?: Prisma.MedicineSuggestionUncheckedUpdateManyWithoutReviewerNestedInput;
 };
 export type UserCreateWithoutPatientInput = {
     email: string;
@@ -809,9 +857,11 @@ export type UserCreateWithoutPatientInput = {
     notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput;
     auditLogs?: Prisma.AuditLogCreateNestedManyWithoutUserInput;
     sessions?: Prisma.SessionCreateNestedManyWithoutUserInput;
-    importHistory?: Prisma.ImportHistoryCreateNestedManyWithoutUserInput;
+    importHistory?: Prisma.ImportHistoryCreateNestedManyWithoutImporterInput;
     exportHistory?: Prisma.ExportHistoryCreateNestedManyWithoutUserInput;
     uploadedReports?: Prisma.MedicalReportCreateNestedManyWithoutUploaderInput;
+    diseaseWarningRules?: Prisma.DiseaseWarningRuleCreateNestedManyWithoutCreatorInput;
+    reviewedSuggestions?: Prisma.MedicineSuggestionCreateNestedManyWithoutReviewerInput;
 };
 export type UserUncheckedCreateWithoutPatientInput = {
     id?: number;
@@ -833,9 +883,11 @@ export type UserUncheckedCreateWithoutPatientInput = {
     notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput;
     auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutUserInput;
     sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput;
-    importHistory?: Prisma.ImportHistoryUncheckedCreateNestedManyWithoutUserInput;
+    importHistory?: Prisma.ImportHistoryUncheckedCreateNestedManyWithoutImporterInput;
     exportHistory?: Prisma.ExportHistoryUncheckedCreateNestedManyWithoutUserInput;
     uploadedReports?: Prisma.MedicalReportUncheckedCreateNestedManyWithoutUploaderInput;
+    diseaseWarningRules?: Prisma.DiseaseWarningRuleUncheckedCreateNestedManyWithoutCreatorInput;
+    reviewedSuggestions?: Prisma.MedicineSuggestionUncheckedCreateNestedManyWithoutReviewerInput;
 };
 export type UserCreateOrConnectWithoutPatientInput = {
     where: Prisma.UserWhereUniqueInput;
@@ -869,9 +921,11 @@ export type UserUpdateWithoutPatientInput = {
     notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput;
     auditLogs?: Prisma.AuditLogUpdateManyWithoutUserNestedInput;
     sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput;
-    importHistory?: Prisma.ImportHistoryUpdateManyWithoutUserNestedInput;
+    importHistory?: Prisma.ImportHistoryUpdateManyWithoutImporterNestedInput;
     exportHistory?: Prisma.ExportHistoryUpdateManyWithoutUserNestedInput;
     uploadedReports?: Prisma.MedicalReportUpdateManyWithoutUploaderNestedInput;
+    diseaseWarningRules?: Prisma.DiseaseWarningRuleUpdateManyWithoutCreatorNestedInput;
+    reviewedSuggestions?: Prisma.MedicineSuggestionUpdateManyWithoutReviewerNestedInput;
 };
 export type UserUncheckedUpdateWithoutPatientInput = {
     id?: Prisma.IntFieldUpdateOperationsInput | number;
@@ -893,9 +947,11 @@ export type UserUncheckedUpdateWithoutPatientInput = {
     notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput;
     auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutUserNestedInput;
     sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput;
-    importHistory?: Prisma.ImportHistoryUncheckedUpdateManyWithoutUserNestedInput;
+    importHistory?: Prisma.ImportHistoryUncheckedUpdateManyWithoutImporterNestedInput;
     exportHistory?: Prisma.ExportHistoryUncheckedUpdateManyWithoutUserNestedInput;
     uploadedReports?: Prisma.MedicalReportUncheckedUpdateManyWithoutUploaderNestedInput;
+    diseaseWarningRules?: Prisma.DiseaseWarningRuleUncheckedUpdateManyWithoutCreatorNestedInput;
+    reviewedSuggestions?: Prisma.MedicineSuggestionUncheckedUpdateManyWithoutReviewerNestedInput;
 };
 export type UserCreateWithoutDoctorInput = {
     email: string;
@@ -916,9 +972,11 @@ export type UserCreateWithoutDoctorInput = {
     notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput;
     auditLogs?: Prisma.AuditLogCreateNestedManyWithoutUserInput;
     sessions?: Prisma.SessionCreateNestedManyWithoutUserInput;
-    importHistory?: Prisma.ImportHistoryCreateNestedManyWithoutUserInput;
+    importHistory?: Prisma.ImportHistoryCreateNestedManyWithoutImporterInput;
     exportHistory?: Prisma.ExportHistoryCreateNestedManyWithoutUserInput;
     uploadedReports?: Prisma.MedicalReportCreateNestedManyWithoutUploaderInput;
+    diseaseWarningRules?: Prisma.DiseaseWarningRuleCreateNestedManyWithoutCreatorInput;
+    reviewedSuggestions?: Prisma.MedicineSuggestionCreateNestedManyWithoutReviewerInput;
 };
 export type UserUncheckedCreateWithoutDoctorInput = {
     id?: number;
@@ -940,9 +998,11 @@ export type UserUncheckedCreateWithoutDoctorInput = {
     notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput;
     auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutUserInput;
     sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput;
-    importHistory?: Prisma.ImportHistoryUncheckedCreateNestedManyWithoutUserInput;
+    importHistory?: Prisma.ImportHistoryUncheckedCreateNestedManyWithoutImporterInput;
     exportHistory?: Prisma.ExportHistoryUncheckedCreateNestedManyWithoutUserInput;
     uploadedReports?: Prisma.MedicalReportUncheckedCreateNestedManyWithoutUploaderInput;
+    diseaseWarningRules?: Prisma.DiseaseWarningRuleUncheckedCreateNestedManyWithoutCreatorInput;
+    reviewedSuggestions?: Prisma.MedicineSuggestionUncheckedCreateNestedManyWithoutReviewerInput;
 };
 export type UserCreateOrConnectWithoutDoctorInput = {
     where: Prisma.UserWhereUniqueInput;
@@ -976,9 +1036,11 @@ export type UserUpdateWithoutDoctorInput = {
     notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput;
     auditLogs?: Prisma.AuditLogUpdateManyWithoutUserNestedInput;
     sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput;
-    importHistory?: Prisma.ImportHistoryUpdateManyWithoutUserNestedInput;
+    importHistory?: Prisma.ImportHistoryUpdateManyWithoutImporterNestedInput;
     exportHistory?: Prisma.ExportHistoryUpdateManyWithoutUserNestedInput;
     uploadedReports?: Prisma.MedicalReportUpdateManyWithoutUploaderNestedInput;
+    diseaseWarningRules?: Prisma.DiseaseWarningRuleUpdateManyWithoutCreatorNestedInput;
+    reviewedSuggestions?: Prisma.MedicineSuggestionUpdateManyWithoutReviewerNestedInput;
 };
 export type UserUncheckedUpdateWithoutDoctorInput = {
     id?: Prisma.IntFieldUpdateOperationsInput | number;
@@ -1000,9 +1062,126 @@ export type UserUncheckedUpdateWithoutDoctorInput = {
     notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput;
     auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutUserNestedInput;
     sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput;
-    importHistory?: Prisma.ImportHistoryUncheckedUpdateManyWithoutUserNestedInput;
+    importHistory?: Prisma.ImportHistoryUncheckedUpdateManyWithoutImporterNestedInput;
     exportHistory?: Prisma.ExportHistoryUncheckedUpdateManyWithoutUserNestedInput;
     uploadedReports?: Prisma.MedicalReportUncheckedUpdateManyWithoutUploaderNestedInput;
+    diseaseWarningRules?: Prisma.DiseaseWarningRuleUncheckedUpdateManyWithoutCreatorNestedInput;
+    reviewedSuggestions?: Prisma.MedicineSuggestionUncheckedUpdateManyWithoutReviewerNestedInput;
+};
+export type UserCreateWithoutDiseaseWarningRulesInput = {
+    email: string;
+    passwordHash: string;
+    role: $Enums.UserRole;
+    emailVerified?: boolean;
+    emailVerificationToken?: string | null;
+    passwordResetToken?: string | null;
+    passwordResetExpires?: Date | string | null;
+    isActive?: boolean;
+    lastLoginAt?: Date | string | null;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+    deletedAt?: Date | string | null;
+    subscription?: Prisma.SubscriptionCreateNestedOneWithoutUserInput;
+    patient?: Prisma.PatientCreateNestedOneWithoutUserInput;
+    doctor?: Prisma.DoctorCreateNestedOneWithoutUserInput;
+    pharmacist?: Prisma.PharmacistCreateNestedOneWithoutUserInput;
+    notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput;
+    auditLogs?: Prisma.AuditLogCreateNestedManyWithoutUserInput;
+    sessions?: Prisma.SessionCreateNestedManyWithoutUserInput;
+    importHistory?: Prisma.ImportHistoryCreateNestedManyWithoutImporterInput;
+    exportHistory?: Prisma.ExportHistoryCreateNestedManyWithoutUserInput;
+    uploadedReports?: Prisma.MedicalReportCreateNestedManyWithoutUploaderInput;
+    reviewedSuggestions?: Prisma.MedicineSuggestionCreateNestedManyWithoutReviewerInput;
+};
+export type UserUncheckedCreateWithoutDiseaseWarningRulesInput = {
+    id?: number;
+    email: string;
+    passwordHash: string;
+    role: $Enums.UserRole;
+    emailVerified?: boolean;
+    emailVerificationToken?: string | null;
+    passwordResetToken?: string | null;
+    passwordResetExpires?: Date | string | null;
+    isActive?: boolean;
+    lastLoginAt?: Date | string | null;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+    deletedAt?: Date | string | null;
+    subscription?: Prisma.SubscriptionUncheckedCreateNestedOneWithoutUserInput;
+    patient?: Prisma.PatientUncheckedCreateNestedOneWithoutUserInput;
+    doctor?: Prisma.DoctorUncheckedCreateNestedOneWithoutUserInput;
+    pharmacist?: Prisma.PharmacistUncheckedCreateNestedOneWithoutUserInput;
+    notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput;
+    auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutUserInput;
+    sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput;
+    importHistory?: Prisma.ImportHistoryUncheckedCreateNestedManyWithoutImporterInput;
+    exportHistory?: Prisma.ExportHistoryUncheckedCreateNestedManyWithoutUserInput;
+    uploadedReports?: Prisma.MedicalReportUncheckedCreateNestedManyWithoutUploaderInput;
+    reviewedSuggestions?: Prisma.MedicineSuggestionUncheckedCreateNestedManyWithoutReviewerInput;
+};
+export type UserCreateOrConnectWithoutDiseaseWarningRulesInput = {
+    where: Prisma.UserWhereUniqueInput;
+    create: Prisma.XOR<Prisma.UserCreateWithoutDiseaseWarningRulesInput, Prisma.UserUncheckedCreateWithoutDiseaseWarningRulesInput>;
+};
+export type UserUpsertWithoutDiseaseWarningRulesInput = {
+    update: Prisma.XOR<Prisma.UserUpdateWithoutDiseaseWarningRulesInput, Prisma.UserUncheckedUpdateWithoutDiseaseWarningRulesInput>;
+    create: Prisma.XOR<Prisma.UserCreateWithoutDiseaseWarningRulesInput, Prisma.UserUncheckedCreateWithoutDiseaseWarningRulesInput>;
+    where?: Prisma.UserWhereInput;
+};
+export type UserUpdateToOneWithWhereWithoutDiseaseWarningRulesInput = {
+    where?: Prisma.UserWhereInput;
+    data: Prisma.XOR<Prisma.UserUpdateWithoutDiseaseWarningRulesInput, Prisma.UserUncheckedUpdateWithoutDiseaseWarningRulesInput>;
+};
+export type UserUpdateWithoutDiseaseWarningRulesInput = {
+    email?: Prisma.StringFieldUpdateOperationsInput | string;
+    passwordHash?: Prisma.StringFieldUpdateOperationsInput | string;
+    role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole;
+    emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    emailVerificationToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    passwordResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    passwordResetExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    subscription?: Prisma.SubscriptionUpdateOneWithoutUserNestedInput;
+    patient?: Prisma.PatientUpdateOneWithoutUserNestedInput;
+    doctor?: Prisma.DoctorUpdateOneWithoutUserNestedInput;
+    pharmacist?: Prisma.PharmacistUpdateOneWithoutUserNestedInput;
+    notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput;
+    auditLogs?: Prisma.AuditLogUpdateManyWithoutUserNestedInput;
+    sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput;
+    importHistory?: Prisma.ImportHistoryUpdateManyWithoutImporterNestedInput;
+    exportHistory?: Prisma.ExportHistoryUpdateManyWithoutUserNestedInput;
+    uploadedReports?: Prisma.MedicalReportUpdateManyWithoutUploaderNestedInput;
+    reviewedSuggestions?: Prisma.MedicineSuggestionUpdateManyWithoutReviewerNestedInput;
+};
+export type UserUncheckedUpdateWithoutDiseaseWarningRulesInput = {
+    id?: Prisma.IntFieldUpdateOperationsInput | number;
+    email?: Prisma.StringFieldUpdateOperationsInput | string;
+    passwordHash?: Prisma.StringFieldUpdateOperationsInput | string;
+    role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole;
+    emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    emailVerificationToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    passwordResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    passwordResetExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    subscription?: Prisma.SubscriptionUncheckedUpdateOneWithoutUserNestedInput;
+    patient?: Prisma.PatientUncheckedUpdateOneWithoutUserNestedInput;
+    doctor?: Prisma.DoctorUncheckedUpdateOneWithoutUserNestedInput;
+    pharmacist?: Prisma.PharmacistUncheckedUpdateOneWithoutUserNestedInput;
+    notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput;
+    auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutUserNestedInput;
+    sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput;
+    importHistory?: Prisma.ImportHistoryUncheckedUpdateManyWithoutImporterNestedInput;
+    exportHistory?: Prisma.ExportHistoryUncheckedUpdateManyWithoutUserNestedInput;
+    uploadedReports?: Prisma.MedicalReportUncheckedUpdateManyWithoutUploaderNestedInput;
+    reviewedSuggestions?: Prisma.MedicineSuggestionUncheckedUpdateManyWithoutReviewerNestedInput;
 };
 export type UserCreateWithoutNotificationsInput = {
     email: string;
@@ -1023,9 +1202,11 @@ export type UserCreateWithoutNotificationsInput = {
     pharmacist?: Prisma.PharmacistCreateNestedOneWithoutUserInput;
     auditLogs?: Prisma.AuditLogCreateNestedManyWithoutUserInput;
     sessions?: Prisma.SessionCreateNestedManyWithoutUserInput;
-    importHistory?: Prisma.ImportHistoryCreateNestedManyWithoutUserInput;
+    importHistory?: Prisma.ImportHistoryCreateNestedManyWithoutImporterInput;
     exportHistory?: Prisma.ExportHistoryCreateNestedManyWithoutUserInput;
     uploadedReports?: Prisma.MedicalReportCreateNestedManyWithoutUploaderInput;
+    diseaseWarningRules?: Prisma.DiseaseWarningRuleCreateNestedManyWithoutCreatorInput;
+    reviewedSuggestions?: Prisma.MedicineSuggestionCreateNestedManyWithoutReviewerInput;
 };
 export type UserUncheckedCreateWithoutNotificationsInput = {
     id?: number;
@@ -1047,9 +1228,11 @@ export type UserUncheckedCreateWithoutNotificationsInput = {
     pharmacist?: Prisma.PharmacistUncheckedCreateNestedOneWithoutUserInput;
     auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutUserInput;
     sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput;
-    importHistory?: Prisma.ImportHistoryUncheckedCreateNestedManyWithoutUserInput;
+    importHistory?: Prisma.ImportHistoryUncheckedCreateNestedManyWithoutImporterInput;
     exportHistory?: Prisma.ExportHistoryUncheckedCreateNestedManyWithoutUserInput;
     uploadedReports?: Prisma.MedicalReportUncheckedCreateNestedManyWithoutUploaderInput;
+    diseaseWarningRules?: Prisma.DiseaseWarningRuleUncheckedCreateNestedManyWithoutCreatorInput;
+    reviewedSuggestions?: Prisma.MedicineSuggestionUncheckedCreateNestedManyWithoutReviewerInput;
 };
 export type UserCreateOrConnectWithoutNotificationsInput = {
     where: Prisma.UserWhereUniqueInput;
@@ -1083,9 +1266,11 @@ export type UserUpdateWithoutNotificationsInput = {
     pharmacist?: Prisma.PharmacistUpdateOneWithoutUserNestedInput;
     auditLogs?: Prisma.AuditLogUpdateManyWithoutUserNestedInput;
     sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput;
-    importHistory?: Prisma.ImportHistoryUpdateManyWithoutUserNestedInput;
+    importHistory?: Prisma.ImportHistoryUpdateManyWithoutImporterNestedInput;
     exportHistory?: Prisma.ExportHistoryUpdateManyWithoutUserNestedInput;
     uploadedReports?: Prisma.MedicalReportUpdateManyWithoutUploaderNestedInput;
+    diseaseWarningRules?: Prisma.DiseaseWarningRuleUpdateManyWithoutCreatorNestedInput;
+    reviewedSuggestions?: Prisma.MedicineSuggestionUpdateManyWithoutReviewerNestedInput;
 };
 export type UserUncheckedUpdateWithoutNotificationsInput = {
     id?: Prisma.IntFieldUpdateOperationsInput | number;
@@ -1107,9 +1292,11 @@ export type UserUncheckedUpdateWithoutNotificationsInput = {
     pharmacist?: Prisma.PharmacistUncheckedUpdateOneWithoutUserNestedInput;
     auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutUserNestedInput;
     sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput;
-    importHistory?: Prisma.ImportHistoryUncheckedUpdateManyWithoutUserNestedInput;
+    importHistory?: Prisma.ImportHistoryUncheckedUpdateManyWithoutImporterNestedInput;
     exportHistory?: Prisma.ExportHistoryUncheckedUpdateManyWithoutUserNestedInput;
     uploadedReports?: Prisma.MedicalReportUncheckedUpdateManyWithoutUploaderNestedInput;
+    diseaseWarningRules?: Prisma.DiseaseWarningRuleUncheckedUpdateManyWithoutCreatorNestedInput;
+    reviewedSuggestions?: Prisma.MedicineSuggestionUncheckedUpdateManyWithoutReviewerNestedInput;
 };
 export type UserCreateWithoutAuditLogsInput = {
     email: string;
@@ -1130,9 +1317,11 @@ export type UserCreateWithoutAuditLogsInput = {
     pharmacist?: Prisma.PharmacistCreateNestedOneWithoutUserInput;
     notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput;
     sessions?: Prisma.SessionCreateNestedManyWithoutUserInput;
-    importHistory?: Prisma.ImportHistoryCreateNestedManyWithoutUserInput;
+    importHistory?: Prisma.ImportHistoryCreateNestedManyWithoutImporterInput;
     exportHistory?: Prisma.ExportHistoryCreateNestedManyWithoutUserInput;
     uploadedReports?: Prisma.MedicalReportCreateNestedManyWithoutUploaderInput;
+    diseaseWarningRules?: Prisma.DiseaseWarningRuleCreateNestedManyWithoutCreatorInput;
+    reviewedSuggestions?: Prisma.MedicineSuggestionCreateNestedManyWithoutReviewerInput;
 };
 export type UserUncheckedCreateWithoutAuditLogsInput = {
     id?: number;
@@ -1154,9 +1343,11 @@ export type UserUncheckedCreateWithoutAuditLogsInput = {
     pharmacist?: Prisma.PharmacistUncheckedCreateNestedOneWithoutUserInput;
     notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput;
     sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput;
-    importHistory?: Prisma.ImportHistoryUncheckedCreateNestedManyWithoutUserInput;
+    importHistory?: Prisma.ImportHistoryUncheckedCreateNestedManyWithoutImporterInput;
     exportHistory?: Prisma.ExportHistoryUncheckedCreateNestedManyWithoutUserInput;
     uploadedReports?: Prisma.MedicalReportUncheckedCreateNestedManyWithoutUploaderInput;
+    diseaseWarningRules?: Prisma.DiseaseWarningRuleUncheckedCreateNestedManyWithoutCreatorInput;
+    reviewedSuggestions?: Prisma.MedicineSuggestionUncheckedCreateNestedManyWithoutReviewerInput;
 };
 export type UserCreateOrConnectWithoutAuditLogsInput = {
     where: Prisma.UserWhereUniqueInput;
@@ -1190,9 +1381,11 @@ export type UserUpdateWithoutAuditLogsInput = {
     pharmacist?: Prisma.PharmacistUpdateOneWithoutUserNestedInput;
     notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput;
     sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput;
-    importHistory?: Prisma.ImportHistoryUpdateManyWithoutUserNestedInput;
+    importHistory?: Prisma.ImportHistoryUpdateManyWithoutImporterNestedInput;
     exportHistory?: Prisma.ExportHistoryUpdateManyWithoutUserNestedInput;
     uploadedReports?: Prisma.MedicalReportUpdateManyWithoutUploaderNestedInput;
+    diseaseWarningRules?: Prisma.DiseaseWarningRuleUpdateManyWithoutCreatorNestedInput;
+    reviewedSuggestions?: Prisma.MedicineSuggestionUpdateManyWithoutReviewerNestedInput;
 };
 export type UserUncheckedUpdateWithoutAuditLogsInput = {
     id?: Prisma.IntFieldUpdateOperationsInput | number;
@@ -1214,9 +1407,11 @@ export type UserUncheckedUpdateWithoutAuditLogsInput = {
     pharmacist?: Prisma.PharmacistUncheckedUpdateOneWithoutUserNestedInput;
     notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput;
     sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput;
-    importHistory?: Prisma.ImportHistoryUncheckedUpdateManyWithoutUserNestedInput;
+    importHistory?: Prisma.ImportHistoryUncheckedUpdateManyWithoutImporterNestedInput;
     exportHistory?: Prisma.ExportHistoryUncheckedUpdateManyWithoutUserNestedInput;
     uploadedReports?: Prisma.MedicalReportUncheckedUpdateManyWithoutUploaderNestedInput;
+    diseaseWarningRules?: Prisma.DiseaseWarningRuleUncheckedUpdateManyWithoutCreatorNestedInput;
+    reviewedSuggestions?: Prisma.MedicineSuggestionUncheckedUpdateManyWithoutReviewerNestedInput;
 };
 export type UserCreateWithoutSessionsInput = {
     email: string;
@@ -1237,9 +1432,11 @@ export type UserCreateWithoutSessionsInput = {
     pharmacist?: Prisma.PharmacistCreateNestedOneWithoutUserInput;
     notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput;
     auditLogs?: Prisma.AuditLogCreateNestedManyWithoutUserInput;
-    importHistory?: Prisma.ImportHistoryCreateNestedManyWithoutUserInput;
+    importHistory?: Prisma.ImportHistoryCreateNestedManyWithoutImporterInput;
     exportHistory?: Prisma.ExportHistoryCreateNestedManyWithoutUserInput;
     uploadedReports?: Prisma.MedicalReportCreateNestedManyWithoutUploaderInput;
+    diseaseWarningRules?: Prisma.DiseaseWarningRuleCreateNestedManyWithoutCreatorInput;
+    reviewedSuggestions?: Prisma.MedicineSuggestionCreateNestedManyWithoutReviewerInput;
 };
 export type UserUncheckedCreateWithoutSessionsInput = {
     id?: number;
@@ -1261,9 +1458,11 @@ export type UserUncheckedCreateWithoutSessionsInput = {
     pharmacist?: Prisma.PharmacistUncheckedCreateNestedOneWithoutUserInput;
     notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput;
     auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutUserInput;
-    importHistory?: Prisma.ImportHistoryUncheckedCreateNestedManyWithoutUserInput;
+    importHistory?: Prisma.ImportHistoryUncheckedCreateNestedManyWithoutImporterInput;
     exportHistory?: Prisma.ExportHistoryUncheckedCreateNestedManyWithoutUserInput;
     uploadedReports?: Prisma.MedicalReportUncheckedCreateNestedManyWithoutUploaderInput;
+    diseaseWarningRules?: Prisma.DiseaseWarningRuleUncheckedCreateNestedManyWithoutCreatorInput;
+    reviewedSuggestions?: Prisma.MedicineSuggestionUncheckedCreateNestedManyWithoutReviewerInput;
 };
 export type UserCreateOrConnectWithoutSessionsInput = {
     where: Prisma.UserWhereUniqueInput;
@@ -1297,9 +1496,11 @@ export type UserUpdateWithoutSessionsInput = {
     pharmacist?: Prisma.PharmacistUpdateOneWithoutUserNestedInput;
     notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput;
     auditLogs?: Prisma.AuditLogUpdateManyWithoutUserNestedInput;
-    importHistory?: Prisma.ImportHistoryUpdateManyWithoutUserNestedInput;
+    importHistory?: Prisma.ImportHistoryUpdateManyWithoutImporterNestedInput;
     exportHistory?: Prisma.ExportHistoryUpdateManyWithoutUserNestedInput;
     uploadedReports?: Prisma.MedicalReportUpdateManyWithoutUploaderNestedInput;
+    diseaseWarningRules?: Prisma.DiseaseWarningRuleUpdateManyWithoutCreatorNestedInput;
+    reviewedSuggestions?: Prisma.MedicineSuggestionUpdateManyWithoutReviewerNestedInput;
 };
 export type UserUncheckedUpdateWithoutSessionsInput = {
     id?: Prisma.IntFieldUpdateOperationsInput | number;
@@ -1321,9 +1522,11 @@ export type UserUncheckedUpdateWithoutSessionsInput = {
     pharmacist?: Prisma.PharmacistUncheckedUpdateOneWithoutUserNestedInput;
     notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput;
     auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutUserNestedInput;
-    importHistory?: Prisma.ImportHistoryUncheckedUpdateManyWithoutUserNestedInput;
+    importHistory?: Prisma.ImportHistoryUncheckedUpdateManyWithoutImporterNestedInput;
     exportHistory?: Prisma.ExportHistoryUncheckedUpdateManyWithoutUserNestedInput;
     uploadedReports?: Prisma.MedicalReportUncheckedUpdateManyWithoutUploaderNestedInput;
+    diseaseWarningRules?: Prisma.DiseaseWarningRuleUncheckedUpdateManyWithoutCreatorNestedInput;
+    reviewedSuggestions?: Prisma.MedicineSuggestionUncheckedUpdateManyWithoutReviewerNestedInput;
 };
 export type UserCreateWithoutPharmacistInput = {
     email: string;
@@ -1344,9 +1547,11 @@ export type UserCreateWithoutPharmacistInput = {
     notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput;
     auditLogs?: Prisma.AuditLogCreateNestedManyWithoutUserInput;
     sessions?: Prisma.SessionCreateNestedManyWithoutUserInput;
-    importHistory?: Prisma.ImportHistoryCreateNestedManyWithoutUserInput;
+    importHistory?: Prisma.ImportHistoryCreateNestedManyWithoutImporterInput;
     exportHistory?: Prisma.ExportHistoryCreateNestedManyWithoutUserInput;
     uploadedReports?: Prisma.MedicalReportCreateNestedManyWithoutUploaderInput;
+    diseaseWarningRules?: Prisma.DiseaseWarningRuleCreateNestedManyWithoutCreatorInput;
+    reviewedSuggestions?: Prisma.MedicineSuggestionCreateNestedManyWithoutReviewerInput;
 };
 export type UserUncheckedCreateWithoutPharmacistInput = {
     id?: number;
@@ -1368,9 +1573,11 @@ export type UserUncheckedCreateWithoutPharmacistInput = {
     notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput;
     auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutUserInput;
     sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput;
-    importHistory?: Prisma.ImportHistoryUncheckedCreateNestedManyWithoutUserInput;
+    importHistory?: Prisma.ImportHistoryUncheckedCreateNestedManyWithoutImporterInput;
     exportHistory?: Prisma.ExportHistoryUncheckedCreateNestedManyWithoutUserInput;
     uploadedReports?: Prisma.MedicalReportUncheckedCreateNestedManyWithoutUploaderInput;
+    diseaseWarningRules?: Prisma.DiseaseWarningRuleUncheckedCreateNestedManyWithoutCreatorInput;
+    reviewedSuggestions?: Prisma.MedicineSuggestionUncheckedCreateNestedManyWithoutReviewerInput;
 };
 export type UserCreateOrConnectWithoutPharmacistInput = {
     where: Prisma.UserWhereUniqueInput;
@@ -1404,9 +1611,11 @@ export type UserUpdateWithoutPharmacistInput = {
     notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput;
     auditLogs?: Prisma.AuditLogUpdateManyWithoutUserNestedInput;
     sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput;
-    importHistory?: Prisma.ImportHistoryUpdateManyWithoutUserNestedInput;
+    importHistory?: Prisma.ImportHistoryUpdateManyWithoutImporterNestedInput;
     exportHistory?: Prisma.ExportHistoryUpdateManyWithoutUserNestedInput;
     uploadedReports?: Prisma.MedicalReportUpdateManyWithoutUploaderNestedInput;
+    diseaseWarningRules?: Prisma.DiseaseWarningRuleUpdateManyWithoutCreatorNestedInput;
+    reviewedSuggestions?: Prisma.MedicineSuggestionUpdateManyWithoutReviewerNestedInput;
 };
 export type UserUncheckedUpdateWithoutPharmacistInput = {
     id?: Prisma.IntFieldUpdateOperationsInput | number;
@@ -1428,9 +1637,11 @@ export type UserUncheckedUpdateWithoutPharmacistInput = {
     notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput;
     auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutUserNestedInput;
     sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput;
-    importHistory?: Prisma.ImportHistoryUncheckedUpdateManyWithoutUserNestedInput;
+    importHistory?: Prisma.ImportHistoryUncheckedUpdateManyWithoutImporterNestedInput;
     exportHistory?: Prisma.ExportHistoryUncheckedUpdateManyWithoutUserNestedInput;
     uploadedReports?: Prisma.MedicalReportUncheckedUpdateManyWithoutUploaderNestedInput;
+    diseaseWarningRules?: Prisma.DiseaseWarningRuleUncheckedUpdateManyWithoutCreatorNestedInput;
+    reviewedSuggestions?: Prisma.MedicineSuggestionUncheckedUpdateManyWithoutReviewerNestedInput;
 };
 export type UserCreateWithoutUploadedReportsInput = {
     email: string;
@@ -1452,8 +1663,10 @@ export type UserCreateWithoutUploadedReportsInput = {
     notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput;
     auditLogs?: Prisma.AuditLogCreateNestedManyWithoutUserInput;
     sessions?: Prisma.SessionCreateNestedManyWithoutUserInput;
-    importHistory?: Prisma.ImportHistoryCreateNestedManyWithoutUserInput;
+    importHistory?: Prisma.ImportHistoryCreateNestedManyWithoutImporterInput;
     exportHistory?: Prisma.ExportHistoryCreateNestedManyWithoutUserInput;
+    diseaseWarningRules?: Prisma.DiseaseWarningRuleCreateNestedManyWithoutCreatorInput;
+    reviewedSuggestions?: Prisma.MedicineSuggestionCreateNestedManyWithoutReviewerInput;
 };
 export type UserUncheckedCreateWithoutUploadedReportsInput = {
     id?: number;
@@ -1476,8 +1689,10 @@ export type UserUncheckedCreateWithoutUploadedReportsInput = {
     notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput;
     auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutUserInput;
     sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput;
-    importHistory?: Prisma.ImportHistoryUncheckedCreateNestedManyWithoutUserInput;
+    importHistory?: Prisma.ImportHistoryUncheckedCreateNestedManyWithoutImporterInput;
     exportHistory?: Prisma.ExportHistoryUncheckedCreateNestedManyWithoutUserInput;
+    diseaseWarningRules?: Prisma.DiseaseWarningRuleUncheckedCreateNestedManyWithoutCreatorInput;
+    reviewedSuggestions?: Prisma.MedicineSuggestionUncheckedCreateNestedManyWithoutReviewerInput;
 };
 export type UserCreateOrConnectWithoutUploadedReportsInput = {
     where: Prisma.UserWhereUniqueInput;
@@ -1512,8 +1727,10 @@ export type UserUpdateWithoutUploadedReportsInput = {
     notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput;
     auditLogs?: Prisma.AuditLogUpdateManyWithoutUserNestedInput;
     sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput;
-    importHistory?: Prisma.ImportHistoryUpdateManyWithoutUserNestedInput;
+    importHistory?: Prisma.ImportHistoryUpdateManyWithoutImporterNestedInput;
     exportHistory?: Prisma.ExportHistoryUpdateManyWithoutUserNestedInput;
+    diseaseWarningRules?: Prisma.DiseaseWarningRuleUpdateManyWithoutCreatorNestedInput;
+    reviewedSuggestions?: Prisma.MedicineSuggestionUpdateManyWithoutReviewerNestedInput;
 };
 export type UserUncheckedUpdateWithoutUploadedReportsInput = {
     id?: Prisma.IntFieldUpdateOperationsInput | number;
@@ -1536,8 +1753,10 @@ export type UserUncheckedUpdateWithoutUploadedReportsInput = {
     notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput;
     auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutUserNestedInput;
     sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput;
-    importHistory?: Prisma.ImportHistoryUncheckedUpdateManyWithoutUserNestedInput;
+    importHistory?: Prisma.ImportHistoryUncheckedUpdateManyWithoutImporterNestedInput;
     exportHistory?: Prisma.ExportHistoryUncheckedUpdateManyWithoutUserNestedInput;
+    diseaseWarningRules?: Prisma.DiseaseWarningRuleUncheckedUpdateManyWithoutCreatorNestedInput;
+    reviewedSuggestions?: Prisma.MedicineSuggestionUncheckedUpdateManyWithoutReviewerNestedInput;
 };
 export type UserCreateWithoutImportHistoryInput = {
     email: string;
@@ -1561,6 +1780,8 @@ export type UserCreateWithoutImportHistoryInput = {
     sessions?: Prisma.SessionCreateNestedManyWithoutUserInput;
     exportHistory?: Prisma.ExportHistoryCreateNestedManyWithoutUserInput;
     uploadedReports?: Prisma.MedicalReportCreateNestedManyWithoutUploaderInput;
+    diseaseWarningRules?: Prisma.DiseaseWarningRuleCreateNestedManyWithoutCreatorInput;
+    reviewedSuggestions?: Prisma.MedicineSuggestionCreateNestedManyWithoutReviewerInput;
 };
 export type UserUncheckedCreateWithoutImportHistoryInput = {
     id?: number;
@@ -1585,6 +1806,8 @@ export type UserUncheckedCreateWithoutImportHistoryInput = {
     sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput;
     exportHistory?: Prisma.ExportHistoryUncheckedCreateNestedManyWithoutUserInput;
     uploadedReports?: Prisma.MedicalReportUncheckedCreateNestedManyWithoutUploaderInput;
+    diseaseWarningRules?: Prisma.DiseaseWarningRuleUncheckedCreateNestedManyWithoutCreatorInput;
+    reviewedSuggestions?: Prisma.MedicineSuggestionUncheckedCreateNestedManyWithoutReviewerInput;
 };
 export type UserCreateOrConnectWithoutImportHistoryInput = {
     where: Prisma.UserWhereUniqueInput;
@@ -1621,6 +1844,8 @@ export type UserUpdateWithoutImportHistoryInput = {
     sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput;
     exportHistory?: Prisma.ExportHistoryUpdateManyWithoutUserNestedInput;
     uploadedReports?: Prisma.MedicalReportUpdateManyWithoutUploaderNestedInput;
+    diseaseWarningRules?: Prisma.DiseaseWarningRuleUpdateManyWithoutCreatorNestedInput;
+    reviewedSuggestions?: Prisma.MedicineSuggestionUpdateManyWithoutReviewerNestedInput;
 };
 export type UserUncheckedUpdateWithoutImportHistoryInput = {
     id?: Prisma.IntFieldUpdateOperationsInput | number;
@@ -1645,6 +1870,123 @@ export type UserUncheckedUpdateWithoutImportHistoryInput = {
     sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput;
     exportHistory?: Prisma.ExportHistoryUncheckedUpdateManyWithoutUserNestedInput;
     uploadedReports?: Prisma.MedicalReportUncheckedUpdateManyWithoutUploaderNestedInput;
+    diseaseWarningRules?: Prisma.DiseaseWarningRuleUncheckedUpdateManyWithoutCreatorNestedInput;
+    reviewedSuggestions?: Prisma.MedicineSuggestionUncheckedUpdateManyWithoutReviewerNestedInput;
+};
+export type UserCreateWithoutReviewedSuggestionsInput = {
+    email: string;
+    passwordHash: string;
+    role: $Enums.UserRole;
+    emailVerified?: boolean;
+    emailVerificationToken?: string | null;
+    passwordResetToken?: string | null;
+    passwordResetExpires?: Date | string | null;
+    isActive?: boolean;
+    lastLoginAt?: Date | string | null;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+    deletedAt?: Date | string | null;
+    subscription?: Prisma.SubscriptionCreateNestedOneWithoutUserInput;
+    patient?: Prisma.PatientCreateNestedOneWithoutUserInput;
+    doctor?: Prisma.DoctorCreateNestedOneWithoutUserInput;
+    pharmacist?: Prisma.PharmacistCreateNestedOneWithoutUserInput;
+    notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput;
+    auditLogs?: Prisma.AuditLogCreateNestedManyWithoutUserInput;
+    sessions?: Prisma.SessionCreateNestedManyWithoutUserInput;
+    importHistory?: Prisma.ImportHistoryCreateNestedManyWithoutImporterInput;
+    exportHistory?: Prisma.ExportHistoryCreateNestedManyWithoutUserInput;
+    uploadedReports?: Prisma.MedicalReportCreateNestedManyWithoutUploaderInput;
+    diseaseWarningRules?: Prisma.DiseaseWarningRuleCreateNestedManyWithoutCreatorInput;
+};
+export type UserUncheckedCreateWithoutReviewedSuggestionsInput = {
+    id?: number;
+    email: string;
+    passwordHash: string;
+    role: $Enums.UserRole;
+    emailVerified?: boolean;
+    emailVerificationToken?: string | null;
+    passwordResetToken?: string | null;
+    passwordResetExpires?: Date | string | null;
+    isActive?: boolean;
+    lastLoginAt?: Date | string | null;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+    deletedAt?: Date | string | null;
+    subscription?: Prisma.SubscriptionUncheckedCreateNestedOneWithoutUserInput;
+    patient?: Prisma.PatientUncheckedCreateNestedOneWithoutUserInput;
+    doctor?: Prisma.DoctorUncheckedCreateNestedOneWithoutUserInput;
+    pharmacist?: Prisma.PharmacistUncheckedCreateNestedOneWithoutUserInput;
+    notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput;
+    auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutUserInput;
+    sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput;
+    importHistory?: Prisma.ImportHistoryUncheckedCreateNestedManyWithoutImporterInput;
+    exportHistory?: Prisma.ExportHistoryUncheckedCreateNestedManyWithoutUserInput;
+    uploadedReports?: Prisma.MedicalReportUncheckedCreateNestedManyWithoutUploaderInput;
+    diseaseWarningRules?: Prisma.DiseaseWarningRuleUncheckedCreateNestedManyWithoutCreatorInput;
+};
+export type UserCreateOrConnectWithoutReviewedSuggestionsInput = {
+    where: Prisma.UserWhereUniqueInput;
+    create: Prisma.XOR<Prisma.UserCreateWithoutReviewedSuggestionsInput, Prisma.UserUncheckedCreateWithoutReviewedSuggestionsInput>;
+};
+export type UserUpsertWithoutReviewedSuggestionsInput = {
+    update: Prisma.XOR<Prisma.UserUpdateWithoutReviewedSuggestionsInput, Prisma.UserUncheckedUpdateWithoutReviewedSuggestionsInput>;
+    create: Prisma.XOR<Prisma.UserCreateWithoutReviewedSuggestionsInput, Prisma.UserUncheckedCreateWithoutReviewedSuggestionsInput>;
+    where?: Prisma.UserWhereInput;
+};
+export type UserUpdateToOneWithWhereWithoutReviewedSuggestionsInput = {
+    where?: Prisma.UserWhereInput;
+    data: Prisma.XOR<Prisma.UserUpdateWithoutReviewedSuggestionsInput, Prisma.UserUncheckedUpdateWithoutReviewedSuggestionsInput>;
+};
+export type UserUpdateWithoutReviewedSuggestionsInput = {
+    email?: Prisma.StringFieldUpdateOperationsInput | string;
+    passwordHash?: Prisma.StringFieldUpdateOperationsInput | string;
+    role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole;
+    emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    emailVerificationToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    passwordResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    passwordResetExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    subscription?: Prisma.SubscriptionUpdateOneWithoutUserNestedInput;
+    patient?: Prisma.PatientUpdateOneWithoutUserNestedInput;
+    doctor?: Prisma.DoctorUpdateOneWithoutUserNestedInput;
+    pharmacist?: Prisma.PharmacistUpdateOneWithoutUserNestedInput;
+    notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput;
+    auditLogs?: Prisma.AuditLogUpdateManyWithoutUserNestedInput;
+    sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput;
+    importHistory?: Prisma.ImportHistoryUpdateManyWithoutImporterNestedInput;
+    exportHistory?: Prisma.ExportHistoryUpdateManyWithoutUserNestedInput;
+    uploadedReports?: Prisma.MedicalReportUpdateManyWithoutUploaderNestedInput;
+    diseaseWarningRules?: Prisma.DiseaseWarningRuleUpdateManyWithoutCreatorNestedInput;
+};
+export type UserUncheckedUpdateWithoutReviewedSuggestionsInput = {
+    id?: Prisma.IntFieldUpdateOperationsInput | number;
+    email?: Prisma.StringFieldUpdateOperationsInput | string;
+    passwordHash?: Prisma.StringFieldUpdateOperationsInput | string;
+    role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole;
+    emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    emailVerificationToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    passwordResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    passwordResetExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    subscription?: Prisma.SubscriptionUncheckedUpdateOneWithoutUserNestedInput;
+    patient?: Prisma.PatientUncheckedUpdateOneWithoutUserNestedInput;
+    doctor?: Prisma.DoctorUncheckedUpdateOneWithoutUserNestedInput;
+    pharmacist?: Prisma.PharmacistUncheckedUpdateOneWithoutUserNestedInput;
+    notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput;
+    auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutUserNestedInput;
+    sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput;
+    importHistory?: Prisma.ImportHistoryUncheckedUpdateManyWithoutImporterNestedInput;
+    exportHistory?: Prisma.ExportHistoryUncheckedUpdateManyWithoutUserNestedInput;
+    uploadedReports?: Prisma.MedicalReportUncheckedUpdateManyWithoutUploaderNestedInput;
+    diseaseWarningRules?: Prisma.DiseaseWarningRuleUncheckedUpdateManyWithoutCreatorNestedInput;
 };
 export type UserCreateWithoutExportHistoryInput = {
     email: string;
@@ -1666,8 +2008,10 @@ export type UserCreateWithoutExportHistoryInput = {
     notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput;
     auditLogs?: Prisma.AuditLogCreateNestedManyWithoutUserInput;
     sessions?: Prisma.SessionCreateNestedManyWithoutUserInput;
-    importHistory?: Prisma.ImportHistoryCreateNestedManyWithoutUserInput;
+    importHistory?: Prisma.ImportHistoryCreateNestedManyWithoutImporterInput;
     uploadedReports?: Prisma.MedicalReportCreateNestedManyWithoutUploaderInput;
+    diseaseWarningRules?: Prisma.DiseaseWarningRuleCreateNestedManyWithoutCreatorInput;
+    reviewedSuggestions?: Prisma.MedicineSuggestionCreateNestedManyWithoutReviewerInput;
 };
 export type UserUncheckedCreateWithoutExportHistoryInput = {
     id?: number;
@@ -1690,8 +2034,10 @@ export type UserUncheckedCreateWithoutExportHistoryInput = {
     notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput;
     auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutUserInput;
     sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput;
-    importHistory?: Prisma.ImportHistoryUncheckedCreateNestedManyWithoutUserInput;
+    importHistory?: Prisma.ImportHistoryUncheckedCreateNestedManyWithoutImporterInput;
     uploadedReports?: Prisma.MedicalReportUncheckedCreateNestedManyWithoutUploaderInput;
+    diseaseWarningRules?: Prisma.DiseaseWarningRuleUncheckedCreateNestedManyWithoutCreatorInput;
+    reviewedSuggestions?: Prisma.MedicineSuggestionUncheckedCreateNestedManyWithoutReviewerInput;
 };
 export type UserCreateOrConnectWithoutExportHistoryInput = {
     where: Prisma.UserWhereUniqueInput;
@@ -1726,8 +2072,10 @@ export type UserUpdateWithoutExportHistoryInput = {
     notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput;
     auditLogs?: Prisma.AuditLogUpdateManyWithoutUserNestedInput;
     sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput;
-    importHistory?: Prisma.ImportHistoryUpdateManyWithoutUserNestedInput;
+    importHistory?: Prisma.ImportHistoryUpdateManyWithoutImporterNestedInput;
     uploadedReports?: Prisma.MedicalReportUpdateManyWithoutUploaderNestedInput;
+    diseaseWarningRules?: Prisma.DiseaseWarningRuleUpdateManyWithoutCreatorNestedInput;
+    reviewedSuggestions?: Prisma.MedicineSuggestionUpdateManyWithoutReviewerNestedInput;
 };
 export type UserUncheckedUpdateWithoutExportHistoryInput = {
     id?: Prisma.IntFieldUpdateOperationsInput | number;
@@ -1750,8 +2098,10 @@ export type UserUncheckedUpdateWithoutExportHistoryInput = {
     notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput;
     auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutUserNestedInput;
     sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput;
-    importHistory?: Prisma.ImportHistoryUncheckedUpdateManyWithoutUserNestedInput;
+    importHistory?: Prisma.ImportHistoryUncheckedUpdateManyWithoutImporterNestedInput;
     uploadedReports?: Prisma.MedicalReportUncheckedUpdateManyWithoutUploaderNestedInput;
+    diseaseWarningRules?: Prisma.DiseaseWarningRuleUncheckedUpdateManyWithoutCreatorNestedInput;
+    reviewedSuggestions?: Prisma.MedicineSuggestionUncheckedUpdateManyWithoutReviewerNestedInput;
 };
 /**
  * Count Type UserCountOutputType
@@ -1763,6 +2113,8 @@ export type UserCountOutputType = {
     importHistory: number;
     exportHistory: number;
     uploadedReports: number;
+    diseaseWarningRules: number;
+    reviewedSuggestions: number;
 };
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     notifications?: boolean | UserCountOutputTypeCountNotificationsArgs;
@@ -1771,6 +2123,8 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
     importHistory?: boolean | UserCountOutputTypeCountImportHistoryArgs;
     exportHistory?: boolean | UserCountOutputTypeCountExportHistoryArgs;
     uploadedReports?: boolean | UserCountOutputTypeCountUploadedReportsArgs;
+    diseaseWarningRules?: boolean | UserCountOutputTypeCountDiseaseWarningRulesArgs;
+    reviewedSuggestions?: boolean | UserCountOutputTypeCountReviewedSuggestionsArgs;
 };
 /**
  * UserCountOutputType without action
@@ -1817,6 +2171,18 @@ export type UserCountOutputTypeCountExportHistoryArgs<ExtArgs extends runtime.Ty
 export type UserCountOutputTypeCountUploadedReportsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     where?: Prisma.MedicalReportWhereInput;
 };
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountDiseaseWarningRulesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    where?: Prisma.DiseaseWarningRuleWhereInput;
+};
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountReviewedSuggestionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    where?: Prisma.MedicineSuggestionWhereInput;
+};
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
     id?: boolean;
     email?: boolean;
@@ -1841,6 +2207,8 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
     importHistory?: boolean | Prisma.User$importHistoryArgs<ExtArgs>;
     exportHistory?: boolean | Prisma.User$exportHistoryArgs<ExtArgs>;
     uploadedReports?: boolean | Prisma.User$uploadedReportsArgs<ExtArgs>;
+    diseaseWarningRules?: boolean | Prisma.User$diseaseWarningRulesArgs<ExtArgs>;
+    reviewedSuggestions?: boolean | Prisma.User$reviewedSuggestionsArgs<ExtArgs>;
     _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>;
 }, ExtArgs["result"]["user"]>;
 export type UserSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -1900,6 +2268,8 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
     importHistory?: boolean | Prisma.User$importHistoryArgs<ExtArgs>;
     exportHistory?: boolean | Prisma.User$exportHistoryArgs<ExtArgs>;
     uploadedReports?: boolean | Prisma.User$uploadedReportsArgs<ExtArgs>;
+    diseaseWarningRules?: boolean | Prisma.User$diseaseWarningRulesArgs<ExtArgs>;
+    reviewedSuggestions?: boolean | Prisma.User$reviewedSuggestionsArgs<ExtArgs>;
     _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>;
 };
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {};
@@ -1917,6 +2287,8 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
         importHistory: Prisma.$ImportHistoryPayload<ExtArgs>[];
         exportHistory: Prisma.$ExportHistoryPayload<ExtArgs>[];
         uploadedReports: Prisma.$MedicalReportPayload<ExtArgs>[];
+        diseaseWarningRules: Prisma.$DiseaseWarningRulePayload<ExtArgs>[];
+        reviewedSuggestions: Prisma.$MedicineSuggestionPayload<ExtArgs>[];
     };
     scalars: runtime.Types.Extensions.GetPayloadResult<{
         id: number;
@@ -2271,6 +2643,8 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
     importHistory<T extends Prisma.User$importHistoryArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$importHistoryArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ImportHistoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>;
     exportHistory<T extends Prisma.User$exportHistoryArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$exportHistoryArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ExportHistoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>;
     uploadedReports<T extends Prisma.User$uploadedReportsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$uploadedReportsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MedicalReportPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>;
+    diseaseWarningRules<T extends Prisma.User$diseaseWarningRulesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$diseaseWarningRulesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DiseaseWarningRulePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>;
+    reviewedSuggestions<T extends Prisma.User$reviewedSuggestionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$reviewedSuggestionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MedicineSuggestionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>;
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2888,6 +3262,52 @@ export type User$uploadedReportsArgs<ExtArgs extends runtime.Types.Extensions.In
     take?: number;
     skip?: number;
     distinct?: Prisma.MedicalReportScalarFieldEnum | Prisma.MedicalReportScalarFieldEnum[];
+};
+/**
+ * User.diseaseWarningRules
+ */
+export type User$diseaseWarningRulesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DiseaseWarningRule
+     */
+    select?: Prisma.DiseaseWarningRuleSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the DiseaseWarningRule
+     */
+    omit?: Prisma.DiseaseWarningRuleOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: Prisma.DiseaseWarningRuleInclude<ExtArgs> | null;
+    where?: Prisma.DiseaseWarningRuleWhereInput;
+    orderBy?: Prisma.DiseaseWarningRuleOrderByWithRelationInput | Prisma.DiseaseWarningRuleOrderByWithRelationInput[];
+    cursor?: Prisma.DiseaseWarningRuleWhereUniqueInput;
+    take?: number;
+    skip?: number;
+    distinct?: Prisma.DiseaseWarningRuleScalarFieldEnum | Prisma.DiseaseWarningRuleScalarFieldEnum[];
+};
+/**
+ * User.reviewedSuggestions
+ */
+export type User$reviewedSuggestionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MedicineSuggestion
+     */
+    select?: Prisma.MedicineSuggestionSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the MedicineSuggestion
+     */
+    omit?: Prisma.MedicineSuggestionOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: Prisma.MedicineSuggestionInclude<ExtArgs> | null;
+    where?: Prisma.MedicineSuggestionWhereInput;
+    orderBy?: Prisma.MedicineSuggestionOrderByWithRelationInput | Prisma.MedicineSuggestionOrderByWithRelationInput[];
+    cursor?: Prisma.MedicineSuggestionWhereUniqueInput;
+    take?: number;
+    skip?: number;
+    distinct?: Prisma.MedicineSuggestionScalarFieldEnum | Prisma.MedicineSuggestionScalarFieldEnum[];
 };
 /**
  * User without action

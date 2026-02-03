@@ -1,6 +1,6 @@
 import * as runtime from "@prisma/client/runtime/index-browser";
-export type * from '../models.js';
-export type * from './prismaNamespace.js';
+export type * from '../models';
+export type * from './prismaNamespace';
 export declare const Decimal: typeof runtime.Decimal;
 export declare const NullTypes: {
     DbNull: (new (secret: never) => typeof runtime.DbNull);
@@ -41,6 +41,7 @@ export declare const ModelName: {
     readonly Appointment: "Appointment";
     readonly Disease: "Disease";
     readonly PatientDisease: "PatientDisease";
+    readonly DiseaseWarningRule: "DiseaseWarningRule";
     readonly ActiveSubstance: "ActiveSubstance";
     readonly DiseaseActiveSubstanceWarning: "DiseaseActiveSubstanceWarning";
     readonly MedicineAlternative: "MedicineAlternative";
@@ -64,6 +65,7 @@ export declare const ModelName: {
     readonly ContraindicationTermMapping: "ContraindicationTermMapping";
     readonly BatchHistory: "BatchHistory";
     readonly ImportHistory: "ImportHistory";
+    readonly MedicineSuggestion: "MedicineSuggestion";
     readonly ExportHistory: "ExportHistory";
 };
 export type ModelName = (typeof ModelName)[keyof typeof ModelName];
@@ -150,8 +152,9 @@ export type PatientScalarFieldEnum = (typeof PatientScalarFieldEnum)[keyof typeo
 export declare const MedicalHistoryScalarFieldEnum: {
     readonly id: "id";
     readonly patientId: "patientId";
-    readonly condition: "condition";
+    readonly diseaseId: "diseaseId";
     readonly diagnosisDate: "diagnosisDate";
+    readonly severity: "severity";
     readonly treatment: "treatment";
     readonly status: "status";
     readonly notes: "notes";
@@ -163,7 +166,8 @@ export declare const FamilyHistoryScalarFieldEnum: {
     readonly id: "id";
     readonly patientId: "patientId";
     readonly relation: "relation";
-    readonly condition: "condition";
+    readonly diseaseId: "diseaseId";
+    readonly severity: "severity";
     readonly notes: "notes";
     readonly createdAt: "createdAt";
     readonly updatedAt: "updatedAt";
@@ -263,6 +267,9 @@ export declare const DiseaseScalarFieldEnum: {
     readonly severity: "severity";
     readonly description: "description";
     readonly isActive: "isActive";
+    readonly requiresSpecialHandling: "requiresSpecialHandling";
+    readonly warningMessage: "warningMessage";
+    readonly warningConfig: "warningConfig";
     readonly createdAt: "createdAt";
     readonly updatedAt: "updatedAt";
 };
@@ -279,6 +286,22 @@ export declare const PatientDiseaseScalarFieldEnum: {
     readonly updatedAt: "updatedAt";
 };
 export type PatientDiseaseScalarFieldEnum = (typeof PatientDiseaseScalarFieldEnum)[keyof typeof PatientDiseaseScalarFieldEnum];
+export declare const DiseaseWarningRuleScalarFieldEnum: {
+    readonly id: "id";
+    readonly diseaseId: "diseaseId";
+    readonly ruleType: "ruleType";
+    readonly targetActiveSubstanceId: "targetActiveSubstanceId";
+    readonly targetDrugClass: "targetDrugClass";
+    readonly severity: "severity";
+    readonly warningMessage: "warningMessage";
+    readonly autoBlock: "autoBlock";
+    readonly requiresOverride: "requiresOverride";
+    readonly requiredMonitoring: "requiredMonitoring";
+    readonly createdBy: "createdBy";
+    readonly createdAt: "createdAt";
+    readonly updatedAt: "updatedAt";
+};
+export type DiseaseWarningRuleScalarFieldEnum = (typeof DiseaseWarningRuleScalarFieldEnum)[keyof typeof DiseaseWarningRuleScalarFieldEnum];
 export declare const ActiveSubstanceScalarFieldEnum: {
     readonly id: "id";
     readonly activeSubstance: "activeSubstance";
@@ -656,6 +679,7 @@ export type MedicalReportScalarFieldEnum = (typeof MedicalReportScalarFieldEnum)
 export declare const PatientShareLinkScalarFieldEnum: {
     readonly id: "id";
     readonly patientId: "patientId";
+    readonly doctorId: "doctorId";
     readonly shareToken: "shareToken";
     readonly expiresAt: "expiresAt";
     readonly isActive: "isActive";
@@ -766,6 +790,22 @@ export declare const ImportHistoryScalarFieldEnum: {
     readonly executionTime: "executionTime";
 };
 export type ImportHistoryScalarFieldEnum = (typeof ImportHistoryScalarFieldEnum)[keyof typeof ImportHistoryScalarFieldEnum];
+export declare const MedicineSuggestionScalarFieldEnum: {
+    readonly id: "id";
+    readonly doctorId: "doctorId";
+    readonly tradeName: "tradeName";
+    readonly activeSubstance: "activeSubstance";
+    readonly concentration: "concentration";
+    readonly dosageForm: "dosageForm";
+    readonly manufacturer: "manufacturer";
+    readonly reason: "reason";
+    readonly status: "status";
+    readonly reviewedBy: "reviewedBy";
+    readonly reviewNotes: "reviewNotes";
+    readonly createdAt: "createdAt";
+    readonly reviewedAt: "reviewedAt";
+};
+export type MedicineSuggestionScalarFieldEnum = (typeof MedicineSuggestionScalarFieldEnum)[keyof typeof MedicineSuggestionScalarFieldEnum];
 export declare const ExportHistoryScalarFieldEnum: {
     readonly id: "id";
     readonly format: "format";

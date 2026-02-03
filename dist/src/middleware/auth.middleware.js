@@ -1,5 +1,8 @@
-import { verifyAccessToken } from '../utils/jwt.util.js';
-export const authenticate = async (req, res, next) => {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.authorize = exports.authenticate = void 0;
+const jwt_util_1 = require("../utils/jwt.util");
+const authenticate = async (req, res, next) => {
     try {
         const authHeader = req.headers.authorization;
         if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -8,7 +11,7 @@ export const authenticate = async (req, res, next) => {
         }
         const token = authHeader.split(' ')[1];
         try {
-            const decoded = verifyAccessToken(token);
+            const decoded = (0, jwt_util_1.verifyAccessToken)(token);
             // Optional: Check if user still exists and is active
             // const user = await prisma.user.findUnique({ where: { id: decoded.userId } });
             // if (!user || !user.isActive) {
@@ -26,7 +29,8 @@ export const authenticate = async (req, res, next) => {
         next(error);
     }
 };
-export const authorize = (roles) => {
+exports.authenticate = authenticate;
+const authorize = (roles) => {
     return (req, res, next) => {
         if (!req.user) {
             res.status(401).json({ error: 'Unauthorized: Not authenticated' });
@@ -39,4 +43,5 @@ export const authorize = (roles) => {
         next();
     };
 };
+exports.authorize = authorize;
 //# sourceMappingURL=auth.middleware.js.map

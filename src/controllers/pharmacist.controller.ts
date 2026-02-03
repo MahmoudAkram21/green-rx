@@ -1,16 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { z } from 'zod';
 import { prisma } from '../lib/prisma';
-
-// Validation Schemas
-const createPharmacistSchema = z.object({
-    userId: z.number().int().positive(),
-    name: z.string().min(1),
-    licenseNumber: z.string().min(1),
-    phoneNumber: z.string().optional(),
-    pharmacyName: z.string().optional(),
-    pharmacyAddress: z.string().optional()
-});
+import { createPharmacistSchema } from '../zod/pharmacist.zod';
 
 // Create or Update Pharmacist Profile
 export const createOrUpdatePharmacist = async (req: Request, res: Response, next: NextFunction) => {

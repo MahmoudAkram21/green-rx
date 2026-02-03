@@ -1,15 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { prisma } from '../lib/prisma';
-import { z } from 'zod';
-
-const ratingSchema = z.object({
-    patientId: z.number(),
-    ratedType: z.enum(['Doctor', 'Pharmacist']),
-    doctorId: z.number().optional(),
-    pharmacistId: z.number().optional(),
-    rating: z.number().min(1).max(5),
-    review: z.string().optional()
-});
+import { ratingSchema } from '../zod/rating.zod';
 
 class RatingController {
     // Create a rating

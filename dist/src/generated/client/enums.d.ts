@@ -101,12 +101,28 @@ export declare const PaymentStatus: {
 };
 export type PaymentStatus = (typeof PaymentStatus)[keyof typeof PaymentStatus];
 export declare const WarningSeverity: {
+    readonly Info: "Info";
     readonly Low: "Low";
     readonly Medium: "Medium";
     readonly High: "High";
     readonly Critical: "Critical";
 };
 export type WarningSeverity = (typeof WarningSeverity)[keyof typeof WarningSeverity];
+export declare const WarningRuleType: {
+    readonly BLOCK_ACTIVE_SUBSTANCE: "BLOCK_ACTIVE_SUBSTANCE";
+    readonly WARN_ACTIVE_SUBSTANCE: "WARN_ACTIVE_SUBSTANCE";
+    readonly REQUIRE_MONITORING: "REQUIRE_MONITORING";
+    readonly ADJUST_DOSAGE: "ADJUST_DOSAGE";
+    readonly BLOCK_DRUG_CLASS: "BLOCK_DRUG_CLASS";
+    readonly REQUIRE_SPECIALIST_APPROVAL: "REQUIRE_SPECIALIST_APPROVAL";
+};
+export type WarningRuleType = (typeof WarningRuleType)[keyof typeof WarningRuleType];
+export declare const SuggestionStatus: {
+    readonly Pending: "Pending";
+    readonly Approved: "Approved";
+    readonly Rejected: "Rejected";
+};
+export type SuggestionStatus = (typeof SuggestionStatus)[keyof typeof SuggestionStatus];
 export declare const ADRSeverity: {
     readonly Mild: "Mild";
     readonly Moderate: "Moderate";

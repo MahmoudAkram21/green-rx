@@ -1,32 +1,11 @@
 import { Request, Response, NextFunction } from 'express';
 import { z } from 'zod';
 import { prisma } from '../lib/prisma';
-import { RelationshipType } from '../generated/client';
-
-// Validation Schemas
-const createDoctorSchema = z.object({
-    userId: z.number().int().positive(),
-    name: z.string().min(1),
-    specialization: z.string().min(1),
-    licenseNumber: z.string().min(1),
-    phoneNumber: z.string().optional(),
-    clinicAddress: z.string().optional(),
-    yearsOfExperience: z.number().int().nonnegative().optional(),
-    qualifications: z.string().optional(),
-    consultationFee: z.number().positive().optional()
-});
-
-const verifyDoctorSchema = z.object({
-    isVerified: z.boolean(),
-    verificationNotes: z.string().optional()
-});
-
-const assignPatientSchema = z.object({
-    patientId: z.number().int().positive(),
-    relationshipType: z.nativeEnum(RelationshipType),
-    startDate: z.string().datetime().optional(),
-    endDate: z.string().datetime().optional()
-});
+import {
+    createDoctorSchema,
+    verifyDoctorSchema,
+    assignPatientSchema
+} from '../zod/doctor.zod';
 
 // Create or Update Doctor Profile
 export const createOrUpdateDoctor = async (req: Request, res: Response, next: NextFunction) => {

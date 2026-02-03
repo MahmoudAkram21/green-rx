@@ -492,7 +492,7 @@ async function main() {
     },
   });
 
-  const admin2 = await prisma.user.create({
+  await prisma.user.create({
     data: {
       email: "admin2@greenrx.com",
       passwordHash: hashedPassword,
@@ -550,7 +550,7 @@ async function main() {
     },
   });
 
-  const doctorUser3 = await prisma.user.create({
+  await prisma.user.create({
     data: {
       email: "dr.williams@greenrx.com",
       passwordHash: hashedPassword,
@@ -574,7 +574,7 @@ async function main() {
   });
 
   // Add unverified doctors for testing verification workflow
-  const doctorUser4 = await prisma.user.create({
+  await prisma.user.create({
     data: {
       email: "dr.pending1@greenrx.com",
       passwordHash: hashedPassword,
@@ -596,7 +596,7 @@ async function main() {
     },
   });
 
-  const doctorUser5 = await prisma.user.create({
+  await prisma.user.create({
     data: {
       email: "dr.pending2@greenrx.com",
       passwordHash: hashedPassword,
@@ -620,7 +620,7 @@ async function main() {
   console.log("✅ Created 3 Verified Doctor users + 2 Pending Verification");
 
   // Pharmacists
-  const pharmacistUser1 = await prisma.user.create({
+  await prisma.user.create({
     data: {
       email: "pharmacist1@greenrx.com",
       passwordHash: hashedPassword,
@@ -642,7 +642,7 @@ async function main() {
     },
   });
 
-  const pharmacistUser2 = await prisma.user.create({
+  await prisma.user.create({
     data: {
       email: "pharmacist2@greenrx.com",
       passwordHash: hashedPassword,
@@ -714,7 +714,7 @@ async function main() {
     },
   });
 
-  const patientUser3 = await prisma.user.create({
+  await prisma.user.create({
     data: {
       email: "patient3@greenrx.com",
       passwordHash: hashedPassword,
@@ -738,7 +738,7 @@ async function main() {
     },
   });
 
-  const patientUser4 = await prisma.user.create({
+  await prisma.user.create({
     data: {
       email: "patient4@greenrx.com",
       passwordHash: hashedPassword,

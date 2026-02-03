@@ -1,8 +1,10 @@
-import "dotenv/config";
-import { prisma } from "../lib/prisma";
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+require("dotenv/config");
+const prisma_1 = require("../lib/prisma");
 // Handle graceful shutdown
 process.on("beforeExit", async () => {
-    await prisma.$disconnect();
+    await prisma_1.prisma.$disconnect();
 });
-export default prisma;
+exports.default = prisma_1.prisma;
 //# sourceMappingURL=database.js.map

@@ -1,8 +1,8 @@
 import * as runtime from "@prisma/client/runtime/client";
-import * as $Class from "./internal/class.js";
-import * as Prisma from "./internal/prismaNamespace.js";
-export * as $Enums from './enums.js';
-export * from "./enums.js";
+import * as $Class from "./internal/class";
+import * as Prisma from "./internal/prismaNamespace";
+export * as $Enums from './enums';
+export * from "./enums";
 /**
  * ## Prisma Client
  *
@@ -94,6 +94,11 @@ export type Disease = Prisma.DiseaseModel;
  *
  */
 export type PatientDisease = Prisma.PatientDiseaseModel;
+/**
+ * Model DiseaseWarningRule
+ *
+ */
+export type DiseaseWarningRule = Prisma.DiseaseWarningRuleModel;
 /**
  * Model ActiveSubstance
  *
@@ -209,6 +214,11 @@ export type BatchHistory = Prisma.BatchHistoryModel;
  *
  */
 export type ImportHistory = Prisma.ImportHistoryModel;
+/**
+ * Model MedicineSuggestion
+ *
+ */
+export type MedicineSuggestion = Prisma.MedicineSuggestionModel;
 /**
  * Model ExportHistory
  *

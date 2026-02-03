@@ -1,68 +1,14 @@
 import { Request, Response, NextFunction } from 'express';
 import { z } from 'zod';
 import { prisma } from '../lib/prisma';
-import { Gender, AgeClassification, AllergySeverity, DiseaseStatus, DiseaseSeverity } from '../generated/client';
-
-// Validation Schemas
-const createPatientSchema = z.object({
-    userId: z.number().int().positive(),
-    name: z.string().min(1),
-    age: z.number().int().positive(),
-    ageClassification: z.nativeEnum(AgeClassification),
-    gender: z.nativeEnum(Gender),
-    weight: z.number().positive().optional(),
-    height: z.number().positive().optional(),
-    smoking: z.boolean().optional(),
-    pregnancyWarning: z.boolean().optional(),
-    lactation: z.boolean().optional()
-});
-
-const medicalHistorySchema = z.object({
-    diseaseId: z.number().int().positive(),
-    severity: z.nativeEnum(DiseaseSeverity),
-    diagnosisDate: z.string().datetime().optional(),
-    treatment: z.string().optional(),
-    status: z.nativeEnum(DiseaseStatus),
-    notes: z.string().optional()
-});
-
-const familyHistorySchema = z.object({
-    relation: z.string().min(1), // e.g., "Father", "Mother", "Sibling"
-    diseaseId: z.number().int().positive(),
-    severity: z.nativeEnum(DiseaseSeverity),
-    notes: z.string().optional()
-});
-
-const lifestyleSchema = z.object({
-    noGlasses: z.boolean().optional(),
-    alcoholAbuse: z.boolean().optional(),
-    excessCaffeine: z.boolean().optional(),
-    waterDaily: z.number().positive().optional(),
-    travellerAbroad: z.boolean().optional(),
-    annualVaccination: z.boolean().optional(),
-    noiseExposure: z.boolean().optional(),
-    chemicalExposure: z.boolean().optional(),
-    radiationExposure: z.boolean().optional()
-});
-
-const allergySchema = z.object({
-    allergen: z.string().min(1),
-    reaction: z.string(),
-    severity: z.nativeEnum(AllergySeverity),
-    notes: z.string().optional()
-});
-
-const childProfileSchema = z.object({
-    name: z.string().min(1),
-    dateOfBirth: z.string().datetime(),
-    gender: z.nativeEnum(Gender),
-    ageClassification: z.nativeEnum(AgeClassification),
-    weight: z.number().positive().optional(),
-    height: z.number().positive().optional(),
-    allergies: z.any().optional(), // JSON
-    diseases: z.any().optional(), // JSON
-    medicalHistory: z.any().optional() // JSON
-});
+import {
+    createPatientSchema,
+    medicalHistorySchema,
+    familyHistorySchema,
+    lifestyleSchema,
+    allergySchema,
+    childProfileSchema
+} from '../zod/patient.zod';
 
 // Create or Update Patient Profile
 export const createOrUpdatePatient = async (req: Request, res: Response, next: NextFunction) => {
