@@ -32,12 +32,56 @@ var __importStar = (this && this.__importStar) || (function () {
         return result;
     };
 })();
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-const XLSX = __importStar(require("xlsx"));
+const exceljs_1 = __importDefault(require("exceljs"));
 const fs = __importStar(require("fs"));
 const prisma_1 = require("../lib/prisma");
 const multer_config_1 = require("../config/multer.config");
 const BATCH_SIZE = 100;
+/** Read Excel/CSV file and return array of row objects (like XLSX.utils.sheet_to_json). */
+async function readSheetToJson(filePath) {
+    const workbook = new exceljs_1.default.Workbook();
+    await workbook.xlsx.readFile(filePath);
+    const sheetNames = workbook.worksheets.map((ws) => ws.name);
+    if (sheetNames.length === 0) {
+        return { sheetNames: [], rows: [] };
+    }
+    const worksheet = workbook.worksheets[0];
+    const headerRow = worksheet.getRow(1);
+    const headers = [];
+    headerRow.eachCell({ includeEmpty: true }, (cell, colNumber) => {
+        const val = cell.value;
+        headers[colNumber - 1] =
+            val != null && typeof val === "object" && "text" in val
+                ? String(val.text)
+                : val != null
+                    ? String(val)
+                    : "";
+    });
+    const rows = [];
+    const rowCount = worksheet.rowCount ?? 0;
+    for (let r = 2; r <= rowCount; r++) {
+        const row = worksheet.getRow(r);
+        const obj = {};
+        headers.forEach((h, i) => {
+            const cell = row.getCell(i + 1);
+            const v = cell.value;
+            obj[h] =
+                v != null && typeof v === "object" && "result" in v
+                    ? v.result
+                    : v != null && typeof v === "object" && "text" in v
+                        ? v.text
+                        : v != null
+                            ? v
+                            : "";
+        });
+        rows.push(obj);
+    }
+    return { sheetNames, rows };
+}
 class ImportController {
     // Import Active Substances from Excel/CSV
     async importActiveSubstances(req, res, _next) {
@@ -52,9 +96,15 @@ class ImportController {
                     .status(400)
                     .json({ error: "File not found or invalid" });
             }
-            let workbook;
+            let rawData;
             try {
-                workbook = XLSX.readFile(filePath);
+                const { sheetNames, rows } = await readSheetToJson(filePath);
+                if (!sheetNames.length || rows.length === 0) {
+                    return res
+                        .status(400)
+                        .json({ error: "File contains no sheets or is empty" });
+                }
+                rawData = rows;
             }
             catch (error) {
                 return res.status(400).json({
@@ -62,19 +112,6 @@ class ImportController {
                     message: error.message || "Invalid file format",
                 });
             }
-            if (!workbook.SheetNames || workbook.SheetNames.length === 0) {
-                return res
-                    .status(400)
-                    .json({ error: "File contains no sheets" });
-            }
-            const sheetName = workbook.SheetNames[0];
-            const worksheet = workbook.Sheets[sheetName];
-            if (!worksheet) {
-                return res
-                    .status(400)
-                    .json({ error: "Sheet is empty or invalid" });
-            }
-            const rawData = XLSX.utils.sheet_to_json(worksheet);
             if (rawData.length === 0) {
                 return res.status(400).json({ error: "File is empty" });
             }
@@ -86,7 +123,7 @@ class ImportController {
                 failed: 0,
                 errors: []
             };
-            // Debug: Log first row keys to see what XLSX parsed
+            // Debug: Log first row keys to see what Excel parsed
             if (rawData.length > 0) {
                 console.log("First row keys:", Object.keys(rawData[0]));
                 console.log("Sample row data:", JSON.stringify(rawData[0], null, 2).substring(0, 500));
@@ -114,7 +151,7 @@ class ImportController {
                         }
                         // Map CSV columns to database fields - comprehensive mapping
                         const data = {
-                            activeSubstance: activeSubstanceName.trim(),
+                            activeSubstance: String(activeSubstanceName).trim(),
                             concentration: this.getFieldValue(row, [
                                 "Concentration ",
                                 "Concentration",
@@ -389,7 +426,7 @@ class ImportController {
                         console.error(`Row ${i + batch.indexOf(row) + 2} error:`, errorMsg, error);
                         results.errors.push({
                             row: i + batch.indexOf(row) + 2, // +2 for header and 0-index
-                            data: row["Active substance"] || "Unknown",
+                            data: String(row["Active substance"] ?? "Unknown"),
                             error: errorMsg,
                         });
                     }
@@ -467,10 +504,7 @@ class ImportController {
             if (!req.file) {
                 return res.status(400).json({ error: "No file uploaded" });
             }
-            const workbook = XLSX.readFile(req.file.path);
-            const sheetName = workbook.SheetNames[0];
-            const worksheet = workbook.Sheets[sheetName];
-            const data = XLSX.utils.sheet_to_json(worksheet);
+            const { rows: data } = await readSheetToJson(req.file.path);
             // Entity-specific import logic would go here
             const validEntities = [
                 "Company",

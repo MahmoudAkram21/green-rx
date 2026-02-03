@@ -1,10 +1,54 @@
 import { Request, Response, NextFunction } from "express";
-import * as XLSX from "xlsx";
+import ExcelJS from "exceljs";
 import * as fs from "fs";
 import { prisma } from "../lib/prisma";
 import { cleanupFile } from "../config/multer.config";
 
 const BATCH_SIZE = 100;
+
+/** Read Excel/CSV file and return array of row objects (like XLSX.utils.sheet_to_json). */
+async function readSheetToJson(
+  filePath: string
+): Promise<{ sheetNames: string[]; rows: Record<string, unknown>[] }> {
+  const workbook = new ExcelJS.Workbook();
+  await workbook.xlsx.readFile(filePath);
+  const sheetNames = workbook.worksheets.map((ws) => ws.name);
+  if (sheetNames.length === 0) {
+    return { sheetNames: [], rows: [] };
+  }
+  const worksheet = workbook.worksheets[0];
+  const headerRow = worksheet.getRow(1);
+  const headers: string[] = [];
+  headerRow.eachCell({ includeEmpty: true }, (cell, colNumber) => {
+    const val = cell.value;
+    headers[colNumber - 1] =
+      val != null && typeof val === "object" && "text" in val
+        ? String((val as { text: string }).text)
+        : val != null
+          ? String(val)
+          : "";
+  });
+  const rows: Record<string, unknown>[] = [];
+  const rowCount = worksheet.rowCount ?? 0;
+  for (let r = 2; r <= rowCount; r++) {
+    const row = worksheet.getRow(r);
+    const obj: Record<string, unknown> = {};
+    headers.forEach((h, i) => {
+      const cell = row.getCell(i + 1);
+      const v = cell.value;
+      obj[h] =
+        v != null && typeof v === "object" && "result" in v
+          ? (v as { result: unknown }).result
+          : v != null && typeof v === "object" && "text" in v
+            ? (v as { text: string }).text
+            : v != null
+              ? v
+              : "";
+    });
+    rows.push(obj);
+  }
+  return { sheetNames, rows };
+}
 
 class ImportController {
   // Import Active Substances from Excel/CSV
@@ -27,32 +71,21 @@ class ImportController {
           .json({ error: "File not found or invalid" }) as any;
       }
 
-      let workbook: XLSX.WorkBook;
+      let rawData: any[];
       try {
-        workbook = XLSX.readFile(filePath);
+        const { sheetNames, rows } = await readSheetToJson(filePath);
+        if (!sheetNames.length || rows.length === 0) {
+          return res
+            .status(400)
+            .json({ error: "File contains no sheets or is empty" }) as any;
+        }
+        rawData = rows as any[];
       } catch (error: any) {
         return res.status(400).json({
           error: "Failed to read file",
           message: error.message || "Invalid file format",
         }) as any;
       }
-
-      if (!workbook.SheetNames || workbook.SheetNames.length === 0) {
-        return res
-          .status(400)
-          .json({ error: "File contains no sheets" }) as any;
-      }
-
-      const sheetName = workbook.SheetNames[0];
-      const worksheet = workbook.Sheets[sheetName];
-
-      if (!worksheet) {
-        return res
-          .status(400)
-          .json({ error: "Sheet is empty or invalid" }) as any;
-      }
-
-      const rawData: any[] = XLSX.utils.sheet_to_json(worksheet);
 
       if (rawData.length === 0) {
         return res.status(400).json({ error: "File is empty" }) as any;
@@ -67,7 +100,7 @@ class ImportController {
         errors: [] as Array<{ row: number; data: string; error: string }>
       };
 
-      // Debug: Log first row keys to see what XLSX parsed
+      // Debug: Log first row keys to see what Excel parsed
       if (rawData.length > 0) {
         console.log("First row keys:", Object.keys(rawData[0]));
         console.log(
@@ -109,7 +142,7 @@ class ImportController {
 
             // Map CSV columns to database fields - comprehensive mapping
             const data: any = {
-              activeSubstance: activeSubstanceName.trim(),
+              activeSubstance: String(activeSubstanceName).trim(),
               concentration: this.getFieldValue(row, [
                 "Concentration ",
                 "Concentration",
@@ -434,7 +467,7 @@ class ImportController {
             );
             results.errors.push({
               row: i + batch.indexOf(row) + 2, // +2 for header and 0-index
-              data: row["Active substance"] || "Unknown",
+              data: String(row["Active substance"] ?? "Unknown"),
               error: errorMsg,
             });
           }
@@ -527,10 +560,7 @@ class ImportController {
         return res.status(400).json({ error: "No file uploaded" }) as any;
       }
 
-      const workbook = XLSX.readFile(req.file.path);
-      const sheetName = workbook.SheetNames[0];
-      const worksheet = workbook.Sheets[sheetName];
-      const data: any[] = XLSX.utils.sheet_to_json(worksheet);
+      const { rows: data } = await readSheetToJson(req.file.path);
 
       // Entity-specific import logic would go here
       const validEntities = [
