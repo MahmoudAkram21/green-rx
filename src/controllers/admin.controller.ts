@@ -194,5 +194,5 @@ class AdminController {
         }
     }
 }
-
+//new controller for admin
 export default new AdminController();
