@@ -1,4 +1,4 @@
-import { UserRole } from '../generated/client';
+import { UserRole } from '../../generated/client/client';
 export interface TokenPayload {
     userId: number;
     email: string;

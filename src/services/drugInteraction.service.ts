@@ -3,7 +3,7 @@ import {
     ActiveSubstance,
     Patient,
     Allergy
-} from '../generated/client';
+} from '../../generated/client/client';
 
 interface DrugInteractionCheck {
     hasDrugInteractions: boolean;

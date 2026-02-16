@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { prisma } from '../lib/prisma';
-import { SubscriptionStatus } from '../generated/client';
+import { SubscriptionStatus } from '../../generated/client/client';
 
 // Create subscription for a user
 export const createSubscription = async (req: Request, res: Response) => {

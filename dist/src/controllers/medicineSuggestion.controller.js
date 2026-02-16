@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const prisma_1 = require("../lib/prisma");
-const client_1 = require("../generated/client");
+const client_1 = require("../../generated/client/client");
 class MedicineSuggestionController {
     // Create a new medicine suggestion (Doctor)
     async createSuggestion(req, res, next) {

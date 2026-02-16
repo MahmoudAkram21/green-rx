@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { prisma } from '../lib/prisma';
 import { hashPassword, comparePassword } from '../utils/password.util';
 import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from '../utils/jwt.util';
-import { UserRole } from '../generated/client';
+import { UserRole } from '../../generated/client/client';
 import { registerSchema, loginSchema, refreshTokenSchema } from '../zod/auth.zod';
 
 // Register

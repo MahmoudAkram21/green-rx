@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { WarningSeverity, DiseaseSeverity } from "../generated/client";
+import { WarningSeverity, DiseaseSeverity } from "../../generated/client/client";
 
 export const createDiseaseSchema = z.object({
   name: z.string().min(1),

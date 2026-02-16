@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { prisma } from '../lib/prisma';
-import { RelationshipType } from '../generated/client';
+import { RelationshipType } from '../../generated/client/client';
 
 // Create patient-doctor relationship
 export const createPatientDoctor = async (req: Request, res: Response) => {

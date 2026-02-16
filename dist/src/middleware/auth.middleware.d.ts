@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { TokenPayload } from '../utils/jwt.util';
-import { UserRole } from '../generated/client';
+import { UserRole } from '../../generated/client/client';
 declare global {
     namespace Express {
         interface Request {

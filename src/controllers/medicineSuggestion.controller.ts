@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { prisma } from '../lib/prisma';
-import { SuggestionStatus } from '../generated/client';
+import { SuggestionStatus } from '../../generated/client/client';
 
 class MedicineSuggestionController {
   // Create a new medicine suggestion (Doctor)

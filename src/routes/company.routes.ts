@@ -7,7 +7,7 @@ import {
     deleteCompany
 } from '../controllers/company.controller';
 import { authenticate, authorize } from '../middleware/auth.middleware';
-import { UserRole } from '../generated/client';
+import { UserRole } from '../../generated/client/client';
 
 const router = express.Router();
 

@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.refundPayment = exports.processPayment = exports.updatePaymentStatus = exports.getAllPayments = exports.getPaymentsBySubscription = exports.getPaymentById = exports.createPayment = void 0;
 const prisma_1 = require("../lib/prisma");
-const client_1 = require("../generated/client");
+const client_1 = require("../../generated/client/client");
 // Create payment
 const createPayment = async (req, res) => {
     try {

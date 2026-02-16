@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { prisma } from '../lib/prisma';
-import { WarningRuleType, WarningSeverity } from '../generated/client';
+import { WarningRuleType, WarningSeverity } from '../../generated/client/client';
 
 class DiseaseWarningRuleController {
   // Get all warning rules for a disease

@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.updateWarningSchema = exports.createWarningSchema = exports.updateDiseaseSchema = exports.createDiseaseSchema = void 0;
 const zod_1 = require("zod");
-const client_1 = require("../generated/client");
+const client_1 = require("../../generated/client/client");
 exports.createDiseaseSchema = zod_1.z.object({
     name: zod_1.z.string().min(1),
     severity: zod_1.z.nativeEnum(client_1.DiseaseSeverity),

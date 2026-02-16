@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import prisma from '../config/database';
-import { DiseaseSeverity, DiseaseStatus } from '../generated/client';
+import { DiseaseSeverity, DiseaseStatus } from '../../generated/client/client';
 
 // Create or update patient disease
 export const addPatientDisease = async (req: Request, res: Response) => {

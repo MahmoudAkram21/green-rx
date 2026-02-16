@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { prisma } from '../lib/prisma';
-import { PaymentStatus } from '../generated/client';
+import { PaymentStatus } from '../../generated/client/client';
 
 // Create payment
 export const createPayment = async (req: Request, res: Response) => {

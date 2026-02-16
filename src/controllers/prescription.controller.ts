@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { prisma } from '../lib/prisma';
-import { PrescriptionStatus } from '../generated/client';
+import { PrescriptionStatus } from '../../generated/client/client';
 import { generateWarnings } from '../services/warningService';
 
 // Create a new prescription

@@ -35,7 +35,7 @@ var __importStar = (this && this.__importStar) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 require("dotenv/config");
 const adapter_pg_1 = require("@prisma/adapter-pg");
-const client_1 = require("../src/generated/client");
+const client_1 = require("../generated/client/client");
 const bcrypt = __importStar(require("bcryptjs"));
 const connectionString = `${process.env.DATABASE_URL}`;
 const adapter = new adapter_pg_1.PrismaPg({ connectionString });

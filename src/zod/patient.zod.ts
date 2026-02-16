@@ -5,7 +5,7 @@ import {
   AllergySeverity,
   DiseaseStatus,
   DiseaseSeverity,
-} from "../generated/client";
+} from "../../generated/client/client";
 
 export const createPatientSchema = z.object({
   userId: z.number().int().positive(),

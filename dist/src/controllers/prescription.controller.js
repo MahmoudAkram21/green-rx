@@ -35,7 +35,7 @@ var __importStar = (this && this.__importStar) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getDrugInteractionAlerts = exports.acknowledgeDrugInteraction = exports.deletePrescription = exports.updatePrescription = exports.getPrescriptionById = exports.getPrescriptions = exports.createBatchPrescriptions = exports.createPrescription = void 0;
 const prisma_1 = require("../lib/prisma");
-const client_1 = require("../generated/client");
+const client_1 = require("../../generated/client/client");
 const warningService_1 = require("../services/warningService");
 // Create a new prescription
 const createPrescription = async (req, res) => {

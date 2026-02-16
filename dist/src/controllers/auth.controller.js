@@ -5,7 +5,7 @@ const zod_1 = require("zod");
 const prisma_1 = require("../lib/prisma");
 const password_util_1 = require("../utils/password.util");
 const jwt_util_1 = require("../utils/jwt.util");
-const client_1 = require("../generated/client");
+const client_1 = require("../../generated/client/client");
 const auth_zod_1 = require("../zod/auth.zod");
 // Register
 const register = async (req, res, next) => {

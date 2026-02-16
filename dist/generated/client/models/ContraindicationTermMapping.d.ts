@@ -1,0 +1,1079 @@
+import type * as runtime from "@prisma/client/runtime/client";
+import type * as Prisma from "../internal/prismaNamespace";
+/**
+ * Model ContraindicationTermMapping
+ *
+ */
+export type ContraindicationTermMappingModel = runtime.Types.Result.DefaultSelection<Prisma.$ContraindicationTermMappingPayload>;
+export type AggregateContraindicationTermMapping = {
+    _count: ContraindicationTermMappingCountAggregateOutputType | null;
+    _avg: ContraindicationTermMappingAvgAggregateOutputType | null;
+    _sum: ContraindicationTermMappingSumAggregateOutputType | null;
+    _min: ContraindicationTermMappingMinAggregateOutputType | null;
+    _max: ContraindicationTermMappingMaxAggregateOutputType | null;
+};
+export type ContraindicationTermMappingAvgAggregateOutputType = {
+    id: number | null;
+};
+export type ContraindicationTermMappingSumAggregateOutputType = {
+    id: number | null;
+};
+export type ContraindicationTermMappingMinAggregateOutputType = {
+    id: number | null;
+    standardTerm: string | null;
+    category: string | null;
+    warningFieldName: string | null;
+    createdAt: Date | null;
+    updatedAt: Date | null;
+};
+export type ContraindicationTermMappingMaxAggregateOutputType = {
+    id: number | null;
+    standardTerm: string | null;
+    category: string | null;
+    warningFieldName: string | null;
+    createdAt: Date | null;
+    updatedAt: Date | null;
+};
+export type ContraindicationTermMappingCountAggregateOutputType = {
+    id: number;
+    standardTerm: number;
+    alternativeTerms: number;
+    category: number;
+    warningFieldName: number;
+    createdAt: number;
+    updatedAt: number;
+    _all: number;
+};
+export type ContraindicationTermMappingAvgAggregateInputType = {
+    id?: true;
+};
+export type ContraindicationTermMappingSumAggregateInputType = {
+    id?: true;
+};
+export type ContraindicationTermMappingMinAggregateInputType = {
+    id?: true;
+    standardTerm?: true;
+    category?: true;
+    warningFieldName?: true;
+    createdAt?: true;
+    updatedAt?: true;
+};
+export type ContraindicationTermMappingMaxAggregateInputType = {
+    id?: true;
+    standardTerm?: true;
+    category?: true;
+    warningFieldName?: true;
+    createdAt?: true;
+    updatedAt?: true;
+};
+export type ContraindicationTermMappingCountAggregateInputType = {
+    id?: true;
+    standardTerm?: true;
+    alternativeTerms?: true;
+    category?: true;
+    warningFieldName?: true;
+    createdAt?: true;
+    updatedAt?: true;
+    _all?: true;
+};
+export type ContraindicationTermMappingAggregateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Filter which ContraindicationTermMapping to aggregate.
+     */
+    where?: Prisma.ContraindicationTermMappingWhereInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of ContraindicationTermMappings to fetch.
+     */
+    orderBy?: Prisma.ContraindicationTermMappingOrderByWithRelationInput | Prisma.ContraindicationTermMappingOrderByWithRelationInput[];
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the start position
+     */
+    cursor?: Prisma.ContraindicationTermMappingWhereUniqueInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` ContraindicationTermMappings from the position of the cursor.
+     */
+    take?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` ContraindicationTermMappings.
+     */
+    skip?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Count returned ContraindicationTermMappings
+    **/
+    _count?: true | ContraindicationTermMappingCountAggregateInputType;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Select which fields to average
+    **/
+    _avg?: ContraindicationTermMappingAvgAggregateInputType;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Select which fields to sum
+    **/
+    _sum?: ContraindicationTermMappingSumAggregateInputType;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Select which fields to find the minimum value
+    **/
+    _min?: ContraindicationTermMappingMinAggregateInputType;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Select which fields to find the maximum value
+    **/
+    _max?: ContraindicationTermMappingMaxAggregateInputType;
+};
+export type GetContraindicationTermMappingAggregateType<T extends ContraindicationTermMappingAggregateArgs> = {
+    [P in keyof T & keyof AggregateContraindicationTermMapping]: P extends '_count' | 'count' ? T[P] extends true ? number : Prisma.GetScalarType<T[P], AggregateContraindicationTermMapping[P]> : Prisma.GetScalarType<T[P], AggregateContraindicationTermMapping[P]>;
+};
+export type ContraindicationTermMappingGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    where?: Prisma.ContraindicationTermMappingWhereInput;
+    orderBy?: Prisma.ContraindicationTermMappingOrderByWithAggregationInput | Prisma.ContraindicationTermMappingOrderByWithAggregationInput[];
+    by: Prisma.ContraindicationTermMappingScalarFieldEnum[] | Prisma.ContraindicationTermMappingScalarFieldEnum;
+    having?: Prisma.ContraindicationTermMappingScalarWhereWithAggregatesInput;
+    take?: number;
+    skip?: number;
+    _count?: ContraindicationTermMappingCountAggregateInputType | true;
+    _avg?: ContraindicationTermMappingAvgAggregateInputType;
+    _sum?: ContraindicationTermMappingSumAggregateInputType;
+    _min?: ContraindicationTermMappingMinAggregateInputType;
+    _max?: ContraindicationTermMappingMaxAggregateInputType;
+};
+export type ContraindicationTermMappingGroupByOutputType = {
+    id: number;
+    standardTerm: string;
+    alternativeTerms: runtime.JsonValue;
+    category: string;
+    warningFieldName: string;
+    createdAt: Date;
+    updatedAt: Date;
+    _count: ContraindicationTermMappingCountAggregateOutputType | null;
+    _avg: ContraindicationTermMappingAvgAggregateOutputType | null;
+    _sum: ContraindicationTermMappingSumAggregateOutputType | null;
+    _min: ContraindicationTermMappingMinAggregateOutputType | null;
+    _max: ContraindicationTermMappingMaxAggregateOutputType | null;
+};
+type GetContraindicationTermMappingGroupByPayload<T extends ContraindicationTermMappingGroupByArgs> = Prisma.PrismaPromise<Array<Prisma.PickEnumerable<ContraindicationTermMappingGroupByOutputType, T['by']> & {
+    [P in ((keyof T) & (keyof ContraindicationTermMappingGroupByOutputType))]: P extends '_count' ? T[P] extends boolean ? number : Prisma.GetScalarType<T[P], ContraindicationTermMappingGroupByOutputType[P]> : Prisma.GetScalarType<T[P], ContraindicationTermMappingGroupByOutputType[P]>;
+}>>;
+export type ContraindicationTermMappingWhereInput = {
+    AND?: Prisma.ContraindicationTermMappingWhereInput | Prisma.ContraindicationTermMappingWhereInput[];
+    OR?: Prisma.ContraindicationTermMappingWhereInput[];
+    NOT?: Prisma.ContraindicationTermMappingWhereInput | Prisma.ContraindicationTermMappingWhereInput[];
+    id?: Prisma.IntFilter<"ContraindicationTermMapping"> | number;
+    standardTerm?: Prisma.StringFilter<"ContraindicationTermMapping"> | string;
+    alternativeTerms?: Prisma.JsonFilter<"ContraindicationTermMapping">;
+    category?: Prisma.StringFilter<"ContraindicationTermMapping"> | string;
+    warningFieldName?: Prisma.StringFilter<"ContraindicationTermMapping"> | string;
+    createdAt?: Prisma.DateTimeFilter<"ContraindicationTermMapping"> | Date | string;
+    updatedAt?: Prisma.DateTimeFilter<"ContraindicationTermMapping"> | Date | string;
+};
+export type ContraindicationTermMappingOrderByWithRelationInput = {
+    id?: Prisma.SortOrder;
+    standardTerm?: Prisma.SortOrder;
+    alternativeTerms?: Prisma.SortOrder;
+    category?: Prisma.SortOrder;
+    warningFieldName?: Prisma.SortOrder;
+    createdAt?: Prisma.SortOrder;
+    updatedAt?: Prisma.SortOrder;
+};
+export type ContraindicationTermMappingWhereUniqueInput = Prisma.AtLeast<{
+    id?: number;
+    AND?: Prisma.ContraindicationTermMappingWhereInput | Prisma.ContraindicationTermMappingWhereInput[];
+    OR?: Prisma.ContraindicationTermMappingWhereInput[];
+    NOT?: Prisma.ContraindicationTermMappingWhereInput | Prisma.ContraindicationTermMappingWhereInput[];
+    standardTerm?: Prisma.StringFilter<"ContraindicationTermMapping"> | string;
+    alternativeTerms?: Prisma.JsonFilter<"ContraindicationTermMapping">;
+    category?: Prisma.StringFilter<"ContraindicationTermMapping"> | string;
+    warningFieldName?: Prisma.StringFilter<"ContraindicationTermMapping"> | string;
+    createdAt?: Prisma.DateTimeFilter<"ContraindicationTermMapping"> | Date | string;
+    updatedAt?: Prisma.DateTimeFilter<"ContraindicationTermMapping"> | Date | string;
+}, "id">;
+export type ContraindicationTermMappingOrderByWithAggregationInput = {
+    id?: Prisma.SortOrder;
+    standardTerm?: Prisma.SortOrder;
+    alternativeTerms?: Prisma.SortOrder;
+    category?: Prisma.SortOrder;
+    warningFieldName?: Prisma.SortOrder;
+    createdAt?: Prisma.SortOrder;
+    updatedAt?: Prisma.SortOrder;
+    _count?: Prisma.ContraindicationTermMappingCountOrderByAggregateInput;
+    _avg?: Prisma.ContraindicationTermMappingAvgOrderByAggregateInput;
+    _max?: Prisma.ContraindicationTermMappingMaxOrderByAggregateInput;
+    _min?: Prisma.ContraindicationTermMappingMinOrderByAggregateInput;
+    _sum?: Prisma.ContraindicationTermMappingSumOrderByAggregateInput;
+};
+export type ContraindicationTermMappingScalarWhereWithAggregatesInput = {
+    AND?: Prisma.ContraindicationTermMappingScalarWhereWithAggregatesInput | Prisma.ContraindicationTermMappingScalarWhereWithAggregatesInput[];
+    OR?: Prisma.ContraindicationTermMappingScalarWhereWithAggregatesInput[];
+    NOT?: Prisma.ContraindicationTermMappingScalarWhereWithAggregatesInput | Prisma.ContraindicationTermMappingScalarWhereWithAggregatesInput[];
+    id?: Prisma.IntWithAggregatesFilter<"ContraindicationTermMapping"> | number;
+    standardTerm?: Prisma.StringWithAggregatesFilter<"ContraindicationTermMapping"> | string;
+    alternativeTerms?: Prisma.JsonWithAggregatesFilter<"ContraindicationTermMapping">;
+    category?: Prisma.StringWithAggregatesFilter<"ContraindicationTermMapping"> | string;
+    warningFieldName?: Prisma.StringWithAggregatesFilter<"ContraindicationTermMapping"> | string;
+    createdAt?: Prisma.DateTimeWithAggregatesFilter<"ContraindicationTermMapping"> | Date | string;
+    updatedAt?: Prisma.DateTimeWithAggregatesFilter<"ContraindicationTermMapping"> | Date | string;
+};
+export type ContraindicationTermMappingCreateInput = {
+    standardTerm: string;
+    alternativeTerms: Prisma.JsonNullValueInput | runtime.InputJsonValue;
+    category: string;
+    warningFieldName: string;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+};
+export type ContraindicationTermMappingUncheckedCreateInput = {
+    id?: number;
+    standardTerm: string;
+    alternativeTerms: Prisma.JsonNullValueInput | runtime.InputJsonValue;
+    category: string;
+    warningFieldName: string;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+};
+export type ContraindicationTermMappingUpdateInput = {
+    standardTerm?: Prisma.StringFieldUpdateOperationsInput | string;
+    alternativeTerms?: Prisma.JsonNullValueInput | runtime.InputJsonValue;
+    category?: Prisma.StringFieldUpdateOperationsInput | string;
+    warningFieldName?: Prisma.StringFieldUpdateOperationsInput | string;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+};
+export type ContraindicationTermMappingUncheckedUpdateInput = {
+    id?: Prisma.IntFieldUpdateOperationsInput | number;
+    standardTerm?: Prisma.StringFieldUpdateOperationsInput | string;
+    alternativeTerms?: Prisma.JsonNullValueInput | runtime.InputJsonValue;
+    category?: Prisma.StringFieldUpdateOperationsInput | string;
+    warningFieldName?: Prisma.StringFieldUpdateOperationsInput | string;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+};
+export type ContraindicationTermMappingCreateManyInput = {
+    id?: number;
+    standardTerm: string;
+    alternativeTerms: Prisma.JsonNullValueInput | runtime.InputJsonValue;
+    category: string;
+    warningFieldName: string;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+};
+export type ContraindicationTermMappingUpdateManyMutationInput = {
+    standardTerm?: Prisma.StringFieldUpdateOperationsInput | string;
+    alternativeTerms?: Prisma.JsonNullValueInput | runtime.InputJsonValue;
+    category?: Prisma.StringFieldUpdateOperationsInput | string;
+    warningFieldName?: Prisma.StringFieldUpdateOperationsInput | string;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+};
+export type ContraindicationTermMappingUncheckedUpdateManyInput = {
+    id?: Prisma.IntFieldUpdateOperationsInput | number;
+    standardTerm?: Prisma.StringFieldUpdateOperationsInput | string;
+    alternativeTerms?: Prisma.JsonNullValueInput | runtime.InputJsonValue;
+    category?: Prisma.StringFieldUpdateOperationsInput | string;
+    warningFieldName?: Prisma.StringFieldUpdateOperationsInput | string;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+};
+export type ContraindicationTermMappingCountOrderByAggregateInput = {
+    id?: Prisma.SortOrder;
+    standardTerm?: Prisma.SortOrder;
+    alternativeTerms?: Prisma.SortOrder;
+    category?: Prisma.SortOrder;
+    warningFieldName?: Prisma.SortOrder;
+    createdAt?: Prisma.SortOrder;
+    updatedAt?: Prisma.SortOrder;
+};
+export type ContraindicationTermMappingAvgOrderByAggregateInput = {
+    id?: Prisma.SortOrder;
+};
+export type ContraindicationTermMappingMaxOrderByAggregateInput = {
+    id?: Prisma.SortOrder;
+    standardTerm?: Prisma.SortOrder;
+    category?: Prisma.SortOrder;
+    warningFieldName?: Prisma.SortOrder;
+    createdAt?: Prisma.SortOrder;
+    updatedAt?: Prisma.SortOrder;
+};
+export type ContraindicationTermMappingMinOrderByAggregateInput = {
+    id?: Prisma.SortOrder;
+    standardTerm?: Prisma.SortOrder;
+    category?: Prisma.SortOrder;
+    warningFieldName?: Prisma.SortOrder;
+    createdAt?: Prisma.SortOrder;
+    updatedAt?: Prisma.SortOrder;
+};
+export type ContraindicationTermMappingSumOrderByAggregateInput = {
+    id?: Prisma.SortOrder;
+};
+export type ContraindicationTermMappingSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+    id?: boolean;
+    standardTerm?: boolean;
+    alternativeTerms?: boolean;
+    category?: boolean;
+    warningFieldName?: boolean;
+    createdAt?: boolean;
+    updatedAt?: boolean;
+}, ExtArgs["result"]["contraindicationTermMapping"]>;
+export type ContraindicationTermMappingSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+    id?: boolean;
+    standardTerm?: boolean;
+    alternativeTerms?: boolean;
+    category?: boolean;
+    warningFieldName?: boolean;
+    createdAt?: boolean;
+    updatedAt?: boolean;
+}, ExtArgs["result"]["contraindicationTermMapping"]>;
+export type ContraindicationTermMappingSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+    id?: boolean;
+    standardTerm?: boolean;
+    alternativeTerms?: boolean;
+    category?: boolean;
+    warningFieldName?: boolean;
+    createdAt?: boolean;
+    updatedAt?: boolean;
+}, ExtArgs["result"]["contraindicationTermMapping"]>;
+export type ContraindicationTermMappingSelectScalar = {
+    id?: boolean;
+    standardTerm?: boolean;
+    alternativeTerms?: boolean;
+    category?: boolean;
+    warningFieldName?: boolean;
+    createdAt?: boolean;
+    updatedAt?: boolean;
+};
+export type ContraindicationTermMappingOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "standardTerm" | "alternativeTerms" | "category" | "warningFieldName" | "createdAt" | "updatedAt", ExtArgs["result"]["contraindicationTermMapping"]>;
+export type $ContraindicationTermMappingPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    name: "ContraindicationTermMapping";
+    objects: {};
+    scalars: runtime.Types.Extensions.GetPayloadResult<{
+        id: number;
+        standardTerm: string;
+        alternativeTerms: runtime.JsonValue;
+        category: string;
+        warningFieldName: string;
+        createdAt: Date;
+        updatedAt: Date;
+    }, ExtArgs["result"]["contraindicationTermMapping"]>;
+    composites: {};
+};
+export type ContraindicationTermMappingGetPayload<S extends boolean | null | undefined | ContraindicationTermMappingDefaultArgs> = runtime.Types.Result.GetResult<Prisma.$ContraindicationTermMappingPayload, S>;
+export type ContraindicationTermMappingCountArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = Omit<ContraindicationTermMappingFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+    select?: ContraindicationTermMappingCountAggregateInputType | true;
+};
+export interface ContraindicationTermMappingDelegate<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: {
+        types: Prisma.TypeMap<ExtArgs>['model']['ContraindicationTermMapping'];
+        meta: {
+            name: 'ContraindicationTermMapping';
+        };
+    };
+    /**
+     * Find zero or one ContraindicationTermMapping that matches the filter.
+     * @param {ContraindicationTermMappingFindUniqueArgs} args - Arguments to find a ContraindicationTermMapping
+     * @example
+     * // Get one ContraindicationTermMapping
+     * const contraindicationTermMapping = await prisma.contraindicationTermMapping.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends ContraindicationTermMappingFindUniqueArgs>(args: Prisma.SelectSubset<T, ContraindicationTermMappingFindUniqueArgs<ExtArgs>>): Prisma.Prisma__ContraindicationTermMappingClient<runtime.Types.Result.GetResult<Prisma.$ContraindicationTermMappingPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>;
+    /**
+     * Find one ContraindicationTermMapping that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {ContraindicationTermMappingFindUniqueOrThrowArgs} args - Arguments to find a ContraindicationTermMapping
+     * @example
+     * // Get one ContraindicationTermMapping
+     * const contraindicationTermMapping = await prisma.contraindicationTermMapping.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends ContraindicationTermMappingFindUniqueOrThrowArgs>(args: Prisma.SelectSubset<T, ContraindicationTermMappingFindUniqueOrThrowArgs<ExtArgs>>): Prisma.Prisma__ContraindicationTermMappingClient<runtime.Types.Result.GetResult<Prisma.$ContraindicationTermMappingPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
+    /**
+     * Find the first ContraindicationTermMapping that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ContraindicationTermMappingFindFirstArgs} args - Arguments to find a ContraindicationTermMapping
+     * @example
+     * // Get one ContraindicationTermMapping
+     * const contraindicationTermMapping = await prisma.contraindicationTermMapping.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends ContraindicationTermMappingFindFirstArgs>(args?: Prisma.SelectSubset<T, ContraindicationTermMappingFindFirstArgs<ExtArgs>>): Prisma.Prisma__ContraindicationTermMappingClient<runtime.Types.Result.GetResult<Prisma.$ContraindicationTermMappingPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>;
+    /**
+     * Find the first ContraindicationTermMapping that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ContraindicationTermMappingFindFirstOrThrowArgs} args - Arguments to find a ContraindicationTermMapping
+     * @example
+     * // Get one ContraindicationTermMapping
+     * const contraindicationTermMapping = await prisma.contraindicationTermMapping.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends ContraindicationTermMappingFindFirstOrThrowArgs>(args?: Prisma.SelectSubset<T, ContraindicationTermMappingFindFirstOrThrowArgs<ExtArgs>>): Prisma.Prisma__ContraindicationTermMappingClient<runtime.Types.Result.GetResult<Prisma.$ContraindicationTermMappingPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
+    /**
+     * Find zero or more ContraindicationTermMappings that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ContraindicationTermMappingFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all ContraindicationTermMappings
+     * const contraindicationTermMappings = await prisma.contraindicationTermMapping.findMany()
+     *
+     * // Get first 10 ContraindicationTermMappings
+     * const contraindicationTermMappings = await prisma.contraindicationTermMapping.findMany({ take: 10 })
+     *
+     * // Only select the `id`
+     * const contraindicationTermMappingWithIdOnly = await prisma.contraindicationTermMapping.findMany({ select: { id: true } })
+     *
+     */
+    findMany<T extends ContraindicationTermMappingFindManyArgs>(args?: Prisma.SelectSubset<T, ContraindicationTermMappingFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ContraindicationTermMappingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>;
+    /**
+     * Create a ContraindicationTermMapping.
+     * @param {ContraindicationTermMappingCreateArgs} args - Arguments to create a ContraindicationTermMapping.
+     * @example
+     * // Create one ContraindicationTermMapping
+     * const ContraindicationTermMapping = await prisma.contraindicationTermMapping.create({
+     *   data: {
+     *     // ... data to create a ContraindicationTermMapping
+     *   }
+     * })
+     *
+     */
+    create<T extends ContraindicationTermMappingCreateArgs>(args: Prisma.SelectSubset<T, ContraindicationTermMappingCreateArgs<ExtArgs>>): Prisma.Prisma__ContraindicationTermMappingClient<runtime.Types.Result.GetResult<Prisma.$ContraindicationTermMappingPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
+    /**
+     * Create many ContraindicationTermMappings.
+     * @param {ContraindicationTermMappingCreateManyArgs} args - Arguments to create many ContraindicationTermMappings.
+     * @example
+     * // Create many ContraindicationTermMappings
+     * const contraindicationTermMapping = await prisma.contraindicationTermMapping.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *
+     */
+    createMany<T extends ContraindicationTermMappingCreateManyArgs>(args?: Prisma.SelectSubset<T, ContraindicationTermMappingCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>;
+    /**
+     * Create many ContraindicationTermMappings and returns the data saved in the database.
+     * @param {ContraindicationTermMappingCreateManyAndReturnArgs} args - Arguments to create many ContraindicationTermMappings.
+     * @example
+     * // Create many ContraindicationTermMappings
+     * const contraindicationTermMapping = await prisma.contraindicationTermMapping.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *
+     * // Create many ContraindicationTermMappings and only return the `id`
+     * const contraindicationTermMappingWithIdOnly = await prisma.contraindicationTermMapping.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     *
+     */
+    createManyAndReturn<T extends ContraindicationTermMappingCreateManyAndReturnArgs>(args?: Prisma.SelectSubset<T, ContraindicationTermMappingCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ContraindicationTermMappingPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>;
+    /**
+     * Delete a ContraindicationTermMapping.
+     * @param {ContraindicationTermMappingDeleteArgs} args - Arguments to delete one ContraindicationTermMapping.
+     * @example
+     * // Delete one ContraindicationTermMapping
+     * const ContraindicationTermMapping = await prisma.contraindicationTermMapping.delete({
+     *   where: {
+     *     // ... filter to delete one ContraindicationTermMapping
+     *   }
+     * })
+     *
+     */
+    delete<T extends ContraindicationTermMappingDeleteArgs>(args: Prisma.SelectSubset<T, ContraindicationTermMappingDeleteArgs<ExtArgs>>): Prisma.Prisma__ContraindicationTermMappingClient<runtime.Types.Result.GetResult<Prisma.$ContraindicationTermMappingPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
+    /**
+     * Update one ContraindicationTermMapping.
+     * @param {ContraindicationTermMappingUpdateArgs} args - Arguments to update one ContraindicationTermMapping.
+     * @example
+     * // Update one ContraindicationTermMapping
+     * const contraindicationTermMapping = await prisma.contraindicationTermMapping.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     *
+     */
+    update<T extends ContraindicationTermMappingUpdateArgs>(args: Prisma.SelectSubset<T, ContraindicationTermMappingUpdateArgs<ExtArgs>>): Prisma.Prisma__ContraindicationTermMappingClient<runtime.Types.Result.GetResult<Prisma.$ContraindicationTermMappingPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
+    /**
+     * Delete zero or more ContraindicationTermMappings.
+     * @param {ContraindicationTermMappingDeleteManyArgs} args - Arguments to filter ContraindicationTermMappings to delete.
+     * @example
+     * // Delete a few ContraindicationTermMappings
+     * const { count } = await prisma.contraindicationTermMapping.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     *
+     */
+    deleteMany<T extends ContraindicationTermMappingDeleteManyArgs>(args?: Prisma.SelectSubset<T, ContraindicationTermMappingDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>;
+    /**
+     * Update zero or more ContraindicationTermMappings.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ContraindicationTermMappingUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many ContraindicationTermMappings
+     * const contraindicationTermMapping = await prisma.contraindicationTermMapping.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     *
+     */
+    updateMany<T extends ContraindicationTermMappingUpdateManyArgs>(args: Prisma.SelectSubset<T, ContraindicationTermMappingUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>;
+    /**
+     * Update zero or more ContraindicationTermMappings and returns the data updated in the database.
+     * @param {ContraindicationTermMappingUpdateManyAndReturnArgs} args - Arguments to update many ContraindicationTermMappings.
+     * @example
+     * // Update many ContraindicationTermMappings
+     * const contraindicationTermMapping = await prisma.contraindicationTermMapping.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *
+     * // Update zero or more ContraindicationTermMappings and only return the `id`
+     * const contraindicationTermMappingWithIdOnly = await prisma.contraindicationTermMapping.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     *
+     */
+    updateManyAndReturn<T extends ContraindicationTermMappingUpdateManyAndReturnArgs>(args: Prisma.SelectSubset<T, ContraindicationTermMappingUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ContraindicationTermMappingPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>;
+    /**
+     * Create or update one ContraindicationTermMapping.
+     * @param {ContraindicationTermMappingUpsertArgs} args - Arguments to update or create a ContraindicationTermMapping.
+     * @example
+     * // Update or create a ContraindicationTermMapping
+     * const contraindicationTermMapping = await prisma.contraindicationTermMapping.upsert({
+     *   create: {
+     *     // ... data to create a ContraindicationTermMapping
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the ContraindicationTermMapping we want to update
+     *   }
+     * })
+     */
+    upsert<T extends ContraindicationTermMappingUpsertArgs>(args: Prisma.SelectSubset<T, ContraindicationTermMappingUpsertArgs<ExtArgs>>): Prisma.Prisma__ContraindicationTermMappingClient<runtime.Types.Result.GetResult<Prisma.$ContraindicationTermMappingPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
+    /**
+     * Count the number of ContraindicationTermMappings.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ContraindicationTermMappingCountArgs} args - Arguments to filter ContraindicationTermMappings to count.
+     * @example
+     * // Count the number of ContraindicationTermMappings
+     * const count = await prisma.contraindicationTermMapping.count({
+     *   where: {
+     *     // ... the filter for the ContraindicationTermMappings we want to count
+     *   }
+     * })
+    **/
+    count<T extends ContraindicationTermMappingCountArgs>(args?: Prisma.Subset<T, ContraindicationTermMappingCountArgs>): Prisma.PrismaPromise<T extends runtime.Types.Utils.Record<'select', any> ? T['select'] extends true ? number : Prisma.GetScalarType<T['select'], ContraindicationTermMappingCountAggregateOutputType> : number>;
+    /**
+     * Allows you to perform aggregations operations on a ContraindicationTermMapping.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ContraindicationTermMappingAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends ContraindicationTermMappingAggregateArgs>(args: Prisma.Subset<T, ContraindicationTermMappingAggregateArgs>): Prisma.PrismaPromise<GetContraindicationTermMappingAggregateType<T>>;
+    /**
+     * Group by ContraindicationTermMapping.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ContraindicationTermMappingGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     *
+    **/
+    groupBy<T extends ContraindicationTermMappingGroupByArgs, HasSelectOrTake extends Prisma.Or<Prisma.Extends<'skip', Prisma.Keys<T>>, Prisma.Extends<'take', Prisma.Keys<T>>>, OrderByArg extends Prisma.True extends HasSelectOrTake ? {
+        orderBy: ContraindicationTermMappingGroupByArgs['orderBy'];
+    } : {
+        orderBy?: ContraindicationTermMappingGroupByArgs['orderBy'];
+    }, OrderFields extends Prisma.ExcludeUnderscoreKeys<Prisma.Keys<Prisma.MaybeTupleToUnion<T['orderBy']>>>, ByFields extends Prisma.MaybeTupleToUnion<T['by']>, ByValid extends Prisma.Has<ByFields, OrderFields>, HavingFields extends Prisma.GetHavingFields<T['having']>, HavingValid extends Prisma.Has<ByFields, HavingFields>, ByEmpty extends T['by'] extends never[] ? Prisma.True : Prisma.False, InputErrors extends ByEmpty extends Prisma.True ? `Error: "by" must not be empty.` : HavingValid extends Prisma.False ? {
+        [P in HavingFields]: P extends ByFields ? never : P extends string ? `Error: Field "${P}" used in "having" needs to be provided in "by".` : [
+            Error,
+            'Field ',
+            P,
+            ` in "having" needs to be provided in "by"`
+        ];
+    }[HavingFields] : 'take' extends Prisma.Keys<T> ? 'orderBy' extends Prisma.Keys<T> ? ByValid extends Prisma.True ? {} : {
+        [P in OrderFields]: P extends ByFields ? never : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+    }[OrderFields] : 'Error: If you provide "take", you also need to provide "orderBy"' : 'skip' extends Prisma.Keys<T> ? 'orderBy' extends Prisma.Keys<T> ? ByValid extends Prisma.True ? {} : {
+        [P in OrderFields]: P extends ByFields ? never : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+    }[OrderFields] : 'Error: If you provide "skip", you also need to provide "orderBy"' : ByValid extends Prisma.True ? {} : {
+        [P in OrderFields]: P extends ByFields ? never : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+    }[OrderFields]>(args: Prisma.SubsetIntersection<T, ContraindicationTermMappingGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetContraindicationTermMappingGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>;
+    /**
+     * Fields of the ContraindicationTermMapping model
+     */
+    readonly fields: ContraindicationTermMappingFieldRefs;
+}
+/**
+ * The delegate class that acts as a "Promise-like" for ContraindicationTermMapping.
+ * Why is this prefixed with `Prisma__`?
+ * Because we want to prevent naming conflicts as mentioned in
+ * https://github.com/prisma/prisma-client-js/issues/707
+ */
+export interface Prisma__ContraindicationTermMappingClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise";
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): runtime.Types.Utils.JsPromise<TResult1 | TResult2>;
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): runtime.Types.Utils.JsPromise<T | TResult>;
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): runtime.Types.Utils.JsPromise<T>;
+}
+/**
+ * Fields of the ContraindicationTermMapping model
+ */
+export interface ContraindicationTermMappingFieldRefs {
+    readonly id: Prisma.FieldRef<"ContraindicationTermMapping", 'Int'>;
+    readonly standardTerm: Prisma.FieldRef<"ContraindicationTermMapping", 'String'>;
+    readonly alternativeTerms: Prisma.FieldRef<"ContraindicationTermMapping", 'Json'>;
+    readonly category: Prisma.FieldRef<"ContraindicationTermMapping", 'String'>;
+    readonly warningFieldName: Prisma.FieldRef<"ContraindicationTermMapping", 'String'>;
+    readonly createdAt: Prisma.FieldRef<"ContraindicationTermMapping", 'DateTime'>;
+    readonly updatedAt: Prisma.FieldRef<"ContraindicationTermMapping", 'DateTime'>;
+}
+/**
+ * ContraindicationTermMapping findUnique
+ */
+export type ContraindicationTermMappingFindUniqueArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ContraindicationTermMapping
+     */
+    select?: Prisma.ContraindicationTermMappingSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the ContraindicationTermMapping
+     */
+    omit?: Prisma.ContraindicationTermMappingOmit<ExtArgs> | null;
+    /**
+     * Filter, which ContraindicationTermMapping to fetch.
+     */
+    where: Prisma.ContraindicationTermMappingWhereUniqueInput;
+};
+/**
+ * ContraindicationTermMapping findUniqueOrThrow
+ */
+export type ContraindicationTermMappingFindUniqueOrThrowArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ContraindicationTermMapping
+     */
+    select?: Prisma.ContraindicationTermMappingSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the ContraindicationTermMapping
+     */
+    omit?: Prisma.ContraindicationTermMappingOmit<ExtArgs> | null;
+    /**
+     * Filter, which ContraindicationTermMapping to fetch.
+     */
+    where: Prisma.ContraindicationTermMappingWhereUniqueInput;
+};
+/**
+ * ContraindicationTermMapping findFirst
+ */
+export type ContraindicationTermMappingFindFirstArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ContraindicationTermMapping
+     */
+    select?: Prisma.ContraindicationTermMappingSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the ContraindicationTermMapping
+     */
+    omit?: Prisma.ContraindicationTermMappingOmit<ExtArgs> | null;
+    /**
+     * Filter, which ContraindicationTermMapping to fetch.
+     */
+    where?: Prisma.ContraindicationTermMappingWhereInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of ContraindicationTermMappings to fetch.
+     */
+    orderBy?: Prisma.ContraindicationTermMappingOrderByWithRelationInput | Prisma.ContraindicationTermMappingOrderByWithRelationInput[];
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the position for searching for ContraindicationTermMappings.
+     */
+    cursor?: Prisma.ContraindicationTermMappingWhereUniqueInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` ContraindicationTermMappings from the position of the cursor.
+     */
+    take?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` ContraindicationTermMappings.
+     */
+    skip?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     *
+     * Filter by unique combinations of ContraindicationTermMappings.
+     */
+    distinct?: Prisma.ContraindicationTermMappingScalarFieldEnum | Prisma.ContraindicationTermMappingScalarFieldEnum[];
+};
+/**
+ * ContraindicationTermMapping findFirstOrThrow
+ */
+export type ContraindicationTermMappingFindFirstOrThrowArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ContraindicationTermMapping
+     */
+    select?: Prisma.ContraindicationTermMappingSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the ContraindicationTermMapping
+     */
+    omit?: Prisma.ContraindicationTermMappingOmit<ExtArgs> | null;
+    /**
+     * Filter, which ContraindicationTermMapping to fetch.
+     */
+    where?: Prisma.ContraindicationTermMappingWhereInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of ContraindicationTermMappings to fetch.
+     */
+    orderBy?: Prisma.ContraindicationTermMappingOrderByWithRelationInput | Prisma.ContraindicationTermMappingOrderByWithRelationInput[];
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the position for searching for ContraindicationTermMappings.
+     */
+    cursor?: Prisma.ContraindicationTermMappingWhereUniqueInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` ContraindicationTermMappings from the position of the cursor.
+     */
+    take?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` ContraindicationTermMappings.
+     */
+    skip?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     *
+     * Filter by unique combinations of ContraindicationTermMappings.
+     */
+    distinct?: Prisma.ContraindicationTermMappingScalarFieldEnum | Prisma.ContraindicationTermMappingScalarFieldEnum[];
+};
+/**
+ * ContraindicationTermMapping findMany
+ */
+export type ContraindicationTermMappingFindManyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ContraindicationTermMapping
+     */
+    select?: Prisma.ContraindicationTermMappingSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the ContraindicationTermMapping
+     */
+    omit?: Prisma.ContraindicationTermMappingOmit<ExtArgs> | null;
+    /**
+     * Filter, which ContraindicationTermMappings to fetch.
+     */
+    where?: Prisma.ContraindicationTermMappingWhereInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of ContraindicationTermMappings to fetch.
+     */
+    orderBy?: Prisma.ContraindicationTermMappingOrderByWithRelationInput | Prisma.ContraindicationTermMappingOrderByWithRelationInput[];
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the position for listing ContraindicationTermMappings.
+     */
+    cursor?: Prisma.ContraindicationTermMappingWhereUniqueInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` ContraindicationTermMappings from the position of the cursor.
+     */
+    take?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` ContraindicationTermMappings.
+     */
+    skip?: number;
+    distinct?: Prisma.ContraindicationTermMappingScalarFieldEnum | Prisma.ContraindicationTermMappingScalarFieldEnum[];
+};
+/**
+ * ContraindicationTermMapping create
+ */
+export type ContraindicationTermMappingCreateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ContraindicationTermMapping
+     */
+    select?: Prisma.ContraindicationTermMappingSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the ContraindicationTermMapping
+     */
+    omit?: Prisma.ContraindicationTermMappingOmit<ExtArgs> | null;
+    /**
+     * The data needed to create a ContraindicationTermMapping.
+     */
+    data: Prisma.XOR<Prisma.ContraindicationTermMappingCreateInput, Prisma.ContraindicationTermMappingUncheckedCreateInput>;
+};
+/**
+ * ContraindicationTermMapping createMany
+ */
+export type ContraindicationTermMappingCreateManyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many ContraindicationTermMappings.
+     */
+    data: Prisma.ContraindicationTermMappingCreateManyInput | Prisma.ContraindicationTermMappingCreateManyInput[];
+    skipDuplicates?: boolean;
+};
+/**
+ * ContraindicationTermMapping createManyAndReturn
+ */
+export type ContraindicationTermMappingCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ContraindicationTermMapping
+     */
+    select?: Prisma.ContraindicationTermMappingSelectCreateManyAndReturn<ExtArgs> | null;
+    /**
+     * Omit specific fields from the ContraindicationTermMapping
+     */
+    omit?: Prisma.ContraindicationTermMappingOmit<ExtArgs> | null;
+    /**
+     * The data used to create many ContraindicationTermMappings.
+     */
+    data: Prisma.ContraindicationTermMappingCreateManyInput | Prisma.ContraindicationTermMappingCreateManyInput[];
+    skipDuplicates?: boolean;
+};
+/**
+ * ContraindicationTermMapping update
+ */
+export type ContraindicationTermMappingUpdateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ContraindicationTermMapping
+     */
+    select?: Prisma.ContraindicationTermMappingSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the ContraindicationTermMapping
+     */
+    omit?: Prisma.ContraindicationTermMappingOmit<ExtArgs> | null;
+    /**
+     * The data needed to update a ContraindicationTermMapping.
+     */
+    data: Prisma.XOR<Prisma.ContraindicationTermMappingUpdateInput, Prisma.ContraindicationTermMappingUncheckedUpdateInput>;
+    /**
+     * Choose, which ContraindicationTermMapping to update.
+     */
+    where: Prisma.ContraindicationTermMappingWhereUniqueInput;
+};
+/**
+ * ContraindicationTermMapping updateMany
+ */
+export type ContraindicationTermMappingUpdateManyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * The data used to update ContraindicationTermMappings.
+     */
+    data: Prisma.XOR<Prisma.ContraindicationTermMappingUpdateManyMutationInput, Prisma.ContraindicationTermMappingUncheckedUpdateManyInput>;
+    /**
+     * Filter which ContraindicationTermMappings to update
+     */
+    where?: Prisma.ContraindicationTermMappingWhereInput;
+    /**
+     * Limit how many ContraindicationTermMappings to update.
+     */
+    limit?: number;
+};
+/**
+ * ContraindicationTermMapping updateManyAndReturn
+ */
+export type ContraindicationTermMappingUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ContraindicationTermMapping
+     */
+    select?: Prisma.ContraindicationTermMappingSelectUpdateManyAndReturn<ExtArgs> | null;
+    /**
+     * Omit specific fields from the ContraindicationTermMapping
+     */
+    omit?: Prisma.ContraindicationTermMappingOmit<ExtArgs> | null;
+    /**
+     * The data used to update ContraindicationTermMappings.
+     */
+    data: Prisma.XOR<Prisma.ContraindicationTermMappingUpdateManyMutationInput, Prisma.ContraindicationTermMappingUncheckedUpdateManyInput>;
+    /**
+     * Filter which ContraindicationTermMappings to update
+     */
+    where?: Prisma.ContraindicationTermMappingWhereInput;
+    /**
+     * Limit how many ContraindicationTermMappings to update.
+     */
+    limit?: number;
+};
+/**
+ * ContraindicationTermMapping upsert
+ */
+export type ContraindicationTermMappingUpsertArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ContraindicationTermMapping
+     */
+    select?: Prisma.ContraindicationTermMappingSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the ContraindicationTermMapping
+     */
+    omit?: Prisma.ContraindicationTermMappingOmit<ExtArgs> | null;
+    /**
+     * The filter to search for the ContraindicationTermMapping to update in case it exists.
+     */
+    where: Prisma.ContraindicationTermMappingWhereUniqueInput;
+    /**
+     * In case the ContraindicationTermMapping found by the `where` argument doesn't exist, create a new ContraindicationTermMapping with this data.
+     */
+    create: Prisma.XOR<Prisma.ContraindicationTermMappingCreateInput, Prisma.ContraindicationTermMappingUncheckedCreateInput>;
+    /**
+     * In case the ContraindicationTermMapping was found with the provided `where` argument, update it with this data.
+     */
+    update: Prisma.XOR<Prisma.ContraindicationTermMappingUpdateInput, Prisma.ContraindicationTermMappingUncheckedUpdateInput>;
+};
+/**
+ * ContraindicationTermMapping delete
+ */
+export type ContraindicationTermMappingDeleteArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ContraindicationTermMapping
+     */
+    select?: Prisma.ContraindicationTermMappingSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the ContraindicationTermMapping
+     */
+    omit?: Prisma.ContraindicationTermMappingOmit<ExtArgs> | null;
+    /**
+     * Filter which ContraindicationTermMapping to delete.
+     */
+    where: Prisma.ContraindicationTermMappingWhereUniqueInput;
+};
+/**
+ * ContraindicationTermMapping deleteMany
+ */
+export type ContraindicationTermMappingDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Filter which ContraindicationTermMappings to delete
+     */
+    where?: Prisma.ContraindicationTermMappingWhereInput;
+    /**
+     * Limit how many ContraindicationTermMappings to delete.
+     */
+    limit?: number;
+};
+/**
+ * ContraindicationTermMapping without action
+ */
+export type ContraindicationTermMappingDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ContraindicationTermMapping
+     */
+    select?: Prisma.ContraindicationTermMappingSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the ContraindicationTermMapping
+     */
+    omit?: Prisma.ContraindicationTermMappingOmit<ExtArgs> | null;
+};
+export {};
+//# sourceMappingURL=ContraindicationTermMapping.d.ts.map

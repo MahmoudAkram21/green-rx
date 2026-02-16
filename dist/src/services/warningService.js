@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.generateWarnings = generateWarnings;
 exports.checkBatchInteractions = checkBatchInteractions;
 const prisma_1 = require("../lib/prisma");
-const client_1 = require("../generated/client");
+const client_1 = require("../../generated/client/client");
 /**
  * Generate comprehensive warnings for a prescription based on patient profile
  */

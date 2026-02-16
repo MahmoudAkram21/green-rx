@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.childProfileSchema = exports.allergySchema = exports.lifestyleSchema = exports.familyHistorySchema = exports.medicalHistorySchema = exports.createPatientSchema = void 0;
 const zod_1 = require("zod");
-const client_1 = require("../generated/client");
+const client_1 = require("../../generated/client/client");
 exports.createPatientSchema = zod_1.z.object({
     userId: zod_1.z.number().int().positive(),
     name: zod_1.z.string().min(1),

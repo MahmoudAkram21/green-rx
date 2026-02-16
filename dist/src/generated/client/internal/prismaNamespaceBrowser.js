@@ -121,12 +121,12 @@ exports.ModelName = {
 /*
  * Enums
  */
-exports.TransactionIsolationLevel = {
+exports.TransactionIsolationLevel = runtime.makeStrictEnum({
     ReadUncommitted: 'ReadUncommitted',
     ReadCommitted: 'ReadCommitted',
     RepeatableRead: 'RepeatableRead',
     Serializable: 'Serializable'
-};
+});
 exports.UserScalarFieldEnum = {
     id: 'id',
     email: 'email',
@@ -830,11 +830,11 @@ exports.SortOrder = {
     desc: 'desc'
 };
 exports.NullableJsonNullValueInput = {
-    DbNull: 'DbNull',
-    JsonNull: 'JsonNull'
+    DbNull: exports.DbNull,
+    JsonNull: exports.JsonNull
 };
 exports.JsonNullValueInput = {
-    JsonNull: 'JsonNull'
+    JsonNull: exports.JsonNull
 };
 exports.QueryMode = {
     default: 'default',
@@ -845,8 +845,8 @@ exports.NullsOrder = {
     last: 'last'
 };
 exports.JsonNullValueFilter = {
-    DbNull: 'DbNull',
-    JsonNull: 'JsonNull',
-    AnyNull: 'AnyNull'
+    DbNull: exports.DbNull,
+    JsonNull: exports.JsonNull,
+    AnyNull: exports.AnyNull
 };
 //# sourceMappingURL=prismaNamespaceBrowser.js.map

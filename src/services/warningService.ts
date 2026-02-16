@@ -1,5 +1,5 @@
 import { prisma } from '../lib/prisma';
-import { WarningSeverity, WarningRuleType } from '../generated/client';
+import { WarningSeverity, WarningRuleType } from '../../generated/client/client';
 
 export interface Warning {
   severity: WarningSeverity;

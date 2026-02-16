@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { z } from 'zod';
 import { prisma } from '../lib/prisma';
-import { DiseaseSeverity } from '../generated/client';
+import { DiseaseSeverity } from '../../generated/client/client';
 import {
     createDiseaseSchema,
     updateDiseaseSchema,

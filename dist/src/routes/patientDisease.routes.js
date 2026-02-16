@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const patientDisease_controller_1 = require("../controllers/patientDisease.controller");
 const auth_middleware_1 = require("../middleware/auth.middleware");
-const client_1 = require("../generated/client");
+const client_1 = require("../../generated/client/client");
 const router = express_1.default.Router();
 // All routes require authentication
 router.use(auth_middleware_1.authenticate);

@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getTodayAppointments = exports.completeAppointment = exports.confirmAppointment = exports.cancelAppointment = exports.updateAppointment = exports.getAppointmentsByDoctor = exports.getAppointmentsByPatient = exports.getAppointmentById = exports.createAppointment = void 0;
 const prisma_1 = require("../lib/prisma");
-const client_1 = require("../generated/client");
+const client_1 = require("../../generated/client/client");
 // Create appointment
 const createAppointment = async (req, res) => {
     try {

@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { RelationshipType } from "../generated/client";
+import { RelationshipType } from "../../generated/client/client";
 
 export const createDoctorSchema = z.object({
   userId: z.number().int().positive(),

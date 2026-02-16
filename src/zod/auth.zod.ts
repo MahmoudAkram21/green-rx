@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { UserRole } from "../generated/client";
+import { UserRole } from "../../generated/client/client";
 
 export const registerSchema = z.object({
   email: z.string().email(),

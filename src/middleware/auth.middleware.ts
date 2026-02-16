@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { verifyAccessToken, TokenPayload } from '../utils/jwt.util';
-import { UserRole } from '../generated/client';
+import { UserRole } from '../../generated/client/client';
 
 // Extend Express Request type to include user
 declare global {

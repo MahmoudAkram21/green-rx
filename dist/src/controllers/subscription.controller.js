@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.renewSubscription = exports.cancelSubscription = exports.updateSubscription = exports.getAllSubscriptions = exports.getSubscriptionByUserId = exports.createSubscription = void 0;
 const prisma_1 = require("../lib/prisma");
-const client_1 = require("../generated/client");
+const client_1 = require("../../generated/client/client");
 // Create subscription for a user
 const createSubscription = async (req, res) => {
     try {

@@ -56,7 +56,7 @@ declare class DrugInteractionService {
         message: string;
         id: number;
         createdAt: Date;
-        severity: import("../generated/client").InteractionSeverity;
+        severity: import("../../generated/client/enums").InteractionSeverity;
         prescriptionId: number;
         interactingMedicineId: number;
         interactionType: string;

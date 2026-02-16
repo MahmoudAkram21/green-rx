@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { prisma } from '../lib/prisma';
-import { AppointmentStatus } from '../generated/client';
+import { AppointmentStatus } from '../../generated/client/client';
 
 // Create appointment
 export const createAppointment = async (req: Request, res: Response) => {

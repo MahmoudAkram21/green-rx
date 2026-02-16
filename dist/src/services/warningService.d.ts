@@ -1,4 +1,4 @@
-import { WarningSeverity } from '../generated/client';
+import { WarningSeverity } from '../../generated/client/client';
 export interface Warning {
     severity: WarningSeverity;
     type: string;

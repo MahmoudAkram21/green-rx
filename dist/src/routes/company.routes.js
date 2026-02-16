@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const company_controller_1 = require("../controllers/company.controller");
 const auth_middleware_1 = require("../middleware/auth.middleware");
-const client_1 = require("../generated/client");
+const client_1 = require("../../generated/client/client");
 const router = express_1.default.Router();
 router.use(auth_middleware_1.authenticate);
 router.post('/', (0, auth_middleware_1.authorize)([client_1.UserRole.Admin, client_1.UserRole.SuperAdmin]), company_controller_1.createCompany);

@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { prisma } from '../lib/prisma';
-import { AllergySeverity } from '../generated/client';
+import { AllergySeverity } from '../../generated/client/client';
 
 // Create allergy
 export const createAllergy = async (req: Request, res: Response) => {
