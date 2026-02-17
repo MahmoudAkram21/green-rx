@@ -13,8 +13,11 @@ app.use(express.urlencoded({ extended: true }));
 // Routes
 app.use('/api', routes);
 
-// Health check
+// Health check (root and under /api for consistency)
 app.get('/health', (_req: Request, res: Response) => {
+  res.json({ status: 'OK', message: 'Server is running' });
+});
+app.get('/api/health', (_req: Request, res: Response) => {
   res.json({ status: 'OK', message: 'Server is running' });
 });
 

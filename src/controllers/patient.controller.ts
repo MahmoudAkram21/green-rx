@@ -131,13 +131,14 @@ export const getPatientByUserId = async (req: Request, res: Response, next: Next
     }
 };
 
-// Add Medical History Entry
+// Add Medical History Entry (accepts single object or array of objects)
 export const addMedicalHistory = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { patientId } = req.params;
-        const validatedData = medicalHistorySchema.parse(req.body);
+        const raw = req.body;
+        const items = Array.isArray(raw) ? raw : [raw];
+        const validatedItems = z.array(medicalHistorySchema).parse(items);
 
-        // Check if patient exists
         const patient = await prisma.patient.findUnique({
             where: { id: parseInt(patientId) }
         });
@@ -147,17 +148,27 @@ export const addMedicalHistory = async (req: Request, res: Response, next: NextF
             return;
         }
 
-        const medicalHistory = await prisma.medicalHistory.create({
-            data: {
-                patientId: parseInt(patientId),
-                ...validatedData,
-                diagnosisDate: validatedData.diagnosisDate ? new Date(validatedData.diagnosisDate) : undefined
-            }
-        });
+        if (validatedItems.length === 0) {
+            res.status(400).json({ error: 'At least one medical history entry is required' });
+            return;
+        }
+
+        const data = validatedItems.map((v) => ({
+            patientId: parseInt(patientId),
+            diseaseId: v.diseaseId,
+            severity: v.severity,
+            status: v.status,
+            diagnosisDate: v.diagnosisDate ? new Date(v.diagnosisDate) : undefined,
+            treatment: v.treatment,
+            notes: v.notes
+        }));
+
+        const medicalHistories = await prisma.medicalHistory.createManyAndReturn({ data });
 
         res.status(201).json({
-            message: 'Medical history added successfully',
-            medicalHistory
+            message: medicalHistories.length === 1 ? 'Medical history added successfully' : `${medicalHistories.length} medical history entries added successfully`,
+            count: medicalHistories.length,
+            medicalHistories
         });
     } catch (error: any) {
         if (error instanceof z.ZodError) {
@@ -185,13 +196,14 @@ export const getMedicalHistories = async (req: Request, res: Response, next: Nex
     }
 };
 
-// Add Family History Entry
+// Add Family History Entry (accepts single object or array of objects)
 export const addFamilyHistory = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { patientId } = req.params;
-        const validatedData = familyHistorySchema.parse(req.body);
+        const raw = req.body;
+        const items = Array.isArray(raw) ? raw : [raw];
+        const validatedItems = z.array(familyHistorySchema).parse(items);
 
-        // Check if patient exists
         const patient = await prisma.patient.findUnique({
             where: { id: parseInt(patientId) }
         });
@@ -201,16 +213,25 @@ export const addFamilyHistory = async (req: Request, res: Response, next: NextFu
             return;
         }
 
-        const familyHistory = await prisma.familyHistory.create({
-            data: {
-                patientId: parseInt(patientId),
-                ...validatedData
-            }
-        });
+        if (validatedItems.length === 0) {
+            res.status(400).json({ error: 'At least one family history entry is required' });
+            return;
+        }
+
+        const data = validatedItems.map((v) => ({
+            patientId: parseInt(patientId),
+            relation: v.relation,
+            diseaseId: v.diseaseId,
+            severity: v.severity,
+            notes: v.notes
+        }));
+
+        const familyHistories = await prisma.familyHistory.createManyAndReturn({ data });
 
         res.status(201).json({
-            message: 'Family history added successfully',
-            familyHistory
+            message: familyHistories.length === 1 ? 'Family history added successfully' : `${familyHistories.length} family history entries added successfully`,
+            count: familyHistories.length,
+            familyHistories
         });
     } catch (error: any) {
         if (error instanceof z.ZodError) {
@@ -325,13 +346,14 @@ export const deleteAllergy = async (req: Request, res: Response, next: NextFunct
     }
 };
 
-// Add Child Profile
+// Add Child Profile (accepts single object or array of objects)
 export const addChildProfile = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { patientId } = req.params;
-        const validatedData = childProfileSchema.parse(req.body);
+        const raw = req.body;
+        const items = Array.isArray(raw) ? raw : [raw];
+        const validatedItems = z.array(childProfileSchema).parse(items);
 
-        // Check if patient exists
         const patient = await prisma.patient.findUnique({
             where: { id: parseInt(patientId) }
         });
@@ -341,17 +363,30 @@ export const addChildProfile = async (req: Request, res: Response, next: NextFun
             return;
         }
 
-        const childProfile = await prisma.childProfile.create({
-            data: {
-                parentPatientId: parseInt(patientId),
-                ...validatedData,
-                dateOfBirth: new Date(validatedData.dateOfBirth)
-            }
-        });
+        if (validatedItems.length === 0) {
+            res.status(400).json({ error: 'At least one child profile is required' });
+            return;
+        }
+
+        const data = validatedItems.map((v) => ({
+            parentPatientId: parseInt(patientId),
+            name: v.name,
+            dateOfBirth: new Date(v.dateOfBirth),
+            gender: v.gender,
+            ageClassification: v.ageClassification,
+            weight: v.weight,
+            height: v.height,
+            allergies: v.allergies,
+            diseases: v.diseases,
+            medicalHistory: v.medicalHistory
+        }));
+
+        const childProfiles = await prisma.childProfile.createManyAndReturn({ data });
 
         res.status(201).json({
-            message: 'Child profile added successfully',
-            childProfile
+            message: childProfiles.length === 1 ? 'Child profile added successfully' : `${childProfiles.length} child profiles added successfully`,
+            count: childProfiles.length,
+            childProfiles
         });
     } catch (error: any) {
         if (error instanceof z.ZodError) {
