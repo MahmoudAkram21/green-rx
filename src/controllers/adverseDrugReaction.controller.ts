@@ -146,14 +146,42 @@ class AdverseDrugReactionController {
         }
     }
 
+    // Get one ADR by ID (for admin review detail)
+    async getADRById(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const { id } = req.params;
+            const adr = await prisma.adverseDrugReaction.findUnique({
+                where: { id: Number(id) },
+                include: {
+                    patient: { select: { name: true, age: true, id: true } },
+                    tradeName: { select: { title: true, id: true } },
+                    activeSubstance: { select: { activeSubstance: true, id: true } },
+                    company: { select: { name: true, id: true } }
+                }
+            });
+            if (!adr) {
+                res.status(404).json({ error: 'ADR not found' });
+                return;
+            }
+            res.json(adr);
+        } catch (error) {
+            next(error);
+        }
+    }
+
     // Get all ADRs (for admin review)
     async getAllADRs(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            const { severity, page = '1', limit = '20' } = req.query;
+            const { severity, page = '1', limit = '20', reviewed } = req.query;
 
             const where: any = {};
             if (severity) {
                 where.severity = severity;
+            }
+            if (reviewed === 'true') {
+                where.status = { notIn: ['Pending', 'Submitted'] };
+            } else if (reviewed === 'false') {
+                where.status = { in: ['Pending', 'Submitted'] };
             }
 
             const [adrs, total] = await Promise.all([
@@ -219,7 +247,7 @@ class AdverseDrugReactionController {
                     where: { severity: { in: ['Severe', 'LifeThreatening'] } }
                 }),
                 prisma.adverseDrugReaction.count({
-                    where: { status: 'Pending' }
+                    where: { status: { in: ['Pending', 'Submitted'] } }
                 }),
                 prisma.adverseDrugReaction.groupBy({
                     by: ['severity'],
@@ -234,6 +262,7 @@ class AdverseDrugReactionController {
             res.json({
                 total: totalADRs,
                 severeCases,
+                unreviewedCases: pendingCases,
                 pendingCases,
                 bySeverity,
                 byStatus

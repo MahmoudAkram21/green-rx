@@ -66,6 +66,45 @@ export const createOrUpdatePatient = async (req: Request, res: Response, next: N
     }
 };
 
+// Get all patients (Admin/SuperAdmin only)
+export const getAllPatients = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const page = Math.max(1, parseInt(String(req.query.page)) || 1);
+        const limit = Math.min(100, Math.max(1, parseInt(String(req.query.limit)) || 20));
+        const search = typeof req.query.search === 'string' ? req.query.search.trim() : undefined;
+        const skip = (page - 1) * limit;
+
+        const where = search
+            ? { name: { contains: search, mode: 'insensitive' as const } }
+            : {};
+
+        const [patients, total] = await Promise.all([
+            prisma.patient.findMany({
+                where,
+                skip,
+                take: limit,
+                include: {
+                    user: { select: { email: true, role: true } }
+                },
+                orderBy: { id: 'asc' }
+            }),
+            prisma.patient.count({ where })
+        ]);
+
+        res.json({
+            patients,
+            pagination: {
+                total,
+                page,
+                limit,
+                totalPages: Math.ceil(total / limit)
+            }
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
 // Get Patient by ID
 export const getPatientById = async (req: Request, res: Response, next: NextFunction) => {
     try {

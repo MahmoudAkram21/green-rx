@@ -15,10 +15,13 @@ router.get('/drug/:drugType/:drugId', adverseDrugReactionController.getDrugADRs)
 // Get all ADRs (admin)
 router.get('/', adverseDrugReactionController.getAllADRs);
 
+// Get ADR statistics (must be before /:id)
+router.get('/statistics/summary', adverseDrugReactionController.getADRStatistics);
+
+// Get one ADR by ID (admin)
+router.get('/:id', adverseDrugReactionController.getADRById);
+
 // Update ADR
 router.patch('/:id', adverseDrugReactionController.updateADR);
-
-// Get ADR statistics
-router.get('/statistics/summary', adverseDrugReactionController.getADRStatistics);
 
 export default router;

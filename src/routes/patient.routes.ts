@@ -1,6 +1,7 @@
 import express from 'express';
 import {
     createOrUpdatePatient,
+    getAllPatients,
     getPatientById,
     getPatientByUserId,
     addMedicalHistory,
@@ -22,6 +23,7 @@ const router = express.Router();
 router.use(authenticate);
 
 // Patient Profile
+router.get('/', authorize([UserRole.Admin, UserRole.SuperAdmin]), getAllPatients);
 router.post('/', authorize([UserRole.Patient, UserRole.Admin]), createOrUpdatePatient);
 router.get('/:id', getPatientById);
 router.get('/user/:userId', getPatientByUserId);

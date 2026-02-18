@@ -299,12 +299,23 @@ userId: (req as any).user?.userId,
     // Get recent audit logs
     async getAuditLogs(req: Request, res: Response, next: NextFunction) {
         try {
-            const { page = '1', limit = '50' } = req.query;
+            const { page = '1', limit = '50', action, entityType, userId } = req.query;
+            const pageNum = Math.max(1, Number(page) || 1);
+            const limitNum = Math.min(100, Math.max(1, Number(limit) || 50));
+
+            const where: { action?: string; entityType?: string; userId?: number } = {};
+            if (action && typeof action === 'string') where.action = action;
+            if (entityType && typeof entityType === 'string') where.entityType = entityType;
+            if (userId && typeof userId === 'string' && userId.trim() !== '') {
+                const id = Number(userId);
+                if (!Number.isNaN(id)) where.userId = id;
+            }
 
             const [logs, total] = await Promise.all([
                 prisma.auditLog.findMany({
-                    skip: (Number(page) - 1) * Number(limit),
-                    take: Number(limit),
+                    where,
+                    skip: (pageNum - 1) * limitNum,
+                    take: limitNum,
                     orderBy: { createdAt: 'desc' },
                     include: {
                         user: {
@@ -312,16 +323,16 @@ userId: (req as any).user?.userId,
                         }
                     }
                 }),
-                prisma.auditLog.count()
+                prisma.auditLog.count({ where })
             ]);
 
             res.json({
                 logs,
                 pagination: {
                     total,
-                    page: Number(page),
-                    limit: Number(limit),
-                    totalPages: Math.ceil(total / Number(limit))
+                    page: pageNum,
+                    limit: limitNum,
+                    totalPages: Math.ceil(total / limitNum) || 1
                 }
             });
         } catch (error) {
