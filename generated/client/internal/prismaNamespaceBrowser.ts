@@ -79,6 +79,8 @@ export const ModelName = {
   DrugInteractionAlert: 'DrugInteractionAlert',
   Notification: 'Notification',
   AuditLog: 'AuditLog',
+  Permission: 'Permission',
+  RolePermission: 'RolePermission',
   Session: 'Session',
   Pharmacist: 'Pharmacist',
   MedicalReport: 'MedicalReport',
@@ -746,6 +748,27 @@ export const AuditLogScalarFieldEnum = {
 } as const
 
 export type AuditLogScalarFieldEnum = (typeof AuditLogScalarFieldEnum)[keyof typeof AuditLogScalarFieldEnum]
+
+
+export const PermissionScalarFieldEnum = {
+  id: 'id',
+  code: 'code',
+  name: 'name',
+  description: 'description',
+  adminOnly: 'adminOnly',
+  createdAt: 'createdAt'
+} as const
+
+export type PermissionScalarFieldEnum = (typeof PermissionScalarFieldEnum)[keyof typeof PermissionScalarFieldEnum]
+
+
+export const RolePermissionScalarFieldEnum = {
+  id: 'id',
+  role: 'role',
+  permissionId: 'permissionId'
+} as const
+
+export type RolePermissionScalarFieldEnum = (typeof RolePermissionScalarFieldEnum)[keyof typeof RolePermissionScalarFieldEnum]
 
 
 export const SessionScalarFieldEnum = {

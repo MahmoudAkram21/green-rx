@@ -178,6 +178,16 @@ export type Notification = Prisma.NotificationModel
  */
 export type AuditLog = Prisma.AuditLogModel
 /**
+ * Model Permission
+ * 
+ */
+export type Permission = Prisma.PermissionModel
+/**
+ * Model RolePermission
+ * 
+ */
+export type RolePermission = Prisma.RolePermissionModel
+/**
  * Model Session
  * 
  */

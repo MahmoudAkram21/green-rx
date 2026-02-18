@@ -1044,6 +1044,35 @@ model AuditLog {
   @@map("audit_logs")
 }
 
+// ============================================
+// ROLES & PERMISSIONS (Admin-managed)
+// ============================================
+
+model Permission {
+  id          Int      @id @default(autoincrement())
+  code        String   @unique // e.g. "users.manage", "reports.view"
+  name        String
+  description String?
+  adminOnly   Boolean  @default(false) // if true, only Admin/SuperAdmin roles can have this permission
+  createdAt   DateTime @default(now())
+
+  rolePermissions RolePermission[]
+
+  @@map("permissions")
+}
+
+model RolePermission {
+  id           Int   @id @default(autoincrement())
+  role         String // UserRole value: Patient, Doctor, Pharmacist, Admin, Company, SuperAdmin
+  permissionId Int
+  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@unique([role, permissionId])
+  @@index([role])
+  @@index([permissionId])
+  @@map("role_permissions")
+}
+
 model Session {
   id           Int      @id @default(autoincrement())
   userId       Int
