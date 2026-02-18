@@ -116,8 +116,8 @@ export const getPatientById = async (req: Request, res: Response, next: NextFunc
                 user: {
                     select: { email: true, role: true, isActive: true }
                 },
-                medicalHistories: true,
-                familyHistories: true,
+                medicalHistories: { include: { disease: true } },
+                familyHistories: { include: { disease: true } },
                 lifestyle: true,
                 allergies: true,
                 childrenProfiles: true,
@@ -346,10 +346,12 @@ export const addAllergy = async (req: Request, res: Response, next: NextFunction
             return;
         }
 
+        const { reaction, ...rest } = validatedData;
         const allergy = await prisma.allergy.create({
             data: {
                 patientId: parseInt(patientId),
-                ...validatedData
+                ...rest,
+                reactionType: reaction ?? null
             }
         });
 
