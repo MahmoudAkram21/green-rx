@@ -89,6 +89,9 @@ const searchActiveSubstances = async (req, res, next) => {
                 skip,
                 take,
                 orderBy: { activeSubstance: "asc" },
+                include: {
+                    _count: { select: { tradeNames: true } },
+                },
             }),
             prisma_1.prisma.activeSubstance.count({ where: whereClause }),
         ]);

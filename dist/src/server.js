@@ -7,15 +7,22 @@ const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
 require("dotenv/config");
 const index_1 = __importDefault(require("./routes/index"));
+const morgan_1 = require("./config/morgan");
+const logger_1 = __importDefault(require("./config/logger"));
 const app = (0, express_1.default)();
+// HTTP request logging (Morgan)
+app.use(morgan_1.morganMiddleware);
 // Middleware
 app.use((0, cors_1.default)());
 app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: true }));
 // Routes
 app.use('/api', index_1.default);
-// Health check
+// Health check (root and under /api for consistency)
 app.get('/health', (_req, res) => {
+    res.json({ status: 'OK', message: 'Server is running' });
+});
+app.get('/api/health', (_req, res) => {
     res.json({ status: 'OK', message: 'Server is running' });
 });
 // 404 handler
@@ -24,7 +31,7 @@ app.use((_req, res) => {
 });
 // Error handler
 app.use((err, _req, res, _next) => {
-    console.error(err.stack);
+    logger_1.default.error(err.stack);
     const status = err.status || 500;
     res.status(status).json({
         error: err.message || 'Internal server error',
@@ -34,6 +41,7 @@ app.use((err, _req, res, _next) => {
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
+    logger_1.default.info(`Server is running on port ${PORT}`);
 });
 exports.default = app;
 //# sourceMappingURL=server.js.map

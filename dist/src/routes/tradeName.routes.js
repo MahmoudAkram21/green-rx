@@ -12,6 +12,7 @@ const router = express_1.default.Router();
 router.use(auth_middleware_1.authenticate);
 // Trade Name CRUD
 router.post('/', (0, auth_middleware_1.authorize)([client_1.UserRole.Admin, client_1.UserRole.SuperAdmin, client_1.UserRole.Company]), tradeName_controller_1.createTradeName);
+router.get('/', tradeName_controller_1.listTradeNames);
 router.get('/search', tradeName_controller_1.searchTradeNames);
 router.get('/:id', tradeName_controller_1.getTradeNameById);
 router.put('/:id', (0, auth_middleware_1.authorize)([client_1.UserRole.Admin, client_1.UserRole.SuperAdmin, client_1.UserRole.Company]), tradeName_controller_1.updateTradeName);

@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteTradeName = exports.updateTradeName = exports.searchTradeNames = exports.getTradeNameById = exports.createTradeName = void 0;
+exports.deleteTradeName = exports.updateTradeName = exports.searchTradeNames = exports.getTradeNameById = exports.listTradeNames = exports.createTradeName = void 0;
 const zod_1 = require("zod");
 const prisma_1 = require("../lib/prisma");
 const tradeName_zod_1 = require("../zod/tradeName.zod");
@@ -37,6 +37,40 @@ const createTradeName = async (req, res, next) => {
     }
 };
 exports.createTradeName = createTradeName;
+// List Trade Names (for dropdowns, PatientTest, etc.)
+const listTradeNames = async (req, res, next) => {
+    try {
+        const { page = '1', limit = '100' } = req.query;
+        const pageNum = Math.max(1, parseInt(page) || 1);
+        const limitNum = Math.min(1000, Math.max(1, parseInt(limit) || 100));
+        const skip = (pageNum - 1) * limitNum;
+        const [tradeNames, total] = await Promise.all([
+            prisma_1.prisma.tradeName.findMany({
+                include: {
+                    activeSubstance: { select: { activeSubstance: true, id: true } },
+                    company: { select: { name: true, id: true } }
+                },
+                orderBy: { title: 'asc' },
+                skip,
+                take: limitNum
+            }),
+            prisma_1.prisma.tradeName.count()
+        ]);
+        res.json({
+            tradeNames,
+            pagination: {
+                total,
+                page: pageNum,
+                limit: limitNum,
+                totalPages: Math.ceil(total / limitNum) || 1
+            }
+        });
+    }
+    catch (error) {
+        next(error);
+    }
+};
+exports.listTradeNames = listTradeNames;
 // Get Trade Name by ID
 const getTradeNameById = async (req, res, next) => {
     try {

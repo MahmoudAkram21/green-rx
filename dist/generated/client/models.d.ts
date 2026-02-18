@@ -26,6 +26,8 @@ export type * from './models/PrescriptionVersion';
 export type * from './models/DrugInteractionAlert';
 export type * from './models/Notification';
 export type * from './models/AuditLog';
+export type * from './models/Permission';
+export type * from './models/RolePermission';
 export type * from './models/Session';
 export type * from './models/Pharmacist';
 export type * from './models/MedicalReport';

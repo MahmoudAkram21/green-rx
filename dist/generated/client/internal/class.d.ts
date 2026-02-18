@@ -420,6 +420,28 @@ export interface PrismaClient<in LogOpts extends Prisma.LogLevel = never, in out
         omit: OmitOpts;
     }>;
     /**
+     * `prisma.permission`: Exposes CRUD operations for the **Permission** model.
+      * Example usage:
+      * ```ts
+      * // Fetch zero or more Permissions
+      * const permissions = await prisma.permission.findMany()
+      * ```
+      */
+    get permission(): Prisma.PermissionDelegate<ExtArgs, {
+        omit: OmitOpts;
+    }>;
+    /**
+     * `prisma.rolePermission`: Exposes CRUD operations for the **RolePermission** model.
+      * Example usage:
+      * ```ts
+      * // Fetch zero or more RolePermissions
+      * const rolePermissions = await prisma.rolePermission.findMany()
+      * ```
+      */
+    get rolePermission(): Prisma.RolePermissionDelegate<ExtArgs, {
+        omit: OmitOpts;
+    }>;
+    /**
      * `prisma.session`: Exposes CRUD operations for the **Session** model.
       * Example usage:
       * ```ts

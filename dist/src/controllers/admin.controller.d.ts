@@ -4,6 +4,9 @@ declare class AdminController {
     verifyDoctor(req: Request, res: Response, next: NextFunction): Promise<void>;
     rejectDoctor(req: Request, res: Response, next: NextFunction): Promise<void>;
     getStatistics(_req: Request, res: Response, next: NextFunction): Promise<void>;
+    getPendingPharmacists(_req: Request, res: Response, next: NextFunction): Promise<void>;
+    verifyPharmacist(req: Request, res: Response, next: NextFunction): Promise<void>;
+    rejectPharmacist(req: Request, res: Response, next: NextFunction): Promise<void>;
     getAuditLogs(req: Request, res: Response, next: NextFunction): Promise<void>;
 }
 declare const _default: AdminController;

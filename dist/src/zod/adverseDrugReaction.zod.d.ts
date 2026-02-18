@@ -19,8 +19,8 @@ export declare const updateAdrSchema: z.ZodObject<{
     status: z.ZodOptional<z.ZodEnum<{
         Pending: "Pending";
         Confirmed: "Confirmed";
-        UnderReview: "UnderReview";
         Rejected: "Rejected";
+        UnderReview: "UnderReview";
     }>>;
     adminNotes: z.ZodOptional<z.ZodString>;
 }, z.core.$strip>;

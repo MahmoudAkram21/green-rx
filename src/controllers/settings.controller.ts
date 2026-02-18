@@ -13,7 +13,7 @@ export async function getLogo(_req: Request, res: Response, next: NextFunction):
             res.status(404).end();
             return;
         }
-        const buf = Buffer.isBuffer(row.valueBytes) ? row.valueBytes : Buffer.from(row.valueBytes as ArrayBuffer);
+        const buf = Buffer.isBuffer(row.valueBytes) ? row.valueBytes : Buffer.from(row.valueBytes as unknown as ArrayBuffer);
         if (!buf.length) {
             res.status(404).end();
             return;

@@ -48,8 +48,8 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.MedicalReportScalarFieldEnum = exports.PharmacistScalarFieldEnum = exports.SessionScalarFieldEnum = exports.AuditLogScalarFieldEnum = exports.NotificationScalarFieldEnum = exports.DrugInteractionAlertScalarFieldEnum = exports.PrescriptionVersionScalarFieldEnum = exports.PrescriptionScalarFieldEnum = exports.ContractingCompanyTradeNameScalarFieldEnum = exports.ContractingCompanyScalarFieldEnum = exports.CompanyScalarFieldEnum = exports.TradeNameScalarFieldEnum = exports.MedicineAlternativeScalarFieldEnum = exports.DiseaseActiveSubstanceWarningScalarFieldEnum = exports.ActiveSubstanceScalarFieldEnum = exports.DiseaseWarningRuleScalarFieldEnum = exports.PatientDiseaseScalarFieldEnum = exports.DiseaseScalarFieldEnum = exports.AppointmentScalarFieldEnum = exports.ConsultationScalarFieldEnum = exports.PatientDoctorScalarFieldEnum = exports.DoctorScalarFieldEnum = exports.AllergyScalarFieldEnum = exports.LifestyleScalarFieldEnum = exports.FamilyHistoryScalarFieldEnum = exports.MedicalHistoryScalarFieldEnum = exports.PatientScalarFieldEnum = exports.PaymentScalarFieldEnum = exports.SubscriptionScalarFieldEnum = exports.PricingPlanScalarFieldEnum = exports.UserScalarFieldEnum = exports.TransactionIsolationLevel = exports.ModelName = exports.AnyNull = exports.JsonNull = exports.DbNull = exports.NullTypes = exports.prismaVersion = exports.getExtensionContext = exports.Decimal = exports.Sql = exports.raw = exports.join = exports.empty = exports.sql = exports.PrismaClientValidationError = exports.PrismaClientInitializationError = exports.PrismaClientRustPanicError = exports.PrismaClientUnknownRequestError = exports.PrismaClientKnownRequestError = void 0;
-exports.defineExtension = exports.JsonNullValueFilter = exports.NullsOrder = exports.QueryMode = exports.JsonNullValueInput = exports.NullableJsonNullValueInput = exports.SortOrder = exports.ExportHistoryScalarFieldEnum = exports.MedicineSuggestionScalarFieldEnum = exports.ImportHistoryScalarFieldEnum = exports.BatchHistoryScalarFieldEnum = exports.ContraindicationTermMappingScalarFieldEnum = exports.VisitScalarFieldEnum = exports.RatingScalarFieldEnum = exports.ChildProfileScalarFieldEnum = exports.AdverseDrugReactionScalarFieldEnum = exports.PatientShareLinkScalarFieldEnum = void 0;
+exports.SessionScalarFieldEnum = exports.RolePermissionScalarFieldEnum = exports.PermissionScalarFieldEnum = exports.AuditLogScalarFieldEnum = exports.NotificationScalarFieldEnum = exports.DrugInteractionAlertScalarFieldEnum = exports.PrescriptionVersionScalarFieldEnum = exports.PrescriptionScalarFieldEnum = exports.ContractingCompanyTradeNameScalarFieldEnum = exports.ContractingCompanyScalarFieldEnum = exports.CompanyScalarFieldEnum = exports.TradeNameScalarFieldEnum = exports.MedicineAlternativeScalarFieldEnum = exports.DiseaseActiveSubstanceWarningScalarFieldEnum = exports.ActiveSubstanceScalarFieldEnum = exports.DiseaseWarningRuleScalarFieldEnum = exports.PatientDiseaseScalarFieldEnum = exports.DiseaseScalarFieldEnum = exports.AppointmentScalarFieldEnum = exports.ConsultationScalarFieldEnum = exports.PatientDoctorScalarFieldEnum = exports.DoctorScalarFieldEnum = exports.AllergyScalarFieldEnum = exports.LifestyleScalarFieldEnum = exports.FamilyHistoryScalarFieldEnum = exports.MedicalHistoryScalarFieldEnum = exports.PatientScalarFieldEnum = exports.PaymentScalarFieldEnum = exports.SubscriptionScalarFieldEnum = exports.PricingPlanScalarFieldEnum = exports.UserScalarFieldEnum = exports.TransactionIsolationLevel = exports.ModelName = exports.AnyNull = exports.JsonNull = exports.DbNull = exports.NullTypes = exports.prismaVersion = exports.getExtensionContext = exports.Decimal = exports.Sql = exports.raw = exports.join = exports.empty = exports.sql = exports.PrismaClientValidationError = exports.PrismaClientInitializationError = exports.PrismaClientRustPanicError = exports.PrismaClientUnknownRequestError = exports.PrismaClientKnownRequestError = void 0;
+exports.defineExtension = exports.JsonNullValueFilter = exports.NullsOrder = exports.QueryMode = exports.JsonNullValueInput = exports.NullableJsonNullValueInput = exports.SortOrder = exports.ExportHistoryScalarFieldEnum = exports.MedicineSuggestionScalarFieldEnum = exports.ImportHistoryScalarFieldEnum = exports.BatchHistoryScalarFieldEnum = exports.ContraindicationTermMappingScalarFieldEnum = exports.VisitScalarFieldEnum = exports.RatingScalarFieldEnum = exports.ChildProfileScalarFieldEnum = exports.AdverseDrugReactionScalarFieldEnum = exports.PatientShareLinkScalarFieldEnum = exports.MedicalReportScalarFieldEnum = exports.PharmacistScalarFieldEnum = void 0;
 const runtime = __importStar(require("@prisma/client/runtime/client"));
 /**
  * Prisma Errors
@@ -132,6 +132,8 @@ exports.ModelName = {
     DrugInteractionAlert: 'DrugInteractionAlert',
     Notification: 'Notification',
     AuditLog: 'AuditLog',
+    Permission: 'Permission',
+    RolePermission: 'RolePermission',
     Session: 'Session',
     Pharmacist: 'Pharmacist',
     MedicalReport: 'MedicalReport',
@@ -680,6 +682,19 @@ exports.AuditLogScalarFieldEnum = {
     ipAddress: 'ipAddress',
     userAgent: 'userAgent',
     createdAt: 'createdAt'
+};
+exports.PermissionScalarFieldEnum = {
+    id: 'id',
+    code: 'code',
+    name: 'name',
+    description: 'description',
+    adminOnly: 'adminOnly',
+    createdAt: 'createdAt'
+};
+exports.RolePermissionScalarFieldEnum = {
+    id: 'id',
+    role: 'role',
+    permissionId: 'permissionId'
 };
 exports.SessionScalarFieldEnum = {
     id: 'id',

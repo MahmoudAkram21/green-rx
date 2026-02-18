@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteChildProfile = exports.getChildProfiles = exports.addChildProfile = exports.deleteAllergy = exports.addAllergy = exports.updateLifestyle = exports.addFamilyHistory = exports.getMedicalHistories = exports.addMedicalHistory = exports.getPatientByUserId = exports.getPatientById = exports.createOrUpdatePatient = void 0;
+exports.deleteChildProfile = exports.getChildProfiles = exports.addChildProfile = exports.deleteAllergy = exports.addAllergy = exports.updateLifestyle = exports.addFamilyHistory = exports.getMedicalHistories = exports.addMedicalHistory = exports.getPatientByUserId = exports.getPatientById = exports.getAllPatients = exports.createOrUpdatePatient = void 0;
 const zod_1 = require("zod");
 const prisma_1 = require("../lib/prisma");
 const patient_zod_1 = require("../zod/patient.zod");
@@ -56,6 +56,43 @@ const createOrUpdatePatient = async (req, res, next) => {
     }
 };
 exports.createOrUpdatePatient = createOrUpdatePatient;
+// Get all patients (Admin/SuperAdmin only)
+const getAllPatients = async (req, res, next) => {
+    try {
+        const page = Math.max(1, parseInt(String(req.query.page)) || 1);
+        const limit = Math.min(100, Math.max(1, parseInt(String(req.query.limit)) || 20));
+        const search = typeof req.query.search === 'string' ? req.query.search.trim() : undefined;
+        const skip = (page - 1) * limit;
+        const where = search
+            ? { name: { contains: search, mode: 'insensitive' } }
+            : {};
+        const [patients, total] = await Promise.all([
+            prisma_1.prisma.patient.findMany({
+                where,
+                skip,
+                take: limit,
+                include: {
+                    user: { select: { email: true, role: true } }
+                },
+                orderBy: { id: 'asc' }
+            }),
+            prisma_1.prisma.patient.count({ where })
+        ]);
+        res.json({
+            patients,
+            pagination: {
+                total,
+                page,
+                limit,
+                totalPages: Math.ceil(total / limit)
+            }
+        });
+    }
+    catch (error) {
+        next(error);
+    }
+};
+exports.getAllPatients = getAllPatients;
 // Get Patient by ID
 const getPatientById = async (req, res, next) => {
     try {
@@ -117,12 +154,13 @@ const getPatientByUserId = async (req, res, next) => {
     }
 };
 exports.getPatientByUserId = getPatientByUserId;
-// Add Medical History Entry
+// Add Medical History Entry (accepts single object or array of objects)
 const addMedicalHistory = async (req, res, next) => {
     try {
         const { patientId } = req.params;
-        const validatedData = patient_zod_1.medicalHistorySchema.parse(req.body);
-        // Check if patient exists
+        const raw = req.body;
+        const items = Array.isArray(raw) ? raw : [raw];
+        const validatedItems = zod_1.z.array(patient_zod_1.medicalHistorySchema).parse(items);
         const patient = await prisma_1.prisma.patient.findUnique({
             where: { id: parseInt(patientId) }
         });
@@ -130,16 +168,24 @@ const addMedicalHistory = async (req, res, next) => {
             res.status(404).json({ error: 'Patient not found' });
             return;
         }
-        const medicalHistory = await prisma_1.prisma.medicalHistory.create({
-            data: {
-                patientId: parseInt(patientId),
-                ...validatedData,
-                diagnosisDate: validatedData.diagnosisDate ? new Date(validatedData.diagnosisDate) : undefined
-            }
-        });
+        if (validatedItems.length === 0) {
+            res.status(400).json({ error: 'At least one medical history entry is required' });
+            return;
+        }
+        const data = validatedItems.map((v) => ({
+            patientId: parseInt(patientId),
+            diseaseId: v.diseaseId,
+            severity: v.severity,
+            status: v.status,
+            diagnosisDate: v.diagnosisDate ? new Date(v.diagnosisDate) : undefined,
+            treatment: v.treatment,
+            notes: v.notes
+        }));
+        const medicalHistories = await prisma_1.prisma.medicalHistory.createManyAndReturn({ data });
         res.status(201).json({
-            message: 'Medical history added successfully',
-            medicalHistory
+            message: medicalHistories.length === 1 ? 'Medical history added successfully' : `${medicalHistories.length} medical history entries added successfully`,
+            count: medicalHistories.length,
+            medicalHistories
         });
     }
     catch (error) {
@@ -167,12 +213,13 @@ const getMedicalHistories = async (req, res, next) => {
     }
 };
 exports.getMedicalHistories = getMedicalHistories;
-// Add Family History Entry
+// Add Family History Entry (accepts single object or array of objects)
 const addFamilyHistory = async (req, res, next) => {
     try {
         const { patientId } = req.params;
-        const validatedData = patient_zod_1.familyHistorySchema.parse(req.body);
-        // Check if patient exists
+        const raw = req.body;
+        const items = Array.isArray(raw) ? raw : [raw];
+        const validatedItems = zod_1.z.array(patient_zod_1.familyHistorySchema).parse(items);
         const patient = await prisma_1.prisma.patient.findUnique({
             where: { id: parseInt(patientId) }
         });
@@ -180,15 +227,22 @@ const addFamilyHistory = async (req, res, next) => {
             res.status(404).json({ error: 'Patient not found' });
             return;
         }
-        const familyHistory = await prisma_1.prisma.familyHistory.create({
-            data: {
-                patientId: parseInt(patientId),
-                ...validatedData
-            }
-        });
+        if (validatedItems.length === 0) {
+            res.status(400).json({ error: 'At least one family history entry is required' });
+            return;
+        }
+        const data = validatedItems.map((v) => ({
+            patientId: parseInt(patientId),
+            relation: v.relation,
+            diseaseId: v.diseaseId,
+            severity: v.severity,
+            notes: v.notes
+        }));
+        const familyHistories = await prisma_1.prisma.familyHistory.createManyAndReturn({ data });
         res.status(201).json({
-            message: 'Family history added successfully',
-            familyHistory
+            message: familyHistories.length === 1 ? 'Family history added successfully' : `${familyHistories.length} family history entries added successfully`,
+            count: familyHistories.length,
+            familyHistories
         });
     }
     catch (error) {
@@ -297,12 +351,13 @@ const deleteAllergy = async (req, res, next) => {
     }
 };
 exports.deleteAllergy = deleteAllergy;
-// Add Child Profile
+// Add Child Profile (accepts single object or array of objects)
 const addChildProfile = async (req, res, next) => {
     try {
         const { patientId } = req.params;
-        const validatedData = patient_zod_1.childProfileSchema.parse(req.body);
-        // Check if patient exists
+        const raw = req.body;
+        const items = Array.isArray(raw) ? raw : [raw];
+        const validatedItems = zod_1.z.array(patient_zod_1.childProfileSchema).parse(items);
         const patient = await prisma_1.prisma.patient.findUnique({
             where: { id: parseInt(patientId) }
         });
@@ -310,16 +365,27 @@ const addChildProfile = async (req, res, next) => {
             res.status(404).json({ error: 'Patient not found' });
             return;
         }
-        const childProfile = await prisma_1.prisma.childProfile.create({
-            data: {
-                parentPatientId: parseInt(patientId),
-                ...validatedData,
-                dateOfBirth: new Date(validatedData.dateOfBirth)
-            }
-        });
+        if (validatedItems.length === 0) {
+            res.status(400).json({ error: 'At least one child profile is required' });
+            return;
+        }
+        const data = validatedItems.map((v) => ({
+            parentPatientId: parseInt(patientId),
+            name: v.name,
+            dateOfBirth: new Date(v.dateOfBirth),
+            gender: v.gender,
+            ageClassification: v.ageClassification,
+            weight: v.weight,
+            height: v.height,
+            allergies: v.allergies,
+            diseases: v.diseases,
+            medicalHistory: v.medicalHistory
+        }));
+        const childProfiles = await prisma_1.prisma.childProfile.createManyAndReturn({ data });
         res.status(201).json({
-            message: 'Child profile added successfully',
-            childProfile
+            message: childProfiles.length === 1 ? 'Child profile added successfully' : `${childProfiles.length} child profiles added successfully`,
+            count: childProfiles.length,
+            childProfiles
         });
     }
     catch (error) {

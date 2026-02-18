@@ -11,6 +11,7 @@ const router = express_1.default.Router();
 // All patient routes require authentication
 router.use(auth_middleware_1.authenticate);
 // Patient Profile
+router.get('/', (0, auth_middleware_1.authorize)([client_1.UserRole.Admin, client_1.UserRole.SuperAdmin]), patient_controller_1.getAllPatients);
 router.post('/', (0, auth_middleware_1.authorize)([client_1.UserRole.Patient, client_1.UserRole.Admin]), patient_controller_1.createOrUpdatePatient);
 router.get('/:id', patient_controller_1.getPatientById);
 router.get('/user/:userId', patient_controller_1.getPatientByUserId);

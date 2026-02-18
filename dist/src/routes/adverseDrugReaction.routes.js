@@ -14,9 +14,11 @@ router.get('/patient/:patientId', adverseDrugReaction_controller_1.default.getPa
 router.get('/drug/:drugType/:drugId', adverseDrugReaction_controller_1.default.getDrugADRs);
 // Get all ADRs (admin)
 router.get('/', adverseDrugReaction_controller_1.default.getAllADRs);
+// Get ADR statistics (must be before /:id)
+router.get('/statistics/summary', adverseDrugReaction_controller_1.default.getADRStatistics);
+// Get one ADR by ID (admin)
+router.get('/:id', adverseDrugReaction_controller_1.default.getADRById);
 // Update ADR
 router.patch('/:id', adverseDrugReaction_controller_1.default.updateADR);
-// Get ADR statistics
-router.get('/statistics/summary', adverseDrugReaction_controller_1.default.getADRStatistics);
 exports.default = router;
 //# sourceMappingURL=adverseDrugReaction.routes.js.map

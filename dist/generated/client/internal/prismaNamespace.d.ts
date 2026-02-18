@@ -259,6 +259,8 @@ export declare const ModelName: {
     readonly DrugInteractionAlert: "DrugInteractionAlert";
     readonly Notification: "Notification";
     readonly AuditLog: "AuditLog";
+    readonly Permission: "Permission";
+    readonly RolePermission: "RolePermission";
     readonly Session: "Session";
     readonly Pharmacist: "Pharmacist";
     readonly MedicalReport: "MedicalReport";
@@ -284,7 +286,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         omit: GlobalOmitOptions;
     };
     meta: {
-        modelProps: "user" | "pricingPlan" | "subscription" | "payment" | "patient" | "medicalHistory" | "familyHistory" | "lifestyle" | "allergy" | "doctor" | "patientDoctor" | "consultation" | "appointment" | "disease" | "patientDisease" | "diseaseWarningRule" | "activeSubstance" | "diseaseActiveSubstanceWarning" | "medicineAlternative" | "tradeName" | "company" | "contractingCompany" | "contractingCompanyTradeName" | "prescription" | "prescriptionVersion" | "drugInteractionAlert" | "notification" | "auditLog" | "session" | "pharmacist" | "medicalReport" | "patientShareLink" | "adverseDrugReaction" | "childProfile" | "rating" | "visit" | "contraindicationTermMapping" | "batchHistory" | "importHistory" | "medicineSuggestion" | "exportHistory";
+        modelProps: "user" | "pricingPlan" | "subscription" | "payment" | "patient" | "medicalHistory" | "familyHistory" | "lifestyle" | "allergy" | "doctor" | "patientDoctor" | "consultation" | "appointment" | "disease" | "patientDisease" | "diseaseWarningRule" | "activeSubstance" | "diseaseActiveSubstanceWarning" | "medicineAlternative" | "tradeName" | "company" | "contractingCompany" | "contractingCompanyTradeName" | "prescription" | "prescriptionVersion" | "drugInteractionAlert" | "notification" | "auditLog" | "permission" | "rolePermission" | "session" | "pharmacist" | "medicalReport" | "patientShareLink" | "adverseDrugReaction" | "childProfile" | "rating" | "visit" | "contraindicationTermMapping" | "batchHistory" | "importHistory" | "medicineSuggestion" | "exportHistory";
         txIsolationLevel: TransactionIsolationLevel;
     };
     model: {
@@ -2360,6 +2362,154 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
                 };
             };
         };
+        Permission: {
+            payload: Prisma.$PermissionPayload<ExtArgs>;
+            fields: Prisma.PermissionFieldRefs;
+            operations: {
+                findUnique: {
+                    args: Prisma.PermissionFindUniqueArgs<ExtArgs>;
+                    result: runtime.Types.Utils.PayloadToResult<Prisma.$PermissionPayload> | null;
+                };
+                findUniqueOrThrow: {
+                    args: Prisma.PermissionFindUniqueOrThrowArgs<ExtArgs>;
+                    result: runtime.Types.Utils.PayloadToResult<Prisma.$PermissionPayload>;
+                };
+                findFirst: {
+                    args: Prisma.PermissionFindFirstArgs<ExtArgs>;
+                    result: runtime.Types.Utils.PayloadToResult<Prisma.$PermissionPayload> | null;
+                };
+                findFirstOrThrow: {
+                    args: Prisma.PermissionFindFirstOrThrowArgs<ExtArgs>;
+                    result: runtime.Types.Utils.PayloadToResult<Prisma.$PermissionPayload>;
+                };
+                findMany: {
+                    args: Prisma.PermissionFindManyArgs<ExtArgs>;
+                    result: runtime.Types.Utils.PayloadToResult<Prisma.$PermissionPayload>[];
+                };
+                create: {
+                    args: Prisma.PermissionCreateArgs<ExtArgs>;
+                    result: runtime.Types.Utils.PayloadToResult<Prisma.$PermissionPayload>;
+                };
+                createMany: {
+                    args: Prisma.PermissionCreateManyArgs<ExtArgs>;
+                    result: BatchPayload;
+                };
+                createManyAndReturn: {
+                    args: Prisma.PermissionCreateManyAndReturnArgs<ExtArgs>;
+                    result: runtime.Types.Utils.PayloadToResult<Prisma.$PermissionPayload>[];
+                };
+                delete: {
+                    args: Prisma.PermissionDeleteArgs<ExtArgs>;
+                    result: runtime.Types.Utils.PayloadToResult<Prisma.$PermissionPayload>;
+                };
+                update: {
+                    args: Prisma.PermissionUpdateArgs<ExtArgs>;
+                    result: runtime.Types.Utils.PayloadToResult<Prisma.$PermissionPayload>;
+                };
+                deleteMany: {
+                    args: Prisma.PermissionDeleteManyArgs<ExtArgs>;
+                    result: BatchPayload;
+                };
+                updateMany: {
+                    args: Prisma.PermissionUpdateManyArgs<ExtArgs>;
+                    result: BatchPayload;
+                };
+                updateManyAndReturn: {
+                    args: Prisma.PermissionUpdateManyAndReturnArgs<ExtArgs>;
+                    result: runtime.Types.Utils.PayloadToResult<Prisma.$PermissionPayload>[];
+                };
+                upsert: {
+                    args: Prisma.PermissionUpsertArgs<ExtArgs>;
+                    result: runtime.Types.Utils.PayloadToResult<Prisma.$PermissionPayload>;
+                };
+                aggregate: {
+                    args: Prisma.PermissionAggregateArgs<ExtArgs>;
+                    result: runtime.Types.Utils.Optional<Prisma.AggregatePermission>;
+                };
+                groupBy: {
+                    args: Prisma.PermissionGroupByArgs<ExtArgs>;
+                    result: runtime.Types.Utils.Optional<Prisma.PermissionGroupByOutputType>[];
+                };
+                count: {
+                    args: Prisma.PermissionCountArgs<ExtArgs>;
+                    result: runtime.Types.Utils.Optional<Prisma.PermissionCountAggregateOutputType> | number;
+                };
+            };
+        };
+        RolePermission: {
+            payload: Prisma.$RolePermissionPayload<ExtArgs>;
+            fields: Prisma.RolePermissionFieldRefs;
+            operations: {
+                findUnique: {
+                    args: Prisma.RolePermissionFindUniqueArgs<ExtArgs>;
+                    result: runtime.Types.Utils.PayloadToResult<Prisma.$RolePermissionPayload> | null;
+                };
+                findUniqueOrThrow: {
+                    args: Prisma.RolePermissionFindUniqueOrThrowArgs<ExtArgs>;
+                    result: runtime.Types.Utils.PayloadToResult<Prisma.$RolePermissionPayload>;
+                };
+                findFirst: {
+                    args: Prisma.RolePermissionFindFirstArgs<ExtArgs>;
+                    result: runtime.Types.Utils.PayloadToResult<Prisma.$RolePermissionPayload> | null;
+                };
+                findFirstOrThrow: {
+                    args: Prisma.RolePermissionFindFirstOrThrowArgs<ExtArgs>;
+                    result: runtime.Types.Utils.PayloadToResult<Prisma.$RolePermissionPayload>;
+                };
+                findMany: {
+                    args: Prisma.RolePermissionFindManyArgs<ExtArgs>;
+                    result: runtime.Types.Utils.PayloadToResult<Prisma.$RolePermissionPayload>[];
+                };
+                create: {
+                    args: Prisma.RolePermissionCreateArgs<ExtArgs>;
+                    result: runtime.Types.Utils.PayloadToResult<Prisma.$RolePermissionPayload>;
+                };
+                createMany: {
+                    args: Prisma.RolePermissionCreateManyArgs<ExtArgs>;
+                    result: BatchPayload;
+                };
+                createManyAndReturn: {
+                    args: Prisma.RolePermissionCreateManyAndReturnArgs<ExtArgs>;
+                    result: runtime.Types.Utils.PayloadToResult<Prisma.$RolePermissionPayload>[];
+                };
+                delete: {
+                    args: Prisma.RolePermissionDeleteArgs<ExtArgs>;
+                    result: runtime.Types.Utils.PayloadToResult<Prisma.$RolePermissionPayload>;
+                };
+                update: {
+                    args: Prisma.RolePermissionUpdateArgs<ExtArgs>;
+                    result: runtime.Types.Utils.PayloadToResult<Prisma.$RolePermissionPayload>;
+                };
+                deleteMany: {
+                    args: Prisma.RolePermissionDeleteManyArgs<ExtArgs>;
+                    result: BatchPayload;
+                };
+                updateMany: {
+                    args: Prisma.RolePermissionUpdateManyArgs<ExtArgs>;
+                    result: BatchPayload;
+                };
+                updateManyAndReturn: {
+                    args: Prisma.RolePermissionUpdateManyAndReturnArgs<ExtArgs>;
+                    result: runtime.Types.Utils.PayloadToResult<Prisma.$RolePermissionPayload>[];
+                };
+                upsert: {
+                    args: Prisma.RolePermissionUpsertArgs<ExtArgs>;
+                    result: runtime.Types.Utils.PayloadToResult<Prisma.$RolePermissionPayload>;
+                };
+                aggregate: {
+                    args: Prisma.RolePermissionAggregateArgs<ExtArgs>;
+                    result: runtime.Types.Utils.Optional<Prisma.AggregateRolePermission>;
+                };
+                groupBy: {
+                    args: Prisma.RolePermissionGroupByArgs<ExtArgs>;
+                    result: runtime.Types.Utils.Optional<Prisma.RolePermissionGroupByOutputType>[];
+                };
+                count: {
+                    args: Prisma.RolePermissionCountArgs<ExtArgs>;
+                    result: runtime.Types.Utils.Optional<Prisma.RolePermissionCountAggregateOutputType> | number;
+                };
+            };
+        };
         Session: {
             payload: Prisma.$SessionPayload<ExtArgs>;
             fields: Prisma.SessionFieldRefs;
@@ -3910,6 +4060,21 @@ export declare const AuditLogScalarFieldEnum: {
     readonly createdAt: "createdAt";
 };
 export type AuditLogScalarFieldEnum = (typeof AuditLogScalarFieldEnum)[keyof typeof AuditLogScalarFieldEnum];
+export declare const PermissionScalarFieldEnum: {
+    readonly id: "id";
+    readonly code: "code";
+    readonly name: "name";
+    readonly description: "description";
+    readonly adminOnly: "adminOnly";
+    readonly createdAt: "createdAt";
+};
+export type PermissionScalarFieldEnum = (typeof PermissionScalarFieldEnum)[keyof typeof PermissionScalarFieldEnum];
+export declare const RolePermissionScalarFieldEnum: {
+    readonly id: "id";
+    readonly role: "role";
+    readonly permissionId: "permissionId";
+};
+export type RolePermissionScalarFieldEnum = (typeof RolePermissionScalarFieldEnum)[keyof typeof RolePermissionScalarFieldEnum];
 export declare const SessionScalarFieldEnum: {
     readonly id: "id";
     readonly userId: "userId";
@@ -4470,6 +4635,8 @@ export type GlobalOmitConfig = {
     drugInteractionAlert?: Prisma.DrugInteractionAlertOmit;
     notification?: Prisma.NotificationOmit;
     auditLog?: Prisma.AuditLogOmit;
+    permission?: Prisma.PermissionOmit;
+    rolePermission?: Prisma.RolePermissionOmit;
     session?: Prisma.SessionOmit;
     pharmacist?: Prisma.PharmacistOmit;
     medicalReport?: Prisma.MedicalReportOmit;
