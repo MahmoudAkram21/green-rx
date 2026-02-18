@@ -54,7 +54,7 @@ class AdminController {
             // Create audit log
             await prisma.auditLog.create({
                 data: {
-                    userId: (req as any).user?.id, // From auth middleware
+                    userId: (req as any).user?.userId,
                     action: 'DOCTOR_VERIFIED',
                     entityType: 'Doctor',
                     entityId: doctor.id,
@@ -94,8 +94,8 @@ class AdminController {
                 // Create audit log
                 await prisma.auditLog.create({
                     data: {
-                        userId: (req as any).user?.id,
-                        action: 'DOCTOR_REJECTED',
+userId: (req as any).user?.userId,
+                    action: 'DOCTOR_REJECTED',
                         entityType: 'Doctor',
                         entityId: doctor.id,
                         changes: { reason, rejectedAt: new Date() }
@@ -112,31 +112,55 @@ class AdminController {
     // Get system statistics
     async getStatistics(_req: Request, res: Response, next: NextFunction) {
         try {
+            const todayStart = new Date(new Date().setHours(0, 0, 0, 0));
+            const todayEnd = new Date(new Date().setHours(23, 59, 59, 999));
+
             const [
                 totalUsers,
                 totalDoctors,
                 verifiedDoctors,
+                totalPharmacists,
+                verifiedPharmacists,
                 totalPatients,
                 totalPrescriptions,
                 activePrescriptions,
                 totalAppointments,
-                todayAppointments
+                todayAppointments,
+                totalCompanies,
+                totalActiveSubstances,
+                totalTradeNames,
+                totalDiseases,
+                totalSubscriptions,
+                activeSubscriptions,
+                totalAdverseDrugReactions,
+                adrPendingReview,
+                totalConsultations,
+                medicineSuggestionsPending
             ] = await Promise.all([
                 prisma.user.count(),
                 prisma.doctor.count(),
                 prisma.doctor.count({ where: { isVerified: true } }),
+                prisma.pharmacist.count(),
+                prisma.pharmacist.count({ where: { isVerified: true } }),
                 prisma.patient.count(),
                 prisma.prescription.count(),
                 prisma.prescription.count({ where: { status: { in: ['Approved', 'Filled'] } } }),
                 prisma.appointment.count(),
                 prisma.appointment.count({
                     where: {
-                        appointmentDate: {
-                            gte: new Date(new Date().setHours(0, 0, 0, 0)),
-                            lt: new Date(new Date().setHours(23, 59, 59, 999))
-                        }
+                        appointmentDate: { gte: todayStart, lte: todayEnd }
                     }
-                })
+                }),
+                prisma.company.count(),
+                prisma.activeSubstance.count({ where: { isActive: true } }),
+                prisma.tradeName.count({ where: { isActive: true } }),
+                prisma.disease.count({ where: { isActive: true } }),
+                prisma.subscription.count(),
+                prisma.subscription.count({ where: { status: 'Active' } }),
+                prisma.adverseDrugReaction.count(),
+                prisma.adverseDrugReaction.count({ where: { status: 'Submitted' } }),
+                prisma.consultation.count(),
+                prisma.medicineSuggestion.count({ where: { status: 'Pending' } })
             ]);
 
             res.json({
@@ -146,6 +170,11 @@ class AdminController {
                     verified: verifiedDoctors,
                     pending: totalDoctors - verifiedDoctors
                 },
+                pharmacists: {
+                    total: totalPharmacists,
+                    verified: verifiedPharmacists,
+                    pending: totalPharmacists - verifiedPharmacists
+                },
                 patients: { total: totalPatients },
                 prescriptions: {
                     total: totalPrescriptions,
@@ -154,8 +183,114 @@ class AdminController {
                 appointments: {
                     total: totalAppointments,
                     today: todayAppointments
+                },
+                companies: { total: totalCompanies },
+                activeSubstances: { total: totalActiveSubstances },
+                tradeNames: { total: totalTradeNames },
+                diseases: { total: totalDiseases },
+                subscriptions: {
+                    total: totalSubscriptions,
+                    active: activeSubscriptions
+                },
+                adverseDrugReactions: {
+                    total: totalAdverseDrugReactions,
+                    pendingReview: adrPendingReview
+                },
+                consultations: { total: totalConsultations },
+                medicineSuggestions: { pending: medicineSuggestionsPending }
+            });
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    // Pharmacist verification
+    async getPendingPharmacists(_req: Request, res: Response, next: NextFunction) {
+        try {
+            const pending = await prisma.pharmacist.findMany({
+                where: { isVerified: false },
+                include: {
+                    user: {
+                        select: { id: true, email: true, createdAt: true }
+                    }
+                },
+                orderBy: { createdAt: 'desc' }
+            });
+            res.json(pending);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async verifyPharmacist(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { id } = req.params;
+            const { notes } = req.body;
+
+            const pharmacist = await prisma.pharmacist.update({
+                where: { id: Number(id) },
+                data: { isVerified: true, verifiedAt: new Date() },
+                include: { user: true }
+            });
+
+            await prisma.notification.create({
+                data: {
+                    userId: pharmacist.userId,
+                    type: 'SystemAlert',
+                    title: 'Account Verified',
+                    message: 'Your pharmacist account has been verified.',
+                    deliveryStatus: 'Pending'
                 }
             });
+
+            await prisma.auditLog.create({
+                data: {
+                    userId: (req as any).user?.userId,
+                    action: 'PHARMACIST_VERIFIED',
+                    entityType: 'Pharmacist',
+                    entityId: pharmacist.id,
+                    changes: { notes, verifiedAt: new Date() }
+                }
+            });
+
+            res.json(pharmacist);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async rejectPharmacist(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { id } = req.params;
+            const { reason } = req.body;
+
+            const pharmacist = await prisma.pharmacist.findUnique({
+                where: { id: Number(id) },
+                include: { user: true }
+            });
+
+            if (pharmacist) {
+                await prisma.notification.create({
+                    data: {
+                        userId: pharmacist.userId,
+                        type: 'SystemAlert',
+                        title: 'Verification Rejected',
+                        message: `Your verification was rejected. Reason: ${reason}`,
+                        deliveryStatus: 'Pending'
+                    }
+                });
+                await prisma.auditLog.create({
+                    data: {
+                        userId: (req as any).user?.userId,
+                        action: 'PHARMACIST_REJECTED',
+                        entityType: 'Pharmacist',
+                        entityId: pharmacist.id,
+                        changes: { reason, rejectedAt: new Date() }
+                    }
+                });
+            }
+
+            res.json({ message: 'Pharmacist verification rejected', reason });
         } catch (error) {
             next(error);
         }
