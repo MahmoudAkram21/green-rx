@@ -1,6 +1,7 @@
 import express from 'express';
 import {
     createTradeName,
+    listTradeNames,
     getTradeNameById,
     searchTradeNames,
     updateTradeName,
@@ -16,6 +17,7 @@ router.use(authenticate);
 
 // Trade Name CRUD
 router.post('/', authorize([UserRole.Admin, UserRole.SuperAdmin, UserRole.Company]), createTradeName);
+router.get('/', listTradeNames);
 router.get('/search', searchTradeNames);
 router.get('/:id', getTradeNameById);
 router.put('/:id', authorize([UserRole.Admin, UserRole.SuperAdmin, UserRole.Company]), updateTradeName);

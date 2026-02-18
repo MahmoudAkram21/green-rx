@@ -37,6 +37,41 @@ export const createTradeName = async (req: Request, res: Response, next: NextFun
     }
 };
 
+// List Trade Names (for dropdowns, PatientTest, etc.)
+export const listTradeNames = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { page = '1', limit = '100' } = req.query;
+        const pageNum = Math.max(1, parseInt(page as string) || 1);
+        const limitNum = Math.min(1000, Math.max(1, parseInt(limit as string) || 100));
+        const skip = (pageNum - 1) * limitNum;
+
+        const [tradeNames, total] = await Promise.all([
+            prisma.tradeName.findMany({
+                include: {
+                    activeSubstance: { select: { activeSubstance: true, id: true } },
+                    company: { select: { name: true, id: true } }
+                },
+                orderBy: { title: 'asc' },
+                skip,
+                take: limitNum
+            }),
+            prisma.tradeName.count()
+        ]);
+
+        res.json({
+            tradeNames,
+            pagination: {
+                total,
+                page: pageNum,
+                limit: limitNum,
+                totalPages: Math.ceil(total / limitNum) || 1
+            }
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
 // Get Trade Name by ID
 export const getTradeNameById = async (req: Request, res: Response, next: NextFunction) => {
     try {
