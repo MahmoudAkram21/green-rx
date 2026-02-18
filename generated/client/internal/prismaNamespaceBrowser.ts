@@ -81,6 +81,7 @@ export const ModelName = {
   AuditLog: 'AuditLog',
   Permission: 'Permission',
   RolePermission: 'RolePermission',
+  AppSetting: 'AppSetting',
   Session: 'Session',
   Pharmacist: 'Pharmacist',
   MedicalReport: 'MedicalReport',
@@ -769,6 +770,17 @@ export const RolePermissionScalarFieldEnum = {
 } as const
 
 export type RolePermissionScalarFieldEnum = (typeof RolePermissionScalarFieldEnum)[keyof typeof RolePermissionScalarFieldEnum]
+
+
+export const AppSettingScalarFieldEnum = {
+  id: 'id',
+  key: 'key',
+  valueBytes: 'valueBytes',
+  contentType: 'contentType',
+  updatedAt: 'updatedAt'
+} as const
+
+export type AppSettingScalarFieldEnum = (typeof AppSettingScalarFieldEnum)[keyof typeof AppSettingScalarFieldEnum]
 
 
 export const SessionScalarFieldEnum = {

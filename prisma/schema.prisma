@@ -1073,6 +1073,20 @@ model RolePermission {
   @@map("role_permissions")
 }
 
+// ============================================
+// APP SETTINGS (e.g. logo stored in backend)
+// ============================================
+
+model AppSetting {
+  id          Int       @id @default(autoincrement())
+  key         String    @unique // e.g. "logo"
+  valueBytes  Bytes?    // binary value (e.g. logo image)
+  contentType String?   // e.g. "image/png", "image/svg+xml"
+  updatedAt   DateTime  @updatedAt
+
+  @@map("app_settings")
+}
+
 model Session {
   id           Int      @id @default(autoincrement())
   userId       Int

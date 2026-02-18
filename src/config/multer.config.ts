@@ -46,6 +46,22 @@ export const upload = multer({
     }
 });
 
+// Memory storage for logo (saved to DB)
+const memoryStorage = multer.memoryStorage();
+const logoFileFilter: multer.Options['fileFilter'] = (_req, file, cb) => {
+    const allowed = ['image/png', 'image/jpeg', 'image/gif', 'image/webp', 'image/svg+xml'];
+    if (file.mimetype && allowed.includes(file.mimetype)) {
+        cb(null, true);
+    } else {
+        cb(new Error('Only image files (PNG, JPEG, GIF, WebP, SVG) are allowed'));
+    }
+};
+export const uploadLogo = multer({
+    storage: memoryStorage,
+    fileFilter: logoFileFilter,
+    limits: { fileSize: 2 * 1024 * 1024 } // 2MB
+});
+
 // Cleanup utility - delete file after processing
 export const cleanupFile = (filePath: string) => {
     if (fs.existsSync(filePath)) {

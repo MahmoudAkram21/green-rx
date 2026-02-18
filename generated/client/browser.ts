@@ -168,6 +168,11 @@ export type Permission = Prisma.PermissionModel
  */
 export type RolePermission = Prisma.RolePermissionModel
 /**
+ * Model AppSetting
+ * 
+ */
+export type AppSetting = Prisma.AppSettingModel
+/**
  * Model Session
  * 
  */

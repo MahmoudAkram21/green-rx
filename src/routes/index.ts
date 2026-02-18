@@ -33,6 +33,7 @@ import patientShareLinkRoutes from './patientShareLink.routes';
 import patientDiseaseRoutes from './patientDisease.routes';
 import diseaseWarningRuleRoutes from './diseaseWarningRule.routes';
 import medicineSuggestionRoutes from './medicineSuggestion.routes';
+import settingsRoutes from './settings.routes';
 
 // Mount routes
 router.use('/auth', authRoutes);
@@ -66,6 +67,7 @@ router.use('/share-links', patientShareLinkRoutes);
 router.use('/patient-diseases', patientDiseaseRoutes);
 router.use('/disease-warning-rules', diseaseWarningRuleRoutes);
 router.use('/medicine-suggestions', medicineSuggestionRoutes);
+router.use('/settings', settingsRoutes);
 
 // Example route
 router.get('/', (_req: Request, res: Response) => {
