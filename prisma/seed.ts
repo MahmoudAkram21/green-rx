@@ -81,6 +81,9 @@ async function main() {
           email: "contact@pfizer.com",
           website: "https://www.pfizer.com",
         },
+        address: "235 East 42nd Street",
+        governorate: "New York",
+        country: "USA",
       },
     }),
     prisma.company.create({
@@ -91,6 +94,9 @@ async function main() {
           email: "info@novartis.com",
           website: "https://www.novartis.com",
         },
+        address: "Lichtstrasse 35",
+        governorate: "Basel-Stadt",
+        country: "Switzerland",
       },
     }),
     prisma.company.create({
@@ -101,6 +107,9 @@ async function main() {
           email: "contact@gsk.com",
           website: "https://www.gsk.com",
         },
+        address: "980 Great West Road",
+        governorate: "Brentford",
+        country: "United Kingdom",
       },
     }),
     prisma.company.create({
@@ -111,6 +120,9 @@ async function main() {
           email: "info@sanofi.com",
           website: "https://www.sanofi.com",
         },
+        address: "54 Rue La Boétie",
+        governorate: "Paris",
+        country: "France",
       },
     }),
     prisma.company.create({
@@ -121,6 +133,9 @@ async function main() {
           email: "contact@roche.com",
           website: "https://www.roche.com",
         },
+        address: "Grenzacherstrasse 124",
+        governorate: "Basel",
+        country: "Switzerland",
       },
     }),
   ]);
@@ -678,6 +693,7 @@ async function main() {
           name: "Alice Cooper",
           age: 45,
           ageClassification: "Adults",
+          dateOfBirth: new Date("1979-05-15"),
           weight: 70.5,
           height: 165,
           gender: "Female",
@@ -702,6 +718,7 @@ async function main() {
           name: "Bob Martinez",
           age: 62,
           ageClassification: "Elderly",
+          dateOfBirth: new Date("1962-08-22"),
           weight: 85.0,
           height: 178,
           gender: "Male",
@@ -726,11 +743,14 @@ async function main() {
           name: "Carol White",
           age: 28,
           ageClassification: "Adults",
+          dateOfBirth: new Date("1996-03-10"),
           weight: 62.0,
           height: 160,
           gender: "Female",
           smoking: false,
           pregnancyWarning: true,
+          pregnancyStatus: true,
+          trimester: 2,
           lactation: false,
           profileCompleteness: 90,
         },
@@ -750,6 +770,7 @@ async function main() {
           name: "David Lee",
           age: 35,
           ageClassification: "Adults",
+          dateOfBirth: new Date("1989-11-01"),
           weight: 78.5,
           height: 175,
           gender: "Male",
@@ -774,6 +795,7 @@ async function main() {
           name: "Emma Thompson",
           age: 8,
           ageClassification: "Children",
+          dateOfBirth: new Date("2016-07-20"),
           weight: 25.0,
           height: 125,
           gender: "Female",
@@ -1155,12 +1177,13 @@ async function main() {
     ],
   });
 
-  // Allergies for all patients
+  // Allergies for all patients (allergenType: Drug | Food per RMMSY spec)
   await prisma.allergy.createMany({
     data: [
       {
         patientId: patients[0].id,
         allergen: "Penicillin",
+        allergenType: "Drug",
         severity: "Severe",
         reactionType: "Anaphylaxis",
         notes: "Avoid all penicillin derivatives. Use alternative antibiotics.",
@@ -1168,6 +1191,7 @@ async function main() {
       {
         patientId: patients[0].id,
         allergen: "Sulfa drugs",
+        allergenType: "Drug",
         severity: "Moderate",
         reactionType: "Rash",
         notes: "Mild rash, avoid sulfonamides",
@@ -1182,6 +1206,7 @@ async function main() {
       {
         patientId: patients[2].id,
         allergen: "Shellfish",
+        allergenType: "Food",
         severity: "Moderate",
         reactionType: "Urticaria",
         notes: "Hives and swelling",
@@ -1201,6 +1226,7 @@ async function main() {
       {
         patientId: patients[4].id,
         allergen: "Peanuts",
+        allergenType: "Food",
         severity: "Severe",
         reactionType: "Anaphylaxis",
         notes: "Life-threatening, carry epinephrine",
@@ -2145,7 +2171,7 @@ async function main() {
   console.log(`     • Lifestyle data, child profiles`);
   console.log(`     • Consultations, visits, medical reports`);
   console.log(`     • Adverse drug reactions, share links, ratings`);
-  console.log("\n🔑 Test Credentials:");
+  console.log("\n🔑 RMMSY - Test Credentials:");
   console.log("   SuperAdmin: superadmin@greenrx.com / Password@123");
   console.log("   Admin:      admin1@greenrx.com / Password@123");
   console.log("   Doctor:     dr.smith@greenrx.com / Password@123");

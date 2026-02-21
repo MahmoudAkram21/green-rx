@@ -1,7 +1,7 @@
 /**
  * Logger config using the "log" package.
  * Use LOG_LEVEL to control verbosity (debug | info | notice | warning | error).
- * Namespace: green-rx (for filtering in logs).
+ * Namespace: rmmsy (for filtering in logs).
  */
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const rootLog = require('log') as {
@@ -15,7 +15,7 @@ const rootLog = require('log') as {
   };
 };
 
-const logger = rootLog.get('green-rx');
+const logger = rootLog.get('rmmsy');
 
 export default logger;
 

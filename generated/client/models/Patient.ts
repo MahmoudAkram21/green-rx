@@ -32,6 +32,7 @@ export type PatientAvgAggregateOutputType = {
   age: number | null
   weight: runtime.Decimal | null
   height: runtime.Decimal | null
+  trimester: number | null
   profileCompleteness: number | null
 }
 
@@ -41,6 +42,7 @@ export type PatientSumAggregateOutputType = {
   age: number | null
   weight: runtime.Decimal | null
   height: runtime.Decimal | null
+  trimester: number | null
   profileCompleteness: number | null
 }
 
@@ -50,11 +52,14 @@ export type PatientMinAggregateOutputType = {
   name: string | null
   age: number | null
   ageClassification: $Enums.AgeClassification | null
+  dateOfBirth: Date | null
   weight: runtime.Decimal | null
   height: runtime.Decimal | null
   gender: $Enums.Gender | null
   smoking: boolean | null
   pregnancyWarning: boolean | null
+  pregnancyStatus: boolean | null
+  trimester: number | null
   lactation: boolean | null
   profileCompleteness: number | null
   createdAt: Date | null
@@ -68,11 +73,14 @@ export type PatientMaxAggregateOutputType = {
   name: string | null
   age: number | null
   ageClassification: $Enums.AgeClassification | null
+  dateOfBirth: Date | null
   weight: runtime.Decimal | null
   height: runtime.Decimal | null
   gender: $Enums.Gender | null
   smoking: boolean | null
   pregnancyWarning: boolean | null
+  pregnancyStatus: boolean | null
+  trimester: number | null
   lactation: boolean | null
   profileCompleteness: number | null
   createdAt: Date | null
@@ -86,11 +94,14 @@ export type PatientCountAggregateOutputType = {
   name: number
   age: number
   ageClassification: number
+  dateOfBirth: number
   weight: number
   height: number
   gender: number
   smoking: number
   pregnancyWarning: number
+  pregnancyStatus: number
+  trimester: number
   lactation: number
   profileCompleteness: number
   createdAt: number
@@ -106,6 +117,7 @@ export type PatientAvgAggregateInputType = {
   age?: true
   weight?: true
   height?: true
+  trimester?: true
   profileCompleteness?: true
 }
 
@@ -115,6 +127,7 @@ export type PatientSumAggregateInputType = {
   age?: true
   weight?: true
   height?: true
+  trimester?: true
   profileCompleteness?: true
 }
 
@@ -124,11 +137,14 @@ export type PatientMinAggregateInputType = {
   name?: true
   age?: true
   ageClassification?: true
+  dateOfBirth?: true
   weight?: true
   height?: true
   gender?: true
   smoking?: true
   pregnancyWarning?: true
+  pregnancyStatus?: true
+  trimester?: true
   lactation?: true
   profileCompleteness?: true
   createdAt?: true
@@ -142,11 +158,14 @@ export type PatientMaxAggregateInputType = {
   name?: true
   age?: true
   ageClassification?: true
+  dateOfBirth?: true
   weight?: true
   height?: true
   gender?: true
   smoking?: true
   pregnancyWarning?: true
+  pregnancyStatus?: true
+  trimester?: true
   lactation?: true
   profileCompleteness?: true
   createdAt?: true
@@ -160,11 +179,14 @@ export type PatientCountAggregateInputType = {
   name?: true
   age?: true
   ageClassification?: true
+  dateOfBirth?: true
   weight?: true
   height?: true
   gender?: true
   smoking?: true
   pregnancyWarning?: true
+  pregnancyStatus?: true
+  trimester?: true
   lactation?: true
   profileCompleteness?: true
   createdAt?: true
@@ -265,11 +287,14 @@ export type PatientGroupByOutputType = {
   name: string
   age: number
   ageClassification: $Enums.AgeClassification
+  dateOfBirth: Date | null
   weight: runtime.Decimal | null
   height: runtime.Decimal | null
   gender: $Enums.Gender
   smoking: boolean
   pregnancyWarning: boolean
+  pregnancyStatus: boolean | null
+  trimester: number | null
   lactation: boolean
   profileCompleteness: number
   createdAt: Date
@@ -306,11 +331,14 @@ export type PatientWhereInput = {
   name?: Prisma.StringFilter<"Patient"> | string
   age?: Prisma.IntFilter<"Patient"> | number
   ageClassification?: Prisma.EnumAgeClassificationFilter<"Patient"> | $Enums.AgeClassification
+  dateOfBirth?: Prisma.DateTimeNullableFilter<"Patient"> | Date | string | null
   weight?: Prisma.DecimalNullableFilter<"Patient"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   height?: Prisma.DecimalNullableFilter<"Patient"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   gender?: Prisma.EnumGenderFilter<"Patient"> | $Enums.Gender
   smoking?: Prisma.BoolFilter<"Patient"> | boolean
   pregnancyWarning?: Prisma.BoolFilter<"Patient"> | boolean
+  pregnancyStatus?: Prisma.BoolNullableFilter<"Patient"> | boolean | null
+  trimester?: Prisma.IntNullableFilter<"Patient"> | number | null
   lactation?: Prisma.BoolFilter<"Patient"> | boolean
   profileCompleteness?: Prisma.IntFilter<"Patient"> | number
   createdAt?: Prisma.DateTimeFilter<"Patient"> | Date | string
@@ -340,11 +368,14 @@ export type PatientOrderByWithRelationInput = {
   name?: Prisma.SortOrder
   age?: Prisma.SortOrder
   ageClassification?: Prisma.SortOrder
+  dateOfBirth?: Prisma.SortOrderInput | Prisma.SortOrder
   weight?: Prisma.SortOrderInput | Prisma.SortOrder
   height?: Prisma.SortOrderInput | Prisma.SortOrder
   gender?: Prisma.SortOrder
   smoking?: Prisma.SortOrder
   pregnancyWarning?: Prisma.SortOrder
+  pregnancyStatus?: Prisma.SortOrderInput | Prisma.SortOrder
+  trimester?: Prisma.SortOrderInput | Prisma.SortOrder
   lactation?: Prisma.SortOrder
   profileCompleteness?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -377,11 +408,14 @@ export type PatientWhereUniqueInput = Prisma.AtLeast<{
   name?: Prisma.StringFilter<"Patient"> | string
   age?: Prisma.IntFilter<"Patient"> | number
   ageClassification?: Prisma.EnumAgeClassificationFilter<"Patient"> | $Enums.AgeClassification
+  dateOfBirth?: Prisma.DateTimeNullableFilter<"Patient"> | Date | string | null
   weight?: Prisma.DecimalNullableFilter<"Patient"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   height?: Prisma.DecimalNullableFilter<"Patient"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   gender?: Prisma.EnumGenderFilter<"Patient"> | $Enums.Gender
   smoking?: Prisma.BoolFilter<"Patient"> | boolean
   pregnancyWarning?: Prisma.BoolFilter<"Patient"> | boolean
+  pregnancyStatus?: Prisma.BoolNullableFilter<"Patient"> | boolean | null
+  trimester?: Prisma.IntNullableFilter<"Patient"> | number | null
   lactation?: Prisma.BoolFilter<"Patient"> | boolean
   profileCompleteness?: Prisma.IntFilter<"Patient"> | number
   createdAt?: Prisma.DateTimeFilter<"Patient"> | Date | string
@@ -411,11 +445,14 @@ export type PatientOrderByWithAggregationInput = {
   name?: Prisma.SortOrder
   age?: Prisma.SortOrder
   ageClassification?: Prisma.SortOrder
+  dateOfBirth?: Prisma.SortOrderInput | Prisma.SortOrder
   weight?: Prisma.SortOrderInput | Prisma.SortOrder
   height?: Prisma.SortOrderInput | Prisma.SortOrder
   gender?: Prisma.SortOrder
   smoking?: Prisma.SortOrder
   pregnancyWarning?: Prisma.SortOrder
+  pregnancyStatus?: Prisma.SortOrderInput | Prisma.SortOrder
+  trimester?: Prisma.SortOrderInput | Prisma.SortOrder
   lactation?: Prisma.SortOrder
   profileCompleteness?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -437,11 +474,14 @@ export type PatientScalarWhereWithAggregatesInput = {
   name?: Prisma.StringWithAggregatesFilter<"Patient"> | string
   age?: Prisma.IntWithAggregatesFilter<"Patient"> | number
   ageClassification?: Prisma.EnumAgeClassificationWithAggregatesFilter<"Patient"> | $Enums.AgeClassification
+  dateOfBirth?: Prisma.DateTimeNullableWithAggregatesFilter<"Patient"> | Date | string | null
   weight?: Prisma.DecimalNullableWithAggregatesFilter<"Patient"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   height?: Prisma.DecimalNullableWithAggregatesFilter<"Patient"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   gender?: Prisma.EnumGenderWithAggregatesFilter<"Patient"> | $Enums.Gender
   smoking?: Prisma.BoolWithAggregatesFilter<"Patient"> | boolean
   pregnancyWarning?: Prisma.BoolWithAggregatesFilter<"Patient"> | boolean
+  pregnancyStatus?: Prisma.BoolNullableWithAggregatesFilter<"Patient"> | boolean | null
+  trimester?: Prisma.IntNullableWithAggregatesFilter<"Patient"> | number | null
   lactation?: Prisma.BoolWithAggregatesFilter<"Patient"> | boolean
   profileCompleteness?: Prisma.IntWithAggregatesFilter<"Patient"> | number
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Patient"> | Date | string
@@ -453,11 +493,14 @@ export type PatientCreateInput = {
   name: string
   age: number
   ageClassification: $Enums.AgeClassification
+  dateOfBirth?: Date | string | null
   weight?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   height?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   gender: $Enums.Gender
   smoking?: boolean
   pregnancyWarning?: boolean
+  pregnancyStatus?: boolean | null
+  trimester?: number | null
   lactation?: boolean
   profileCompleteness?: number
   createdAt?: Date | string
@@ -487,11 +530,14 @@ export type PatientUncheckedCreateInput = {
   name: string
   age: number
   ageClassification: $Enums.AgeClassification
+  dateOfBirth?: Date | string | null
   weight?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   height?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   gender: $Enums.Gender
   smoking?: boolean
   pregnancyWarning?: boolean
+  pregnancyStatus?: boolean | null
+  trimester?: number | null
   lactation?: boolean
   profileCompleteness?: number
   createdAt?: Date | string
@@ -518,11 +564,14 @@ export type PatientUpdateInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   age?: Prisma.IntFieldUpdateOperationsInput | number
   ageClassification?: Prisma.EnumAgeClassificationFieldUpdateOperationsInput | $Enums.AgeClassification
+  dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   weight?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   height?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender
   smoking?: Prisma.BoolFieldUpdateOperationsInput | boolean
   pregnancyWarning?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pregnancyStatus?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  trimester?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   lactation?: Prisma.BoolFieldUpdateOperationsInput | boolean
   profileCompleteness?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -552,11 +601,14 @@ export type PatientUncheckedUpdateInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   age?: Prisma.IntFieldUpdateOperationsInput | number
   ageClassification?: Prisma.EnumAgeClassificationFieldUpdateOperationsInput | $Enums.AgeClassification
+  dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   weight?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   height?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender
   smoking?: Prisma.BoolFieldUpdateOperationsInput | boolean
   pregnancyWarning?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pregnancyStatus?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  trimester?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   lactation?: Prisma.BoolFieldUpdateOperationsInput | boolean
   profileCompleteness?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -585,11 +637,14 @@ export type PatientCreateManyInput = {
   name: string
   age: number
   ageClassification: $Enums.AgeClassification
+  dateOfBirth?: Date | string | null
   weight?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   height?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   gender: $Enums.Gender
   smoking?: boolean
   pregnancyWarning?: boolean
+  pregnancyStatus?: boolean | null
+  trimester?: number | null
   lactation?: boolean
   profileCompleteness?: number
   createdAt?: Date | string
@@ -601,11 +656,14 @@ export type PatientUpdateManyMutationInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   age?: Prisma.IntFieldUpdateOperationsInput | number
   ageClassification?: Prisma.EnumAgeClassificationFieldUpdateOperationsInput | $Enums.AgeClassification
+  dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   weight?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   height?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender
   smoking?: Prisma.BoolFieldUpdateOperationsInput | boolean
   pregnancyWarning?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pregnancyStatus?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  trimester?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   lactation?: Prisma.BoolFieldUpdateOperationsInput | boolean
   profileCompleteness?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -619,11 +677,14 @@ export type PatientUncheckedUpdateManyInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   age?: Prisma.IntFieldUpdateOperationsInput | number
   ageClassification?: Prisma.EnumAgeClassificationFieldUpdateOperationsInput | $Enums.AgeClassification
+  dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   weight?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   height?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender
   smoking?: Prisma.BoolFieldUpdateOperationsInput | boolean
   pregnancyWarning?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pregnancyStatus?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  trimester?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   lactation?: Prisma.BoolFieldUpdateOperationsInput | boolean
   profileCompleteness?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -642,11 +703,14 @@ export type PatientCountOrderByAggregateInput = {
   name?: Prisma.SortOrder
   age?: Prisma.SortOrder
   ageClassification?: Prisma.SortOrder
+  dateOfBirth?: Prisma.SortOrder
   weight?: Prisma.SortOrder
   height?: Prisma.SortOrder
   gender?: Prisma.SortOrder
   smoking?: Prisma.SortOrder
   pregnancyWarning?: Prisma.SortOrder
+  pregnancyStatus?: Prisma.SortOrder
+  trimester?: Prisma.SortOrder
   lactation?: Prisma.SortOrder
   profileCompleteness?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -660,6 +724,7 @@ export type PatientAvgOrderByAggregateInput = {
   age?: Prisma.SortOrder
   weight?: Prisma.SortOrder
   height?: Prisma.SortOrder
+  trimester?: Prisma.SortOrder
   profileCompleteness?: Prisma.SortOrder
 }
 
@@ -669,11 +734,14 @@ export type PatientMaxOrderByAggregateInput = {
   name?: Prisma.SortOrder
   age?: Prisma.SortOrder
   ageClassification?: Prisma.SortOrder
+  dateOfBirth?: Prisma.SortOrder
   weight?: Prisma.SortOrder
   height?: Prisma.SortOrder
   gender?: Prisma.SortOrder
   smoking?: Prisma.SortOrder
   pregnancyWarning?: Prisma.SortOrder
+  pregnancyStatus?: Prisma.SortOrder
+  trimester?: Prisma.SortOrder
   lactation?: Prisma.SortOrder
   profileCompleteness?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -687,11 +755,14 @@ export type PatientMinOrderByAggregateInput = {
   name?: Prisma.SortOrder
   age?: Prisma.SortOrder
   ageClassification?: Prisma.SortOrder
+  dateOfBirth?: Prisma.SortOrder
   weight?: Prisma.SortOrder
   height?: Prisma.SortOrder
   gender?: Prisma.SortOrder
   smoking?: Prisma.SortOrder
   pregnancyWarning?: Prisma.SortOrder
+  pregnancyStatus?: Prisma.SortOrder
+  trimester?: Prisma.SortOrder
   lactation?: Prisma.SortOrder
   profileCompleteness?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -705,6 +776,7 @@ export type PatientSumOrderByAggregateInput = {
   age?: Prisma.SortOrder
   weight?: Prisma.SortOrder
   height?: Prisma.SortOrder
+  trimester?: Prisma.SortOrder
   profileCompleteness?: Prisma.SortOrder
 }
 
@@ -751,6 +823,18 @@ export type EnumAgeClassificationFieldUpdateOperationsInput = {
 
 export type EnumGenderFieldUpdateOperationsInput = {
   set?: $Enums.Gender
+}
+
+export type NullableBoolFieldUpdateOperationsInput = {
+  set?: boolean | null
+}
+
+export type NullableIntFieldUpdateOperationsInput = {
+  set?: number | null
+  increment?: number
+  decrement?: number
+  multiply?: number
+  divide?: number
 }
 
 export type PatientCreateNestedOneWithoutMedicalHistoriesInput = {
@@ -969,11 +1053,14 @@ export type PatientCreateWithoutUserInput = {
   name: string
   age: number
   ageClassification: $Enums.AgeClassification
+  dateOfBirth?: Date | string | null
   weight?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   height?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   gender: $Enums.Gender
   smoking?: boolean
   pregnancyWarning?: boolean
+  pregnancyStatus?: boolean | null
+  trimester?: number | null
   lactation?: boolean
   profileCompleteness?: number
   createdAt?: Date | string
@@ -1001,11 +1088,14 @@ export type PatientUncheckedCreateWithoutUserInput = {
   name: string
   age: number
   ageClassification: $Enums.AgeClassification
+  dateOfBirth?: Date | string | null
   weight?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   height?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   gender: $Enums.Gender
   smoking?: boolean
   pregnancyWarning?: boolean
+  pregnancyStatus?: boolean | null
+  trimester?: number | null
   lactation?: boolean
   profileCompleteness?: number
   createdAt?: Date | string
@@ -1048,11 +1138,14 @@ export type PatientUpdateWithoutUserInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   age?: Prisma.IntFieldUpdateOperationsInput | number
   ageClassification?: Prisma.EnumAgeClassificationFieldUpdateOperationsInput | $Enums.AgeClassification
+  dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   weight?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   height?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender
   smoking?: Prisma.BoolFieldUpdateOperationsInput | boolean
   pregnancyWarning?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pregnancyStatus?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  trimester?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   lactation?: Prisma.BoolFieldUpdateOperationsInput | boolean
   profileCompleteness?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1080,11 +1173,14 @@ export type PatientUncheckedUpdateWithoutUserInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   age?: Prisma.IntFieldUpdateOperationsInput | number
   ageClassification?: Prisma.EnumAgeClassificationFieldUpdateOperationsInput | $Enums.AgeClassification
+  dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   weight?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   height?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender
   smoking?: Prisma.BoolFieldUpdateOperationsInput | boolean
   pregnancyWarning?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pregnancyStatus?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  trimester?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   lactation?: Prisma.BoolFieldUpdateOperationsInput | boolean
   profileCompleteness?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1111,11 +1207,14 @@ export type PatientCreateWithoutMedicalHistoriesInput = {
   name: string
   age: number
   ageClassification: $Enums.AgeClassification
+  dateOfBirth?: Date | string | null
   weight?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   height?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   gender: $Enums.Gender
   smoking?: boolean
   pregnancyWarning?: boolean
+  pregnancyStatus?: boolean | null
+  trimester?: number | null
   lactation?: boolean
   profileCompleteness?: number
   createdAt?: Date | string
@@ -1144,11 +1243,14 @@ export type PatientUncheckedCreateWithoutMedicalHistoriesInput = {
   name: string
   age: number
   ageClassification: $Enums.AgeClassification
+  dateOfBirth?: Date | string | null
   weight?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   height?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   gender: $Enums.Gender
   smoking?: boolean
   pregnancyWarning?: boolean
+  pregnancyStatus?: boolean | null
+  trimester?: number | null
   lactation?: boolean
   profileCompleteness?: number
   createdAt?: Date | string
@@ -1190,11 +1292,14 @@ export type PatientUpdateWithoutMedicalHistoriesInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   age?: Prisma.IntFieldUpdateOperationsInput | number
   ageClassification?: Prisma.EnumAgeClassificationFieldUpdateOperationsInput | $Enums.AgeClassification
+  dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   weight?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   height?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender
   smoking?: Prisma.BoolFieldUpdateOperationsInput | boolean
   pregnancyWarning?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pregnancyStatus?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  trimester?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   lactation?: Prisma.BoolFieldUpdateOperationsInput | boolean
   profileCompleteness?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1223,11 +1328,14 @@ export type PatientUncheckedUpdateWithoutMedicalHistoriesInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   age?: Prisma.IntFieldUpdateOperationsInput | number
   ageClassification?: Prisma.EnumAgeClassificationFieldUpdateOperationsInput | $Enums.AgeClassification
+  dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   weight?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   height?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender
   smoking?: Prisma.BoolFieldUpdateOperationsInput | boolean
   pregnancyWarning?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pregnancyStatus?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  trimester?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   lactation?: Prisma.BoolFieldUpdateOperationsInput | boolean
   profileCompleteness?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1253,11 +1361,14 @@ export type PatientCreateWithoutFamilyHistoriesInput = {
   name: string
   age: number
   ageClassification: $Enums.AgeClassification
+  dateOfBirth?: Date | string | null
   weight?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   height?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   gender: $Enums.Gender
   smoking?: boolean
   pregnancyWarning?: boolean
+  pregnancyStatus?: boolean | null
+  trimester?: number | null
   lactation?: boolean
   profileCompleteness?: number
   createdAt?: Date | string
@@ -1286,11 +1397,14 @@ export type PatientUncheckedCreateWithoutFamilyHistoriesInput = {
   name: string
   age: number
   ageClassification: $Enums.AgeClassification
+  dateOfBirth?: Date | string | null
   weight?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   height?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   gender: $Enums.Gender
   smoking?: boolean
   pregnancyWarning?: boolean
+  pregnancyStatus?: boolean | null
+  trimester?: number | null
   lactation?: boolean
   profileCompleteness?: number
   createdAt?: Date | string
@@ -1332,11 +1446,14 @@ export type PatientUpdateWithoutFamilyHistoriesInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   age?: Prisma.IntFieldUpdateOperationsInput | number
   ageClassification?: Prisma.EnumAgeClassificationFieldUpdateOperationsInput | $Enums.AgeClassification
+  dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   weight?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   height?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender
   smoking?: Prisma.BoolFieldUpdateOperationsInput | boolean
   pregnancyWarning?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pregnancyStatus?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  trimester?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   lactation?: Prisma.BoolFieldUpdateOperationsInput | boolean
   profileCompleteness?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1365,11 +1482,14 @@ export type PatientUncheckedUpdateWithoutFamilyHistoriesInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   age?: Prisma.IntFieldUpdateOperationsInput | number
   ageClassification?: Prisma.EnumAgeClassificationFieldUpdateOperationsInput | $Enums.AgeClassification
+  dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   weight?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   height?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender
   smoking?: Prisma.BoolFieldUpdateOperationsInput | boolean
   pregnancyWarning?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pregnancyStatus?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  trimester?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   lactation?: Prisma.BoolFieldUpdateOperationsInput | boolean
   profileCompleteness?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1395,11 +1515,14 @@ export type PatientCreateWithoutLifestyleInput = {
   name: string
   age: number
   ageClassification: $Enums.AgeClassification
+  dateOfBirth?: Date | string | null
   weight?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   height?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   gender: $Enums.Gender
   smoking?: boolean
   pregnancyWarning?: boolean
+  pregnancyStatus?: boolean | null
+  trimester?: number | null
   lactation?: boolean
   profileCompleteness?: number
   createdAt?: Date | string
@@ -1428,11 +1551,14 @@ export type PatientUncheckedCreateWithoutLifestyleInput = {
   name: string
   age: number
   ageClassification: $Enums.AgeClassification
+  dateOfBirth?: Date | string | null
   weight?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   height?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   gender: $Enums.Gender
   smoking?: boolean
   pregnancyWarning?: boolean
+  pregnancyStatus?: boolean | null
+  trimester?: number | null
   lactation?: boolean
   profileCompleteness?: number
   createdAt?: Date | string
@@ -1474,11 +1600,14 @@ export type PatientUpdateWithoutLifestyleInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   age?: Prisma.IntFieldUpdateOperationsInput | number
   ageClassification?: Prisma.EnumAgeClassificationFieldUpdateOperationsInput | $Enums.AgeClassification
+  dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   weight?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   height?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender
   smoking?: Prisma.BoolFieldUpdateOperationsInput | boolean
   pregnancyWarning?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pregnancyStatus?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  trimester?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   lactation?: Prisma.BoolFieldUpdateOperationsInput | boolean
   profileCompleteness?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1507,11 +1636,14 @@ export type PatientUncheckedUpdateWithoutLifestyleInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   age?: Prisma.IntFieldUpdateOperationsInput | number
   ageClassification?: Prisma.EnumAgeClassificationFieldUpdateOperationsInput | $Enums.AgeClassification
+  dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   weight?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   height?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender
   smoking?: Prisma.BoolFieldUpdateOperationsInput | boolean
   pregnancyWarning?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pregnancyStatus?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  trimester?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   lactation?: Prisma.BoolFieldUpdateOperationsInput | boolean
   profileCompleteness?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1537,11 +1669,14 @@ export type PatientCreateWithoutAllergiesInput = {
   name: string
   age: number
   ageClassification: $Enums.AgeClassification
+  dateOfBirth?: Date | string | null
   weight?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   height?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   gender: $Enums.Gender
   smoking?: boolean
   pregnancyWarning?: boolean
+  pregnancyStatus?: boolean | null
+  trimester?: number | null
   lactation?: boolean
   profileCompleteness?: number
   createdAt?: Date | string
@@ -1570,11 +1705,14 @@ export type PatientUncheckedCreateWithoutAllergiesInput = {
   name: string
   age: number
   ageClassification: $Enums.AgeClassification
+  dateOfBirth?: Date | string | null
   weight?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   height?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   gender: $Enums.Gender
   smoking?: boolean
   pregnancyWarning?: boolean
+  pregnancyStatus?: boolean | null
+  trimester?: number | null
   lactation?: boolean
   profileCompleteness?: number
   createdAt?: Date | string
@@ -1616,11 +1754,14 @@ export type PatientUpdateWithoutAllergiesInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   age?: Prisma.IntFieldUpdateOperationsInput | number
   ageClassification?: Prisma.EnumAgeClassificationFieldUpdateOperationsInput | $Enums.AgeClassification
+  dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   weight?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   height?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender
   smoking?: Prisma.BoolFieldUpdateOperationsInput | boolean
   pregnancyWarning?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pregnancyStatus?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  trimester?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   lactation?: Prisma.BoolFieldUpdateOperationsInput | boolean
   profileCompleteness?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1649,11 +1790,14 @@ export type PatientUncheckedUpdateWithoutAllergiesInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   age?: Prisma.IntFieldUpdateOperationsInput | number
   ageClassification?: Prisma.EnumAgeClassificationFieldUpdateOperationsInput | $Enums.AgeClassification
+  dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   weight?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   height?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender
   smoking?: Prisma.BoolFieldUpdateOperationsInput | boolean
   pregnancyWarning?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pregnancyStatus?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  trimester?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   lactation?: Prisma.BoolFieldUpdateOperationsInput | boolean
   profileCompleteness?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1679,11 +1823,14 @@ export type PatientCreateWithoutPatientDoctorsInput = {
   name: string
   age: number
   ageClassification: $Enums.AgeClassification
+  dateOfBirth?: Date | string | null
   weight?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   height?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   gender: $Enums.Gender
   smoking?: boolean
   pregnancyWarning?: boolean
+  pregnancyStatus?: boolean | null
+  trimester?: number | null
   lactation?: boolean
   profileCompleteness?: number
   createdAt?: Date | string
@@ -1712,11 +1859,14 @@ export type PatientUncheckedCreateWithoutPatientDoctorsInput = {
   name: string
   age: number
   ageClassification: $Enums.AgeClassification
+  dateOfBirth?: Date | string | null
   weight?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   height?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   gender: $Enums.Gender
   smoking?: boolean
   pregnancyWarning?: boolean
+  pregnancyStatus?: boolean | null
+  trimester?: number | null
   lactation?: boolean
   profileCompleteness?: number
   createdAt?: Date | string
@@ -1758,11 +1908,14 @@ export type PatientUpdateWithoutPatientDoctorsInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   age?: Prisma.IntFieldUpdateOperationsInput | number
   ageClassification?: Prisma.EnumAgeClassificationFieldUpdateOperationsInput | $Enums.AgeClassification
+  dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   weight?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   height?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender
   smoking?: Prisma.BoolFieldUpdateOperationsInput | boolean
   pregnancyWarning?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pregnancyStatus?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  trimester?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   lactation?: Prisma.BoolFieldUpdateOperationsInput | boolean
   profileCompleteness?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1791,11 +1944,14 @@ export type PatientUncheckedUpdateWithoutPatientDoctorsInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   age?: Prisma.IntFieldUpdateOperationsInput | number
   ageClassification?: Prisma.EnumAgeClassificationFieldUpdateOperationsInput | $Enums.AgeClassification
+  dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   weight?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   height?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender
   smoking?: Prisma.BoolFieldUpdateOperationsInput | boolean
   pregnancyWarning?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pregnancyStatus?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  trimester?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   lactation?: Prisma.BoolFieldUpdateOperationsInput | boolean
   profileCompleteness?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1821,11 +1977,14 @@ export type PatientCreateWithoutConsultationsInput = {
   name: string
   age: number
   ageClassification: $Enums.AgeClassification
+  dateOfBirth?: Date | string | null
   weight?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   height?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   gender: $Enums.Gender
   smoking?: boolean
   pregnancyWarning?: boolean
+  pregnancyStatus?: boolean | null
+  trimester?: number | null
   lactation?: boolean
   profileCompleteness?: number
   createdAt?: Date | string
@@ -1854,11 +2013,14 @@ export type PatientUncheckedCreateWithoutConsultationsInput = {
   name: string
   age: number
   ageClassification: $Enums.AgeClassification
+  dateOfBirth?: Date | string | null
   weight?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   height?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   gender: $Enums.Gender
   smoking?: boolean
   pregnancyWarning?: boolean
+  pregnancyStatus?: boolean | null
+  trimester?: number | null
   lactation?: boolean
   profileCompleteness?: number
   createdAt?: Date | string
@@ -1900,11 +2062,14 @@ export type PatientUpdateWithoutConsultationsInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   age?: Prisma.IntFieldUpdateOperationsInput | number
   ageClassification?: Prisma.EnumAgeClassificationFieldUpdateOperationsInput | $Enums.AgeClassification
+  dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   weight?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   height?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender
   smoking?: Prisma.BoolFieldUpdateOperationsInput | boolean
   pregnancyWarning?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pregnancyStatus?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  trimester?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   lactation?: Prisma.BoolFieldUpdateOperationsInput | boolean
   profileCompleteness?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1933,11 +2098,14 @@ export type PatientUncheckedUpdateWithoutConsultationsInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   age?: Prisma.IntFieldUpdateOperationsInput | number
   ageClassification?: Prisma.EnumAgeClassificationFieldUpdateOperationsInput | $Enums.AgeClassification
+  dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   weight?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   height?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender
   smoking?: Prisma.BoolFieldUpdateOperationsInput | boolean
   pregnancyWarning?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pregnancyStatus?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  trimester?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   lactation?: Prisma.BoolFieldUpdateOperationsInput | boolean
   profileCompleteness?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1963,11 +2131,14 @@ export type PatientCreateWithoutAppointmentsInput = {
   name: string
   age: number
   ageClassification: $Enums.AgeClassification
+  dateOfBirth?: Date | string | null
   weight?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   height?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   gender: $Enums.Gender
   smoking?: boolean
   pregnancyWarning?: boolean
+  pregnancyStatus?: boolean | null
+  trimester?: number | null
   lactation?: boolean
   profileCompleteness?: number
   createdAt?: Date | string
@@ -1996,11 +2167,14 @@ export type PatientUncheckedCreateWithoutAppointmentsInput = {
   name: string
   age: number
   ageClassification: $Enums.AgeClassification
+  dateOfBirth?: Date | string | null
   weight?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   height?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   gender: $Enums.Gender
   smoking?: boolean
   pregnancyWarning?: boolean
+  pregnancyStatus?: boolean | null
+  trimester?: number | null
   lactation?: boolean
   profileCompleteness?: number
   createdAt?: Date | string
@@ -2042,11 +2216,14 @@ export type PatientUpdateWithoutAppointmentsInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   age?: Prisma.IntFieldUpdateOperationsInput | number
   ageClassification?: Prisma.EnumAgeClassificationFieldUpdateOperationsInput | $Enums.AgeClassification
+  dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   weight?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   height?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender
   smoking?: Prisma.BoolFieldUpdateOperationsInput | boolean
   pregnancyWarning?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pregnancyStatus?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  trimester?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   lactation?: Prisma.BoolFieldUpdateOperationsInput | boolean
   profileCompleteness?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2075,11 +2252,14 @@ export type PatientUncheckedUpdateWithoutAppointmentsInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   age?: Prisma.IntFieldUpdateOperationsInput | number
   ageClassification?: Prisma.EnumAgeClassificationFieldUpdateOperationsInput | $Enums.AgeClassification
+  dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   weight?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   height?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender
   smoking?: Prisma.BoolFieldUpdateOperationsInput | boolean
   pregnancyWarning?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pregnancyStatus?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  trimester?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   lactation?: Prisma.BoolFieldUpdateOperationsInput | boolean
   profileCompleteness?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2105,11 +2285,14 @@ export type PatientCreateWithoutPatientDiseasesInput = {
   name: string
   age: number
   ageClassification: $Enums.AgeClassification
+  dateOfBirth?: Date | string | null
   weight?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   height?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   gender: $Enums.Gender
   smoking?: boolean
   pregnancyWarning?: boolean
+  pregnancyStatus?: boolean | null
+  trimester?: number | null
   lactation?: boolean
   profileCompleteness?: number
   createdAt?: Date | string
@@ -2138,11 +2321,14 @@ export type PatientUncheckedCreateWithoutPatientDiseasesInput = {
   name: string
   age: number
   ageClassification: $Enums.AgeClassification
+  dateOfBirth?: Date | string | null
   weight?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   height?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   gender: $Enums.Gender
   smoking?: boolean
   pregnancyWarning?: boolean
+  pregnancyStatus?: boolean | null
+  trimester?: number | null
   lactation?: boolean
   profileCompleteness?: number
   createdAt?: Date | string
@@ -2184,11 +2370,14 @@ export type PatientUpdateWithoutPatientDiseasesInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   age?: Prisma.IntFieldUpdateOperationsInput | number
   ageClassification?: Prisma.EnumAgeClassificationFieldUpdateOperationsInput | $Enums.AgeClassification
+  dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   weight?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   height?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender
   smoking?: Prisma.BoolFieldUpdateOperationsInput | boolean
   pregnancyWarning?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pregnancyStatus?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  trimester?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   lactation?: Prisma.BoolFieldUpdateOperationsInput | boolean
   profileCompleteness?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2217,11 +2406,14 @@ export type PatientUncheckedUpdateWithoutPatientDiseasesInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   age?: Prisma.IntFieldUpdateOperationsInput | number
   ageClassification?: Prisma.EnumAgeClassificationFieldUpdateOperationsInput | $Enums.AgeClassification
+  dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   weight?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   height?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender
   smoking?: Prisma.BoolFieldUpdateOperationsInput | boolean
   pregnancyWarning?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pregnancyStatus?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  trimester?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   lactation?: Prisma.BoolFieldUpdateOperationsInput | boolean
   profileCompleteness?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2247,11 +2439,14 @@ export type PatientCreateWithoutPrescriptionsInput = {
   name: string
   age: number
   ageClassification: $Enums.AgeClassification
+  dateOfBirth?: Date | string | null
   weight?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   height?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   gender: $Enums.Gender
   smoking?: boolean
   pregnancyWarning?: boolean
+  pregnancyStatus?: boolean | null
+  trimester?: number | null
   lactation?: boolean
   profileCompleteness?: number
   createdAt?: Date | string
@@ -2280,11 +2475,14 @@ export type PatientUncheckedCreateWithoutPrescriptionsInput = {
   name: string
   age: number
   ageClassification: $Enums.AgeClassification
+  dateOfBirth?: Date | string | null
   weight?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   height?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   gender: $Enums.Gender
   smoking?: boolean
   pregnancyWarning?: boolean
+  pregnancyStatus?: boolean | null
+  trimester?: number | null
   lactation?: boolean
   profileCompleteness?: number
   createdAt?: Date | string
@@ -2326,11 +2524,14 @@ export type PatientUpdateWithoutPrescriptionsInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   age?: Prisma.IntFieldUpdateOperationsInput | number
   ageClassification?: Prisma.EnumAgeClassificationFieldUpdateOperationsInput | $Enums.AgeClassification
+  dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   weight?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   height?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender
   smoking?: Prisma.BoolFieldUpdateOperationsInput | boolean
   pregnancyWarning?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pregnancyStatus?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  trimester?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   lactation?: Prisma.BoolFieldUpdateOperationsInput | boolean
   profileCompleteness?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2359,11 +2560,14 @@ export type PatientUncheckedUpdateWithoutPrescriptionsInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   age?: Prisma.IntFieldUpdateOperationsInput | number
   ageClassification?: Prisma.EnumAgeClassificationFieldUpdateOperationsInput | $Enums.AgeClassification
+  dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   weight?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   height?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender
   smoking?: Prisma.BoolFieldUpdateOperationsInput | boolean
   pregnancyWarning?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pregnancyStatus?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  trimester?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   lactation?: Prisma.BoolFieldUpdateOperationsInput | boolean
   profileCompleteness?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2389,11 +2593,14 @@ export type PatientCreateWithoutMedicalReportsInput = {
   name: string
   age: number
   ageClassification: $Enums.AgeClassification
+  dateOfBirth?: Date | string | null
   weight?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   height?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   gender: $Enums.Gender
   smoking?: boolean
   pregnancyWarning?: boolean
+  pregnancyStatus?: boolean | null
+  trimester?: number | null
   lactation?: boolean
   profileCompleteness?: number
   createdAt?: Date | string
@@ -2422,11 +2629,14 @@ export type PatientUncheckedCreateWithoutMedicalReportsInput = {
   name: string
   age: number
   ageClassification: $Enums.AgeClassification
+  dateOfBirth?: Date | string | null
   weight?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   height?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   gender: $Enums.Gender
   smoking?: boolean
   pregnancyWarning?: boolean
+  pregnancyStatus?: boolean | null
+  trimester?: number | null
   lactation?: boolean
   profileCompleteness?: number
   createdAt?: Date | string
@@ -2468,11 +2678,14 @@ export type PatientUpdateWithoutMedicalReportsInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   age?: Prisma.IntFieldUpdateOperationsInput | number
   ageClassification?: Prisma.EnumAgeClassificationFieldUpdateOperationsInput | $Enums.AgeClassification
+  dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   weight?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   height?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender
   smoking?: Prisma.BoolFieldUpdateOperationsInput | boolean
   pregnancyWarning?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pregnancyStatus?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  trimester?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   lactation?: Prisma.BoolFieldUpdateOperationsInput | boolean
   profileCompleteness?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2501,11 +2714,14 @@ export type PatientUncheckedUpdateWithoutMedicalReportsInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   age?: Prisma.IntFieldUpdateOperationsInput | number
   ageClassification?: Prisma.EnumAgeClassificationFieldUpdateOperationsInput | $Enums.AgeClassification
+  dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   weight?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   height?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender
   smoking?: Prisma.BoolFieldUpdateOperationsInput | boolean
   pregnancyWarning?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pregnancyStatus?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  trimester?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   lactation?: Prisma.BoolFieldUpdateOperationsInput | boolean
   profileCompleteness?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2531,11 +2747,14 @@ export type PatientCreateWithoutShareLinksInput = {
   name: string
   age: number
   ageClassification: $Enums.AgeClassification
+  dateOfBirth?: Date | string | null
   weight?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   height?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   gender: $Enums.Gender
   smoking?: boolean
   pregnancyWarning?: boolean
+  pregnancyStatus?: boolean | null
+  trimester?: number | null
   lactation?: boolean
   profileCompleteness?: number
   createdAt?: Date | string
@@ -2564,11 +2783,14 @@ export type PatientUncheckedCreateWithoutShareLinksInput = {
   name: string
   age: number
   ageClassification: $Enums.AgeClassification
+  dateOfBirth?: Date | string | null
   weight?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   height?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   gender: $Enums.Gender
   smoking?: boolean
   pregnancyWarning?: boolean
+  pregnancyStatus?: boolean | null
+  trimester?: number | null
   lactation?: boolean
   profileCompleteness?: number
   createdAt?: Date | string
@@ -2610,11 +2832,14 @@ export type PatientUpdateWithoutShareLinksInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   age?: Prisma.IntFieldUpdateOperationsInput | number
   ageClassification?: Prisma.EnumAgeClassificationFieldUpdateOperationsInput | $Enums.AgeClassification
+  dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   weight?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   height?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender
   smoking?: Prisma.BoolFieldUpdateOperationsInput | boolean
   pregnancyWarning?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pregnancyStatus?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  trimester?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   lactation?: Prisma.BoolFieldUpdateOperationsInput | boolean
   profileCompleteness?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2643,11 +2868,14 @@ export type PatientUncheckedUpdateWithoutShareLinksInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   age?: Prisma.IntFieldUpdateOperationsInput | number
   ageClassification?: Prisma.EnumAgeClassificationFieldUpdateOperationsInput | $Enums.AgeClassification
+  dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   weight?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   height?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender
   smoking?: Prisma.BoolFieldUpdateOperationsInput | boolean
   pregnancyWarning?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pregnancyStatus?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  trimester?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   lactation?: Prisma.BoolFieldUpdateOperationsInput | boolean
   profileCompleteness?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2673,11 +2901,14 @@ export type PatientCreateWithoutAdverseReactionsInput = {
   name: string
   age: number
   ageClassification: $Enums.AgeClassification
+  dateOfBirth?: Date | string | null
   weight?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   height?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   gender: $Enums.Gender
   smoking?: boolean
   pregnancyWarning?: boolean
+  pregnancyStatus?: boolean | null
+  trimester?: number | null
   lactation?: boolean
   profileCompleteness?: number
   createdAt?: Date | string
@@ -2706,11 +2937,14 @@ export type PatientUncheckedCreateWithoutAdverseReactionsInput = {
   name: string
   age: number
   ageClassification: $Enums.AgeClassification
+  dateOfBirth?: Date | string | null
   weight?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   height?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   gender: $Enums.Gender
   smoking?: boolean
   pregnancyWarning?: boolean
+  pregnancyStatus?: boolean | null
+  trimester?: number | null
   lactation?: boolean
   profileCompleteness?: number
   createdAt?: Date | string
@@ -2752,11 +2986,14 @@ export type PatientUpdateWithoutAdverseReactionsInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   age?: Prisma.IntFieldUpdateOperationsInput | number
   ageClassification?: Prisma.EnumAgeClassificationFieldUpdateOperationsInput | $Enums.AgeClassification
+  dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   weight?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   height?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender
   smoking?: Prisma.BoolFieldUpdateOperationsInput | boolean
   pregnancyWarning?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pregnancyStatus?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  trimester?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   lactation?: Prisma.BoolFieldUpdateOperationsInput | boolean
   profileCompleteness?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2785,11 +3022,14 @@ export type PatientUncheckedUpdateWithoutAdverseReactionsInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   age?: Prisma.IntFieldUpdateOperationsInput | number
   ageClassification?: Prisma.EnumAgeClassificationFieldUpdateOperationsInput | $Enums.AgeClassification
+  dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   weight?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   height?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender
   smoking?: Prisma.BoolFieldUpdateOperationsInput | boolean
   pregnancyWarning?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pregnancyStatus?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  trimester?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   lactation?: Prisma.BoolFieldUpdateOperationsInput | boolean
   profileCompleteness?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2815,11 +3055,14 @@ export type PatientCreateWithoutChildrenProfilesInput = {
   name: string
   age: number
   ageClassification: $Enums.AgeClassification
+  dateOfBirth?: Date | string | null
   weight?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   height?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   gender: $Enums.Gender
   smoking?: boolean
   pregnancyWarning?: boolean
+  pregnancyStatus?: boolean | null
+  trimester?: number | null
   lactation?: boolean
   profileCompleteness?: number
   createdAt?: Date | string
@@ -2848,11 +3091,14 @@ export type PatientUncheckedCreateWithoutChildrenProfilesInput = {
   name: string
   age: number
   ageClassification: $Enums.AgeClassification
+  dateOfBirth?: Date | string | null
   weight?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   height?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   gender: $Enums.Gender
   smoking?: boolean
   pregnancyWarning?: boolean
+  pregnancyStatus?: boolean | null
+  trimester?: number | null
   lactation?: boolean
   profileCompleteness?: number
   createdAt?: Date | string
@@ -2894,11 +3140,14 @@ export type PatientUpdateWithoutChildrenProfilesInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   age?: Prisma.IntFieldUpdateOperationsInput | number
   ageClassification?: Prisma.EnumAgeClassificationFieldUpdateOperationsInput | $Enums.AgeClassification
+  dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   weight?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   height?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender
   smoking?: Prisma.BoolFieldUpdateOperationsInput | boolean
   pregnancyWarning?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pregnancyStatus?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  trimester?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   lactation?: Prisma.BoolFieldUpdateOperationsInput | boolean
   profileCompleteness?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2927,11 +3176,14 @@ export type PatientUncheckedUpdateWithoutChildrenProfilesInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   age?: Prisma.IntFieldUpdateOperationsInput | number
   ageClassification?: Prisma.EnumAgeClassificationFieldUpdateOperationsInput | $Enums.AgeClassification
+  dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   weight?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   height?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender
   smoking?: Prisma.BoolFieldUpdateOperationsInput | boolean
   pregnancyWarning?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pregnancyStatus?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  trimester?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   lactation?: Prisma.BoolFieldUpdateOperationsInput | boolean
   profileCompleteness?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2957,11 +3209,14 @@ export type PatientCreateWithoutRatingsInput = {
   name: string
   age: number
   ageClassification: $Enums.AgeClassification
+  dateOfBirth?: Date | string | null
   weight?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   height?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   gender: $Enums.Gender
   smoking?: boolean
   pregnancyWarning?: boolean
+  pregnancyStatus?: boolean | null
+  trimester?: number | null
   lactation?: boolean
   profileCompleteness?: number
   createdAt?: Date | string
@@ -2990,11 +3245,14 @@ export type PatientUncheckedCreateWithoutRatingsInput = {
   name: string
   age: number
   ageClassification: $Enums.AgeClassification
+  dateOfBirth?: Date | string | null
   weight?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   height?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   gender: $Enums.Gender
   smoking?: boolean
   pregnancyWarning?: boolean
+  pregnancyStatus?: boolean | null
+  trimester?: number | null
   lactation?: boolean
   profileCompleteness?: number
   createdAt?: Date | string
@@ -3036,11 +3294,14 @@ export type PatientUpdateWithoutRatingsInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   age?: Prisma.IntFieldUpdateOperationsInput | number
   ageClassification?: Prisma.EnumAgeClassificationFieldUpdateOperationsInput | $Enums.AgeClassification
+  dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   weight?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   height?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender
   smoking?: Prisma.BoolFieldUpdateOperationsInput | boolean
   pregnancyWarning?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pregnancyStatus?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  trimester?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   lactation?: Prisma.BoolFieldUpdateOperationsInput | boolean
   profileCompleteness?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -3069,11 +3330,14 @@ export type PatientUncheckedUpdateWithoutRatingsInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   age?: Prisma.IntFieldUpdateOperationsInput | number
   ageClassification?: Prisma.EnumAgeClassificationFieldUpdateOperationsInput | $Enums.AgeClassification
+  dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   weight?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   height?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender
   smoking?: Prisma.BoolFieldUpdateOperationsInput | boolean
   pregnancyWarning?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pregnancyStatus?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  trimester?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   lactation?: Prisma.BoolFieldUpdateOperationsInput | boolean
   profileCompleteness?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -3099,11 +3363,14 @@ export type PatientCreateWithoutVisitsInput = {
   name: string
   age: number
   ageClassification: $Enums.AgeClassification
+  dateOfBirth?: Date | string | null
   weight?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   height?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   gender: $Enums.Gender
   smoking?: boolean
   pregnancyWarning?: boolean
+  pregnancyStatus?: boolean | null
+  trimester?: number | null
   lactation?: boolean
   profileCompleteness?: number
   createdAt?: Date | string
@@ -3132,11 +3399,14 @@ export type PatientUncheckedCreateWithoutVisitsInput = {
   name: string
   age: number
   ageClassification: $Enums.AgeClassification
+  dateOfBirth?: Date | string | null
   weight?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   height?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   gender: $Enums.Gender
   smoking?: boolean
   pregnancyWarning?: boolean
+  pregnancyStatus?: boolean | null
+  trimester?: number | null
   lactation?: boolean
   profileCompleteness?: number
   createdAt?: Date | string
@@ -3178,11 +3448,14 @@ export type PatientUpdateWithoutVisitsInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   age?: Prisma.IntFieldUpdateOperationsInput | number
   ageClassification?: Prisma.EnumAgeClassificationFieldUpdateOperationsInput | $Enums.AgeClassification
+  dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   weight?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   height?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender
   smoking?: Prisma.BoolFieldUpdateOperationsInput | boolean
   pregnancyWarning?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pregnancyStatus?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  trimester?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   lactation?: Prisma.BoolFieldUpdateOperationsInput | boolean
   profileCompleteness?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -3211,11 +3484,14 @@ export type PatientUncheckedUpdateWithoutVisitsInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   age?: Prisma.IntFieldUpdateOperationsInput | number
   ageClassification?: Prisma.EnumAgeClassificationFieldUpdateOperationsInput | $Enums.AgeClassification
+  dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   weight?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   height?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender
   smoking?: Prisma.BoolFieldUpdateOperationsInput | boolean
   pregnancyWarning?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pregnancyStatus?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  trimester?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   lactation?: Prisma.BoolFieldUpdateOperationsInput | boolean
   profileCompleteness?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -3391,11 +3667,14 @@ export type PatientSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   name?: boolean
   age?: boolean
   ageClassification?: boolean
+  dateOfBirth?: boolean
   weight?: boolean
   height?: boolean
   gender?: boolean
   smoking?: boolean
   pregnancyWarning?: boolean
+  pregnancyStatus?: boolean
+  trimester?: boolean
   lactation?: boolean
   profileCompleteness?: boolean
   createdAt?: boolean
@@ -3426,11 +3705,14 @@ export type PatientSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   name?: boolean
   age?: boolean
   ageClassification?: boolean
+  dateOfBirth?: boolean
   weight?: boolean
   height?: boolean
   gender?: boolean
   smoking?: boolean
   pregnancyWarning?: boolean
+  pregnancyStatus?: boolean
+  trimester?: boolean
   lactation?: boolean
   profileCompleteness?: boolean
   createdAt?: boolean
@@ -3445,11 +3727,14 @@ export type PatientSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   name?: boolean
   age?: boolean
   ageClassification?: boolean
+  dateOfBirth?: boolean
   weight?: boolean
   height?: boolean
   gender?: boolean
   smoking?: boolean
   pregnancyWarning?: boolean
+  pregnancyStatus?: boolean
+  trimester?: boolean
   lactation?: boolean
   profileCompleteness?: boolean
   createdAt?: boolean
@@ -3464,11 +3749,14 @@ export type PatientSelectScalar = {
   name?: boolean
   age?: boolean
   ageClassification?: boolean
+  dateOfBirth?: boolean
   weight?: boolean
   height?: boolean
   gender?: boolean
   smoking?: boolean
   pregnancyWarning?: boolean
+  pregnancyStatus?: boolean
+  trimester?: boolean
   lactation?: boolean
   profileCompleteness?: boolean
   createdAt?: boolean
@@ -3476,7 +3764,7 @@ export type PatientSelectScalar = {
   deletedAt?: boolean
 }
 
-export type PatientOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "name" | "age" | "ageClassification" | "weight" | "height" | "gender" | "smoking" | "pregnancyWarning" | "lactation" | "profileCompleteness" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["patient"]>
+export type PatientOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "name" | "age" | "ageClassification" | "dateOfBirth" | "weight" | "height" | "gender" | "smoking" | "pregnancyWarning" | "pregnancyStatus" | "trimester" | "lactation" | "profileCompleteness" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["patient"]>
 export type PatientInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   prescriptions?: boolean | Prisma.Patient$prescriptionsArgs<ExtArgs>
@@ -3529,11 +3817,14 @@ export type $PatientPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     name: string
     age: number
     ageClassification: $Enums.AgeClassification
+    dateOfBirth: Date | null
     weight: runtime.Decimal | null
     height: runtime.Decimal | null
     gender: $Enums.Gender
     smoking: boolean
     pregnancyWarning: boolean
+    pregnancyStatus: boolean | null
+    trimester: number | null
     lactation: boolean
     profileCompleteness: number
     createdAt: Date
@@ -3983,11 +4274,14 @@ export interface PatientFieldRefs {
   readonly name: Prisma.FieldRef<"Patient", 'String'>
   readonly age: Prisma.FieldRef<"Patient", 'Int'>
   readonly ageClassification: Prisma.FieldRef<"Patient", 'AgeClassification'>
+  readonly dateOfBirth: Prisma.FieldRef<"Patient", 'DateTime'>
   readonly weight: Prisma.FieldRef<"Patient", 'Decimal'>
   readonly height: Prisma.FieldRef<"Patient", 'Decimal'>
   readonly gender: Prisma.FieldRef<"Patient", 'Gender'>
   readonly smoking: Prisma.FieldRef<"Patient", 'Boolean'>
   readonly pregnancyWarning: Prisma.FieldRef<"Patient", 'Boolean'>
+  readonly pregnancyStatus: Prisma.FieldRef<"Patient", 'Boolean'>
+  readonly trimester: Prisma.FieldRef<"Patient", 'Int'>
   readonly lactation: Prisma.FieldRef<"Patient", 'Boolean'>
   readonly profileCompleteness: Prisma.FieldRef<"Patient", 'Int'>
   readonly createdAt: Prisma.FieldRef<"Patient", 'DateTime'>

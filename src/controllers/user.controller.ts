@@ -1,17 +1,23 @@
 import { Request, Response, NextFunction } from 'express';
 import { prisma } from '../lib/prisma';
 
-// Get all users
+/** Strip passwordHash from user object for API response (RMMSY: admin must never see passwords). */
+function omitPassword<T extends { passwordHash?: string }>(user: T): Omit<T, 'passwordHash'> {
+  const { passwordHash: _, ...rest } = user;
+  return rest as Omit<T, 'passwordHash'>;
+}
+
+// Get all users (password never returned)
 export const getAllUsers = async (_req: Request, res: Response, next: NextFunction) => {
   try {
     const users = await prisma.user.findMany();
-    res.json(users);
+    res.json(users.map(omitPassword));
   } catch (error) {
     next(error);
   }
 };
 
-// Get user by ID
+// Get user by ID (password never returned)
 export const getUserById = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { id } = req.params;
@@ -24,7 +30,7 @@ export const getUserById = async (req: Request, res: Response, next: NextFunctio
       return;
     }
 
-    res.json(user);
+    res.json(omitPassword(user));
   } catch (error) {
     next(error);
   }
@@ -44,7 +50,7 @@ export const createUser = async (req: Request, res: Response, next: NextFunction
       data: { email, passwordHash, role, isActive: true }
     });
 
-    res.status(201).json(user);
+    res.status(201).json(omitPassword(user));
   } catch (error: any) {
     if (error.code === 'P2002') {
       res.status(409).json({ error: 'Email already exists' });
@@ -65,7 +71,7 @@ export const updateUser = async (req: Request, res: Response, next: NextFunction
       data: { email, isActive }
     });
 
-    res.json(user);
+    res.json(omitPassword(user));
   } catch (error: any) {
     if (error.code === 'P2025') {
       res.status(404).json({ error: 'User not found' });

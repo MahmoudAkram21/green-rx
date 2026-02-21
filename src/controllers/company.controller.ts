@@ -7,9 +7,15 @@ import { createCompanySchema, updateCompanySchema } from '../zod/company.zod';
 export const createCompany = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const validatedData = createCompanySchema.parse(req.body);
+        const { phoneNumber, email, website, ...rest } = validatedData as any;
+        const contactInfo = [phoneNumber, email, website].some(Boolean)
+            ? { ...(phoneNumber && { phoneNumber }), ...(email && { email }), ...(website && { website }) }
+            : (rest.contactInfo ?? undefined);
+        const data: any = { name: rest.name, address: rest.address, governorate: rest.governorate, country: rest.country };
+        if (contactInfo) data.contactInfo = contactInfo;
 
         const company = await prisma.company.create({
-            data: validatedData
+            data
         });
 
         res.status(201).json({
@@ -122,11 +128,21 @@ export const getAllCompanies = async (req: Request, res: Response, next: NextFun
 export const updateCompany = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { id } = req.params;
-        const validatedData = updateCompanySchema.parse(req.body);
+        const validatedData = updateCompanySchema.parse(req.body) as any;
+        const { phoneNumber, email, website, contactInfo: ci, ...rest } = validatedData;
+        const contactInfo = [phoneNumber, email, website].some(Boolean)
+            ? { ...(phoneNumber != null && { phoneNumber }), ...(email != null && { email }), ...(website != null && { website }) }
+            : ci;
+        const data: any = {};
+        if (rest.name != null) data.name = rest.name;
+        if (rest.address != null) data.address = rest.address;
+        if (rest.governorate != null) data.governorate = rest.governorate;
+        if (rest.country != null) data.country = rest.country;
+        if (contactInfo != null) data.contactInfo = contactInfo;
 
         const company = await prisma.company.update({
             where: { id: parseInt(id) },
-            data: validatedData
+            data
         });
 
         res.json({

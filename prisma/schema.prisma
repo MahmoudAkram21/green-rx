@@ -1,4 +1,4 @@
-// Green RX Database Schema
+// RMMSY Database Schema
 // Comprehensive schema for medical prescription management system
 
 generator client {
@@ -278,11 +278,14 @@ model Patient {
   name                String
   age                 Int
   ageClassification   AgeClassification
-  weight              Decimal?          @db.Decimal(5, 2) // in kg
-  height              Decimal?          @db.Decimal(5, 2) // in cm
+  dateOfBirth         DateTime?         // optional: for calendar-based age; age can be derived
+  weight              Decimal?           @db.Decimal(5, 2) // in kg
+  height              Decimal?           @db.Decimal(5, 2) // in cm
   gender              Gender
   smoking             Boolean           @default(false)
   pregnancyWarning    Boolean           @default(false)
+  pregnancyStatus     Boolean?          // true if currently pregnant (female)
+  trimester           Int?              // 1, 2, or 3 when pregnancyStatus is true
   lactation           Boolean           @default(false)
   profileCompleteness Int               @default(0) // percentage
   createdAt           DateTime          @default(now())
@@ -377,7 +380,8 @@ model Allergy {
   id           Int             @id @default(autoincrement())
   patientId    Int
   allergen     String
-  severity     AllergySeverity
+  allergenType String?         // "Drug" | "Food" (null = legacy, treat as Drug)
+  severity     AllergySeverity // retained for backward compatibility; UI may hide per spec
   reactionType String?
   notes        String?
   createdAt    DateTime        @default(now())
@@ -869,6 +873,9 @@ model Company {
   id          Int       @id @default(autoincrement())
   name        String    @unique
   contactInfo Json?
+  address     String?
+  governorate String?
+  country     String?
   isActive    Boolean   @default(true)
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt

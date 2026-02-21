@@ -834,14 +834,6 @@ export type DoctorUncheckedUpdateOneWithoutUserNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.DoctorUpdateToOneWithWhereWithoutUserInput, Prisma.DoctorUpdateWithoutUserInput>, Prisma.DoctorUncheckedUpdateWithoutUserInput>
 }
 
-export type NullableIntFieldUpdateOperationsInput = {
-  set?: number | null
-  increment?: number
-  decrement?: number
-  multiply?: number
-  divide?: number
-}
-
 export type DoctorCreateNestedOneWithoutPatientDoctorsInput = {
   create?: Prisma.XOR<Prisma.DoctorCreateWithoutPatientDoctorsInput, Prisma.DoctorUncheckedCreateWithoutPatientDoctorsInput>
   connectOrCreate?: Prisma.DoctorCreateOrConnectWithoutPatientDoctorsInput
