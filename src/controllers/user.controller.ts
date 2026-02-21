@@ -7,22 +7,45 @@ function omitPassword<T extends { passwordHash?: string }>(user: T): Omit<T, 'pa
   return rest as Omit<T, 'passwordHash'>;
 }
 
-// Get all users (password never returned)
+// Get all users (password never returned), include profile names for list display
 export const getAllUsers = async (_req: Request, res: Response, next: NextFunction) => {
   try {
-    const users = await prisma.user.findMany();
+    const users = await prisma.user.findMany({
+      include: {
+        patient: { select: { name: true } },
+        doctor: { select: { name: true } },
+        pharmacist: { select: { name: true } }
+      }
+    });
     res.json(users.map(omitPassword));
   } catch (error) {
     next(error);
   }
 };
 
-// Get user by ID (password never returned)
+// Get user by ID with role-specific profile (password never returned)
 export const getUserById = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { id } = req.params;
     const user = await prisma.user.findUnique({
-      where: { id: parseInt(id) }
+      where: { id: parseInt(id) },
+      include: {
+        patient: {
+          include: {
+            _count: { select: { prescriptions: true, allergies: true, patientDiseases: true, medicalHistories: true } }
+          }
+        },
+        doctor: {
+          include: {
+            _count: { select: { prescriptions: true, patientDoctors: true, consultations: true, appointments: true } }
+          }
+        },
+        pharmacist: {
+          include: {
+            _count: { select: { ratings: true } }
+          }
+        }
+      }
     });
 
     if (!user) {
