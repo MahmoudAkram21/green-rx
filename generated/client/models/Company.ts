@@ -37,6 +37,9 @@ export type CompanySumAggregateOutputType = {
 export type CompanyMinAggregateOutputType = {
   id: number | null
   name: string | null
+  address: string | null
+  governorate: string | null
+  country: string | null
   isActive: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -46,6 +49,9 @@ export type CompanyMinAggregateOutputType = {
 export type CompanyMaxAggregateOutputType = {
   id: number | null
   name: string | null
+  address: string | null
+  governorate: string | null
+  country: string | null
   isActive: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -56,6 +62,9 @@ export type CompanyCountAggregateOutputType = {
   id: number
   name: number
   contactInfo: number
+  address: number
+  governorate: number
+  country: number
   isActive: number
   createdAt: number
   updatedAt: number
@@ -75,6 +84,9 @@ export type CompanySumAggregateInputType = {
 export type CompanyMinAggregateInputType = {
   id?: true
   name?: true
+  address?: true
+  governorate?: true
+  country?: true
   isActive?: true
   createdAt?: true
   updatedAt?: true
@@ -84,6 +96,9 @@ export type CompanyMinAggregateInputType = {
 export type CompanyMaxAggregateInputType = {
   id?: true
   name?: true
+  address?: true
+  governorate?: true
+  country?: true
   isActive?: true
   createdAt?: true
   updatedAt?: true
@@ -94,6 +109,9 @@ export type CompanyCountAggregateInputType = {
   id?: true
   name?: true
   contactInfo?: true
+  address?: true
+  governorate?: true
+  country?: true
   isActive?: true
   createdAt?: true
   updatedAt?: true
@@ -191,6 +209,9 @@ export type CompanyGroupByOutputType = {
   id: number
   name: string
   contactInfo: runtime.JsonValue | null
+  address: string | null
+  governorate: string | null
+  country: string | null
   isActive: boolean
   createdAt: Date
   updatedAt: Date
@@ -224,6 +245,9 @@ export type CompanyWhereInput = {
   id?: Prisma.IntFilter<"Company"> | number
   name?: Prisma.StringFilter<"Company"> | string
   contactInfo?: Prisma.JsonNullableFilter<"Company">
+  address?: Prisma.StringNullableFilter<"Company"> | string | null
+  governorate?: Prisma.StringNullableFilter<"Company"> | string | null
+  country?: Prisma.StringNullableFilter<"Company"> | string | null
   isActive?: Prisma.BoolFilter<"Company"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Company"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Company"> | Date | string
@@ -237,6 +261,9 @@ export type CompanyOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   contactInfo?: Prisma.SortOrderInput | Prisma.SortOrder
+  address?: Prisma.SortOrderInput | Prisma.SortOrder
+  governorate?: Prisma.SortOrderInput | Prisma.SortOrder
+  country?: Prisma.SortOrderInput | Prisma.SortOrder
   isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -253,6 +280,9 @@ export type CompanyWhereUniqueInput = Prisma.AtLeast<{
   OR?: Prisma.CompanyWhereInput[]
   NOT?: Prisma.CompanyWhereInput | Prisma.CompanyWhereInput[]
   contactInfo?: Prisma.JsonNullableFilter<"Company">
+  address?: Prisma.StringNullableFilter<"Company"> | string | null
+  governorate?: Prisma.StringNullableFilter<"Company"> | string | null
+  country?: Prisma.StringNullableFilter<"Company"> | string | null
   isActive?: Prisma.BoolFilter<"Company"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Company"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Company"> | Date | string
@@ -266,6 +296,9 @@ export type CompanyOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   contactInfo?: Prisma.SortOrderInput | Prisma.SortOrder
+  address?: Prisma.SortOrderInput | Prisma.SortOrder
+  governorate?: Prisma.SortOrderInput | Prisma.SortOrder
+  country?: Prisma.SortOrderInput | Prisma.SortOrder
   isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -284,6 +317,9 @@ export type CompanyScalarWhereWithAggregatesInput = {
   id?: Prisma.IntWithAggregatesFilter<"Company"> | number
   name?: Prisma.StringWithAggregatesFilter<"Company"> | string
   contactInfo?: Prisma.JsonNullableWithAggregatesFilter<"Company">
+  address?: Prisma.StringNullableWithAggregatesFilter<"Company"> | string | null
+  governorate?: Prisma.StringNullableWithAggregatesFilter<"Company"> | string | null
+  country?: Prisma.StringNullableWithAggregatesFilter<"Company"> | string | null
   isActive?: Prisma.BoolWithAggregatesFilter<"Company"> | boolean
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Company"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Company"> | Date | string
@@ -293,6 +329,9 @@ export type CompanyScalarWhereWithAggregatesInput = {
 export type CompanyCreateInput = {
   name: string
   contactInfo?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  address?: string | null
+  governorate?: string | null
+  country?: string | null
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -306,6 +345,9 @@ export type CompanyUncheckedCreateInput = {
   id?: number
   name: string
   contactInfo?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  address?: string | null
+  governorate?: string | null
+  country?: string | null
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -318,6 +360,9 @@ export type CompanyUncheckedCreateInput = {
 export type CompanyUpdateInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   contactInfo?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  governorate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -331,6 +376,9 @@ export type CompanyUncheckedUpdateInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   name?: Prisma.StringFieldUpdateOperationsInput | string
   contactInfo?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  governorate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -344,6 +392,9 @@ export type CompanyCreateManyInput = {
   id?: number
   name: string
   contactInfo?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  address?: string | null
+  governorate?: string | null
+  country?: string | null
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -353,6 +404,9 @@ export type CompanyCreateManyInput = {
 export type CompanyUpdateManyMutationInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   contactInfo?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  governorate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -363,6 +417,9 @@ export type CompanyUncheckedUpdateManyInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   name?: Prisma.StringFieldUpdateOperationsInput | string
   contactInfo?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  governorate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -378,6 +435,9 @@ export type CompanyCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   contactInfo?: Prisma.SortOrder
+  address?: Prisma.SortOrder
+  governorate?: Prisma.SortOrder
+  country?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -391,6 +451,9 @@ export type CompanyAvgOrderByAggregateInput = {
 export type CompanyMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
+  address?: Prisma.SortOrder
+  governorate?: Prisma.SortOrder
+  country?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -400,6 +463,9 @@ export type CompanyMaxOrderByAggregateInput = {
 export type CompanyMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
+  address?: Prisma.SortOrder
+  governorate?: Prisma.SortOrder
+  country?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -455,6 +521,9 @@ export type CompanyUpdateOneRequiredWithoutAdverseReactionsNestedInput = {
 export type CompanyCreateWithoutTradeNamesInput = {
   name: string
   contactInfo?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  address?: string | null
+  governorate?: string | null
+  country?: string | null
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -467,6 +536,9 @@ export type CompanyUncheckedCreateWithoutTradeNamesInput = {
   id?: number
   name: string
   contactInfo?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  address?: string | null
+  governorate?: string | null
+  country?: string | null
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -494,6 +566,9 @@ export type CompanyUpdateToOneWithWhereWithoutTradeNamesInput = {
 export type CompanyUpdateWithoutTradeNamesInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   contactInfo?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  governorate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -506,6 +581,9 @@ export type CompanyUncheckedUpdateWithoutTradeNamesInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   name?: Prisma.StringFieldUpdateOperationsInput | string
   contactInfo?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  governorate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -517,6 +595,9 @@ export type CompanyUncheckedUpdateWithoutTradeNamesInput = {
 export type CompanyCreateWithoutContractingCompaniesInput = {
   name: string
   contactInfo?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  address?: string | null
+  governorate?: string | null
+  country?: string | null
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -529,6 +610,9 @@ export type CompanyUncheckedCreateWithoutContractingCompaniesInput = {
   id?: number
   name: string
   contactInfo?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  address?: string | null
+  governorate?: string | null
+  country?: string | null
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -556,6 +640,9 @@ export type CompanyUpdateToOneWithWhereWithoutContractingCompaniesInput = {
 export type CompanyUpdateWithoutContractingCompaniesInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   contactInfo?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  governorate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -568,6 +655,9 @@ export type CompanyUncheckedUpdateWithoutContractingCompaniesInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   name?: Prisma.StringFieldUpdateOperationsInput | string
   contactInfo?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  governorate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -579,6 +669,9 @@ export type CompanyUncheckedUpdateWithoutContractingCompaniesInput = {
 export type CompanyCreateWithoutAdverseReactionsInput = {
   name: string
   contactInfo?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  address?: string | null
+  governorate?: string | null
+  country?: string | null
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -591,6 +684,9 @@ export type CompanyUncheckedCreateWithoutAdverseReactionsInput = {
   id?: number
   name: string
   contactInfo?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  address?: string | null
+  governorate?: string | null
+  country?: string | null
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -618,6 +714,9 @@ export type CompanyUpdateToOneWithWhereWithoutAdverseReactionsInput = {
 export type CompanyUpdateWithoutAdverseReactionsInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   contactInfo?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  governorate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -630,6 +729,9 @@ export type CompanyUncheckedUpdateWithoutAdverseReactionsInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   name?: Prisma.StringFieldUpdateOperationsInput | string
   contactInfo?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  governorate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -691,6 +793,9 @@ export type CompanySelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   id?: boolean
   name?: boolean
   contactInfo?: boolean
+  address?: boolean
+  governorate?: boolean
+  country?: boolean
   isActive?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -705,6 +810,9 @@ export type CompanySelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   id?: boolean
   name?: boolean
   contactInfo?: boolean
+  address?: boolean
+  governorate?: boolean
+  country?: boolean
   isActive?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -715,6 +823,9 @@ export type CompanySelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   id?: boolean
   name?: boolean
   contactInfo?: boolean
+  address?: boolean
+  governorate?: boolean
+  country?: boolean
   isActive?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -725,13 +836,16 @@ export type CompanySelectScalar = {
   id?: boolean
   name?: boolean
   contactInfo?: boolean
+  address?: boolean
+  governorate?: boolean
+  country?: boolean
   isActive?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   deletedAt?: boolean
 }
 
-export type CompanyOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "contactInfo" | "isActive" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["company"]>
+export type CompanyOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "contactInfo" | "address" | "governorate" | "country" | "isActive" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["company"]>
 export type CompanyInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   tradeNames?: boolean | Prisma.Company$tradeNamesArgs<ExtArgs>
   contractingCompanies?: boolean | Prisma.Company$contractingCompaniesArgs<ExtArgs>
@@ -752,6 +866,9 @@ export type $CompanyPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     id: number
     name: string
     contactInfo: runtime.JsonValue | null
+    address: string | null
+    governorate: string | null
+    country: string | null
     isActive: boolean
     createdAt: Date
     updatedAt: Date
@@ -1185,6 +1302,9 @@ export interface CompanyFieldRefs {
   readonly id: Prisma.FieldRef<"Company", 'Int'>
   readonly name: Prisma.FieldRef<"Company", 'String'>
   readonly contactInfo: Prisma.FieldRef<"Company", 'Json'>
+  readonly address: Prisma.FieldRef<"Company", 'String'>
+  readonly governorate: Prisma.FieldRef<"Company", 'String'>
+  readonly country: Prisma.FieldRef<"Company", 'String'>
   readonly isActive: Prisma.FieldRef<"Company", 'Boolean'>
   readonly createdAt: Prisma.FieldRef<"Company", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Company", 'DateTime'>

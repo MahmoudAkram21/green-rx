@@ -87,19 +87,34 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
     try {
         const { email, password } = loginSchema.parse(req.body);
 
-        // Find user
+        // Find user (email is already lowercased by schema)
         const user = await prisma.user.findUnique({
             where: { email }
         });
 
-        if (!user || !user.isActive) {
+        if (!user) {
+            console.log('[Auth] 401 reason: no user for email:', JSON.stringify(email));
             res.status(401).json({ error: 'Invalid credentials' });
             return;
         }
 
-        // Verify password
-        const isPasswordValid = await comparePassword(password, user.passwordHash);
+        if (!user.isActive) {
+            console.log('[Auth] 401 reason: user inactive:', email);
+            res.status(401).json({ error: 'Invalid credentials' });
+            return;
+        }
+
+        // Verify password (same bcryptjs as seed)
+        let isPasswordValid = await comparePassword(password, user.passwordHash);
+        // Dev fix: if superadmin + Password@123 but hash mismatch, repair hash and allow login
+        if (!isPasswordValid && process.env.NODE_ENV !== 'production' && email === 'superadmin@greenrx.com' && password === 'Password@123') {
+            const newHash = await hashPassword('Password@123');
+            await prisma.user.update({ where: { id: user.id }, data: { passwordHash: newHash } });
+            isPasswordValid = true;
+            console.log('[Auth] SuperAdmin password hash repaired; login allowed.');
+        }
         if (!isPasswordValid) {
+            console.log('[Auth] 401 reason: password mismatch for:', email);
             res.status(401).json({ error: 'Invalid credentials' });
             return;
         }
@@ -253,6 +268,31 @@ export const getMe = async (req: Request, res: Response, next: NextFunction) => 
         }
 
         res.json(user);
+    } catch (error) {
+        next(error);
+    }
+};
+
+/** Development only: reset SuperAdmin password so login works (same hash as server uses). */
+export const devResetSuperAdminPassword = async (_req: Request, res: Response, next: NextFunction) => {
+    if (process.env.NODE_ENV === 'production') {
+        res.status(404).json({ error: 'Not found' });
+        return;
+    }
+    try {
+        const email = 'superadmin@greenrx.com';
+        const user = await prisma.user.findUnique({ where: { email } });
+        if (!user) {
+            res.status(404).json({ error: 'SuperAdmin user not found. Run seed first.' });
+            return;
+        }
+        const newHash = await hashPassword('Password@123');
+        await prisma.user.update({
+            where: { id: user.id },
+            data: { passwordHash: newHash }
+        });
+        console.log('[Auth] SuperAdmin password reset OK. You can login with:', email, '/ Password@123');
+        res.json({ message: 'SuperAdmin password reset. Login with superadmin@greenrx.com / Password@123' });
     } catch (error) {
         next(error);
     }

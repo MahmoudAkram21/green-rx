@@ -13,8 +13,11 @@ export const createPatientSchema = z.object({
   age: z.number().int().positive(),
   ageClassification: z.nativeEnum(AgeClassification),
   gender: z.nativeEnum(Gender),
-  weight: z.number().positive().optional(),
-  height: z.number().positive().optional(),
+  weight: z.number().positive({ message: "Weight must be greater than zero" }).optional(),
+  height: z.number().positive({ message: "Height must be greater than zero" }).optional(),
+  dateOfBirth: z.string().datetime().optional(),
+  pregnancyStatus: z.boolean().optional(),
+  trimester: z.number().int().min(1).max(3).optional(),
   smoking: z.boolean().optional(),
   pregnancyWarning: z.boolean().optional(),
   lactation: z.boolean().optional(),
@@ -60,8 +63,8 @@ export const childProfileSchema = z.object({
   dateOfBirth: z.string().datetime(),
   gender: z.nativeEnum(Gender),
   ageClassification: z.nativeEnum(AgeClassification),
-  weight: z.number().positive().optional(),
-  height: z.number().positive().optional(),
+  weight: z.number().positive({ message: "Weight must be greater than zero" }).optional(),
+  height: z.number().positive({ message: "Height must be greater than zero" }).optional(),
   allergies: z.any().optional(), // JSON
   diseases: z.any().optional(), // JSON
   medicalHistory: z.any().optional(), // JSON

@@ -15,7 +15,7 @@ class AdverseDrugReactionController {
                 },
                 include: {
                     patient: {
-                        select: { name: true, age: true }
+                        select: { id: true, age: true, gender: true }
                     },
                     tradeName: {
                         select: { title: true }
@@ -117,7 +117,7 @@ class AdverseDrugReactionController {
                     orderBy: { startDate: 'desc' },
                     include: {
                         patient: {
-                            select: { name: true, age: true }
+                            select: { id: true, age: true, gender: true }
                         }
                     }
                 }),
@@ -153,7 +153,7 @@ class AdverseDrugReactionController {
             const adr = await prisma.adverseDrugReaction.findUnique({
                 where: { id: Number(id) },
                 include: {
-                    patient: { select: { name: true, age: true, id: true } },
+                    patient: { select: { id: true, age: true, gender: true } },
                     tradeName: { select: { title: true, id: true } },
                     activeSubstance: { select: { activeSubstance: true, id: true } },
                     company: { select: { name: true, id: true } }
@@ -192,7 +192,7 @@ class AdverseDrugReactionController {
                     orderBy: { createdAt: 'desc' },
                     include: {
                         patient: {
-                            select: { name: true, age: true }
+                            select: { id: true, age: true, gender: true }
                         },
                         tradeName: true,
                         activeSubstance: true
