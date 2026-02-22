@@ -1,12 +1,12 @@
-module.exports =  {
+module.exports = {
   apps : [{
-    name      : 'green-rx-backend', // A unique name for your application
-    script    : 'dist/src/server.js',      // The entry point file for your Node.js app
-    instances : 'max',         // 'max' will use all available CPU cores for load balancing
-    exec_mode : 'fork',     // Run in cluster mode
-    watch     : true,          // Watch for file changes and restart the app (optional, useful for development)
+    name      : 'green-rx-backend',
+    script    : 'dist/src/server.js',
+    instances : 1,          // Change this to 1
+    exec_mode : 'fork',     // Keep as fork
+    watch     : true,
     env_production : {
-      NODE_ENV: 'production', // Environment variables for the production environment
+      NODE_ENV: 'production',
       PORT: 6010
     }
   }]
