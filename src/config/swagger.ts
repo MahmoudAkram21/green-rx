@@ -208,49 +208,49 @@ s('/consultations/doctor/{doctorId}/followups', 'get', 'Consultations', 'Get upc
 // VISITS  →  /api/visits/*
 // ═══════════════════════════════════════════════════
 s('/visits', 'post', 'Visits', 'Create a visit record');
-s('/visits/{id}', 'get', 'Visits', 'Get visit by ID', false, [p('id')]);
-s('/visits/{id}', 'patch', 'Visits', 'Update a visit', false, [p('id')]);
-s('/visits/{id}', 'delete', 'Visits', 'Delete a visit', false, [p('id')]);
-s('/visits/patient/{patientId}', 'get', 'Visits', 'Get all visits for a patient', false, [p('patientId')]);
-s('/visits/doctor/{doctorId}', 'get', 'Visits', 'Get all visits for a doctor', false, [p('doctorId')]);
+s('/visits/{id}', 'get', 'Visits', 'Get visit by ID', true, [p('id')]);
+s('/visits/{id}', 'patch', 'Visits', 'Update a visit', true, [p('id')]);
+s('/visits/{id}', 'delete', 'Visits', 'Delete a visit', true, [p('id')]);
+s('/visits/patient/{patientId}', 'get', 'Visits', 'Get all visits for a patient', true, [p('patientId')]);
+s('/visits/doctor/{doctorId}', 'get', 'Visits', 'Get all visits for a doctor', true, [p('doctorId')]);
 
 // ═══════════════════════════════════════════════════
 // MEDICAL REPORTS  →  /api/medical-reports/*
 // ═══════════════════════════════════════════════════
 s('/medical-reports', 'post', 'Medical Reports', 'Create a medical report');
-s('/medical-reports/patient/{patientId}', 'get', 'Medical Reports', 'Get all medical reports for a patient', false, [p('patientId')]);
-s('/medical-reports/{id}', 'get', 'Medical Reports', 'Get medical report by ID', false, [p('id')]);
-s('/medical-reports/{id}', 'patch', 'Medical Reports', 'Update a medical report', false, [p('id')]);
-s('/medical-reports/{id}', 'delete', 'Medical Reports', 'Delete a medical report', false, [p('id')]);
-s('/medical-reports/{id}/upload', 'post', 'Medical Reports', 'Upload a file for a medical report', false, [p('id')]);
+s('/medical-reports/patient/{patientId}', 'get', 'Medical Reports', 'Get all medical reports for a patient', true, [p('patientId')]);
+s('/medical-reports/{id}', 'get', 'Medical Reports', 'Get medical report by ID', true, [p('id')]);
+s('/medical-reports/{id}', 'patch', 'Medical Reports', 'Update a medical report', true, [p('id')]);
+s('/medical-reports/{id}', 'delete', 'Medical Reports', 'Delete a medical report', true, [p('id')]);
+s('/medical-reports/{id}/upload', 'post', 'Medical Reports', 'Upload a file for a medical report', true, [p('id')]);
 
 // ═══════════════════════════════════════════════════
 // SHARE LINKS  →  /api/share-links/*
 // ═══════════════════════════════════════════════════
-s('/share-links/patient/{patientId}', 'get', 'Share Links', 'Get all share links for a patient', false, [p('patientId')]);
-s('/share-links/patient/{patientId}', 'post', 'Share Links', 'Generate a new share link for a patient', false, [p('patientId')]);
+s('/share-links/patient/{patientId}', 'get', 'Share Links', 'Get all share links for a patient', true, [p('patientId')]);
+s('/share-links/patient/{patientId}', 'post', 'Share Links', 'Generate a new share link for a patient', true, [p('patientId')]);
 s('/share-links/shared/{token}', 'get', 'Share Links', 'Access shared patient data via token (public)', false, [ps('token')]);
-s('/share-links/{id}/revoke', 'patch', 'Share Links', 'Revoke a share link', false, [p('id')]);
-s('/share-links/{id}', 'patch', 'Share Links', 'Update share link settings', false, [p('id')]);
-s('/share-links/{id}', 'delete', 'Share Links', 'Delete a share link', false, [p('id')]);
+s('/share-links/{id}/revoke', 'patch', 'Share Links', 'Revoke a share link', true, [p('id')]);
+s('/share-links/{id}', 'patch', 'Share Links', 'Update share link settings', true, [p('id')]);
+s('/share-links/{id}', 'delete', 'Share Links', 'Delete a share link', true, [p('id')]);
 
 // ═══════════════════════════════════════════════════
 // RATINGS  →  /api/ratings/*
 // ═══════════════════════════════════════════════════
 s('/ratings', 'post', 'Ratings', 'Create or update a rating');
-s('/ratings/doctor/{doctorId}', 'get', 'Ratings', 'Get ratings for a doctor', false, [p('doctorId')]);
-s('/ratings/pharmacist/{pharmacistId}', 'get', 'Ratings', 'Get ratings for a pharmacist', false, [p('pharmacistId')]);
-s('/ratings/patient/{patientId}', 'get', 'Ratings', 'Get ratings submitted by a patient', false, [p('patientId')]);
-s('/ratings/{id}', 'delete', 'Ratings', 'Delete a rating', false, [p('id')]);
+s('/ratings/doctor/{doctorId}', 'get', 'Ratings', 'Get ratings for a doctor', true, [p('doctorId')]);
+s('/ratings/pharmacist/{pharmacistId}', 'get', 'Ratings', 'Get ratings for a pharmacist', true, [p('pharmacistId')]);
+s('/ratings/patient/{patientId}', 'get', 'Ratings', 'Get ratings submitted by a patient', true, [p('patientId')]);
+s('/ratings/{id}', 'delete', 'Ratings', 'Delete a rating', true, [p('id')]);
 
 // ═══════════════════════════════════════════════════
 // NOTIFICATIONS  →  /api/notifications/*
 // ═══════════════════════════════════════════════════
 s('/notifications', 'post', 'Notifications', 'Create a notification');
-s('/notifications/user/{userId}', 'get', 'Notifications', 'Get all notifications for a user', false, [p('userId')]);
-s('/notifications/user/{userId}/read-all', 'patch', 'Notifications', 'Mark all notifications as read', false, [p('userId')]);
-s('/notifications/{id}/read', 'patch', 'Notifications', 'Mark a single notification as read', false, [p('id')]);
-s('/notifications/{id}', 'delete', 'Notifications', 'Delete a notification', false, [p('id')]);
+s('/notifications/user/{userId}', 'get', 'Notifications', 'Get all notifications for a user', true, [p('userId')]);
+s('/notifications/user/{userId}/read-all', 'patch', 'Notifications', 'Mark all notifications as read', true, [p('userId')]);
+s('/notifications/{id}/read', 'patch', 'Notifications', 'Mark a single notification as read', true, [p('id')]);
+s('/notifications/{id}', 'delete', 'Notifications', 'Delete a notification', true, [p('id')]);
 s('/notifications/appointment-reminders', 'post', 'Notifications', 'Trigger appointment reminder notifications');
 
 // ═══════════════════════════════════════════════════
