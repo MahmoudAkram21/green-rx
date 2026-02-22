@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.cleanupFile = exports.upload = void 0;
+exports.cleanupFile = exports.uploadLogo = exports.upload = void 0;
 const multer_1 = __importDefault(require("multer"));
 const path_1 = __importDefault(require("path"));
 const fs_1 = __importDefault(require("fs"));
@@ -46,6 +46,22 @@ exports.upload = (0, multer_1.default)({
     limits: {
         fileSize: 50 * 1024 * 1024 // 50MB max file size
     }
+});
+// Memory storage for logo (saved to DB)
+const memoryStorage = multer_1.default.memoryStorage();
+const logoFileFilter = (_req, file, cb) => {
+    const allowed = ['image/png', 'image/jpeg', 'image/gif', 'image/webp', 'image/svg+xml'];
+    if (file.mimetype && allowed.includes(file.mimetype)) {
+        cb(null, true);
+    }
+    else {
+        cb(new Error('Only image files (PNG, JPEG, GIF, WebP, SVG) are allowed'));
+    }
+};
+exports.uploadLogo = (0, multer_1.default)({
+    storage: memoryStorage,
+    fileFilter: logoFileFilter,
+    limits: { fileSize: 2 * 1024 * 1024 } // 2MB
 });
 // Cleanup utility - delete file after processing
 const cleanupFile = (filePath) => {

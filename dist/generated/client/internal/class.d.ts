@@ -442,6 +442,17 @@ export interface PrismaClient<in LogOpts extends Prisma.LogLevel = never, in out
         omit: OmitOpts;
     }>;
     /**
+     * `prisma.appSetting`: Exposes CRUD operations for the **AppSetting** model.
+      * Example usage:
+      * ```ts
+      * // Fetch zero or more AppSettings
+      * const appSettings = await prisma.appSetting.findMany()
+      * ```
+      */
+    get appSetting(): Prisma.AppSettingDelegate<ExtArgs, {
+        omit: OmitOpts;
+    }>;
+    /**
      * `prisma.session`: Exposes CRUD operations for the **Session** model.
       * Example usage:
       * ```ts

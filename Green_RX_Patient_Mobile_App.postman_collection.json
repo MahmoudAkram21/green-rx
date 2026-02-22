@@ -1,0 +1,1319 @@
+{
+    "info": {
+        "name": "Green RX - Patient Mobile App",
+        "description": "API Collection for Patient Mobile App\n\n**How the patient gets their own info:**\n1. Login → POST /auth/login with email & password. Response includes **token** and usually **user** (id, email, role).\n2. Decode the JWT or use login response to get **userId** (e.g. user.id).\n3. Get full patient profile → **GET /api/patients/user/:userId** with header **Authorization: Bearer {{accessToken}}**. Returns the patient record (including medicalHistories, familyHistories, allergies, childrenProfiles, etc.) for that user. Use this as \"Get My Profile\".\n4. Alternatively, if you already have **patientId**, use **GET /api/patients/:id** to get that patient by ID.\n5. All other patient endpoints (medical-history, family-history, children, allergies, etc.) use **:patientId** in the URL — use the **id** from the profile (step 3) as :patientId.\n\n**What Patients Can Do:**\n✅ Manage MY profile & medical history\n✅ Track MY allergies & diseases\n✅ View MY prescriptions (read-only)\n✅ Book & manage MY appointments\n✅ Report adverse drug reactions\n✅ Share MY medical records\n✅ Rate doctors\n✅ Search medications & diseases\n\n**What Patients CANNOT Do:**\n❌ View other patients' data\n❌ Create prescriptions\n❌ Access all patients list\n❌ Perform admin functions\n\n**Authentication:** All endpoints require Bearer token (except Register/Login)\n**Base URL:** http://localhost:5000/api",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+        "version": "2.2.0"
+    },
+    "auth": {
+        "type": "bearer",
+        "bearer": [
+            {
+                "key": "token",
+                "value": "{{accessToken}}",
+                "type": "string"
+            }
+        ]
+    },
+    "variable": [
+        {
+            "key": "baseUrl",
+            "value": "http://localhost:5000/api",
+            "type": "string"
+        },
+        {
+            "key": "accessToken",
+            "value": "",
+            "type": "string"
+        }
+    ],
+    "item": [
+        {
+            "name": "🔐 Authentication",
+            "item": [
+                {
+                    "name": "Register",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"email\": \"patient@example.com\",\n  \"password\": \"SecurePass123!\",\n  \"role\": \"Patient\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/auth/register",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "register"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Login",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "var jsonData = pm.response.json();",
+                                    "pm.collectionVariables.set(\"accessToken\", jsonData.token);"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"email\": \"patient@example.com\",\n  \"password\": \"SecurePass123!\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/auth/login",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "login"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Logout",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/auth/logout",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "logout"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "👤 Patients",
+            "item": [
+                {
+                    "name": "Get Patient by ID",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{baseUrl}}/patients/:patientId",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "patients",
+                                ":patientId"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "patientId",
+                                    "value": "1"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get My Profile by User ID",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{baseUrl}}/patients/user/:userId",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "patients",
+                                "user",
+                                ":userId"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "userId",
+                                    "value": "1",
+                                    "description": "User ID from login (use to get own patient profile)"
+                                }
+                            ]
+                        },
+                        "description": "Primary way for a patient to get their own full profile. Use the userId from the login response (or decoded from JWT). Returns patient with medicalHistories, familyHistories, allergies, childrenProfiles, etc. Use the returned patient.id as :patientId for other endpoints."
+                    }
+                },
+                {
+                    "name": "Update Patient",
+                    "request": {
+                        "method": "PUT",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"name\": \"Sara Ahmed\",\n  \"age\": 32,\n  \"weight\": 65,\n  \"height\": 165\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/patients/1",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "patients",
+                                "1"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Add Medical History",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "[\n  {\n    \"diseaseId\": 1,\n    \"severity\": \"Moderate\",\n    \"diagnosisDate\": \"2023-01-15T00:00:00Z\",\n    \"treatment\": \"Lifestyle modification and medication\",\n    \"status\": \"Chronic\",\n    \"notes\": \"Requires regular monitoring\"\n  },\n  {\n    \"diseaseId\": 2,\n    \"severity\": \"Mild\",\n    \"status\": \"Resolved\"\n  }\n]",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/patients/:patientId/medical-history",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "patients",
+                                ":patientId",
+                                "medical-history"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "patientId",
+                                    "value": "1"
+                                }
+                            ]
+                        },
+                        "description": "Accepts single object or array. Use array for form with multiple entries. Response: { message, count, medicalHistories }."
+                    }
+                },
+                {
+                    "name": "Get Medical History",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/patients/:patientId/medical-history",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "patients",
+                                ":patientId",
+                                "medical-history"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "patientId",
+                                    "value": "1"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Add Family History",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "[\n  {\n    \"relation\": \"Father\",\n    \"diseaseId\": 2,\n    \"severity\": \"Severe\",\n    \"notes\": \"Diagnosed at age 55\"\n  },\n  {\n    \"relation\": \"Mother\",\n    \"diseaseId\": 1,\n    \"severity\": \"Moderate\"\n  }\n]",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/patients/:patientId/family-history",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "patients",
+                                ":patientId",
+                                "family-history"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "patientId",
+                                    "value": "1"
+                                }
+                            ]
+                        },
+                        "description": "Accepts single object or array. Use array for form with multiple entries. Response: { message, count, familyHistories }."
+                    }
+                },
+                {
+                    "name": "Update Lifestyle",
+                    "request": {
+                        "method": "PUT",
+                        "header": [],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"smoking\": false,\n  \"alcoholAbuse\": false,\n  \"excessCaffeine\": true,\n  \"waterDaily\": 2.5,\n  \"travellerAbroad\": false,\n  \"annualVaccination\": true,\n  \"surgeriesLast3Months\": false\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/patients/:patientId/lifestyle",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "patients",
+                                ":patientId",
+                                "lifestyle"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "patientId",
+                                    "value": "1"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Child Profiles",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/patients/:patientId/children",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "patients",
+                                ":patientId",
+                                "children"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "patientId",
+                                    "value": "1"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Add Child Profile",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "[\n  {\n    \"name\": \"Ahmed Mohamed\",\n    \"dateOfBirth\": \"2016-05-01T00:00:00Z\",\n    \"gender\": \"Male\",\n    \"ageClassification\": \"Children\",\n    \"weight\": 25,\n    \"height\": 130\n  },\n  {\n    \"name\": \"Fatma Ali\",\n    \"dateOfBirth\": \"2020-03-15T00:00:00Z\",\n    \"gender\": \"Female\",\n    \"ageClassification\": \"Toddlers\"\n  }\n]",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/patients/:patientId/children",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "patients",
+                                ":patientId",
+                                "children"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "patientId",
+                                    "value": "1"
+                                }
+                            ]
+                        },
+                        "description": "Accepts single object or array. Use array for form with multiple children. Required: name, dateOfBirth (ISO), gender, ageClassification. Response: { message, count, childProfiles }."
+                    }
+                },
+                {
+                    "name": "Delete Child Profile",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/patients/children/:childId",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "patients",
+                                "children",
+                                ":childId"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "childId",
+                                    "value": "1"
+                                }
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "🩺 Patient Diseases (NEW)",
+            "item": [
+                {
+                    "name": "Add Patient Disease",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"diseaseId\": 1,\n  \"diagnosisDate\": \"2024-01-10T00:00:00Z\",\n  \"severity\": \"Moderate\",\n  \"status\": \"Active\",\n  \"notes\": \"Under treatment\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/patient-diseases/patient/:patientId",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "patient-diseases",
+                                "patient",
+                                ":patientId"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "patientId",
+                                    "value": "1"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Patient Diseases",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/patient-diseases/patient/:patientId?status=Active",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "patient-diseases",
+                                "patient",
+                                ":patientId"
+                            ],
+                            "query": [
+                                {
+                                    "key": "status",
+                                    "value": "Active"
+                                }
+                            ],
+                            "variable": [
+                                {
+                                    "key": "patientId",
+                                    "value": "1"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Active Diseases",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/patient-diseases/patient/:patientId/active",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "patient-diseases",
+                                "patient",
+                                ":patientId",
+                                "active"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "patientId",
+                                    "value": "1"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Update Disease Status",
+                    "request": {
+                        "method": "PATCH",
+                        "header": [],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"status\": \"Resolved\",\n  \"notes\": \"Treatment completed successfully\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/patient-diseases/:id",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "patient-diseases",
+                                ":id"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "id",
+                                    "value": "1",
+                                    "description": "PatientDisease record ID (not diseaseId)"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Delete Patient Disease",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/patient-diseases/:id",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "patient-diseases",
+                                ":id"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "id",
+                                    "value": "1",
+                                    "description": "PatientDisease record ID (not diseaseId)"
+                                }
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "🚫 Allergies",
+            "item": [
+                {
+                    "name": "Create Allergy",
+                    "request": {
+                        "method": "POST",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"patientId\": 1,\n  \"allergen\": \"Penicillin\",\n  \"severity\": \"Moderate\",\n  \"reaction\": \"Skin rash\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/allergies",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "allergies"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Patient Allergies",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{baseUrl}}/allergies/patient/1",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "allergies",
+                                "patient",
+                                "1"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Delete Allergy",
+                    "request": {
+                        "method": "DELETE",
+                        "url": {
+                            "raw": "{{baseUrl}}/allergies/1",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "allergies",
+                                "1"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "📝 Prescriptions",
+            "item": [
+                {
+                    "name": "Get Patient Prescriptions",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{baseUrl}}/prescriptions/patient/1",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "prescriptions",
+                                "patient",
+                                "1"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "🔄 Prescription Versions (NEW)",
+            "item": [
+                {
+                    "name": "Get Prescription Versions",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{baseUrl}}/prescription-versions/prescription/1",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "prescription-versions",
+                                "prescription",
+                                "1"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Compare Versions",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{baseUrl}}/prescription-versions/prescription/1/compare?version1=1&version2=2",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "prescription-versions",
+                                "prescription",
+                                "1",
+                                "compare"
+                            ],
+                            "query": [
+                                {
+                                    "key": "version1",
+                                    "value": "1"
+                                },
+                                {
+                                    "key": "version2",
+                                    "value": "2"
+                                }
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "⚠️ Drug Interactions (NEW)",
+            "item": [
+                {
+                    "name": "Get Patient Alerts",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{baseUrl}}/drug-interactions/patient/:patientId",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "drug-interactions",
+                                "patient",
+                                ":patientId"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "patientId",
+                                    "value": "1"
+                                }
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "⚕️ Adverse Drug Reactions (NEW)",
+            "item": [
+                {
+                    "name": "Report ADR",
+                    "request": {
+                        "method": "POST",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"patientId\": 1,\n  \"tradeNameId\": 25,\n  \"companyId\": 1,\n  \"severity\": \"Moderate\",\n  \"reaction\": \"Nausea and dizziness 2 hours after taking medication\",\n  \"startDate\": \"2025-12-22T12:00:00Z\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/adverse-drug-reactions",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "adverse-drug-reactions"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Patient ADRs",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{baseUrl}}/adverse-drug-reactions/patient/1",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "adverse-drug-reactions",
+                                "patient",
+                                "1"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "📅 Appointments",
+            "item": [
+                {
+                    "name": "Create Appointment",
+                    "request": {
+                        "method": "POST",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"patientId\": 1,\n  \"doctorId\": 1,\n  \"appointmentDate\": \"2025-12-25T10:00:00Z\",\n  \"reason\": \"Regular checkup\",\n  \"duration\": 30\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/appointments",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "appointments"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Patient Appointments",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{baseUrl}}/appointments/patient/1",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "appointments",
+                                "patient",
+                                "1"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Cancel Appointment",
+                    "request": {
+                        "method": "POST",
+                        "url": {
+                            "raw": "{{baseUrl}}/appointments/:appointmentId/cancel",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "appointments",
+                                ":appointmentId",
+                                "cancel"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "appointmentId",
+                                    "value": "1"
+                                }
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "🏥 Visits (NEW)",
+            "item": [
+                {
+                    "name": "Get Patient Visits",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{baseUrl}}/visits/patient/1",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "visits",
+                                "patient",
+                                "1"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "📋 Medical Reports (NEW)",
+            "item": [
+                {
+                    "name": "Get Patient Reports",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{baseUrl}}/medical-reports/patient/1",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "medical-reports",
+                                "patient",
+                                "1"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "⭐ Ratings (NEW)",
+            "item": [
+                {
+                    "name": "Rate Doctor",
+                    "request": {
+                        "method": "POST",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"ratedEntityType\": \"Doctor\",\n  \"ratedEntityId\": 1,\n  \"rating\": 5,\n  \"comment\": \"Excellent doctor, very professional\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/ratings",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "ratings"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Doctor Ratings",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{baseUrl}}/ratings/doctor/:doctorId",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "ratings",
+                                "doctor",
+                                ":doctorId"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "doctorId",
+                                    "value": "1"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Delete My Rating",
+                    "request": {
+                        "method": "DELETE",
+                        "url": {
+                            "raw": "{{baseUrl}}/ratings/:ratingId",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "ratings",
+                                ":ratingId"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "ratingId",
+                                    "value": "1"
+                                }
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "🔗 Patient Share Links (NEW)",
+            "item": [
+                {
+                    "name": "Generate Share Link",
+                    "request": {
+                        "method": "POST",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"expiresInDays\": 7,\n  \"includeData\": {\n    \"medicalHistory\": true,\n    \"prescriptions\": true,\n    \"allergies\": true,\n    \"medicalReports\": false\n  }\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/share-links/patient/1",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "share-links",
+                                "patient",
+                                "1"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Access Shared Data (Public)",
+                    "request": {
+                        "method": "GET",
+                        "auth": {
+                            "type": "noauth"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/share-links/shared/a1b2c3d4e5f6",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "share-links",
+                                "shared",
+                                "a1b2c3d4e5f6"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Patient Share Links",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{baseUrl}}/share-links/patient/1",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "share-links",
+                                "patient",
+                                "1"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Revoke Share Link",
+                    "request": {
+                        "method": "PATCH",
+                        "url": {
+                            "raw": "{{baseUrl}}/share-links/:linkId/revoke",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "share-links",
+                                ":linkId",
+                                "revoke"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "linkId",
+                                    "value": "1"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Update Share Link",
+                    "request": {
+                        "method": "PATCH",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"expiresInDays\": 14,\n  \"isActive\": true\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/share-links/:linkId",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "share-links",
+                                ":linkId"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "linkId",
+                                    "value": "1"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Delete Share Link",
+                    "request": {
+                        "method": "DELETE",
+                        "url": {
+                            "raw": "{{baseUrl}}/share-links/:linkId",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "share-links",
+                                ":linkId"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "linkId",
+                                    "value": "1"
+                                }
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "🔔 Notifications (NEW)",
+            "item": [
+                {
+                    "name": "Get User Notifications",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{baseUrl}}/notifications/user/1?unreadOnly=true",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "notifications",
+                                "user",
+                                "1"
+                            ],
+                            "query": [
+                                {
+                                    "key": "unreadOnly",
+                                    "value": "true"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Mark as Read",
+                    "request": {
+                        "method": "PATCH",
+                        "url": {
+                            "raw": "{{baseUrl}}/notifications/1/read",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "notifications",
+                                "1",
+                                "read"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Mark All as Read",
+                    "request": {
+                        "method": "PATCH",
+                        "url": {
+                            "raw": "{{baseUrl}}/notifications/user/1/read-all",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "notifications",
+                                "user",
+                                "1",
+                                "read-all"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "💳 Subscriptions",
+            "item": [
+                {
+                    "name": "Get Pricing Plans",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{baseUrl}}/pricing-plans",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "pricing-plans"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Create Subscription",
+                    "request": {
+                        "method": "POST",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"userId\": 1,\n  \"pricingPlanId\": 1,\n  \"autoRenew\": true\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/subscriptions",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "subscriptions"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "💊 Active Substances",
+            "item": [
+                {
+                    "name": "Get All Active Substances",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{baseUrl}}/active-substances?page=1&limit=20&search=aspirin",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "active-substances"
+                            ],
+                            "query": [
+                                {
+                                    "key": "page",
+                                    "value": "1"
+                                },
+                                {
+                                    "key": "limit",
+                                    "value": "20"
+                                },
+                                {
+                                    "key": "search",
+                                    "value": "aspirin"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Active Substance by ID",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{baseUrl}}/active-substances/1",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "active-substances",
+                                "1"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "🏷️ Trade Names",
+            "item": [
+                {
+                    "name": "Get All Trade Names",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{baseUrl}}/trade-names",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "trade-names"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Trade Name by ID",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{baseUrl}}/trade-names/1",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "trade-names",
+                                "1"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "🏥 Diseases",
+            "item": [
+                {
+                    "name": "Get All Diseases",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{baseUrl}}/diseases",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "diseases"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Disease by ID",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{baseUrl}}/diseases/1",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "diseases",
+                                "1"
+                            ]
+                        }
+                    }
+                }
+            ]
+        }
+    ]
+}

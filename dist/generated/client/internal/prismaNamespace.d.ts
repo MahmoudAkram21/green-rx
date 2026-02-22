@@ -261,6 +261,7 @@ export declare const ModelName: {
     readonly AuditLog: "AuditLog";
     readonly Permission: "Permission";
     readonly RolePermission: "RolePermission";
+    readonly AppSetting: "AppSetting";
     readonly Session: "Session";
     readonly Pharmacist: "Pharmacist";
     readonly MedicalReport: "MedicalReport";
@@ -286,7 +287,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         omit: GlobalOmitOptions;
     };
     meta: {
-        modelProps: "user" | "pricingPlan" | "subscription" | "payment" | "patient" | "medicalHistory" | "familyHistory" | "lifestyle" | "allergy" | "doctor" | "patientDoctor" | "consultation" | "appointment" | "disease" | "patientDisease" | "diseaseWarningRule" | "activeSubstance" | "diseaseActiveSubstanceWarning" | "medicineAlternative" | "tradeName" | "company" | "contractingCompany" | "contractingCompanyTradeName" | "prescription" | "prescriptionVersion" | "drugInteractionAlert" | "notification" | "auditLog" | "permission" | "rolePermission" | "session" | "pharmacist" | "medicalReport" | "patientShareLink" | "adverseDrugReaction" | "childProfile" | "rating" | "visit" | "contraindicationTermMapping" | "batchHistory" | "importHistory" | "medicineSuggestion" | "exportHistory";
+        modelProps: "user" | "pricingPlan" | "subscription" | "payment" | "patient" | "medicalHistory" | "familyHistory" | "lifestyle" | "allergy" | "doctor" | "patientDoctor" | "consultation" | "appointment" | "disease" | "patientDisease" | "diseaseWarningRule" | "activeSubstance" | "diseaseActiveSubstanceWarning" | "medicineAlternative" | "tradeName" | "company" | "contractingCompany" | "contractingCompanyTradeName" | "prescription" | "prescriptionVersion" | "drugInteractionAlert" | "notification" | "auditLog" | "permission" | "rolePermission" | "appSetting" | "session" | "pharmacist" | "medicalReport" | "patientShareLink" | "adverseDrugReaction" | "childProfile" | "rating" | "visit" | "contraindicationTermMapping" | "batchHistory" | "importHistory" | "medicineSuggestion" | "exportHistory";
         txIsolationLevel: TransactionIsolationLevel;
     };
     model: {
@@ -2510,6 +2511,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
                 };
             };
         };
+        AppSetting: {
+            payload: Prisma.$AppSettingPayload<ExtArgs>;
+            fields: Prisma.AppSettingFieldRefs;
+            operations: {
+                findUnique: {
+                    args: Prisma.AppSettingFindUniqueArgs<ExtArgs>;
+                    result: runtime.Types.Utils.PayloadToResult<Prisma.$AppSettingPayload> | null;
+                };
+                findUniqueOrThrow: {
+                    args: Prisma.AppSettingFindUniqueOrThrowArgs<ExtArgs>;
+                    result: runtime.Types.Utils.PayloadToResult<Prisma.$AppSettingPayload>;
+                };
+                findFirst: {
+                    args: Prisma.AppSettingFindFirstArgs<ExtArgs>;
+                    result: runtime.Types.Utils.PayloadToResult<Prisma.$AppSettingPayload> | null;
+                };
+                findFirstOrThrow: {
+                    args: Prisma.AppSettingFindFirstOrThrowArgs<ExtArgs>;
+                    result: runtime.Types.Utils.PayloadToResult<Prisma.$AppSettingPayload>;
+                };
+                findMany: {
+                    args: Prisma.AppSettingFindManyArgs<ExtArgs>;
+                    result: runtime.Types.Utils.PayloadToResult<Prisma.$AppSettingPayload>[];
+                };
+                create: {
+                    args: Prisma.AppSettingCreateArgs<ExtArgs>;
+                    result: runtime.Types.Utils.PayloadToResult<Prisma.$AppSettingPayload>;
+                };
+                createMany: {
+                    args: Prisma.AppSettingCreateManyArgs<ExtArgs>;
+                    result: BatchPayload;
+                };
+                createManyAndReturn: {
+                    args: Prisma.AppSettingCreateManyAndReturnArgs<ExtArgs>;
+                    result: runtime.Types.Utils.PayloadToResult<Prisma.$AppSettingPayload>[];
+                };
+                delete: {
+                    args: Prisma.AppSettingDeleteArgs<ExtArgs>;
+                    result: runtime.Types.Utils.PayloadToResult<Prisma.$AppSettingPayload>;
+                };
+                update: {
+                    args: Prisma.AppSettingUpdateArgs<ExtArgs>;
+                    result: runtime.Types.Utils.PayloadToResult<Prisma.$AppSettingPayload>;
+                };
+                deleteMany: {
+                    args: Prisma.AppSettingDeleteManyArgs<ExtArgs>;
+                    result: BatchPayload;
+                };
+                updateMany: {
+                    args: Prisma.AppSettingUpdateManyArgs<ExtArgs>;
+                    result: BatchPayload;
+                };
+                updateManyAndReturn: {
+                    args: Prisma.AppSettingUpdateManyAndReturnArgs<ExtArgs>;
+                    result: runtime.Types.Utils.PayloadToResult<Prisma.$AppSettingPayload>[];
+                };
+                upsert: {
+                    args: Prisma.AppSettingUpsertArgs<ExtArgs>;
+                    result: runtime.Types.Utils.PayloadToResult<Prisma.$AppSettingPayload>;
+                };
+                aggregate: {
+                    args: Prisma.AppSettingAggregateArgs<ExtArgs>;
+                    result: runtime.Types.Utils.Optional<Prisma.AggregateAppSetting>;
+                };
+                groupBy: {
+                    args: Prisma.AppSettingGroupByArgs<ExtArgs>;
+                    result: runtime.Types.Utils.Optional<Prisma.AppSettingGroupByOutputType>[];
+                };
+                count: {
+                    args: Prisma.AppSettingCountArgs<ExtArgs>;
+                    result: runtime.Types.Utils.Optional<Prisma.AppSettingCountAggregateOutputType> | number;
+                };
+            };
+        };
         Session: {
             payload: Prisma.$SessionPayload<ExtArgs>;
             fields: Prisma.SessionFieldRefs;
@@ -4075,6 +4150,14 @@ export declare const RolePermissionScalarFieldEnum: {
     readonly permissionId: "permissionId";
 };
 export type RolePermissionScalarFieldEnum = (typeof RolePermissionScalarFieldEnum)[keyof typeof RolePermissionScalarFieldEnum];
+export declare const AppSettingScalarFieldEnum: {
+    readonly id: "id";
+    readonly key: "key";
+    readonly valueBytes: "valueBytes";
+    readonly contentType: "contentType";
+    readonly updatedAt: "updatedAt";
+};
+export type AppSettingScalarFieldEnum = (typeof AppSettingScalarFieldEnum)[keyof typeof AppSettingScalarFieldEnum];
 export declare const SessionScalarFieldEnum: {
     readonly id: "id";
     readonly userId: "userId";
@@ -4466,6 +4549,14 @@ export type EnumNotificationTypeFieldRefInput<$PrismaModel> = FieldRefInputType<
  */
 export type ListEnumNotificationTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'NotificationType[]'>;
 /**
+ * Reference to a field of type 'Bytes'
+ */
+export type BytesFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Bytes'>;
+/**
+ * Reference to a field of type 'Bytes[]'
+ */
+export type ListBytesFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Bytes[]'>;
+/**
  * Reference to a field of type 'ReportType'
  */
 export type EnumReportTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ReportType'>;
@@ -4637,6 +4728,7 @@ export type GlobalOmitConfig = {
     auditLog?: Prisma.AuditLogOmit;
     permission?: Prisma.PermissionOmit;
     rolePermission?: Prisma.RolePermissionOmit;
+    appSetting?: Prisma.AppSettingOmit;
     session?: Prisma.SessionOmit;
     pharmacist?: Prisma.PharmacistOmit;
     medicalReport?: Prisma.MedicalReportOmit;

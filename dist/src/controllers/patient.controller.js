@@ -103,8 +103,8 @@ const getPatientById = async (req, res, next) => {
                 user: {
                     select: { email: true, role: true, isActive: true }
                 },
-                medicalHistories: true,
-                familyHistories: true,
+                medicalHistories: { include: { disease: true } },
+                familyHistories: { include: { disease: true } },
                 lifestyle: true,
                 allergies: true,
                 childrenProfiles: true,
@@ -313,10 +313,12 @@ const addAllergy = async (req, res, next) => {
             res.status(404).json({ error: 'Patient not found' });
             return;
         }
+        const { reaction, ...rest } = validatedData;
         const allergy = await prisma_1.prisma.allergy.create({
             data: {
                 patientId: parseInt(patientId),
-                ...validatedData
+                ...rest,
+                reactionType: reaction ?? null
             }
         });
         res.status(201).json({

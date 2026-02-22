@@ -9,6 +9,9 @@ require("dotenv/config");
 const index_1 = __importDefault(require("./routes/index"));
 const morgan_1 = require("./config/morgan");
 const logger_1 = __importDefault(require("./config/logger"));
+const swagger_1 = __importDefault(require("./config/swagger"));
+// Use require here to avoid ts-node declaration resolution issues in dev mode.
+const swaggerUi = require('swagger-ui-express');
 const app = (0, express_1.default)();
 // HTTP request logging (Morgan)
 app.use(morgan_1.morganMiddleware);
@@ -16,6 +19,11 @@ app.use(morgan_1.morganMiddleware);
 app.use((0, cors_1.default)());
 app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: true }));
+// Swagger / OpenAPI
+app.get('/api/openapi.json', (_req, res) => {
+    res.json(swagger_1.default);
+});
+app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swagger_1.default, { explorer: true }));
 // Routes
 app.use('/api', index_1.default);
 // Health check (root and under /api for consistency)
