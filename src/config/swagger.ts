@@ -154,7 +154,10 @@ const options: Record<string, unknown> = {
   definition: {
     openapi: '3.0.3',
     info: { title: 'Green RX Backend API', version: '1.0.0', description: 'Doctor and Patient mobile API documentation.' },
-    servers: [{ url: apiBase, description: 'Primary API server' }],
+    servers: [
+      { url: 'https://green-back.developteam.site/api', description: 'Production server' },
+      { url: apiBase, description: 'Local development server' }
+    ],
     tags: [
       { name: 'System', description: 'System endpoints' },
       { name: 'Auth', description: 'Authentication endpoints' },
