@@ -5,13 +5,9 @@ module.exports =  {
     instances : 'max',         // 'max' will use all available CPU cores for load balancing
     exec_mode : 'fork',     // Run in cluster mode
     watch     : true,          // Watch for file changes and restart the app (optional, useful for development)
-    env: {
-      NODE_ENV: 'production',
-      PORT: 6010
-    },
     env_production : {
       NODE_ENV: 'production', // Environment variables for the production environment
-      PORT: 8080
+      PORT: 6010
     }
   }]
 };
