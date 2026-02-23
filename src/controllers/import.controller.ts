@@ -580,20 +580,23 @@ class ImportController {
       if (entityType === "Company") {
         for (const row of data) {
           try {
-            const name = this.getFieldValue(row, "name") || this.getFieldValue(row, "company name");
+            const name = this.getFieldValue(row, ["name", "company name"]);
             if (!name) { results.failed++; results.errors.push("Row missing required field: name"); continue; }
+            const address = this.getFieldValue(row, ["address"]);
+            const governorate = this.getFieldValue(row, ["governorate"]);
+            const country = this.getFieldValue(row, ["country"]);
             await prisma.company.upsert({
               where: { name: String(name) },
               update: {
-                address: this.getFieldValue(row, "address") ? String(this.getFieldValue(row, "address")) : undefined,
-                governorate: this.getFieldValue(row, "governorate") ? String(this.getFieldValue(row, "governorate")) : undefined,
-                country: this.getFieldValue(row, "country") ? String(this.getFieldValue(row, "country")) : undefined,
+                address: address ? String(address) : undefined,
+                governorate: governorate ? String(governorate) : undefined,
+                country: country ? String(country) : undefined,
               },
               create: {
                 name: String(name),
-                address: this.getFieldValue(row, "address") ? String(this.getFieldValue(row, "address")) : undefined,
-                governorate: this.getFieldValue(row, "governorate") ? String(this.getFieldValue(row, "governorate")) : undefined,
-                country: this.getFieldValue(row, "country") ? String(this.getFieldValue(row, "country")) : undefined,
+                address: address ? String(address) : undefined,
+                governorate: governorate ? String(governorate) : undefined,
+                country: country ? String(country) : undefined,
               },
             });
             results.successful++;
@@ -606,20 +609,21 @@ class ImportController {
         const validSeverities = ["None", "Mild", "Moderate", "Severe", "Critical"];
         for (const row of data) {
           try {
-            const name = this.getFieldValue(row, "name") || this.getFieldValue(row, "disease name");
-            const severityRaw = this.getFieldValue(row, "severity");
+            const name = this.getFieldValue(row, ["name", "disease name"]);
+            const severityRaw = this.getFieldValue(row, ["severity"]);
             const severity = validSeverities.includes(String(severityRaw)) ? String(severityRaw) : "None";
             if (!name) { results.failed++; results.errors.push("Row missing required field: name"); continue; }
+            const description = this.getFieldValue(row, ["description"]);
             await prisma.disease.upsert({
               where: { name: String(name) },
               update: {
                 severity: severity as any,
-                description: this.getFieldValue(row, "description") ? String(this.getFieldValue(row, "description")) : undefined,
+                description: description ? String(description) : undefined,
               },
               create: {
                 name: String(name),
                 severity: severity as any,
-                description: this.getFieldValue(row, "description") ? String(this.getFieldValue(row, "description")) : undefined,
+                description: description ? String(description) : undefined,
               },
             });
             results.successful++;
@@ -631,22 +635,25 @@ class ImportController {
       } else if (entityType === "TradeName") {
         for (const row of data) {
           try {
-            const title = this.getFieldValue(row, "title") || this.getFieldValue(row, "trade name");
-            const activeSubstanceId = this.getFieldValue(row, "activesubstanceid") || this.getFieldValue(row, "active substance id");
-            const companyId = this.getFieldValue(row, "companyid") || this.getFieldValue(row, "company id");
+            const title = this.getFieldValue(row, ["title", "trade name"]);
+            const activeSubstanceId = this.getFieldValue(row, ["activesubstanceid", "active substance id"]);
+            const companyId = this.getFieldValue(row, ["companyid", "company id"]);
             if (!title || !activeSubstanceId || !companyId) {
               results.failed++;
               results.errors.push("Row missing required fields: title, activeSubstanceId, companyId");
               continue;
             }
+            const batchNumber = this.getFieldValue(row, ["batchnumber", "batch number"]);
+            const barCode = this.getFieldValue(row, ["barcode", "bar code"]);
+            const stockQuantity = this.getFieldValue(row, ["stockquantity", "stock quantity"]);
             await prisma.tradeName.create({
               data: {
                 title: String(title),
                 activeSubstanceId: Number(activeSubstanceId),
                 companyId: Number(companyId),
-                batchNumber: this.getFieldValue(row, "batchnumber") ? String(this.getFieldValue(row, "batchnumber")) : undefined,
-                barCode: this.getFieldValue(row, "barcode") ? String(this.getFieldValue(row, "barcode")) : undefined,
-                stockQuantity: this.getFieldValue(row, "stockquantity") ? Number(this.getFieldValue(row, "stockquantity")) : undefined,
+                batchNumber: batchNumber ? String(batchNumber) : undefined,
+                barCode: barCode ? String(barCode) : undefined,
+                stockQuantity: stockQuantity ? Number(stockQuantity) : undefined,
               },
             });
             results.successful++;
@@ -658,20 +665,21 @@ class ImportController {
       } else if (entityType === "ContractingCompany") {
         for (const row of data) {
           try {
-            const title = this.getFieldValue(row, "title") || this.getFieldValue(row, "contracting company");
-            const companyId = this.getFieldValue(row, "companyid") || this.getFieldValue(row, "company id");
-            const contractingDateRaw = this.getFieldValue(row, "contractingdate") || this.getFieldValue(row, "contracting date");
+            const title = this.getFieldValue(row, ["title", "contracting company"]);
+            const companyId = this.getFieldValue(row, ["companyid", "company id"]);
+            const contractingDateRaw = this.getFieldValue(row, ["contractingdate", "contracting date"]);
             if (!title || !companyId || !contractingDateRaw) {
               results.failed++;
               results.errors.push("Row missing required fields: title, companyId, contractingDate");
               continue;
             }
+            const expiryDateRaw = this.getFieldValue(row, ["expirydate", "expiry date"]);
             await prisma.contractingCompany.create({
               data: {
                 title: String(title),
                 companyId: Number(companyId),
                 contractingDate: new Date(String(contractingDateRaw)),
-                expiryDate: this.getFieldValue(row, "expirydate") ? new Date(String(this.getFieldValue(row, "expirydate"))) : undefined,
+                expiryDate: expiryDateRaw ? new Date(String(expiryDateRaw)) : undefined,
               },
             });
             results.successful++;
@@ -690,7 +698,6 @@ class ImportController {
           const fileExtension = req.file.originalname.split(".").pop()?.toLowerCase() || "xlsx";
           await prisma.importHistory.create({
             data: {
-              entityType,
               fileName: req.file.originalname,
               fileSize: req.file.size,
               fileType: fileExtension,
