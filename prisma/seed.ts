@@ -1,6 +1,6 @@
 import "dotenv/config";
 import { PrismaPg } from "@prisma/adapter-pg";
-import { PrismaClient } from "../generated/client/client";
+import { PrismaClient, Prisma } from "../generated/client/client";
 import * as bcrypt from "bcryptjs";
 
 const connectionString = `${process.env.DATABASE_URL}`;
@@ -1933,9 +1933,9 @@ async function main() {
         userId: patientUser1.id,
         type: "PrescriptionReady",
         title: "Prescription Ready",
-        message:
-          "Your prescription for Glucophage is ready for pickup at City Pharmacy",
+        message: "Your prescription for Glucophage is ready for pickup at City Pharmacy",
         isRead: false,
+        deliveryStatus: "Delivered",
       },
       {
         userId: patientUser2.id,
@@ -1943,10 +1943,654 @@ async function main() {
         title: "Appointment Reminder",
         message: "You have an appointment with Dr. Smith in 2 days",
         isRead: false,
+        deliveryStatus: "Delivered",
+      },
+      {
+        userId: patientUser2.id,
+        type: "PrescriptionReady",
+        title: "Prescription Filled",
+        message: "Your Norvasc prescription has been filled successfully",
+        isRead: true,
+        readAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000),
+        deliveryStatus: "Delivered",
+      },
+      {
+        userId: patientUser1.id,
+        type: "AppointmentReminder",
+        title: "Upcoming Appointment",
+        message: "Reminder: You have a diabetes checkup with Dr. Smith in 2 days",
+        isRead: true,
+        readAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
+        deliveryStatus: "Delivered",
+      },
+      {
+        userId: patientUser5.id,
+        type: "AppointmentReminder",
+        title: "Pediatric Checkup Reminder",
+        message: "Emma's asthma management review with Dr. Johnson is in 14 days",
+        isRead: false,
+        deliveryStatus: "Delivered",
+      },
+      {
+        userId: doctorUser1.id,
+        type: "SystemAlert",
+        title: "New Patient Assigned",
+        message: "Patient Alice Cooper has been assigned to your care",
+        isRead: true,
+        readAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000),
+        deliveryStatus: "Delivered",
+      },
+      {
+        userId: doctorUser1.id,
+        type: "DrugInteraction",
+        title: "Drug Interaction Alert",
+        message: "Potential interaction detected between Metformin and Ibuprofen for patient Bob Martinez",
+        isRead: false,
+        deliveryStatus: "Delivered",
+      },
+      {
+        userId: doctorUser2.id,
+        type: "SystemAlert",
+        title: "Account Verified",
+        message: "Your doctor account has been verified. You can now create prescriptions.",
+        isRead: true,
+        readAt: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000),
+        deliveryStatus: "Delivered",
+      },
+      {
+        userId: admin1.id,
+        type: "SystemAlert",
+        title: "Pending Doctor Verifications",
+        message: "There are 2 doctors awaiting verification: Dr. Emily Chen and Dr. Robert Kumar",
+        isRead: false,
+        deliveryStatus: "Delivered",
+      },
+      {
+        userId: superAdmin.id,
+        type: "SystemAlert",
+        title: "New ADR Report Submitted",
+        message: "A new adverse drug reaction report has been submitted for Zyrtec (Cetirizine)",
+        isRead: false,
+        deliveryStatus: "Delivered",
       },
     ],
   });
   console.log("✅ Created notifications");
+
+  // ============================================
+  // SECTION 13: PAYMENTS
+  // ============================================
+  console.log("\n💳 Creating payments...");
+  await prisma.payment.createMany({
+    data: [
+      {
+        subscriptionId: subscriptions[0].id, // Dr. Smith - Professional
+        amount: 79.99,
+        currency: "USD",
+        paymentMethod: "CreditCard",
+        transactionId: "TXN-2024-001",
+        status: "Completed",
+        paidAt: new Date(Date.now() - 29 * 24 * 60 * 60 * 1000),
+      },
+      {
+        subscriptionId: subscriptions[1].id, // Dr. Johnson - Enterprise
+        amount: 299.99,
+        currency: "USD",
+        paymentMethod: "BankTransfer",
+        transactionId: "TXN-2024-002",
+        status: "Completed",
+        paidAt: new Date(Date.now() - 28 * 24 * 60 * 60 * 1000),
+      },
+    ],
+  });
+  console.log("✅ Created payments");
+
+  // ============================================
+  // SECTION 14: PRESCRIPTION VERSIONS + DRUG INTERACTION ALERTS
+  // ============================================
+  console.log("\n📋 Creating prescription versions and drug interaction alerts...");
+  await prisma.prescriptionVersion.createMany({
+    data: [
+      {
+        prescriptionId: prescriptions[0].id, // Glucophage
+        version: 1,
+        changes: { created: true, dosage: "500mg", frequency: "Twice daily" },
+        changedBy: doctorUser1.id,
+      },
+      {
+        prescriptionId: prescriptions[1].id, // Norvasc
+        version: 1,
+        changes: { created: true, dosage: "5mg", frequency: "Once daily" },
+        changedBy: doctorUser1.id,
+      },
+      {
+        prescriptionId: prescriptions[1].id, // Norvasc - status update
+        version: 2,
+        changes: { status: { from: "Approved", to: "Filled" }, currentRefillCount: { from: 0, to: 1 } },
+        changedBy: doctorUser1.id,
+      },
+      {
+        prescriptionId: prescriptions[2].id, // Lipitor
+        version: 1,
+        changes: { created: true, dosage: "20mg", frequency: "Once daily at bedtime" },
+        changedBy: doctorUser1.id,
+      },
+      {
+        prescriptionId: prescriptions[3].id, // Zyrtec
+        version: 1,
+        changes: { created: true, dosage: "10mg", frequency: "Once daily" },
+        changedBy: doctorUser1.id,
+      },
+    ],
+  });
+
+  // Drug Interaction Alert: Metformin (diabetes) + Ibuprofen (NSAID) interaction
+  await prisma.drugInteractionAlert.createMany({
+    data: [
+      {
+        prescriptionId: prescriptions[0].id, // Glucophage prescription
+        interactingMedicineId: tradeNames[1].id, // Brufen (Ibuprofen)
+        interactionType: "Pharmacodynamic",
+        severity: "Moderate",
+        message: "NSAIDs like Ibuprofen may reduce the effectiveness of Metformin and increase risk of lactic acidosis. Monitor blood glucose closely.",
+        acknowledgedByDoctor: true,
+        acknowledgedByPatient: false,
+        acknowledgedAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000),
+      },
+      {
+        prescriptionId: prescriptions[2].id, // Lipitor
+        interactingMedicineId: tradeNames[4].id, // Norvasc (Amlodipine)
+        interactionType: "Pharmacokinetic",
+        severity: "Minor",
+        message: "Amlodipine may slightly increase Atorvastatin levels. Monitor for statin-related side effects such as myalgia.",
+        acknowledgedByDoctor: true,
+        acknowledgedByPatient: true,
+        acknowledgedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
+      },
+    ],
+  });
+  console.log("✅ Created prescription versions and drug interaction alerts");
+
+  // ============================================
+  // SECTION 15: CONTRACTING COMPANIES
+  // ============================================
+  console.log("\n🏢 Creating contracting companies...");
+  const contractingCompanies = await Promise.all([
+    prisma.contractingCompany.create({
+      data: {
+        title: "MedSupply Egypt",
+        companyId: companies[0].id, // Pfizer
+        contractingDate: new Date("2023-01-01"),
+        expiryDate: new Date("2025-12-31"),
+        isActive: true,
+      },
+    }),
+    prisma.contractingCompany.create({
+      data: {
+        title: "PharmaDist MENA",
+        companyId: companies[2].id, // GSK
+        contractingDate: new Date("2022-06-01"),
+        expiryDate: new Date("2024-12-31"),
+        isActive: true,
+      },
+    }),
+    prisma.contractingCompany.create({
+      data: {
+        title: "NovaDist Corp",
+        companyId: companies[1].id, // Novartis
+        contractingDate: new Date("2023-03-15"),
+        expiryDate: new Date("2025-03-14"),
+        isActive: true,
+      },
+    }),
+  ]);
+
+  await prisma.contractingCompanyTradeName.createMany({
+    data: [
+      { contractingCompanyId: contractingCompanies[0].id, tradeNameId: tradeNames[1].id }, // MedSupply + Brufen
+      { contractingCompanyId: contractingCompanies[0].id, tradeNameId: tradeNames[4].id }, // MedSupply + Norvasc
+      { contractingCompanyId: contractingCompanies[0].id, tradeNameId: tradeNames[6].id }, // MedSupply + Lipitor
+      { contractingCompanyId: contractingCompanies[1].id, tradeNameId: tradeNames[0].id }, // PharmaDist + Panadol
+      { contractingCompanyId: contractingCompanies[1].id, tradeNameId: tradeNames[2].id }, // PharmaDist + Amoxil
+      { contractingCompanyId: contractingCompanies[1].id, tradeNameId: tradeNames[7].id }, // PharmaDist + Ventolin
+      { contractingCompanyId: contractingCompanies[2].id, tradeNameId: tradeNames[5].id }, // NovaDist + Losec
+      { contractingCompanyId: contractingCompanies[2].id, tradeNameId: tradeNames[8].id }, // NovaDist + Zyrtec
+    ],
+  });
+  console.log(`✅ Created ${contractingCompanies.length} contracting companies with trade name links`);
+
+  // ============================================
+  // SECTION 16: MEDICINE ALTERNATIVES
+  // ============================================
+  console.log("\n🔄 Creating medicine alternatives...");
+  await prisma.medicineAlternative.createMany({
+    data: [
+      {
+        // Ibuprofen → Paracetamol (for pain, when NSAID contraindicated)
+        activeSubstanceId: activeSubstances[1].id,
+        alternativeActiveSubstanceId: activeSubstances[0].id,
+        reason: "Safer alternative for patients with GI issues, renal impairment, or cardiovascular risk",
+      },
+      {
+        // Paracetamol → Ibuprofen (for inflammatory pain)
+        activeSubstanceId: activeSubstances[0].id,
+        alternativeActiveSubstanceId: activeSubstances[1].id,
+        reason: "Alternative when anti-inflammatory effect is needed",
+      },
+      {
+        // Losartan → Amlodipine (ARB → CCB for hypertension)
+        activeSubstanceId: activeSubstances[9].id,
+        alternativeActiveSubstanceId: activeSubstances[4].id,
+        reason: "Alternative antihypertensive when ARB is not tolerated or contraindicated in pregnancy",
+      },
+      {
+        // Atorvastatin → Cetirizine is not an alt, use Losartan as alt for Atorvastatin → different drug class
+        activeSubstanceId: activeSubstances[6].id,
+        alternativeActiveSubstanceId: activeSubstances[9].id,
+        reason: "When statin is contraindicated (myopathy), consider ARB for cardiovascular protection",
+      },
+      {
+        // Amoxicillin → Cetirizine is not right; Amoxicillin alternative is itself in different class
+        // Salbutamol (inhaler) → Cetirizine for allergy-induced asthma prevention
+        activeSubstanceId: activeSubstances[7].id,
+        alternativeActiveSubstanceId: activeSubstances[8].id,
+        reason: "For allergy-triggered asthma, antihistamines can reduce trigger exposure",
+      },
+    ],
+  });
+  console.log("✅ Created medicine alternatives");
+
+  // ============================================
+  // SECTION 17: DISEASE ACTIVE SUBSTANCE WARNINGS
+  // ============================================
+  console.log("\n⚠️  Creating disease-active substance warnings...");
+  await prisma.diseaseActiveSubstanceWarning.createMany({
+    data: [
+      {
+        diseaseId: diseases[0].id, // Type 2 Diabetes
+        activeSubstanceId: activeSubstances[1].id, // Ibuprofen
+        warningFieldName: "gitWarning",
+        warningMessage: "NSAIDs in diabetic patients increase risk of renal impairment and mask hypoglycemia symptoms. Monitor blood glucose and renal function closely.",
+        severity: "High",
+      },
+      {
+        diseaseId: diseases[1].id, // Hypertension
+        activeSubstanceId: activeSubstances[1].id, // Ibuprofen
+        warningFieldName: "vascularWarning",
+        warningMessage: "NSAIDs can elevate blood pressure and reduce efficacy of antihypertensives. Avoid or use with close BP monitoring.",
+        severity: "High",
+      },
+      {
+        diseaseId: diseases[1].id, // Hypertension
+        activeSubstanceId: activeSubstances[9].id, // Losartan
+        warningFieldName: "renalWarning",
+        warningMessage: "ARBs require renal function monitoring in hypertensive patients, especially elderly or those with pre-existing kidney disease.",
+        severity: "Medium",
+      },
+      {
+        diseaseId: diseases[5].id, // Chronic Kidney Disease
+        activeSubstanceId: activeSubstances[3].id, // Metformin
+        warningFieldName: "renalWarning",
+        warningMessage: "Metformin is contraindicated in severe renal impairment (eGFR < 30). Risk of lactic acidosis. Dose reduction required if eGFR 30-45.",
+        severity: "Critical",
+      },
+      {
+        diseaseId: diseases[5].id, // Chronic Kidney Disease
+        activeSubstanceId: activeSubstances[1].id, // Ibuprofen
+        warningFieldName: "renalWarning",
+        warningMessage: "NSAIDs are contraindicated in chronic kidney disease as they can cause acute kidney injury and worsen renal function.",
+        severity: "Critical",
+      },
+      {
+        diseaseId: diseases[2].id, // Asthma
+        activeSubstanceId: activeSubstances[1].id, // Ibuprofen
+        warningFieldName: "pulmonaryWarning",
+        warningMessage: "NSAIDs can trigger bronchospasm in aspirin/NSAID-sensitive asthmatic patients (Samter's triad). Contraindicated in known NSAID-sensitive asthma.",
+        severity: "High",
+      },
+      {
+        diseaseId: diseases[7].id, // Coronary Artery Disease
+        activeSubstanceId: activeSubstances[1].id, // Ibuprofen
+        warningFieldName: "cardiacWarning",
+        warningMessage: "NSAIDs increase cardiovascular risk in patients with established CAD. Use minimum effective dose for shortest possible duration.",
+        severity: "Critical",
+      },
+    ],
+  });
+  console.log("✅ Created disease-active substance warnings");
+
+  // ============================================
+  // SECTION 18: BATCH HISTORY
+  // ============================================
+  console.log("\n📦 Creating batch histories...");
+  await prisma.batchHistory.createMany({
+    data: [
+      {
+        tradeNameId: tradeNames[0].id, // Panadol
+        batchNumber: "BN-PAN-2024-001",
+        manufacturingDate: new Date("2024-01-15"),
+        expiryDate: new Date("2026-01-14"),
+        quantity: 50000,
+        isRecalled: false,
+      },
+      {
+        tradeNameId: tradeNames[1].id, // Brufen
+        batchNumber: "BN-BRU-2024-001",
+        manufacturingDate: new Date("2024-02-10"),
+        expiryDate: new Date("2026-02-09"),
+        quantity: 30000,
+        isRecalled: false,
+      },
+      {
+        tradeNameId: tradeNames[2].id, // Amoxil
+        batchNumber: "BN-AMX-2024-001",
+        manufacturingDate: new Date("2024-01-20"),
+        expiryDate: new Date("2025-07-19"),
+        quantity: 20000,
+        isRecalled: false,
+      },
+      {
+        tradeNameId: tradeNames[3].id, // Glucophage
+        batchNumber: "BN-GLC-2024-001",
+        manufacturingDate: new Date("2024-03-01"),
+        expiryDate: new Date("2026-02-28"),
+        quantity: 40000,
+        isRecalled: false,
+      },
+      {
+        tradeNameId: tradeNames[6].id, // Lipitor
+        batchNumber: "BN-LIP-2023-099",
+        manufacturingDate: new Date("2023-10-01"),
+        expiryDate: new Date("2025-09-30"),
+        quantity: 25000,
+        isRecalled: true,
+        recallReason: "Labeling error — incorrect dosage information on package insert",
+        recallDate: new Date("2024-01-10"),
+      },
+      {
+        tradeNameId: tradeNames[7].id, // Ventolin
+        batchNumber: "BN-VEN-2024-001",
+        manufacturingDate: new Date("2024-04-01"),
+        expiryDate: new Date("2026-03-31"),
+        quantity: 15000,
+        isRecalled: false,
+      },
+    ],
+  });
+  console.log("✅ Created batch histories");
+
+  // ============================================
+  // SECTION 19: PERMISSIONS & ROLE PERMISSIONS
+  // ============================================
+  console.log("\n🔐 Creating permissions and role permissions...");
+  const permissions = await Promise.all([
+    prisma.permission.create({ data: { code: "users.view", name: "View Users", description: "Can view user list and profiles", adminOnly: true } }),
+    prisma.permission.create({ data: { code: "users.manage", name: "Manage Users", description: "Can create, update, and deactivate users", adminOnly: true } }),
+    prisma.permission.create({ data: { code: "doctors.verify", name: "Verify Doctors", description: "Can approve or reject doctor applications", adminOnly: true } }),
+    prisma.permission.create({ data: { code: "pharmacists.verify", name: "Verify Pharmacists", description: "Can approve or reject pharmacist applications", adminOnly: true } }),
+    prisma.permission.create({ data: { code: "medicines.view", name: "View Medicines", description: "Can browse the medicine catalog", adminOnly: false } }),
+    prisma.permission.create({ data: { code: "medicines.manage", name: "Manage Medicines", description: "Can create, edit, and delete active substances and trade names", adminOnly: true } }),
+    prisma.permission.create({ data: { code: "prescriptions.create", name: "Create Prescriptions", description: "Can write new prescriptions", adminOnly: false } }),
+    prisma.permission.create({ data: { code: "prescriptions.view", name: "View Prescriptions", description: "Can view prescription records", adminOnly: false } }),
+    prisma.permission.create({ data: { code: "reports.view", name: "View Reports", description: "Can view analytics and ADR reports", adminOnly: true } }),
+    prisma.permission.create({ data: { code: "import.manage", name: "Manage Imports", description: "Can import bulk data from Excel files", adminOnly: true } }),
+    prisma.permission.create({ data: { code: "export.manage", name: "Manage Exports", description: "Can export data to Excel files", adminOnly: true } }),
+    prisma.permission.create({ data: { code: "audit.view", name: "View Audit Logs", description: "Can view system audit trail", adminOnly: true } }),
+    prisma.permission.create({ data: { code: "settings.manage", name: "Manage Settings", description: "Can update application settings", adminOnly: true } }),
+    prisma.permission.create({ data: { code: "adr.submit", name: "Submit ADR", description: "Can submit adverse drug reaction reports", adminOnly: false } }),
+    prisma.permission.create({ data: { code: "adr.review", name: "Review ADR", description: "Can review and close ADR reports", adminOnly: true } }),
+  ]);
+
+  await prisma.rolePermission.createMany({
+    data: [
+      // SuperAdmin gets all permissions
+      ...permissions.map(p => ({ role: "SuperAdmin", permissionId: p.id })),
+      // Admin gets most permissions except settings
+      ...permissions.filter(p => p.code !== "settings.manage").map(p => ({ role: "Admin", permissionId: p.id })),
+      // Doctor permissions
+      { role: "Doctor", permissionId: permissions.find(p => p.code === "medicines.view")!.id },
+      { role: "Doctor", permissionId: permissions.find(p => p.code === "prescriptions.create")!.id },
+      { role: "Doctor", permissionId: permissions.find(p => p.code === "prescriptions.view")!.id },
+      { role: "Doctor", permissionId: permissions.find(p => p.code === "adr.submit")!.id },
+      // Pharmacist permissions
+      { role: "Pharmacist", permissionId: permissions.find(p => p.code === "medicines.view")!.id },
+      { role: "Pharmacist", permissionId: permissions.find(p => p.code === "prescriptions.view")!.id },
+      // Patient permissions
+      { role: "Patient", permissionId: permissions.find(p => p.code === "medicines.view")!.id },
+      { role: "Patient", permissionId: permissions.find(p => p.code === "prescriptions.view")!.id },
+      { role: "Patient", permissionId: permissions.find(p => p.code === "adr.submit")!.id },
+    ],
+  });
+  console.log(`✅ Created ${permissions.length} permissions with role assignments`);
+
+  // ============================================
+  // SECTION 20: AUDIT LOGS
+  // ============================================
+  console.log("\n📝 Creating audit logs...");
+  await prisma.auditLog.createMany({
+    data: [
+      {
+        userId: superAdmin.id,
+        action: "CREATE_USER",
+        entityType: "User",
+        entityId: doctorUser1.id,
+        changes: { role: "Doctor", email: "dr.smith@greenrx.com" },
+        ipAddress: "192.168.1.1",
+        userAgent: "Mozilla/5.0 (seed)",
+      },
+      {
+        userId: admin1.id,
+        action: "VERIFY_DOCTOR",
+        entityType: "Doctor",
+        entityId: doctors[0].id,
+        changes: { isVerified: { from: false, to: true } },
+        ipAddress: "192.168.1.2",
+        userAgent: "Mozilla/5.0 (seed)",
+      },
+      {
+        userId: admin1.id,
+        action: "VERIFY_DOCTOR",
+        entityType: "Doctor",
+        entityId: doctors[1].id,
+        changes: { isVerified: { from: false, to: true } },
+        ipAddress: "192.168.1.2",
+        userAgent: "Mozilla/5.0 (seed)",
+      },
+      {
+        userId: admin1.id,
+        action: "VERIFY_DOCTOR",
+        entityType: "Doctor",
+        entityId: doctors[2].id,
+        changes: { isVerified: { from: false, to: true } },
+        ipAddress: "192.168.1.2",
+        userAgent: "Mozilla/5.0 (seed)",
+      },
+      {
+        userId: doctorUser1.id,
+        action: "CREATE_PRESCRIPTION",
+        entityType: "Prescription",
+        entityId: prescriptions[0].id,
+        changes: { patientId: patients[0].id, tradeNameId: tradeNames[3].id, status: "Approved" },
+        ipAddress: "10.0.0.5",
+        userAgent: "Mozilla/5.0 (seed)",
+      },
+      {
+        userId: doctorUser1.id,
+        action: "CREATE_PRESCRIPTION",
+        entityType: "Prescription",
+        entityId: prescriptions[1].id,
+        changes: { patientId: patients[1].id, tradeNameId: tradeNames[4].id, status: "Filled" },
+        ipAddress: "10.0.0.5",
+        userAgent: "Mozilla/5.0 (seed)",
+      },
+      {
+        userId: superAdmin.id,
+        action: "UPDATE_ACTIVE_SUBSTANCE",
+        entityType: "ActiveSubstance",
+        entityId: activeSubstances[0].id,
+        changes: { pregnancyWarning: { from: null, to: "Category B - Generally safe" } },
+        ipAddress: "192.168.1.1",
+        userAgent: "Mozilla/5.0 (seed)",
+      },
+      {
+        userId: admin1.id,
+        action: "DELETE_TRADE_NAME",
+        entityType: "TradeName",
+        entityId: 999,
+        changes: { title: "Discontinued Product", reason: "Product withdrawn from market" },
+        ipAddress: "192.168.1.2",
+        userAgent: "Mozilla/5.0 (seed)",
+      },
+      {
+        userId: superAdmin.id,
+        action: "REVIEW_MEDICINE_SUGGESTION",
+        entityType: "MedicineSuggestion",
+        entityId: 2,
+        changes: { status: { from: "Pending", to: "Approved" }, reviewNotes: "Approved for catalog" },
+        ipAddress: "192.168.1.1",
+        userAgent: "Mozilla/5.0 (seed)",
+      },
+      {
+        userId: admin1.id,
+        action: "REVIEW_MEDICINE_SUGGESTION",
+        entityType: "MedicineSuggestion",
+        entityId: 3,
+        changes: { status: { from: "Pending", to: "Rejected" }, reviewNotes: "Duplicate product" },
+        ipAddress: "192.168.1.2",
+        userAgent: "Mozilla/5.0 (seed)",
+      },
+    ],
+  });
+  console.log("✅ Created audit logs");
+
+  // ============================================
+  // SECTION 21: CONTRAINDICATION TERM MAPPINGS
+  // ============================================
+  console.log("\n📖 Creating contraindication term mappings...");
+  await prisma.contraindicationTermMapping.createMany({
+    data: [
+      {
+        standardTerm: "Hepatic Impairment",
+        alternativeTerms: ["liver disease", "hepatic disease", "liver failure", "cirrhosis", "hepatitis", "liver dysfunction"],
+        category: "Organ",
+        warningFieldName: "hepaticWarning",
+      },
+      {
+        standardTerm: "Renal Impairment",
+        alternativeTerms: ["kidney disease", "renal disease", "kidney failure", "CKD", "chronic kidney disease", "renal dysfunction"],
+        category: "Organ",
+        warningFieldName: "renalWarning",
+      },
+      {
+        standardTerm: "Pregnancy",
+        alternativeTerms: ["pregnant", "pregnancy", "gestational", "prenatal", "gravid", "expecting"],
+        category: "Population",
+        warningFieldName: "pregnancyWarning",
+      },
+      {
+        standardTerm: "Breastfeeding",
+        alternativeTerms: ["lactation", "nursing", "breastfeeding", "breast-feeding", "postnatal", "lactating"],
+        category: "Population",
+        warningFieldName: "lactationWarning",
+      },
+      {
+        standardTerm: "Pediatric",
+        alternativeTerms: ["children", "child", "pediatric", "paediatric", "infant", "neonatal", "juvenile"],
+        category: "Population",
+        warningFieldName: "specialPopulationChildren",
+      },
+      {
+        standardTerm: "Elderly",
+        alternativeTerms: ["geriatric", "elderly", "old age", "senior", "aged", "over 65"],
+        category: "Population",
+        warningFieldName: "specialPopulationElderly",
+      },
+      {
+        standardTerm: "Cardiac Disease",
+        alternativeTerms: ["heart disease", "cardiac", "heart failure", "arrhythmia", "coronary", "myocardial"],
+        category: "Organ",
+        warningFieldName: "cardiacWarning",
+      },
+      {
+        standardTerm: "Respiratory Disease",
+        alternativeTerms: ["asthma", "COPD", "pulmonary", "respiratory", "lung disease", "bronchospasm"],
+        category: "Condition",
+        warningFieldName: "pulmonaryWarning",
+      },
+    ],
+  });
+  console.log("✅ Created contraindication term mappings");
+
+  // ============================================
+  // SECTION 22: IMPORT / EXPORT HISTORY
+  // ============================================
+  console.log("\n📂 Creating import/export history...");
+  await prisma.importHistory.createMany({
+    data: [
+      {
+        fileName: "ActiveSubstances_2024_Q1.xlsx",
+        fileSize: 1048576,
+        fileType: "xlsx",
+        totalRows: 150,
+        successfulRows: 148,
+        failedRows: 2,
+        skippedRows: 0,
+        importedBy: superAdmin.id,
+        importDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
+        errors: [
+          { row: 45, error: "Missing required field: activeSubstance" },
+          { row: 102, error: "Invalid dosageForm value" },
+        ],
+        executionTime: 4250,
+      },
+      {
+        fileName: "TradeNames_2024_March.xlsx",
+        fileSize: 524288,
+        fileType: "xlsx",
+        totalRows: 80,
+        successfulRows: 80,
+        failedRows: 0,
+        skippedRows: 0,
+        importedBy: admin1.id,
+        importDate: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000),
+        errors: Prisma.JsonNull,
+        executionTime: 1820,
+      },
+      {
+        fileName: "Diseases_2024.csv",
+        fileSize: 98304,
+        fileType: "csv",
+        totalRows: 45,
+        successfulRows: 44,
+        failedRows: 1,
+        skippedRows: 0,
+        importedBy: admin1.id,
+        importDate: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
+        errors: [{ row: 23, error: "Duplicate disease name: Hypertension" }],
+        executionTime: 980,
+      },
+    ],
+  });
+
+  await prisma.exportHistory.createMany({
+    data: [
+      {
+        format: "xlsx",
+        totalRecords: 148,
+        filters: { isActive: true, classification: "Antibiotic" },
+        exportedBy: superAdmin.id,
+        exportDate: new Date(Date.now() - 20 * 24 * 60 * 60 * 1000),
+      },
+      {
+        format: "xlsx",
+        totalRecords: 80,
+        filters: { companyId: companies[0].id },
+        exportedBy: admin1.id,
+        exportDate: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000),
+      },
+    ],
+  });
+  console.log("✅ Created import/export history");
 
   console.log("\n✨ Database seeding completed successfully!");
   console.log("\n📊 Summary:");
@@ -2156,27 +2800,35 @@ async function main() {
   // ============================================
   console.log("\n✨ Database seeded successfully!");
   console.log(`   - ${companies.length} Companies`);
+  console.log(`   - ${contractingCompanies.length} Contracting Companies`);
   console.log(`   - ${activeSubstances.length} Active Substances`);
   console.log(`   - ${tradeNames.length} Trade Names`);
   console.log(`   - ${diseases.length} Diseases`);
-  console.log(`   - ${warningRules.length} Disease Warning Rules (P0)`);
-  console.log(`   - ${medicineSuggestions.length} Medicine Suggestions (P0)`);
+  console.log(`   - ${warningRules.length} Disease Warning Rules`);
+  console.log(`   - ${medicineSuggestions.length} Medicine Suggestions`);
   console.log(`   - ${pricingPlans.length} Pricing Plans`);
-  console.log(
-    `   - 13 Users (1 SuperAdmin, 2 Admins, 3 Doctors, 2 Pharmacists, 5 Patients)`
-  );
-  console.log(`   - ${prescriptions.length} Prescriptions`);
-  console.log(`   - Comprehensive patient data including:`);
+  console.log(`   - ${permissions.length} Permissions with role assignments`);
+  console.log(`   - 13 Users (1 SuperAdmin, 2 Admins, 5 Doctors, 2 Pharmacists, 5 Patients)`);
+  console.log(`   - ${subscriptions.length} Subscriptions + Payments`);
+  console.log(`   - ${prescriptions.length} Prescriptions with versions & interaction alerts`);
+  console.log(`   - Comprehensive patient data:`);
   console.log(`     • Medical histories, family histories, allergies`);
-  console.log(`     • Lifestyle data, child profiles`);
-  console.log(`     • Consultations, visits, medical reports`);
-  console.log(`     • Adverse drug reactions, share links, ratings`);
-  console.log("\n🔑 RMMSY - Test Credentials:");
-  console.log("   SuperAdmin: superadmin@greenrx.com / Password@123");
-  console.log("   Admin:      admin1@greenrx.com / Password@123");
-  console.log("   Doctor:     dr.smith@greenrx.com / Password@123");
-  console.log("   Pharmacist: pharmacist1@greenrx.com / Password@123");
-  console.log("   Patient:    patient1@greenrx.com / Password@123");
+  console.log(`     • Lifestyle data, child profiles, patient diseases`);
+  console.log(`     • Consultations, visits, appointments`);
+  console.log(`     • Medical reports, adverse drug reactions`);
+  console.log(`     • Share links, ratings, notifications`);
+  console.log(`   - Supporting data:`);
+  console.log(`     • Medicine alternatives, batch histories`);
+  console.log(`     • Disease-substance warnings`);
+  console.log(`     • Contracting companies + trade name links`);
+  console.log(`     • Audit logs, import/export history`);
+  console.log(`     • Contraindication term mappings`);
+  console.log("\n🔑 Test Credentials (all passwords: Password@123):");
+  console.log("   SuperAdmin: superadmin@greenrx.com");
+  console.log("   Admin:      admin1@greenrx.com");
+  console.log("   Doctor:     dr.smith@greenrx.com");
+  console.log("   Pharmacist: pharmacist1@greenrx.com");
+  console.log("   Patient:    patient1@greenrx.com");
 }
 
 main()
