@@ -16,6 +16,7 @@ async function main() {
   console.log("\n🧹 Cleaning up existing data...");
 
   // Delete all dependent data first
+  await prisma.patientMedicine.deleteMany();
   await prisma.drugInteractionAlert.deleteMany();
   await prisma.prescriptionVersion.deleteMany();
   await prisma.prescription.deleteMany();
@@ -2522,7 +2523,102 @@ async function main() {
   console.log("✅ Created contraindication term mappings");
 
   // ============================================
-  // SECTION 22: IMPORT / EXPORT HISTORY
+  // SECTION 22: PATIENT SELF-REPORTED MEDICINES
+  // ============================================
+  console.log("\n💊 Creating patient self-reported medicines...");
+  await prisma.patientMedicine.createMany({
+    data: [
+      // Patient 1 (Alice Cooper) — takes Panadol OTC + Glucophage prescribed
+      {
+        patientId: patients[0].id,
+        tradeNameId: tradeNames[0].id,         // Panadol (in system)
+        activeSubstanceId: activeSubstances[0].id,
+        medicineName: "Panadol",
+        dosage: "500mg",
+        frequency: "As needed for pain",
+        startDate: new Date("2023-01-01"),
+        isOngoing: true,
+        notes: "OTC — takes occasionally for headaches",
+        isVerified: true,
+        verifiedBy: admin1.id,
+        verifiedAt: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000),
+      },
+      // Patient 2 (Bob Martinez) — takes Brufen self-purchased
+      {
+        patientId: patients[1].id,
+        tradeNameId: tradeNames[1].id,         // Brufen (in system)
+        activeSubstanceId: activeSubstances[1].id,
+        medicineName: "Brufen",
+        dosage: "400mg",
+        frequency: "Twice daily with meals",
+        startDate: new Date("2024-02-01"),
+        isOngoing: true,
+        notes: "Bought OTC for lower back pain",
+        isVerified: true,
+        verifiedBy: admin1.id,
+        verifiedAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000),
+      },
+      // Patient 3 (Carol White) — takes a vitamin supplement NOT in system → image upload
+      {
+        patientId: patients[2].id,
+        tradeNameId: null,                     // NOT in system
+        medicineName: "Pregnacare Original",
+        dosage: "1 tablet",
+        frequency: "Once daily",
+        startDate: new Date("2024-08-01"),
+        isOngoing: true,
+        notes: "Pregnancy multivitamin — bought from pharmacy",
+        imageUrl: "/uploads/patient-medicines/sample-pregnacare.jpg",
+        imageFileName: "pregnacare.jpg",
+        isVerified: false,                     // Pending admin/doctor verification
+      },
+      // Patient 4 (David Lee) — takes Losec (in system)
+      {
+        patientId: patients[3].id,
+        tradeNameId: tradeNames[5].id,         // Losec (in system)
+        activeSubstanceId: activeSubstances[5].id,
+        medicineName: "Losec",
+        dosage: "20mg",
+        frequency: "Once daily before breakfast",
+        startDate: new Date("2021-08-15"),
+        isOngoing: true,
+        isVerified: true,
+        verifiedBy: admin1.id,
+        verifiedAt: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000),
+      },
+      // Patient 5 (Emma Thompson) — takes Ventolin (in system) + unknown herbal drops NOT in system
+      {
+        patientId: patients[4].id,
+        tradeNameId: tradeNames[7].id,         // Ventolin (in system)
+        activeSubstanceId: activeSubstances[7].id,
+        medicineName: "Ventolin Inhaler",
+        dosage: "2 puffs",
+        frequency: "Before physical activity",
+        startDate: new Date("2022-02-20"),
+        isOngoing: true,
+        isVerified: true,
+        verifiedBy: admin1.id,
+        verifiedAt: new Date(Date.now() - 20 * 24 * 60 * 60 * 1000),
+      },
+      {
+        patientId: patients[4].id,
+        tradeNameId: null,                     // NOT in system
+        medicineName: "Nature's Bounty Vitamin D3",
+        dosage: "400 IU",
+        frequency: "Once daily",
+        startDate: new Date("2023-09-01"),
+        isOngoing: true,
+        notes: "Vitamin D supplement recommended by school nurse",
+        imageUrl: "/uploads/patient-medicines/sample-vitamind3.jpg",
+        imageFileName: "vitamin-d3.jpg",
+        isVerified: false,
+      },
+    ],
+  });
+  console.log("✅ Created patient self-reported medicines");
+
+  // ============================================
+  // SECTION 23: IMPORT / EXPORT HISTORY
   // ============================================
   console.log("\n📂 Creating import/export history...");
   await prisma.importHistory.createMany({

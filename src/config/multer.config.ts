@@ -62,6 +62,38 @@ export const uploadLogo = multer({
     limits: { fileSize: 2 * 1024 * 1024 } // 2MB
 });
 
+// ── Medicine image upload (patient self-report) ────────────────────────────────
+const medicineImagesDir = path.join(__dirname, '../../uploads/patient-medicines');
+if (!fs.existsSync(medicineImagesDir)) {
+    fs.mkdirSync(medicineImagesDir, { recursive: true });
+}
+
+const medicineImageStorage = multer.diskStorage({
+    destination: (_req, _file, cb) => {
+        cb(null, medicineImagesDir);
+    },
+    filename: (_req, file, cb) => {
+        const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1E9)}`;
+        const ext = path.extname(file.originalname);
+        cb(null, `medicine-${uniqueSuffix}${ext}`);
+    },
+});
+
+const medicineImageFilter: multer.Options['fileFilter'] = (_req, file, cb) => {
+    const allowed = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp', 'image/gif'];
+    if (allowed.includes(file.mimetype) || file.originalname.match(/\.(png|jpg|jpeg|webp|gif)$/i)) {
+        cb(null, true);
+    } else {
+        cb(new Error('Only image files (PNG, JPG, JPEG, WebP, GIF) are allowed'));
+    }
+};
+
+export const uploadMedicineImage = multer({
+    storage: medicineImageStorage,
+    fileFilter: medicineImageFilter,
+    limits: { fileSize: 10 * 1024 * 1024 }, // 10MB
+});
+
 // Cleanup utility - delete file after processing
 export const cleanupFile = (filePath: string) => {
     if (fs.existsSync(filePath)) {

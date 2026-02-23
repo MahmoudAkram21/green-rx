@@ -67,6 +67,16 @@ export async function generateWarnings(
             }
           }
         }
+      },
+      // Self-reported medicines the patient added manually
+      medicines: {
+        where: { isOngoing: true },
+        include: {
+          tradeName: {
+            include: { activeSubstance: true }
+          },
+          activeSubstance: true,
+        }
       }
     }
   });
@@ -421,9 +431,22 @@ function checkDrugInteractions(patient: any, newSubstance: any): Warning[] {
     { field: 'interactionPDE5Inhibitors', type: 'PDE5 Inhibitors', severity: WarningSeverity.Low }
   ];
 
-  for (const currentRx of patient.prescriptions) {
-    const currentSubstance = currentRx.tradeName.activeSubstance;
+  // Collect active substances from both prescriptions and self-reported medicines
+  const substancesToCheck: { activeSubstance: any; label: string }[] = [];
 
+  for (const rx of patient.prescriptions) {
+    substancesToCheck.push({ activeSubstance: rx.tradeName.activeSubstance, label: rx.tradeName.activeSubstance.activeSubstance });
+  }
+
+  // Also include self-reported ongoing medicines (patient-added)
+  for (const pm of (patient as any).medicines ?? []) {
+    const substance = pm.activeSubstance ?? pm.tradeName?.activeSubstance;
+    if (substance) {
+      substancesToCheck.push({ activeSubstance: substance, label: `${substance.activeSubstance} (self-reported)` });
+    }
+  }
+
+  for (const { activeSubstance: currentSubstance, label } of substancesToCheck) {
     for (const {field, type, severity} of interactionFields) {
       const interactionData = newSubstance[field];
       
@@ -437,7 +460,7 @@ function checkDrugInteractions(patient: any, newSubstance: any): Warning[] {
           warnings.push({
             severity,
             type: 'DrugInteraction',
-            message: `💊 DRUG INTERACTION: May interact with ${currentSubstance.activeSubstance} (${type}). Monitor closely.`
+            message: `💊 DRUG INTERACTION: May interact with ${label} (${type}). Monitor closely.`
           });
         }
       }

@@ -186,18 +186,19 @@ model User {
   deletedAt              DateTime?
 
   // Relations
-  subscription        Subscription?
-  patient             Patient?
-  doctor              Doctor?
-  pharmacist          Pharmacist?
-  notifications       Notification[]
-  auditLogs           AuditLog[]
-  sessions            Session[]
-  importHistory       ImportHistory[]      @relation("ImportHistory")
-  exportHistory       ExportHistory[]      @relation("ExportHistory")
-  uploadedReports     MedicalReport[]      @relation("UploadedReports")
-  diseaseWarningRules DiseaseWarningRule[]
-  reviewedSuggestions MedicineSuggestion[] @relation("SuggestionReviewer")
+  subscription          Subscription?
+  patient               Patient?
+  doctor                Doctor?
+  pharmacist            Pharmacist?
+  notifications         Notification[]
+  auditLogs             AuditLog[]
+  sessions              Session[]
+  importHistory         ImportHistory[]      @relation("ImportHistory")
+  exportHistory         ExportHistory[]      @relation("ExportHistory")
+  uploadedReports       MedicalReport[]      @relation("UploadedReports")
+  diseaseWarningRules   DiseaseWarningRule[]
+  reviewedSuggestions   MedicineSuggestion[] @relation("SuggestionReviewer")
+  verifiedMedicines     PatientMedicine[]    @relation("MedicineVerifier")
 
   @@index([role])
   @@index([deletedAt])
@@ -309,6 +310,7 @@ model Patient {
   childrenProfiles ChildProfile[]        @relation("ParentChildren")
   ratings          Rating[]
   visits           Visit[]
+  medicines        PatientMedicine[]
 
   @@index([age])
   @@index([ageClassification])
@@ -792,6 +794,7 @@ model ActiveSubstance {
   medicineAlternatives           MedicineAlternative[]           @relation("PrimarySubstance")
   alternativeTo                  MedicineAlternative[]           @relation("AlternativeSubstance")
   adverseReactions               AdverseDrugReaction[]
+  patientMedicines               PatientMedicine[]
 
   @@index([activeSubstance])
   @@index([isActive])
@@ -861,6 +864,7 @@ model TradeName {
   drugInteractionAlerts        DrugInteractionAlert[]
   batchHistories               BatchHistory[]
   adverseReactions             AdverseDrugReaction[]
+  patientMedicines             PatientMedicine[]
 
   @@index([title])
   @@index([activeSubstanceId])
@@ -1312,6 +1316,43 @@ model Visit {
   @@index([visitDate])
   @@index([isArchived])
   @@map("visits")
+}
+
+// ============================================
+// PATIENT SELF-REPORTED MEDICINES
+// ============================================
+
+model PatientMedicine {
+  id                Int       @id @default(autoincrement())
+  patientId         Int
+  tradeNameId       Int?      // null when medicine not found in system
+  activeSubstanceId Int?      // derived from tradeName or manually linked
+  medicineName      String    // always filled — either tradeName.title or free-text name
+  dosage            String?
+  frequency         String?
+  startDate         DateTime?
+  endDate           DateTime?
+  isOngoing         Boolean   @default(true)
+  notes             String?
+  // When medicine not found in system, patient uploads an image
+  imageUrl          String?
+  imageFileName     String?
+  isVerified        Boolean   @default(false) // admin/doctor can verify/link the image to a real TradeName
+  verifiedBy        Int?
+  verifiedAt        DateTime?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  // Relations
+  patient         Patient          @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  tradeName       TradeName?       @relation(fields: [tradeNameId], references: [id], onDelete: SetNull)
+  activeSubstance ActiveSubstance? @relation(fields: [activeSubstanceId], references: [id], onDelete: SetNull)
+  verifier        User?            @relation("MedicineVerifier", fields: [verifiedBy], references: [id], onDelete: SetNull)
+
+  @@index([patientId])
+  @@index([tradeNameId])
+  @@index([isOngoing])
+  @@map("patient_medicines")
 }
 
 // ============================================
