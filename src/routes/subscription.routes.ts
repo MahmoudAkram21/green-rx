@@ -7,17 +7,17 @@ import {
     cancelSubscription,
     renewSubscription
 } from '../controllers/subscription.controller';
-import { authenticate } from '../middleware/auth.middleware';
+import { authenticate, authorize } from '../middleware/auth.middleware';
+import { UserRole } from '../../generated/client/client';
 
 const router = express.Router();
 
 // All routes require authentication
 router.use(authenticate);
 
-// Subscription routes
 router.post('/', createSubscription);
 router.get('/user/:userId', getSubscriptionByUserId);
-router.get('/', getAllSubscriptions); // Admin only - TODO: Add admin check
+router.get('/', authorize([UserRole.Admin, UserRole.SuperAdmin]), getAllSubscriptions);
 router.put('/:userId', updateSubscription);
 router.post('/:userId/cancel', cancelSubscription);
 router.post('/:userId/renew', renewSubscription);

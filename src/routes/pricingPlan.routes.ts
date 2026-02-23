@@ -7,7 +7,8 @@ import {
     deletePricingPlan,
     getDefaultPricingPlan
 } from '../controllers/pricingPlan.controller';
-import { authenticate } from '../middleware/auth.middleware';
+import { authenticate, authorize } from '../middleware/auth.middleware';
+import { UserRole } from '../../generated/client/client';
 
 const router = express.Router();
 
@@ -16,9 +17,9 @@ router.get('/', getPricingPlans);
 router.get('/default', getDefaultPricingPlan);
 router.get('/:id', getPricingPlanById);
 
-// Admin routes (require authentication and admin role)
-router.post('/', authenticate, createPricingPlan); // TODO: Add admin role check
-router.put('/:id', authenticate, updatePricingPlan); // TODO: Add admin role check
-router.delete('/:id', authenticate, deletePricingPlan); // TODO: Add admin role check
+// Admin-only routes
+router.post('/', authenticate, authorize([UserRole.Admin, UserRole.SuperAdmin]), createPricingPlan);
+router.put('/:id', authenticate, authorize([UserRole.Admin, UserRole.SuperAdmin]), updatePricingPlan);
+router.delete('/:id', authenticate, authorize([UserRole.Admin, UserRole.SuperAdmin]), deletePricingPlan);
 
 export default router;

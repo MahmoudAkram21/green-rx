@@ -1,27 +1,18 @@
 import express from 'express';
 import adverseDrugReactionController from '../controllers/adverseDrugReaction.controller';
+import { authenticate, authorize } from '../middleware/auth.middleware';
+import { UserRole } from '../../generated/client/client';
 
 const router = express.Router();
 
-// Report an ADR
+router.use(authenticate);
+
 router.post('/', adverseDrugReactionController.reportADR);
-
-// Get all ADRs for a patient
 router.get('/patient/:patientId', adverseDrugReactionController.getPatientADRs);
-
-// Get ADRs for a specific drug
 router.get('/drug/:drugType/:drugId', adverseDrugReactionController.getDrugADRs);
-
-// Get all ADRs (admin)
-router.get('/', adverseDrugReactionController.getAllADRs);
-
-// Get ADR statistics (must be before /:id)
-router.get('/statistics/summary', adverseDrugReactionController.getADRStatistics);
-
-// Get one ADR by ID (admin)
+router.get('/', authorize([UserRole.Admin, UserRole.SuperAdmin]), adverseDrugReactionController.getAllADRs);
+router.get('/statistics/summary', authorize([UserRole.Admin, UserRole.SuperAdmin]), adverseDrugReactionController.getADRStatistics);
 router.get('/:id', adverseDrugReactionController.getADRById);
-
-// Update ADR
 router.patch('/:id', adverseDrugReactionController.updateADR);
 
 export default router;

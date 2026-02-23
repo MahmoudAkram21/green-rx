@@ -553,6 +553,7 @@ class ImportController {
     res: Response,
     next: NextFunction
   ): Promise<void> {
+    const filePath = req.file?.path;
     try {
       const { entityType } = req.params;
 
@@ -560,9 +561,6 @@ class ImportController {
         return res.status(400).json({ error: "No file uploaded" }) as any;
       }
 
-      const { rows: data } = await readSheetToJson(req.file.path);
-
-      // Entity-specific import logic would go here
       const validEntities = [
         "Company",
         "Disease",
@@ -571,14 +569,154 @@ class ImportController {
       ];
 
       if (!validEntities.includes(entityType)) {
+        cleanupFile(req.file.path);
         return res.status(400).json({ error: "Invalid entity type" }) as any;
       }
 
+      const { rows: data } = await readSheetToJson(req.file.path);
+
+      const results = { total: data.length, successful: 0, failed: 0, errors: [] as string[] };
+
+      if (entityType === "Company") {
+        for (const row of data) {
+          try {
+            const name = this.getFieldValue(row, "name") || this.getFieldValue(row, "company name");
+            if (!name) { results.failed++; results.errors.push("Row missing required field: name"); continue; }
+            await prisma.company.upsert({
+              where: { name: String(name) },
+              update: {
+                address: this.getFieldValue(row, "address") ? String(this.getFieldValue(row, "address")) : undefined,
+                governorate: this.getFieldValue(row, "governorate") ? String(this.getFieldValue(row, "governorate")) : undefined,
+                country: this.getFieldValue(row, "country") ? String(this.getFieldValue(row, "country")) : undefined,
+              },
+              create: {
+                name: String(name),
+                address: this.getFieldValue(row, "address") ? String(this.getFieldValue(row, "address")) : undefined,
+                governorate: this.getFieldValue(row, "governorate") ? String(this.getFieldValue(row, "governorate")) : undefined,
+                country: this.getFieldValue(row, "country") ? String(this.getFieldValue(row, "country")) : undefined,
+              },
+            });
+            results.successful++;
+          } catch (err: any) {
+            results.failed++;
+            results.errors.push(err.message);
+          }
+        }
+      } else if (entityType === "Disease") {
+        const validSeverities = ["None", "Mild", "Moderate", "Severe", "Critical"];
+        for (const row of data) {
+          try {
+            const name = this.getFieldValue(row, "name") || this.getFieldValue(row, "disease name");
+            const severityRaw = this.getFieldValue(row, "severity");
+            const severity = validSeverities.includes(String(severityRaw)) ? String(severityRaw) : "None";
+            if (!name) { results.failed++; results.errors.push("Row missing required field: name"); continue; }
+            await prisma.disease.upsert({
+              where: { name: String(name) },
+              update: {
+                severity: severity as any,
+                description: this.getFieldValue(row, "description") ? String(this.getFieldValue(row, "description")) : undefined,
+              },
+              create: {
+                name: String(name),
+                severity: severity as any,
+                description: this.getFieldValue(row, "description") ? String(this.getFieldValue(row, "description")) : undefined,
+              },
+            });
+            results.successful++;
+          } catch (err: any) {
+            results.failed++;
+            results.errors.push(err.message);
+          }
+        }
+      } else if (entityType === "TradeName") {
+        for (const row of data) {
+          try {
+            const title = this.getFieldValue(row, "title") || this.getFieldValue(row, "trade name");
+            const activeSubstanceId = this.getFieldValue(row, "activesubstanceid") || this.getFieldValue(row, "active substance id");
+            const companyId = this.getFieldValue(row, "companyid") || this.getFieldValue(row, "company id");
+            if (!title || !activeSubstanceId || !companyId) {
+              results.failed++;
+              results.errors.push("Row missing required fields: title, activeSubstanceId, companyId");
+              continue;
+            }
+            await prisma.tradeName.create({
+              data: {
+                title: String(title),
+                activeSubstanceId: Number(activeSubstanceId),
+                companyId: Number(companyId),
+                batchNumber: this.getFieldValue(row, "batchnumber") ? String(this.getFieldValue(row, "batchnumber")) : undefined,
+                barCode: this.getFieldValue(row, "barcode") ? String(this.getFieldValue(row, "barcode")) : undefined,
+                stockQuantity: this.getFieldValue(row, "stockquantity") ? Number(this.getFieldValue(row, "stockquantity")) : undefined,
+              },
+            });
+            results.successful++;
+          } catch (err: any) {
+            results.failed++;
+            results.errors.push(err.message);
+          }
+        }
+      } else if (entityType === "ContractingCompany") {
+        for (const row of data) {
+          try {
+            const title = this.getFieldValue(row, "title") || this.getFieldValue(row, "contracting company");
+            const companyId = this.getFieldValue(row, "companyid") || this.getFieldValue(row, "company id");
+            const contractingDateRaw = this.getFieldValue(row, "contractingdate") || this.getFieldValue(row, "contracting date");
+            if (!title || !companyId || !contractingDateRaw) {
+              results.failed++;
+              results.errors.push("Row missing required fields: title, companyId, contractingDate");
+              continue;
+            }
+            await prisma.contractingCompany.create({
+              data: {
+                title: String(title),
+                companyId: Number(companyId),
+                contractingDate: new Date(String(contractingDateRaw)),
+                expiryDate: this.getFieldValue(row, "expirydate") ? new Date(String(this.getFieldValue(row, "expirydate"))) : undefined,
+              },
+            });
+            results.successful++;
+          } catch (err: any) {
+            results.failed++;
+            results.errors.push(err.message);
+          }
+        }
+      }
+
+      // Record import history
+      const userId = (req as any).user?.userId;
+      const validUserId = userId && !isNaN(Number(userId)) ? Number(userId) : null;
+      if (validUserId) {
+        try {
+          const fileExtension = req.file.originalname.split(".").pop()?.toLowerCase() || "xlsx";
+          await prisma.importHistory.create({
+            data: {
+              entityType,
+              fileName: req.file.originalname,
+              fileSize: req.file.size,
+              fileType: fileExtension,
+              totalRows: results.total,
+              successfulRows: results.successful,
+              failedRows: results.failed,
+              skippedRows: 0,
+              importedBy: validUserId,
+              errors: results.errors.length > 0 ? results.errors : undefined,
+            },
+          });
+        } catch (historyError: any) {
+          console.error("Failed to create import history:", historyError.message);
+        }
+      }
+
+      if (filePath) cleanupFile(filePath);
+
       res.json({
         message: `${entityType} import completed`,
-        recordsProcessed: data.length,
+        ...results,
       });
     } catch (error) {
+      if (filePath) {
+        try { cleanupFile(filePath); } catch (_) {}
+      }
       next(error);
     }
   }

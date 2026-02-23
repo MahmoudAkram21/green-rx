@@ -8,20 +8,20 @@ import {
     processPayment,
     refundPayment
 } from '../controllers/payment.controller';
-import { authenticate } from '../middleware/auth.middleware';
+import { authenticate, authorize } from '../middleware/auth.middleware';
+import { UserRole } from '../../generated/client/client';
 
 const router = express.Router();
 
 // All routes require authentication
 router.use(authenticate);
 
-// Payment routes
 router.post('/', createPayment);
 router.get('/:id', getPaymentById);
 router.get('/subscription/:subscriptionId', getPaymentsBySubscription);
-router.get('/', getAllPayments); // Admin only - TODO: Add admin check
-router.put('/:id/status', updatePaymentStatus); // Admin only - TODO: Add admin check
+router.get('/', authorize([UserRole.Admin, UserRole.SuperAdmin]), getAllPayments);
+router.put('/:id/status', authorize([UserRole.Admin, UserRole.SuperAdmin]), updatePaymentStatus);
 router.post('/:id/process', processPayment);
-router.post('/:id/refund', refundPayment); // Admin only - TODO: Add admin check
+router.post('/:id/refund', authorize([UserRole.Admin, UserRole.SuperAdmin]), refundPayment);
 
 export default router;

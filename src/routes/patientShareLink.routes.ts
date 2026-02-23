@@ -1,24 +1,17 @@
 import express from 'express';
 import patientShareLinkController from '../controllers/patientShareLink.controller';
+import { authenticate } from '../middleware/auth.middleware';
 
 const router = express.Router();
 
-// Generate a share link
-router.post('/patient/:patientId', patientShareLinkController.generateShareLink);
-
-// Access shared data (public endpoint)
+// Public: token-based shared data access (no auth required)
 router.get('/shared/:token', patientShareLinkController.getSharedData);
 
-// Get all share links for a patient
-router.get('/patient/:patientId', patientShareLinkController.getPatientShareLinks);
-
-// Revoke a share link
-router.patch('/:id/revoke', patientShareLinkController.revokeShareLink);
-
-// Update share link settings
-router.patch('/:id', patientShareLinkController.updateShareLink);
-
-// Delete a share link
-router.delete('/:id', patientShareLinkController.deleteShareLink);
+// All remaining routes require authentication
+router.post('/patient/:patientId', authenticate, patientShareLinkController.generateShareLink);
+router.get('/patient/:patientId', authenticate, patientShareLinkController.getPatientShareLinks);
+router.patch('/:id/revoke', authenticate, patientShareLinkController.revokeShareLink);
+router.patch('/:id', authenticate, patientShareLinkController.updateShareLink);
+router.delete('/:id', authenticate, patientShareLinkController.deleteShareLink);
 
 export default router;

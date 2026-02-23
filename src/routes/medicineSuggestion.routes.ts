@@ -1,6 +1,7 @@
 import { Router } from "express";
 import medicineSuggestionController from "../controllers/medicineSuggestion.controller";
 import { authenticate, authorize } from "../middleware/auth.middleware";
+import { UserRole } from "../../generated/client/client";
 
 const router = Router();
 
@@ -16,14 +17,14 @@ router.get("/:id", medicineSuggestionController.getSuggestionById);
 // Create a new suggestion (Doctor only)
 router.post(
   "/",
-  authorize(["Doctor"]),
+  authorize([UserRole.Doctor]),
   medicineSuggestionController.createSuggestion
 );
 
 // Review a suggestion (Admin only)
 router.patch(
   "/:id/review",
-  authorize(["Admin", "SuperAdmin"]),
+  authorize([UserRole.Admin, UserRole.SuperAdmin]),
   medicineSuggestionController.reviewSuggestion
 );
 

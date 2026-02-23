@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { verifyAccessToken, TokenPayload } from '../utils/jwt.util';
 import { UserRole } from '../../generated/client/client';
+import { prisma } from '../lib/prisma';
 
 // Extend Express Request type to include user
 declare global {
@@ -25,11 +26,11 @@ export const authenticate = async (req: Request, res: Response, next: NextFuncti
         try {
             const decoded = verifyAccessToken(token);
 
-            // Optional: Check if user still exists and is active
-            // const user = await prisma.user.findUnique({ where: { id: decoded.userId } });
-            // if (!user || !user.isActive) {
-            //   return res.status(401).json({ error: 'Unauthorized: User not found or inactive' });
-            // }
+            const user = await prisma.user.findUnique({ where: { id: decoded.userId } });
+            if (!user || !user.isActive) {
+                res.status(401).json({ error: 'Unauthorized: Account is inactive or deleted' });
+                return;
+            }
 
             req.user = decoded;
             next();
