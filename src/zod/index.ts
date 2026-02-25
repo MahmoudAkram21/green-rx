@@ -14,6 +14,7 @@ export {
   familyHistorySchema,
   lifestyleSchema,
   allergySchema,
+  batchAllergySchema,
   childProfileSchema,
 } from "./patient.zod";
 

@@ -7,8 +7,18 @@ import {
     familyHistorySchema,
     lifestyleSchema,
     allergySchema,
+    batchAllergySchema,
     childProfileSchema
 } from '../zod/patient.zod';
+import { AllergySeverity } from '../../generated/client/client';
+
+function computeBmi(weight: unknown, height: unknown): number | null {
+    const w = weight != null ? Number(weight) : NaN;
+    const h = height != null ? Number(height) : NaN; // expect cm
+    if (!Number.isFinite(w) || !Number.isFinite(h) || h <= 0) return null;
+    const heightM = h / 100;
+    return Math.round((w / (heightM * heightM)) * 100) / 100;
+}
 
 // Create or Update Patient Profile
 export const createOrUpdatePatient = async (req: Request, res: Response, next: NextFunction) => {
@@ -134,7 +144,8 @@ export const getPatientById = async (req: Request, res: Response, next: NextFunc
             return;
         }
 
-        res.json(patient);
+        const bodyMassIndex = computeBmi(patient.weight, patient.height);
+        res.json({ ...patient, bodyMassIndex: bodyMassIndex ?? undefined });
     } catch (error) {
         next(error);
     }
@@ -164,7 +175,8 @@ export const getPatientByUserId = async (req: Request, res: Response, next: Next
             return;
         }
 
-        res.json(patient);
+        const bodyMassIndex = computeBmi(patient.weight, patient.height);
+        res.json({ ...patient, bodyMassIndex: bodyMassIndex ?? undefined });
     } catch (error) {
         next(error);
     }
@@ -281,6 +293,21 @@ export const addFamilyHistory = async (req: Request, res: Response, next: NextFu
     }
 };
 
+// Get All Family Histories for a Patient
+export const getFamilyHistories = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { patientId } = req.params;
+        const list = await prisma.familyHistory.findMany({
+            where: { patientId: parseInt(patientId) },
+            include: { disease: true },
+            orderBy: { createdAt: 'desc' },
+        });
+        res.json(list);
+    } catch (error) {
+        next(error);
+    }
+};
+
 // Update or Create Lifestyle
 export const updateLifestyle = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -330,13 +357,23 @@ export const updateLifestyle = async (req: Request, res: Response, next: NextFun
     }
 };
 
+function toAllergyCreateData(patientId: number, v: z.infer<typeof allergySchema>) {
+    const { reaction, allergenType, severity, ...rest } = v;
+    return {
+        patientId,
+        ...rest,
+        allergenType: allergenType ?? undefined,
+        reactionType: reaction ?? null,
+        severity: severity ?? AllergySeverity.Mild,
+    };
+}
+
 // Add Allergy
 export const addAllergy = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { patientId } = req.params;
         const validatedData = allergySchema.parse(req.body);
 
-        // Check if patient exists
         const patient = await prisma.patient.findUnique({
             where: { id: parseInt(patientId) }
         });
@@ -346,18 +383,46 @@ export const addAllergy = async (req: Request, res: Response, next: NextFunction
             return;
         }
 
-        const { reaction, ...rest } = validatedData;
         const allergy = await prisma.allergy.create({
-            data: {
-                patientId: parseInt(patientId),
-                ...rest,
-                reactionType: reaction ?? null
-            }
+            data: toAllergyCreateData(parseInt(patientId), validatedData)
         });
 
         res.status(201).json({
             message: 'Allergy added successfully',
             allergy
+        });
+    } catch (error: any) {
+        if (error instanceof z.ZodError) {
+            res.status(400).json({ error: error.issues });
+            return;
+        }
+        next(error);
+    }
+};
+
+// Add Allergies (batch)
+export const addAllergiesBatch = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { patientId } = req.params;
+        const validatedItems = batchAllergySchema.parse(req.body);
+
+        const patient = await prisma.patient.findUnique({
+            where: { id: parseInt(patientId) }
+        });
+
+        if (!patient) {
+            res.status(404).json({ error: 'Patient not found' });
+            return;
+        }
+
+        const pid = parseInt(patientId);
+        const data = validatedItems.map((v) => toAllergyCreateData(pid, v));
+        const allergies = await prisma.allergy.createManyAndReturn({ data });
+
+        res.status(201).json({
+            message: `${allergies.length} allergy/allergies added successfully`,
+            count: allergies.length,
+            allergies
         });
     } catch (error: any) {
         if (error instanceof z.ZodError) {

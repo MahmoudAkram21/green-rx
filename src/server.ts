@@ -53,9 +53,15 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Swagger / OpenAPI
+// Swagger / OpenAPI (served at /api/docs; redirect /api-docs for convenience)
 app.get('/api/openapi.json', (_req: Request, res: Response) => {
   res.json(swaggerSpec);
+});
+app.get('/api-docs', (_req: Request, res: Response) => {
+  res.redirect(302, '/api/docs');
+});
+app.get('/api-docs/', (_req: Request, res: Response) => {
+  res.redirect(302, '/api/docs');
 });
 app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, { explorer: true }));
 

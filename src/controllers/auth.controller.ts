@@ -10,7 +10,7 @@ import { registerSchema, loginSchema, refreshTokenSchema } from '../zod/auth.zod
 export const register = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const validatedData = registerSchema.parse(req.body);
-        const { email, password, role, name } = validatedData;
+        const { email, password, role, name, phone } = validatedData;
 
         // Check if user exists
         const existingUser = await prisma.user.findUnique({
@@ -31,6 +31,7 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
             const user = await tx.user.create({
                 data: {
                     email,
+                    ...(phone != null && phone !== '' ? { phone } : {}),
                     passwordHash,
                     role,
                     isActive: true

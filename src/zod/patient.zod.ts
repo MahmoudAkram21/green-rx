@@ -21,6 +21,7 @@ export const createPatientSchema = z.object({
   smoking: z.boolean().optional(),
   pregnancyWarning: z.boolean().optional(),
   lactation: z.boolean().optional(),
+  bloodType: z.string().trim().optional(), // e.g. A+, A-, B+, B-, AB+, AB-, O+, O-
 });
 
 export const medicalHistorySchema = z.object({
@@ -49,14 +50,21 @@ export const lifestyleSchema = z.object({
   noiseExposure: z.boolean().optional(),
   chemicalExposure: z.boolean().optional(),
   radiationExposure: z.boolean().optional(),
+  physicalActivity: z.string().trim().optional(),
+  dietaryHabits: z.string().trim().optional(),
 });
+
+const allergenTypeEnum = z.enum(["Drug", "Food", "Pollen", "Dust", "Pet", "Fragrance", "Other"]);
 
 export const allergySchema = z.object({
   allergen: z.string().min(1),
-  reaction: z.string(),
-  severity: z.nativeEnum(AllergySeverity),
+  allergenType: allergenTypeEnum.optional().nullable(),
+  reaction: z.string().optional(),
+  severity: z.nativeEnum(AllergySeverity).optional(),
   notes: z.string().optional(),
 });
+
+export const batchAllergySchema = z.array(allergySchema);
 
 export const childProfileSchema = z.object({
   name: z.string().min(1),

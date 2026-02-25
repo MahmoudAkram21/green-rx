@@ -173,6 +173,7 @@ enum VisitType {
 model User {
   id                     Int       @id @default(autoincrement())
   email                  String    @unique
+  phone                  String?   // e.g. E.164: +201145441141
   passwordHash           String
   role                   UserRole
   emailVerified          Boolean   @default(false)
@@ -288,6 +289,7 @@ model Patient {
   pregnancyStatus     Boolean?          // true if currently pregnant (female)
   trimester           Int?              // 1, 2, or 3 when pregnancyStatus is true
   lactation           Boolean           @default(false)
+  bloodType           String?           // e.g. A+, A-, B+, B-, AB+, AB-, O+, O-
   profileCompleteness Int               @default(0) // percentage
   createdAt           DateTime          @default(now())
   updatedAt           DateTime          @updatedAt
@@ -299,6 +301,7 @@ model Patient {
   patientDiseases  PatientDisease[]
   medicalHistories MedicalHistory[]
   familyHistories  FamilyHistory[]
+  surgicalHistories SurgicalHistory[]
   lifestyle        Lifestyle?
   allergies        Allergy[]
   patientDoctors   PatientDoctor[]
@@ -358,19 +361,36 @@ model FamilyHistory {
   @@map("family_histories")
 }
 
+model SurgicalHistory {
+  id             Int      @id @default(autoincrement())
+  patientId      Int
+  operationName  String
+  surgeryDate    DateTime
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  // Relations
+  patient Patient @relation(fields: [patientId], references: [id], onDelete: Cascade)
+
+  @@index([patientId])
+  @@map("surgical_histories")
+}
+
 model Lifestyle {
-  id                   Int      @id @default(autoincrement())
-  patientId            Int      @unique
-  noGlasses            Boolean  @default(false)
-  alcoholAbuse         Boolean  @default(false)
-  excessCaffeine       Boolean  @default(false)
-  waterDaily           Decimal? @db.Decimal(4, 2) // liters per day
-  travellerAbroad      Boolean  @default(false)
-  annualVaccination    Boolean  @default(false)
-  surgeriesLast3Months Boolean  @default(false)
-  surgeriesDetails     String?
-  createdAt            DateTime @default(now())
-  updatedAt            DateTime @updatedAt
+  id                Int      @id @default(autoincrement())
+  patientId         Int      @unique
+  noGlasses         Boolean  @default(false)
+  alcoholAbuse      Boolean  @default(false)
+  excessCaffeine    Boolean  @default(false)
+  waterDaily        Decimal? @db.Decimal(4, 2) // liters per day
+  travellerAbroad   Boolean  @default(false)
+  annualVaccination Boolean  @default(false)
+  surgeriesLast3Months Boolean @default(false)
+  surgeriesDetails  String?
+  physicalActivity  String?  // e.g. dropdown value from "Enter Lifestyle Details"
+  dietaryHabits     String?  // e.g. dropdown value from "Enter Lifestyle Details"
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
 
   // Relations
   patient Patient @relation(fields: [patientId], references: [id], onDelete: Cascade)
