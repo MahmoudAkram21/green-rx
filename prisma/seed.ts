@@ -31,6 +31,7 @@ async function main() {
   await prisma.adverseDrugReaction.deleteMany();
   await prisma.childProfile.deleteMany();
   await prisma.lifestyle.deleteMany();
+  await prisma.lifestyleOption.deleteMany();
   await prisma.allergy.deleteMany();
   await prisma.patientDisease.deleteMany();
   await prisma.familyHistory.deleteMany();
@@ -430,6 +431,29 @@ async function main() {
     }),
   ]);
   console.log(`✅ Created ${diseases.length} diseases`);
+
+  // ============================================
+  // SECTION 4B: LIFESTYLE OPTIONS (Enter Lifestyle Details dropdowns)
+  // ============================================
+  console.log("\n🏃 Creating lifestyle options...");
+  const lifestyleOptions = await Promise.all([
+    // physical_activity options
+    prisma.lifestyleOption.create({ data: { type: "physical_activity", label: "Sedentary", sortOrder: 1 } }),
+    prisma.lifestyleOption.create({ data: { type: "physical_activity", label: "Light (e.g. walking)", sortOrder: 2 } }),
+    prisma.lifestyleOption.create({ data: { type: "physical_activity", label: "Moderate (e.g. cycling, swimming)", sortOrder: 3 } }),
+    prisma.lifestyleOption.create({ data: { type: "physical_activity", label: "Vigorous (e.g. running, gym)", sortOrder: 4 } }),
+    prisma.lifestyleOption.create({ data: { type: "physical_activity", label: "None / Prefer not to say", sortOrder: 5 } }),
+    // dietary_habits options
+    prisma.lifestyleOption.create({ data: { type: "dietary_habits", label: "No special diet", sortOrder: 1 } }),
+    prisma.lifestyleOption.create({ data: { type: "dietary_habits", label: "Vegetarian", sortOrder: 2 } }),
+    prisma.lifestyleOption.create({ data: { type: "dietary_habits", label: "Vegan", sortOrder: 3 } }),
+    prisma.lifestyleOption.create({ data: { type: "dietary_habits", label: "Halal", sortOrder: 4 } }),
+    prisma.lifestyleOption.create({ data: { type: "dietary_habits", label: "Kosher", sortOrder: 5 } }),
+    prisma.lifestyleOption.create({ data: { type: "dietary_habits", label: "Low sodium", sortOrder: 6 } }),
+    prisma.lifestyleOption.create({ data: { type: "dietary_habits", label: "Low sugar", sortOrder: 7 } }),
+    prisma.lifestyleOption.create({ data: { type: "dietary_habits", label: "Other", sortOrder: 8 } }),
+  ]);
+  console.log(`✅ Created ${lifestyleOptions.length} lifestyle options`);
 
   // ============================================
   // SECTION 5: PRICING PLANS
