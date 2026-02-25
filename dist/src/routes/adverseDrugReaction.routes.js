@@ -5,20 +5,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const adverseDrugReaction_controller_1 = __importDefault(require("../controllers/adverseDrugReaction.controller"));
+const auth_middleware_1 = require("../middleware/auth.middleware");
+const client_1 = require("../../generated/client/client");
 const router = express_1.default.Router();
-// Report an ADR
+router.use(auth_middleware_1.authenticate);
 router.post('/', adverseDrugReaction_controller_1.default.reportADR);
-// Get all ADRs for a patient
 router.get('/patient/:patientId', adverseDrugReaction_controller_1.default.getPatientADRs);
-// Get ADRs for a specific drug
 router.get('/drug/:drugType/:drugId', adverseDrugReaction_controller_1.default.getDrugADRs);
-// Get all ADRs (admin)
-router.get('/', adverseDrugReaction_controller_1.default.getAllADRs);
-// Get ADR statistics (must be before /:id)
-router.get('/statistics/summary', adverseDrugReaction_controller_1.default.getADRStatistics);
-// Get one ADR by ID (admin)
+router.get('/', (0, auth_middleware_1.authorize)([client_1.UserRole.Admin, client_1.UserRole.SuperAdmin]), adverseDrugReaction_controller_1.default.getAllADRs);
+router.get('/statistics/summary', (0, auth_middleware_1.authorize)([client_1.UserRole.Admin, client_1.UserRole.SuperAdmin]), adverseDrugReaction_controller_1.default.getADRStatistics);
 router.get('/:id', adverseDrugReaction_controller_1.default.getADRById);
-// Update ADR
 router.patch('/:id', adverseDrugReaction_controller_1.default.updateADR);
 exports.default = router;
 //# sourceMappingURL=adverseDrugReaction.routes.js.map

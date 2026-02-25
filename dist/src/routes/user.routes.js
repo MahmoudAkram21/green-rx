@@ -37,17 +37,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
-const router = express_1.default.Router();
 const userController = __importStar(require("../controllers/user.controller"));
-// GET /api/users - Get all users
+const auth_middleware_1 = require("../middleware/auth.middleware");
+const client_1 = require("../../generated/client/client");
+const router = express_1.default.Router();
+router.use(auth_middleware_1.authenticate);
+router.use((0, auth_middleware_1.authorize)([client_1.UserRole.Admin, client_1.UserRole.SuperAdmin]));
 router.get('/', userController.getAllUsers);
-// GET /api/users/:id - Get user by ID
 router.get('/:id', userController.getUserById);
-// POST /api/users - Create new user
 router.post('/', userController.createUser);
-// PUT /api/users/:id - Update user
 router.put('/:id', userController.updateUser);
-// DELETE /api/users/:id - Delete user
 router.delete('/:id', userController.deleteUser);
 exports.default = router;
 //# sourceMappingURL=user.routes.js.map

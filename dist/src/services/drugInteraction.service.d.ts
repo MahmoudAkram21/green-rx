@@ -46,10 +46,6 @@ declare class DrugInteractionService {
      */
     private checkOrganWarnings;
     /**
-     * Helper method to check if drug matches a class
-     */
-    private drugMatchesClass;
-    /**
      * Create drug interaction alert in database
      */
     createDrugInteractionAlert(prescriptionId: number, interactingMedicineId: number, interactionType: string, severity: 'Minor' | 'Moderate' | 'Major' | 'Contraindicated', message: string): Promise<{

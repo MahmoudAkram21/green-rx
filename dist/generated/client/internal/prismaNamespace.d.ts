@@ -238,6 +238,7 @@ export declare const ModelName: {
     readonly Patient: "Patient";
     readonly MedicalHistory: "MedicalHistory";
     readonly FamilyHistory: "FamilyHistory";
+    readonly SurgicalHistory: "SurgicalHistory";
     readonly Lifestyle: "Lifestyle";
     readonly Allergy: "Allergy";
     readonly Doctor: "Doctor";
@@ -270,6 +271,7 @@ export declare const ModelName: {
     readonly ChildProfile: "ChildProfile";
     readonly Rating: "Rating";
     readonly Visit: "Visit";
+    readonly PatientMedicine: "PatientMedicine";
     readonly ContraindicationTermMapping: "ContraindicationTermMapping";
     readonly BatchHistory: "BatchHistory";
     readonly ImportHistory: "ImportHistory";
@@ -287,7 +289,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         omit: GlobalOmitOptions;
     };
     meta: {
-        modelProps: "user" | "pricingPlan" | "subscription" | "payment" | "patient" | "medicalHistory" | "familyHistory" | "lifestyle" | "allergy" | "doctor" | "patientDoctor" | "consultation" | "appointment" | "disease" | "patientDisease" | "diseaseWarningRule" | "activeSubstance" | "diseaseActiveSubstanceWarning" | "medicineAlternative" | "tradeName" | "company" | "contractingCompany" | "contractingCompanyTradeName" | "prescription" | "prescriptionVersion" | "drugInteractionAlert" | "notification" | "auditLog" | "permission" | "rolePermission" | "appSetting" | "session" | "pharmacist" | "medicalReport" | "patientShareLink" | "adverseDrugReaction" | "childProfile" | "rating" | "visit" | "contraindicationTermMapping" | "batchHistory" | "importHistory" | "medicineSuggestion" | "exportHistory";
+        modelProps: "user" | "pricingPlan" | "subscription" | "payment" | "patient" | "medicalHistory" | "familyHistory" | "surgicalHistory" | "lifestyle" | "allergy" | "doctor" | "patientDoctor" | "consultation" | "appointment" | "disease" | "patientDisease" | "diseaseWarningRule" | "activeSubstance" | "diseaseActiveSubstanceWarning" | "medicineAlternative" | "tradeName" | "company" | "contractingCompany" | "contractingCompanyTradeName" | "prescription" | "prescriptionVersion" | "drugInteractionAlert" | "notification" | "auditLog" | "permission" | "rolePermission" | "appSetting" | "session" | "pharmacist" | "medicalReport" | "patientShareLink" | "adverseDrugReaction" | "childProfile" | "rating" | "visit" | "patientMedicine" | "contraindicationTermMapping" | "batchHistory" | "importHistory" | "medicineSuggestion" | "exportHistory";
         txIsolationLevel: TransactionIsolationLevel;
     };
     model: {
@@ -806,6 +808,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
                 count: {
                     args: Prisma.FamilyHistoryCountArgs<ExtArgs>;
                     result: runtime.Types.Utils.Optional<Prisma.FamilyHistoryCountAggregateOutputType> | number;
+                };
+            };
+        };
+        SurgicalHistory: {
+            payload: Prisma.$SurgicalHistoryPayload<ExtArgs>;
+            fields: Prisma.SurgicalHistoryFieldRefs;
+            operations: {
+                findUnique: {
+                    args: Prisma.SurgicalHistoryFindUniqueArgs<ExtArgs>;
+                    result: runtime.Types.Utils.PayloadToResult<Prisma.$SurgicalHistoryPayload> | null;
+                };
+                findUniqueOrThrow: {
+                    args: Prisma.SurgicalHistoryFindUniqueOrThrowArgs<ExtArgs>;
+                    result: runtime.Types.Utils.PayloadToResult<Prisma.$SurgicalHistoryPayload>;
+                };
+                findFirst: {
+                    args: Prisma.SurgicalHistoryFindFirstArgs<ExtArgs>;
+                    result: runtime.Types.Utils.PayloadToResult<Prisma.$SurgicalHistoryPayload> | null;
+                };
+                findFirstOrThrow: {
+                    args: Prisma.SurgicalHistoryFindFirstOrThrowArgs<ExtArgs>;
+                    result: runtime.Types.Utils.PayloadToResult<Prisma.$SurgicalHistoryPayload>;
+                };
+                findMany: {
+                    args: Prisma.SurgicalHistoryFindManyArgs<ExtArgs>;
+                    result: runtime.Types.Utils.PayloadToResult<Prisma.$SurgicalHistoryPayload>[];
+                };
+                create: {
+                    args: Prisma.SurgicalHistoryCreateArgs<ExtArgs>;
+                    result: runtime.Types.Utils.PayloadToResult<Prisma.$SurgicalHistoryPayload>;
+                };
+                createMany: {
+                    args: Prisma.SurgicalHistoryCreateManyArgs<ExtArgs>;
+                    result: BatchPayload;
+                };
+                createManyAndReturn: {
+                    args: Prisma.SurgicalHistoryCreateManyAndReturnArgs<ExtArgs>;
+                    result: runtime.Types.Utils.PayloadToResult<Prisma.$SurgicalHistoryPayload>[];
+                };
+                delete: {
+                    args: Prisma.SurgicalHistoryDeleteArgs<ExtArgs>;
+                    result: runtime.Types.Utils.PayloadToResult<Prisma.$SurgicalHistoryPayload>;
+                };
+                update: {
+                    args: Prisma.SurgicalHistoryUpdateArgs<ExtArgs>;
+                    result: runtime.Types.Utils.PayloadToResult<Prisma.$SurgicalHistoryPayload>;
+                };
+                deleteMany: {
+                    args: Prisma.SurgicalHistoryDeleteManyArgs<ExtArgs>;
+                    result: BatchPayload;
+                };
+                updateMany: {
+                    args: Prisma.SurgicalHistoryUpdateManyArgs<ExtArgs>;
+                    result: BatchPayload;
+                };
+                updateManyAndReturn: {
+                    args: Prisma.SurgicalHistoryUpdateManyAndReturnArgs<ExtArgs>;
+                    result: runtime.Types.Utils.PayloadToResult<Prisma.$SurgicalHistoryPayload>[];
+                };
+                upsert: {
+                    args: Prisma.SurgicalHistoryUpsertArgs<ExtArgs>;
+                    result: runtime.Types.Utils.PayloadToResult<Prisma.$SurgicalHistoryPayload>;
+                };
+                aggregate: {
+                    args: Prisma.SurgicalHistoryAggregateArgs<ExtArgs>;
+                    result: runtime.Types.Utils.Optional<Prisma.AggregateSurgicalHistory>;
+                };
+                groupBy: {
+                    args: Prisma.SurgicalHistoryGroupByArgs<ExtArgs>;
+                    result: runtime.Types.Utils.Optional<Prisma.SurgicalHistoryGroupByOutputType>[];
+                };
+                count: {
+                    args: Prisma.SurgicalHistoryCountArgs<ExtArgs>;
+                    result: runtime.Types.Utils.Optional<Prisma.SurgicalHistoryCountAggregateOutputType> | number;
                 };
             };
         };
@@ -3177,6 +3253,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
                 };
             };
         };
+        PatientMedicine: {
+            payload: Prisma.$PatientMedicinePayload<ExtArgs>;
+            fields: Prisma.PatientMedicineFieldRefs;
+            operations: {
+                findUnique: {
+                    args: Prisma.PatientMedicineFindUniqueArgs<ExtArgs>;
+                    result: runtime.Types.Utils.PayloadToResult<Prisma.$PatientMedicinePayload> | null;
+                };
+                findUniqueOrThrow: {
+                    args: Prisma.PatientMedicineFindUniqueOrThrowArgs<ExtArgs>;
+                    result: runtime.Types.Utils.PayloadToResult<Prisma.$PatientMedicinePayload>;
+                };
+                findFirst: {
+                    args: Prisma.PatientMedicineFindFirstArgs<ExtArgs>;
+                    result: runtime.Types.Utils.PayloadToResult<Prisma.$PatientMedicinePayload> | null;
+                };
+                findFirstOrThrow: {
+                    args: Prisma.PatientMedicineFindFirstOrThrowArgs<ExtArgs>;
+                    result: runtime.Types.Utils.PayloadToResult<Prisma.$PatientMedicinePayload>;
+                };
+                findMany: {
+                    args: Prisma.PatientMedicineFindManyArgs<ExtArgs>;
+                    result: runtime.Types.Utils.PayloadToResult<Prisma.$PatientMedicinePayload>[];
+                };
+                create: {
+                    args: Prisma.PatientMedicineCreateArgs<ExtArgs>;
+                    result: runtime.Types.Utils.PayloadToResult<Prisma.$PatientMedicinePayload>;
+                };
+                createMany: {
+                    args: Prisma.PatientMedicineCreateManyArgs<ExtArgs>;
+                    result: BatchPayload;
+                };
+                createManyAndReturn: {
+                    args: Prisma.PatientMedicineCreateManyAndReturnArgs<ExtArgs>;
+                    result: runtime.Types.Utils.PayloadToResult<Prisma.$PatientMedicinePayload>[];
+                };
+                delete: {
+                    args: Prisma.PatientMedicineDeleteArgs<ExtArgs>;
+                    result: runtime.Types.Utils.PayloadToResult<Prisma.$PatientMedicinePayload>;
+                };
+                update: {
+                    args: Prisma.PatientMedicineUpdateArgs<ExtArgs>;
+                    result: runtime.Types.Utils.PayloadToResult<Prisma.$PatientMedicinePayload>;
+                };
+                deleteMany: {
+                    args: Prisma.PatientMedicineDeleteManyArgs<ExtArgs>;
+                    result: BatchPayload;
+                };
+                updateMany: {
+                    args: Prisma.PatientMedicineUpdateManyArgs<ExtArgs>;
+                    result: BatchPayload;
+                };
+                updateManyAndReturn: {
+                    args: Prisma.PatientMedicineUpdateManyAndReturnArgs<ExtArgs>;
+                    result: runtime.Types.Utils.PayloadToResult<Prisma.$PatientMedicinePayload>[];
+                };
+                upsert: {
+                    args: Prisma.PatientMedicineUpsertArgs<ExtArgs>;
+                    result: runtime.Types.Utils.PayloadToResult<Prisma.$PatientMedicinePayload>;
+                };
+                aggregate: {
+                    args: Prisma.PatientMedicineAggregateArgs<ExtArgs>;
+                    result: runtime.Types.Utils.Optional<Prisma.AggregatePatientMedicine>;
+                };
+                groupBy: {
+                    args: Prisma.PatientMedicineGroupByArgs<ExtArgs>;
+                    result: runtime.Types.Utils.Optional<Prisma.PatientMedicineGroupByOutputType>[];
+                };
+                count: {
+                    args: Prisma.PatientMedicineCountArgs<ExtArgs>;
+                    result: runtime.Types.Utils.Optional<Prisma.PatientMedicineCountAggregateOutputType> | number;
+                };
+            };
+        };
         ContraindicationTermMapping: {
             payload: Prisma.$ContraindicationTermMappingPayload<ExtArgs>;
             fields: Prisma.ContraindicationTermMappingFieldRefs;
@@ -3584,6 +3734,7 @@ export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof
 export declare const UserScalarFieldEnum: {
     readonly id: "id";
     readonly email: "email";
+    readonly phone: "phone";
     readonly passwordHash: "passwordHash";
     readonly role: "role";
     readonly emailVerified: "emailVerified";
@@ -3642,12 +3793,16 @@ export declare const PatientScalarFieldEnum: {
     readonly name: "name";
     readonly age: "age";
     readonly ageClassification: "ageClassification";
+    readonly dateOfBirth: "dateOfBirth";
     readonly weight: "weight";
     readonly height: "height";
     readonly gender: "gender";
     readonly smoking: "smoking";
     readonly pregnancyWarning: "pregnancyWarning";
+    readonly pregnancyStatus: "pregnancyStatus";
+    readonly trimester: "trimester";
     readonly lactation: "lactation";
+    readonly bloodType: "bloodType";
     readonly profileCompleteness: "profileCompleteness";
     readonly createdAt: "createdAt";
     readonly updatedAt: "updatedAt";
@@ -3678,6 +3833,15 @@ export declare const FamilyHistoryScalarFieldEnum: {
     readonly updatedAt: "updatedAt";
 };
 export type FamilyHistoryScalarFieldEnum = (typeof FamilyHistoryScalarFieldEnum)[keyof typeof FamilyHistoryScalarFieldEnum];
+export declare const SurgicalHistoryScalarFieldEnum: {
+    readonly id: "id";
+    readonly patientId: "patientId";
+    readonly operationName: "operationName";
+    readonly surgeryDate: "surgeryDate";
+    readonly createdAt: "createdAt";
+    readonly updatedAt: "updatedAt";
+};
+export type SurgicalHistoryScalarFieldEnum = (typeof SurgicalHistoryScalarFieldEnum)[keyof typeof SurgicalHistoryScalarFieldEnum];
 export declare const LifestyleScalarFieldEnum: {
     readonly id: "id";
     readonly patientId: "patientId";
@@ -3689,6 +3853,8 @@ export declare const LifestyleScalarFieldEnum: {
     readonly annualVaccination: "annualVaccination";
     readonly surgeriesLast3Months: "surgeriesLast3Months";
     readonly surgeriesDetails: "surgeriesDetails";
+    readonly physicalActivity: "physicalActivity";
+    readonly dietaryHabits: "dietaryHabits";
     readonly createdAt: "createdAt";
     readonly updatedAt: "updatedAt";
 };
@@ -3697,6 +3863,7 @@ export declare const AllergyScalarFieldEnum: {
     readonly id: "id";
     readonly patientId: "patientId";
     readonly allergen: "allergen";
+    readonly allergenType: "allergenType";
     readonly severity: "severity";
     readonly reactionType: "reactionType";
     readonly notes: "notes";
@@ -4039,6 +4206,9 @@ export declare const CompanyScalarFieldEnum: {
     readonly id: "id";
     readonly name: "name";
     readonly contactInfo: "contactInfo";
+    readonly address: "address";
+    readonly governorate: "governorate";
+    readonly country: "country";
     readonly isActive: "isActive";
     readonly createdAt: "createdAt";
     readonly updatedAt: "updatedAt";
@@ -4279,6 +4449,27 @@ export declare const VisitScalarFieldEnum: {
     readonly updatedAt: "updatedAt";
 };
 export type VisitScalarFieldEnum = (typeof VisitScalarFieldEnum)[keyof typeof VisitScalarFieldEnum];
+export declare const PatientMedicineScalarFieldEnum: {
+    readonly id: "id";
+    readonly patientId: "patientId";
+    readonly tradeNameId: "tradeNameId";
+    readonly activeSubstanceId: "activeSubstanceId";
+    readonly medicineName: "medicineName";
+    readonly dosage: "dosage";
+    readonly frequency: "frequency";
+    readonly startDate: "startDate";
+    readonly endDate: "endDate";
+    readonly isOngoing: "isOngoing";
+    readonly notes: "notes";
+    readonly imageUrl: "imageUrl";
+    readonly imageFileName: "imageFileName";
+    readonly isVerified: "isVerified";
+    readonly verifiedBy: "verifiedBy";
+    readonly verifiedAt: "verifiedAt";
+    readonly createdAt: "createdAt";
+    readonly updatedAt: "updatedAt";
+};
+export type PatientMedicineScalarFieldEnum = (typeof PatientMedicineScalarFieldEnum)[keyof typeof PatientMedicineScalarFieldEnum];
 export declare const ContraindicationTermMappingScalarFieldEnum: {
     readonly id: "id";
     readonly standardTerm: "standardTerm";
@@ -4705,6 +4896,7 @@ export type GlobalOmitConfig = {
     patient?: Prisma.PatientOmit;
     medicalHistory?: Prisma.MedicalHistoryOmit;
     familyHistory?: Prisma.FamilyHistoryOmit;
+    surgicalHistory?: Prisma.SurgicalHistoryOmit;
     lifestyle?: Prisma.LifestyleOmit;
     allergy?: Prisma.AllergyOmit;
     doctor?: Prisma.DoctorOmit;
@@ -4737,6 +4929,7 @@ export type GlobalOmitConfig = {
     childProfile?: Prisma.ChildProfileOmit;
     rating?: Prisma.RatingOmit;
     visit?: Prisma.VisitOmit;
+    patientMedicine?: Prisma.PatientMedicineOmit;
     contraindicationTermMapping?: Prisma.ContraindicationTermMappingOmit;
     batchHistory?: Prisma.BatchHistoryOmit;
     importHistory?: Prisma.ImportHistoryOmit;

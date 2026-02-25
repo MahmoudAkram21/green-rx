@@ -37,6 +37,7 @@ const patientShareLink_routes_1 = __importDefault(require("./patientShareLink.ro
 const patientDisease_routes_1 = __importDefault(require("./patientDisease.routes"));
 const diseaseWarningRule_routes_1 = __importDefault(require("./diseaseWarningRule.routes"));
 const medicineSuggestion_routes_1 = __importDefault(require("./medicineSuggestion.routes"));
+const patientMedicine_routes_1 = __importDefault(require("./patientMedicine.routes"));
 const settings_routes_1 = __importDefault(require("./settings.routes"));
 // Mount routes
 router.use('/auth', auth_routes_1.default);
@@ -70,6 +71,7 @@ router.use('/share-links', patientShareLink_routes_1.default);
 router.use('/patient-diseases', patientDisease_routes_1.default);
 router.use('/disease-warning-rules', diseaseWarningRule_routes_1.default);
 router.use('/medicine-suggestions', medicineSuggestion_routes_1.default);
+router.use('/patient-medicines', patientMedicine_routes_1.default);
 router.use('/settings', settings_routes_1.default);
 // Example route
 router.get('/', (_req, res) => {

@@ -51,6 +51,16 @@ async function generateWarnings(patientId, tradeNameId) {
                         }
                     }
                 }
+            },
+            // Self-reported medicines the patient added manually
+            medicines: {
+                where: { isOngoing: true },
+                include: {
+                    tradeName: {
+                        include: { activeSubstance: true }
+                    },
+                    activeSubstance: true,
+                }
             }
         }
     });
@@ -349,8 +359,19 @@ function checkDrugInteractions(patient, newSubstance) {
         { field: 'interactionAnthelmintics', type: 'Anthelmintics/Antimalarials', severity: client_1.WarningSeverity.Low },
         { field: 'interactionPDE5Inhibitors', type: 'PDE5 Inhibitors', severity: client_1.WarningSeverity.Low }
     ];
-    for (const currentRx of patient.prescriptions) {
-        const currentSubstance = currentRx.tradeName.activeSubstance;
+    // Collect active substances from both prescriptions and self-reported medicines
+    const substancesToCheck = [];
+    for (const rx of patient.prescriptions) {
+        substancesToCheck.push({ activeSubstance: rx.tradeName.activeSubstance, label: rx.tradeName.activeSubstance.activeSubstance });
+    }
+    // Also include self-reported ongoing medicines (patient-added)
+    for (const pm of patient.medicines ?? []) {
+        const substance = pm.activeSubstance ?? pm.tradeName?.activeSubstance;
+        if (substance) {
+            substancesToCheck.push({ activeSubstance: substance, label: `${substance.activeSubstance} (self-reported)` });
+        }
+    }
+    for (const { activeSubstance: currentSubstance, label } of substancesToCheck) {
         for (const { field, type, severity } of interactionFields) {
             const interactionData = newSubstance[field];
             if (interactionData && Array.isArray(interactionData) && interactionData.length > 0) {
@@ -360,7 +381,7 @@ function checkDrugInteractions(patient, newSubstance) {
                     warnings.push({
                         severity,
                         type: 'DrugInteraction',
-                        message: `💊 DRUG INTERACTION: May interact with ${currentSubstance.activeSubstance} (${type}). Monitor closely.`
+                        message: `💊 DRUG INTERACTION: May interact with ${label} (${type}). Monitor closely.`
                     });
                 }
             }

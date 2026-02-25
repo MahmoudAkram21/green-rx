@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.cleanupFile = exports.uploadLogo = exports.upload = void 0;
+exports.cleanupFile = exports.uploadMedicineImage = exports.uploadLogo = exports.upload = void 0;
 const multer_1 = __importDefault(require("multer"));
 const path_1 = __importDefault(require("path"));
 const fs_1 = __importDefault(require("fs"));
@@ -62,6 +62,35 @@ exports.uploadLogo = (0, multer_1.default)({
     storage: memoryStorage,
     fileFilter: logoFileFilter,
     limits: { fileSize: 2 * 1024 * 1024 } // 2MB
+});
+// ── Medicine image upload (patient self-report) ────────────────────────────────
+const medicineImagesDir = path_1.default.join(__dirname, '../../uploads/patient-medicines');
+if (!fs_1.default.existsSync(medicineImagesDir)) {
+    fs_1.default.mkdirSync(medicineImagesDir, { recursive: true });
+}
+const medicineImageStorage = multer_1.default.diskStorage({
+    destination: (_req, _file, cb) => {
+        cb(null, medicineImagesDir);
+    },
+    filename: (_req, file, cb) => {
+        const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1E9)}`;
+        const ext = path_1.default.extname(file.originalname);
+        cb(null, `medicine-${uniqueSuffix}${ext}`);
+    },
+});
+const medicineImageFilter = (_req, file, cb) => {
+    const allowed = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp', 'image/gif'];
+    if (allowed.includes(file.mimetype) || file.originalname.match(/\.(png|jpg|jpeg|webp|gif)$/i)) {
+        cb(null, true);
+    }
+    else {
+        cb(new Error('Only image files (PNG, JPG, JPEG, WebP, GIF) are allowed'));
+    }
+};
+exports.uploadMedicineImage = (0, multer_1.default)({
+    storage: medicineImageStorage,
+    fileFilter: medicineImageFilter,
+    limits: { fileSize: 10 * 1024 * 1024 }, // 10MB
 });
 // Cleanup utility - delete file after processing
 const cleanupFile = (filePath) => {

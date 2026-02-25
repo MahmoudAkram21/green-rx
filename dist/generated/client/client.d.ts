@@ -55,6 +55,11 @@ export type MedicalHistory = Prisma.MedicalHistoryModel;
  */
 export type FamilyHistory = Prisma.FamilyHistoryModel;
 /**
+ * Model SurgicalHistory
+ *
+ */
+export type SurgicalHistory = Prisma.SurgicalHistoryModel;
+/**
  * Model Lifestyle
  *
  */
@@ -214,6 +219,11 @@ export type Rating = Prisma.RatingModel;
  *
  */
 export type Visit = Prisma.VisitModel;
+/**
+ * Model PatientMedicine
+ *
+ */
+export type PatientMedicine = Prisma.PatientMedicineModel;
 /**
  * Model ContraindicationTermMapping
  *

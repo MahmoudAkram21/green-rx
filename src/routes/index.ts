@@ -35,6 +35,7 @@ import diseaseWarningRuleRoutes from './diseaseWarningRule.routes';
 import medicineSuggestionRoutes from './medicineSuggestion.routes';
 import patientMedicineRoutes from './patientMedicine.routes';
 import settingsRoutes from './settings.routes';
+import lifestyleOptionRoutes from './lifestyleOption.routes';
 
 // Mount routes
 router.use('/auth', authRoutes);
@@ -70,6 +71,7 @@ router.use('/disease-warning-rules', diseaseWarningRuleRoutes);
 router.use('/medicine-suggestions', medicineSuggestionRoutes);
 router.use('/patient-medicines', patientMedicineRoutes);
 router.use('/settings', settingsRoutes);
+router.use('/lifestyle-options', lifestyleOptionRoutes);
 
 // Example route
 router.get('/', (_req: Request, res: Response) => {

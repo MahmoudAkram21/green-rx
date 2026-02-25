@@ -33,6 +33,8 @@ export type LifestyleMinAggregateOutputType = {
     annualVaccination: boolean | null;
     surgeriesLast3Months: boolean | null;
     surgeriesDetails: string | null;
+    physicalActivity: string | null;
+    dietaryHabits: string | null;
     createdAt: Date | null;
     updatedAt: Date | null;
 };
@@ -47,6 +49,8 @@ export type LifestyleMaxAggregateOutputType = {
     annualVaccination: boolean | null;
     surgeriesLast3Months: boolean | null;
     surgeriesDetails: string | null;
+    physicalActivity: string | null;
+    dietaryHabits: string | null;
     createdAt: Date | null;
     updatedAt: Date | null;
 };
@@ -61,6 +65,8 @@ export type LifestyleCountAggregateOutputType = {
     annualVaccination: number;
     surgeriesLast3Months: number;
     surgeriesDetails: number;
+    physicalActivity: number;
+    dietaryHabits: number;
     createdAt: number;
     updatedAt: number;
     _all: number;
@@ -86,6 +92,8 @@ export type LifestyleMinAggregateInputType = {
     annualVaccination?: true;
     surgeriesLast3Months?: true;
     surgeriesDetails?: true;
+    physicalActivity?: true;
+    dietaryHabits?: true;
     createdAt?: true;
     updatedAt?: true;
 };
@@ -100,6 +108,8 @@ export type LifestyleMaxAggregateInputType = {
     annualVaccination?: true;
     surgeriesLast3Months?: true;
     surgeriesDetails?: true;
+    physicalActivity?: true;
+    dietaryHabits?: true;
     createdAt?: true;
     updatedAt?: true;
 };
@@ -114,6 +124,8 @@ export type LifestyleCountAggregateInputType = {
     annualVaccination?: true;
     surgeriesLast3Months?: true;
     surgeriesDetails?: true;
+    physicalActivity?: true;
+    dietaryHabits?: true;
     createdAt?: true;
     updatedAt?: true;
     _all?: true;
@@ -205,6 +217,8 @@ export type LifestyleGroupByOutputType = {
     annualVaccination: boolean;
     surgeriesLast3Months: boolean;
     surgeriesDetails: string | null;
+    physicalActivity: string | null;
+    dietaryHabits: string | null;
     createdAt: Date;
     updatedAt: Date;
     _count: LifestyleCountAggregateOutputType | null;
@@ -230,6 +244,8 @@ export type LifestyleWhereInput = {
     annualVaccination?: Prisma.BoolFilter<"Lifestyle"> | boolean;
     surgeriesLast3Months?: Prisma.BoolFilter<"Lifestyle"> | boolean;
     surgeriesDetails?: Prisma.StringNullableFilter<"Lifestyle"> | string | null;
+    physicalActivity?: Prisma.StringNullableFilter<"Lifestyle"> | string | null;
+    dietaryHabits?: Prisma.StringNullableFilter<"Lifestyle"> | string | null;
     createdAt?: Prisma.DateTimeFilter<"Lifestyle"> | Date | string;
     updatedAt?: Prisma.DateTimeFilter<"Lifestyle"> | Date | string;
     patient?: Prisma.XOR<Prisma.PatientScalarRelationFilter, Prisma.PatientWhereInput>;
@@ -245,6 +261,8 @@ export type LifestyleOrderByWithRelationInput = {
     annualVaccination?: Prisma.SortOrder;
     surgeriesLast3Months?: Prisma.SortOrder;
     surgeriesDetails?: Prisma.SortOrderInput | Prisma.SortOrder;
+    physicalActivity?: Prisma.SortOrderInput | Prisma.SortOrder;
+    dietaryHabits?: Prisma.SortOrderInput | Prisma.SortOrder;
     createdAt?: Prisma.SortOrder;
     updatedAt?: Prisma.SortOrder;
     patient?: Prisma.PatientOrderByWithRelationInput;
@@ -263,6 +281,8 @@ export type LifestyleWhereUniqueInput = Prisma.AtLeast<{
     annualVaccination?: Prisma.BoolFilter<"Lifestyle"> | boolean;
     surgeriesLast3Months?: Prisma.BoolFilter<"Lifestyle"> | boolean;
     surgeriesDetails?: Prisma.StringNullableFilter<"Lifestyle"> | string | null;
+    physicalActivity?: Prisma.StringNullableFilter<"Lifestyle"> | string | null;
+    dietaryHabits?: Prisma.StringNullableFilter<"Lifestyle"> | string | null;
     createdAt?: Prisma.DateTimeFilter<"Lifestyle"> | Date | string;
     updatedAt?: Prisma.DateTimeFilter<"Lifestyle"> | Date | string;
     patient?: Prisma.XOR<Prisma.PatientScalarRelationFilter, Prisma.PatientWhereInput>;
@@ -278,6 +298,8 @@ export type LifestyleOrderByWithAggregationInput = {
     annualVaccination?: Prisma.SortOrder;
     surgeriesLast3Months?: Prisma.SortOrder;
     surgeriesDetails?: Prisma.SortOrderInput | Prisma.SortOrder;
+    physicalActivity?: Prisma.SortOrderInput | Prisma.SortOrder;
+    dietaryHabits?: Prisma.SortOrderInput | Prisma.SortOrder;
     createdAt?: Prisma.SortOrder;
     updatedAt?: Prisma.SortOrder;
     _count?: Prisma.LifestyleCountOrderByAggregateInput;
@@ -300,6 +322,8 @@ export type LifestyleScalarWhereWithAggregatesInput = {
     annualVaccination?: Prisma.BoolWithAggregatesFilter<"Lifestyle"> | boolean;
     surgeriesLast3Months?: Prisma.BoolWithAggregatesFilter<"Lifestyle"> | boolean;
     surgeriesDetails?: Prisma.StringNullableWithAggregatesFilter<"Lifestyle"> | string | null;
+    physicalActivity?: Prisma.StringNullableWithAggregatesFilter<"Lifestyle"> | string | null;
+    dietaryHabits?: Prisma.StringNullableWithAggregatesFilter<"Lifestyle"> | string | null;
     createdAt?: Prisma.DateTimeWithAggregatesFilter<"Lifestyle"> | Date | string;
     updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Lifestyle"> | Date | string;
 };
@@ -312,6 +336,8 @@ export type LifestyleCreateInput = {
     annualVaccination?: boolean;
     surgeriesLast3Months?: boolean;
     surgeriesDetails?: string | null;
+    physicalActivity?: string | null;
+    dietaryHabits?: string | null;
     createdAt?: Date | string;
     updatedAt?: Date | string;
     patient: Prisma.PatientCreateNestedOneWithoutLifestyleInput;
@@ -327,6 +353,8 @@ export type LifestyleUncheckedCreateInput = {
     annualVaccination?: boolean;
     surgeriesLast3Months?: boolean;
     surgeriesDetails?: string | null;
+    physicalActivity?: string | null;
+    dietaryHabits?: string | null;
     createdAt?: Date | string;
     updatedAt?: Date | string;
 };
@@ -339,6 +367,8 @@ export type LifestyleUpdateInput = {
     annualVaccination?: Prisma.BoolFieldUpdateOperationsInput | boolean;
     surgeriesLast3Months?: Prisma.BoolFieldUpdateOperationsInput | boolean;
     surgeriesDetails?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    physicalActivity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    dietaryHabits?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     patient?: Prisma.PatientUpdateOneRequiredWithoutLifestyleNestedInput;
@@ -354,6 +384,8 @@ export type LifestyleUncheckedUpdateInput = {
     annualVaccination?: Prisma.BoolFieldUpdateOperationsInput | boolean;
     surgeriesLast3Months?: Prisma.BoolFieldUpdateOperationsInput | boolean;
     surgeriesDetails?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    physicalActivity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    dietaryHabits?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 };
@@ -368,6 +400,8 @@ export type LifestyleCreateManyInput = {
     annualVaccination?: boolean;
     surgeriesLast3Months?: boolean;
     surgeriesDetails?: string | null;
+    physicalActivity?: string | null;
+    dietaryHabits?: string | null;
     createdAt?: Date | string;
     updatedAt?: Date | string;
 };
@@ -380,6 +414,8 @@ export type LifestyleUpdateManyMutationInput = {
     annualVaccination?: Prisma.BoolFieldUpdateOperationsInput | boolean;
     surgeriesLast3Months?: Prisma.BoolFieldUpdateOperationsInput | boolean;
     surgeriesDetails?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    physicalActivity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    dietaryHabits?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 };
@@ -394,6 +430,8 @@ export type LifestyleUncheckedUpdateManyInput = {
     annualVaccination?: Prisma.BoolFieldUpdateOperationsInput | boolean;
     surgeriesLast3Months?: Prisma.BoolFieldUpdateOperationsInput | boolean;
     surgeriesDetails?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    physicalActivity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    dietaryHabits?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 };
@@ -412,6 +450,8 @@ export type LifestyleCountOrderByAggregateInput = {
     annualVaccination?: Prisma.SortOrder;
     surgeriesLast3Months?: Prisma.SortOrder;
     surgeriesDetails?: Prisma.SortOrder;
+    physicalActivity?: Prisma.SortOrder;
+    dietaryHabits?: Prisma.SortOrder;
     createdAt?: Prisma.SortOrder;
     updatedAt?: Prisma.SortOrder;
 };
@@ -431,6 +471,8 @@ export type LifestyleMaxOrderByAggregateInput = {
     annualVaccination?: Prisma.SortOrder;
     surgeriesLast3Months?: Prisma.SortOrder;
     surgeriesDetails?: Prisma.SortOrder;
+    physicalActivity?: Prisma.SortOrder;
+    dietaryHabits?: Prisma.SortOrder;
     createdAt?: Prisma.SortOrder;
     updatedAt?: Prisma.SortOrder;
 };
@@ -445,6 +487,8 @@ export type LifestyleMinOrderByAggregateInput = {
     annualVaccination?: Prisma.SortOrder;
     surgeriesLast3Months?: Prisma.SortOrder;
     surgeriesDetails?: Prisma.SortOrder;
+    physicalActivity?: Prisma.SortOrder;
+    dietaryHabits?: Prisma.SortOrder;
     createdAt?: Prisma.SortOrder;
     updatedAt?: Prisma.SortOrder;
 };
@@ -490,6 +534,8 @@ export type LifestyleCreateWithoutPatientInput = {
     annualVaccination?: boolean;
     surgeriesLast3Months?: boolean;
     surgeriesDetails?: string | null;
+    physicalActivity?: string | null;
+    dietaryHabits?: string | null;
     createdAt?: Date | string;
     updatedAt?: Date | string;
 };
@@ -503,6 +549,8 @@ export type LifestyleUncheckedCreateWithoutPatientInput = {
     annualVaccination?: boolean;
     surgeriesLast3Months?: boolean;
     surgeriesDetails?: string | null;
+    physicalActivity?: string | null;
+    dietaryHabits?: string | null;
     createdAt?: Date | string;
     updatedAt?: Date | string;
 };
@@ -528,6 +576,8 @@ export type LifestyleUpdateWithoutPatientInput = {
     annualVaccination?: Prisma.BoolFieldUpdateOperationsInput | boolean;
     surgeriesLast3Months?: Prisma.BoolFieldUpdateOperationsInput | boolean;
     surgeriesDetails?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    physicalActivity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    dietaryHabits?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 };
@@ -541,6 +591,8 @@ export type LifestyleUncheckedUpdateWithoutPatientInput = {
     annualVaccination?: Prisma.BoolFieldUpdateOperationsInput | boolean;
     surgeriesLast3Months?: Prisma.BoolFieldUpdateOperationsInput | boolean;
     surgeriesDetails?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    physicalActivity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    dietaryHabits?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 };
@@ -555,6 +607,8 @@ export type LifestyleSelect<ExtArgs extends runtime.Types.Extensions.InternalArg
     annualVaccination?: boolean;
     surgeriesLast3Months?: boolean;
     surgeriesDetails?: boolean;
+    physicalActivity?: boolean;
+    dietaryHabits?: boolean;
     createdAt?: boolean;
     updatedAt?: boolean;
     patient?: boolean | Prisma.PatientDefaultArgs<ExtArgs>;
@@ -570,6 +624,8 @@ export type LifestyleSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ext
     annualVaccination?: boolean;
     surgeriesLast3Months?: boolean;
     surgeriesDetails?: boolean;
+    physicalActivity?: boolean;
+    dietaryHabits?: boolean;
     createdAt?: boolean;
     updatedAt?: boolean;
     patient?: boolean | Prisma.PatientDefaultArgs<ExtArgs>;
@@ -585,6 +641,8 @@ export type LifestyleSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ext
     annualVaccination?: boolean;
     surgeriesLast3Months?: boolean;
     surgeriesDetails?: boolean;
+    physicalActivity?: boolean;
+    dietaryHabits?: boolean;
     createdAt?: boolean;
     updatedAt?: boolean;
     patient?: boolean | Prisma.PatientDefaultArgs<ExtArgs>;
@@ -600,10 +658,12 @@ export type LifestyleSelectScalar = {
     annualVaccination?: boolean;
     surgeriesLast3Months?: boolean;
     surgeriesDetails?: boolean;
+    physicalActivity?: boolean;
+    dietaryHabits?: boolean;
     createdAt?: boolean;
     updatedAt?: boolean;
 };
-export type LifestyleOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "patientId" | "noGlasses" | "alcoholAbuse" | "excessCaffeine" | "waterDaily" | "travellerAbroad" | "annualVaccination" | "surgeriesLast3Months" | "surgeriesDetails" | "createdAt" | "updatedAt", ExtArgs["result"]["lifestyle"]>;
+export type LifestyleOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "patientId" | "noGlasses" | "alcoholAbuse" | "excessCaffeine" | "waterDaily" | "travellerAbroad" | "annualVaccination" | "surgeriesLast3Months" | "surgeriesDetails" | "physicalActivity" | "dietaryHabits" | "createdAt" | "updatedAt", ExtArgs["result"]["lifestyle"]>;
 export type LifestyleInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     patient?: boolean | Prisma.PatientDefaultArgs<ExtArgs>;
 };
@@ -629,6 +689,8 @@ export type $LifestylePayload<ExtArgs extends runtime.Types.Extensions.InternalA
         annualVaccination: boolean;
         surgeriesLast3Months: boolean;
         surgeriesDetails: string | null;
+        physicalActivity: string | null;
+        dietaryHabits: string | null;
         createdAt: Date;
         updatedAt: Date;
     }, ExtArgs["result"]["lifestyle"]>;
@@ -996,6 +1058,8 @@ export interface LifestyleFieldRefs {
     readonly annualVaccination: Prisma.FieldRef<"Lifestyle", 'Boolean'>;
     readonly surgeriesLast3Months: Prisma.FieldRef<"Lifestyle", 'Boolean'>;
     readonly surgeriesDetails: Prisma.FieldRef<"Lifestyle", 'String'>;
+    readonly physicalActivity: Prisma.FieldRef<"Lifestyle", 'String'>;
+    readonly dietaryHabits: Prisma.FieldRef<"Lifestyle", 'String'>;
     readonly createdAt: Prisma.FieldRef<"Lifestyle", 'DateTime'>;
     readonly updatedAt: Prisma.FieldRef<"Lifestyle", 'DateTime'>;
 }

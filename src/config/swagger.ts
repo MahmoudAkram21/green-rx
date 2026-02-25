@@ -64,6 +64,7 @@ const PHARMACIST_TAGS = {
 
 const ADMIN_TAG = 'System & Admin';
 
+/** Optional custom responses: e.g. { 201: 'Created', 204: 'No Content' } */
 const s = (
   pathKey: string,
   method: Method,
@@ -71,9 +72,16 @@ const s = (
   summary: string,
   secure = true,
   params: any[] = [],
-  body?: { schemaRef: string; required?: boolean }
+  body?: { schemaRef: string; required?: boolean },
+  responses?: Record<string, string>
 ) => {
   const tagList = Array.isArray(tagOrTags) ? tagOrTags : [tagOrTags];
+  const defaultResponses: Record<string, { description: string }> = { '200': { description: 'Success' } };
+  if (responses) {
+    for (const [code, desc] of Object.entries(responses)) {
+      defaultResponses[code] = { description: desc };
+    }
+  }
   paths[pathKey] = paths[pathKey] || {};
   paths[pathKey][method] = {
     tags: tagList,
@@ -86,7 +94,7 @@ const s = (
         content: { 'application/json': { schema: { $ref: `#/components/schemas/${body.schemaRef}` } } }
       }
     } : {}),
-    responses: { '200': { description: 'Success' } }
+    responses: defaultResponses
   };
 };
 
@@ -137,6 +145,14 @@ s('/patients/surgeries/{id}', 'delete', PATIENT_TAGS.SURGERIES, 'Delete a surgic
 
 // PATIENTS — Lifestyle
 s('/patients/{patientId}/lifestyle', 'put', PATIENT_TAGS.LIFESTYLE, 'Update patient lifestyle data', true, [p('patientId')], { schemaRef: 'LifestyleRequest' });
+
+// LIFESTYLE OPTIONS (Admin adds options; app fetches for "Enter Lifestyle Details" dropdowns)
+s('/lifestyle-options', 'get', [PATIENT_TAGS.LIFESTYLE, ADMIN_TAG], 'List active lifestyle options for dropdowns', true, [q('type', 'Filter: physical_activity | dietary_habits')]);
+s('/lifestyle-options/all', 'get', ADMIN_TAG, 'List all lifestyle options including inactive (Admin)', true, [q('type', 'Optional: physical_activity | dietary_habits')]);
+s('/lifestyle-options/{id}', 'get', [PATIENT_TAGS.LIFESTYLE, ADMIN_TAG], 'Get lifestyle option by ID', true, [p('id')]);
+s('/lifestyle-options', 'post', ADMIN_TAG, 'Create a lifestyle option (Admin)', true, [], { schemaRef: 'CreateLifestyleOptionRequest' }, { '200': 'Success', '201': 'Created' });
+s('/lifestyle-options/{id}', 'put', ADMIN_TAG, 'Update a lifestyle option (Admin)', true, [p('id')], { schemaRef: 'UpdateLifestyleOptionRequest' });
+s('/lifestyle-options/{id}', 'delete', ADMIN_TAG, 'Delete a lifestyle option (Admin)', true, [p('id')], undefined, { '200': 'Success', '204': 'No Content' });
 
 // PATIENTS — Children
 s('/patients/{patientId}/children', 'get', PATIENT_TAGS.PROFILE, 'Get child profiles for patient', true, [p('patientId')]);
@@ -498,7 +514,27 @@ const options: Record<string, unknown> = {
         MedicalHistoryRequest: { type: 'object', required: ['diseaseId', 'severity', 'status'], properties: { diseaseId: { type: 'integer' }, severity: { type: 'string', enum: ['None', 'Mild', 'Moderate', 'Severe'] }, diagnosisDate: { type: 'string', format: 'date-time' }, treatment: { type: 'string' }, status: { type: 'string', enum: ['Active', 'Resolved', 'Chronic', 'Unknown'] }, notes: { type: 'string' } } },
         FamilyHistoryRequest: { type: 'object', required: ['relation', 'diseaseId', 'severity'], properties: { relation: { type: 'string', example: 'Father' }, diseaseId: { type: 'integer' }, severity: { type: 'string', enum: ['None', 'Mild', 'Moderate', 'Severe'] }, notes: { type: 'string' } } },
         SurgicalHistoryRequest: { type: 'object', required: ['operationName', 'surgeryDate'], properties: { operationName: { type: 'string' }, surgeryDate: { type: 'string', format: 'date-time' } } },
-        LifestyleRequest: { type: 'object', properties: { noGlasses: { type: 'boolean' }, alcoholAbuse: { type: 'boolean' }, excessCaffeine: { type: 'boolean' }, waterDaily: { type: 'number' }, travellerAbroad: { type: 'boolean' }, annualVaccination: { type: 'boolean' }, noiseExposure: { type: 'boolean' }, chemicalExposure: { type: 'boolean' }, radiationExposure: { type: 'boolean' }, physicalActivity: { type: 'string' }, dietaryHabits: { type: 'string' } } },
+        LifestyleRequest: {
+          description: 'Enter Lifestyle Details screen. Use values from GET /lifestyle-options (physicalActivity from type=physical_activity, dietaryHabits from type=dietary_habits).',
+          type: 'object',
+          properties: { noGlasses: { type: 'boolean' }, alcoholAbuse: { type: 'boolean', description: 'Do you drink alcohol? (Yes = true)' }, excessCaffeine: { type: 'boolean' }, waterDaily: { type: 'number' }, travellerAbroad: { type: 'boolean' }, annualVaccination: { type: 'boolean' }, noiseExposure: { type: 'boolean' }, chemicalExposure: { type: 'boolean' }, radiationExposure: { type: 'boolean' }, physicalActivity: { type: 'string', description: 'Option label from GET /lifestyle-options?type=physical_activity' }, dietaryHabits: { type: 'string', description: 'Option label from GET /lifestyle-options?type=dietary_habits' } }
+        },
+        CreateLifestyleOptionRequest: {
+          description: 'Admin adds an option for "Enter Lifestyle Details" dropdowns. type determines which dropdown (physical_activity or dietary_habits).',
+          type: 'object',
+          required: ['type', 'label'],
+          properties: { type: { type: 'string', enum: ['physical_activity', 'dietary_habits'], description: 'Which dropdown this option belongs to' }, label: { type: 'string', description: 'Display text e.g. Sedentary, Vegetarian' }, value: { type: 'string', description: 'Stored value (defaults to label if omitted)' }, sortOrder: { type: 'integer', description: 'Display order' }, isActive: { type: 'boolean', default: true } }
+        },
+        UpdateLifestyleOptionRequest: {
+          description: 'Admin updates an existing lifestyle option.',
+          type: 'object',
+          properties: { type: { type: 'string', enum: ['physical_activity', 'dietary_habits'] }, label: { type: 'string' }, value: { type: 'string' }, sortOrder: { type: 'integer' }, isActive: { type: 'boolean' } }
+        },
+        LifestyleOption: {
+          description: 'Single option for lifestyle dropdowns (admin-managed).',
+          type: 'object',
+          properties: { id: { type: 'integer' }, type: { type: 'string', enum: ['physical_activity', 'dietary_habits'] }, label: { type: 'string' }, value: { type: 'string', nullable: true }, sortOrder: { type: 'integer' }, isActive: { type: 'boolean' }, createdAt: { type: 'string', format: 'date-time' }, updatedAt: { type: 'string', format: 'date-time' } }
+        },
         ChildProfileRequest: { type: 'object', required: ['name', 'dateOfBirth', 'gender', 'ageClassification'], properties: { name: { type: 'string' }, dateOfBirth: { type: 'string', format: 'date-time' }, gender: { type: 'string', enum: ['Male', 'Female', 'Other'] }, ageClassification: { type: 'string', enum: ['Neonates', 'Infants', 'Toddlers', 'Children', 'Adolescents', 'Adults', 'Elderly'] }, weight: { type: 'number' }, height: { type: 'number' }, allergies: {}, diseases: {}, medicalHistory: {} } },
         // ── Doctor & Pharmacist
         CreateDoctorRequest: { type: 'object', required: ['userId', 'name', 'specialization', 'licenseNumber'], properties: { userId: { type: 'integer' }, name: { type: 'string' }, specialization: { type: 'string' }, licenseNumber: { type: 'string' }, phoneNumber: { type: 'string' }, clinicAddress: { type: 'string' }, yearsOfExperience: { type: 'integer' }, qualifications: { type: 'string' }, consultationFee: { type: 'number' } } },

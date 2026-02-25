@@ -19,6 +19,7 @@ export type PatientAvgAggregateOutputType = {
     age: number | null;
     weight: runtime.Decimal | null;
     height: runtime.Decimal | null;
+    trimester: number | null;
     profileCompleteness: number | null;
 };
 export type PatientSumAggregateOutputType = {
@@ -27,6 +28,7 @@ export type PatientSumAggregateOutputType = {
     age: number | null;
     weight: runtime.Decimal | null;
     height: runtime.Decimal | null;
+    trimester: number | null;
     profileCompleteness: number | null;
 };
 export type PatientMinAggregateOutputType = {
@@ -35,12 +37,16 @@ export type PatientMinAggregateOutputType = {
     name: string | null;
     age: number | null;
     ageClassification: $Enums.AgeClassification | null;
+    dateOfBirth: Date | null;
     weight: runtime.Decimal | null;
     height: runtime.Decimal | null;
     gender: $Enums.Gender | null;
     smoking: boolean | null;
     pregnancyWarning: boolean | null;
+    pregnancyStatus: boolean | null;
+    trimester: number | null;
     lactation: boolean | null;
+    bloodType: string | null;
     profileCompleteness: number | null;
     createdAt: Date | null;
     updatedAt: Date | null;
@@ -52,12 +58,16 @@ export type PatientMaxAggregateOutputType = {
     name: string | null;
     age: number | null;
     ageClassification: $Enums.AgeClassification | null;
+    dateOfBirth: Date | null;
     weight: runtime.Decimal | null;
     height: runtime.Decimal | null;
     gender: $Enums.Gender | null;
     smoking: boolean | null;
     pregnancyWarning: boolean | null;
+    pregnancyStatus: boolean | null;
+    trimester: number | null;
     lactation: boolean | null;
+    bloodType: string | null;
     profileCompleteness: number | null;
     createdAt: Date | null;
     updatedAt: Date | null;
@@ -69,12 +79,16 @@ export type PatientCountAggregateOutputType = {
     name: number;
     age: number;
     ageClassification: number;
+    dateOfBirth: number;
     weight: number;
     height: number;
     gender: number;
     smoking: number;
     pregnancyWarning: number;
+    pregnancyStatus: number;
+    trimester: number;
     lactation: number;
+    bloodType: number;
     profileCompleteness: number;
     createdAt: number;
     updatedAt: number;
@@ -87,6 +101,7 @@ export type PatientAvgAggregateInputType = {
     age?: true;
     weight?: true;
     height?: true;
+    trimester?: true;
     profileCompleteness?: true;
 };
 export type PatientSumAggregateInputType = {
@@ -95,6 +110,7 @@ export type PatientSumAggregateInputType = {
     age?: true;
     weight?: true;
     height?: true;
+    trimester?: true;
     profileCompleteness?: true;
 };
 export type PatientMinAggregateInputType = {
@@ -103,12 +119,16 @@ export type PatientMinAggregateInputType = {
     name?: true;
     age?: true;
     ageClassification?: true;
+    dateOfBirth?: true;
     weight?: true;
     height?: true;
     gender?: true;
     smoking?: true;
     pregnancyWarning?: true;
+    pregnancyStatus?: true;
+    trimester?: true;
     lactation?: true;
+    bloodType?: true;
     profileCompleteness?: true;
     createdAt?: true;
     updatedAt?: true;
@@ -120,12 +140,16 @@ export type PatientMaxAggregateInputType = {
     name?: true;
     age?: true;
     ageClassification?: true;
+    dateOfBirth?: true;
     weight?: true;
     height?: true;
     gender?: true;
     smoking?: true;
     pregnancyWarning?: true;
+    pregnancyStatus?: true;
+    trimester?: true;
     lactation?: true;
+    bloodType?: true;
     profileCompleteness?: true;
     createdAt?: true;
     updatedAt?: true;
@@ -137,12 +161,16 @@ export type PatientCountAggregateInputType = {
     name?: true;
     age?: true;
     ageClassification?: true;
+    dateOfBirth?: true;
     weight?: true;
     height?: true;
     gender?: true;
     smoking?: true;
     pregnancyWarning?: true;
+    pregnancyStatus?: true;
+    trimester?: true;
     lactation?: true;
+    bloodType?: true;
     profileCompleteness?: true;
     createdAt?: true;
     updatedAt?: true;
@@ -231,12 +259,16 @@ export type PatientGroupByOutputType = {
     name: string;
     age: number;
     ageClassification: $Enums.AgeClassification;
+    dateOfBirth: Date | null;
     weight: runtime.Decimal | null;
     height: runtime.Decimal | null;
     gender: $Enums.Gender;
     smoking: boolean;
     pregnancyWarning: boolean;
+    pregnancyStatus: boolean | null;
+    trimester: number | null;
     lactation: boolean;
+    bloodType: string | null;
     profileCompleteness: number;
     createdAt: Date;
     updatedAt: Date;
@@ -259,12 +291,16 @@ export type PatientWhereInput = {
     name?: Prisma.StringFilter<"Patient"> | string;
     age?: Prisma.IntFilter<"Patient"> | number;
     ageClassification?: Prisma.EnumAgeClassificationFilter<"Patient"> | $Enums.AgeClassification;
+    dateOfBirth?: Prisma.DateTimeNullableFilter<"Patient"> | Date | string | null;
     weight?: Prisma.DecimalNullableFilter<"Patient"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     height?: Prisma.DecimalNullableFilter<"Patient"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     gender?: Prisma.EnumGenderFilter<"Patient"> | $Enums.Gender;
     smoking?: Prisma.BoolFilter<"Patient"> | boolean;
     pregnancyWarning?: Prisma.BoolFilter<"Patient"> | boolean;
+    pregnancyStatus?: Prisma.BoolNullableFilter<"Patient"> | boolean | null;
+    trimester?: Prisma.IntNullableFilter<"Patient"> | number | null;
     lactation?: Prisma.BoolFilter<"Patient"> | boolean;
+    bloodType?: Prisma.StringNullableFilter<"Patient"> | string | null;
     profileCompleteness?: Prisma.IntFilter<"Patient"> | number;
     createdAt?: Prisma.DateTimeFilter<"Patient"> | Date | string;
     updatedAt?: Prisma.DateTimeFilter<"Patient"> | Date | string;
@@ -274,6 +310,7 @@ export type PatientWhereInput = {
     patientDiseases?: Prisma.PatientDiseaseListRelationFilter;
     medicalHistories?: Prisma.MedicalHistoryListRelationFilter;
     familyHistories?: Prisma.FamilyHistoryListRelationFilter;
+    surgicalHistories?: Prisma.SurgicalHistoryListRelationFilter;
     lifestyle?: Prisma.XOR<Prisma.LifestyleNullableScalarRelationFilter, Prisma.LifestyleWhereInput> | null;
     allergies?: Prisma.AllergyListRelationFilter;
     patientDoctors?: Prisma.PatientDoctorListRelationFilter;
@@ -285,6 +322,7 @@ export type PatientWhereInput = {
     childrenProfiles?: Prisma.ChildProfileListRelationFilter;
     ratings?: Prisma.RatingListRelationFilter;
     visits?: Prisma.VisitListRelationFilter;
+    medicines?: Prisma.PatientMedicineListRelationFilter;
 };
 export type PatientOrderByWithRelationInput = {
     id?: Prisma.SortOrder;
@@ -292,12 +330,16 @@ export type PatientOrderByWithRelationInput = {
     name?: Prisma.SortOrder;
     age?: Prisma.SortOrder;
     ageClassification?: Prisma.SortOrder;
+    dateOfBirth?: Prisma.SortOrderInput | Prisma.SortOrder;
     weight?: Prisma.SortOrderInput | Prisma.SortOrder;
     height?: Prisma.SortOrderInput | Prisma.SortOrder;
     gender?: Prisma.SortOrder;
     smoking?: Prisma.SortOrder;
     pregnancyWarning?: Prisma.SortOrder;
+    pregnancyStatus?: Prisma.SortOrderInput | Prisma.SortOrder;
+    trimester?: Prisma.SortOrderInput | Prisma.SortOrder;
     lactation?: Prisma.SortOrder;
+    bloodType?: Prisma.SortOrderInput | Prisma.SortOrder;
     profileCompleteness?: Prisma.SortOrder;
     createdAt?: Prisma.SortOrder;
     updatedAt?: Prisma.SortOrder;
@@ -307,6 +349,7 @@ export type PatientOrderByWithRelationInput = {
     patientDiseases?: Prisma.PatientDiseaseOrderByRelationAggregateInput;
     medicalHistories?: Prisma.MedicalHistoryOrderByRelationAggregateInput;
     familyHistories?: Prisma.FamilyHistoryOrderByRelationAggregateInput;
+    surgicalHistories?: Prisma.SurgicalHistoryOrderByRelationAggregateInput;
     lifestyle?: Prisma.LifestyleOrderByWithRelationInput;
     allergies?: Prisma.AllergyOrderByRelationAggregateInput;
     patientDoctors?: Prisma.PatientDoctorOrderByRelationAggregateInput;
@@ -318,6 +361,7 @@ export type PatientOrderByWithRelationInput = {
     childrenProfiles?: Prisma.ChildProfileOrderByRelationAggregateInput;
     ratings?: Prisma.RatingOrderByRelationAggregateInput;
     visits?: Prisma.VisitOrderByRelationAggregateInput;
+    medicines?: Prisma.PatientMedicineOrderByRelationAggregateInput;
 };
 export type PatientWhereUniqueInput = Prisma.AtLeast<{
     id?: number;
@@ -328,12 +372,16 @@ export type PatientWhereUniqueInput = Prisma.AtLeast<{
     name?: Prisma.StringFilter<"Patient"> | string;
     age?: Prisma.IntFilter<"Patient"> | number;
     ageClassification?: Prisma.EnumAgeClassificationFilter<"Patient"> | $Enums.AgeClassification;
+    dateOfBirth?: Prisma.DateTimeNullableFilter<"Patient"> | Date | string | null;
     weight?: Prisma.DecimalNullableFilter<"Patient"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     height?: Prisma.DecimalNullableFilter<"Patient"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     gender?: Prisma.EnumGenderFilter<"Patient"> | $Enums.Gender;
     smoking?: Prisma.BoolFilter<"Patient"> | boolean;
     pregnancyWarning?: Prisma.BoolFilter<"Patient"> | boolean;
+    pregnancyStatus?: Prisma.BoolNullableFilter<"Patient"> | boolean | null;
+    trimester?: Prisma.IntNullableFilter<"Patient"> | number | null;
     lactation?: Prisma.BoolFilter<"Patient"> | boolean;
+    bloodType?: Prisma.StringNullableFilter<"Patient"> | string | null;
     profileCompleteness?: Prisma.IntFilter<"Patient"> | number;
     createdAt?: Prisma.DateTimeFilter<"Patient"> | Date | string;
     updatedAt?: Prisma.DateTimeFilter<"Patient"> | Date | string;
@@ -343,6 +391,7 @@ export type PatientWhereUniqueInput = Prisma.AtLeast<{
     patientDiseases?: Prisma.PatientDiseaseListRelationFilter;
     medicalHistories?: Prisma.MedicalHistoryListRelationFilter;
     familyHistories?: Prisma.FamilyHistoryListRelationFilter;
+    surgicalHistories?: Prisma.SurgicalHistoryListRelationFilter;
     lifestyle?: Prisma.XOR<Prisma.LifestyleNullableScalarRelationFilter, Prisma.LifestyleWhereInput> | null;
     allergies?: Prisma.AllergyListRelationFilter;
     patientDoctors?: Prisma.PatientDoctorListRelationFilter;
@@ -354,6 +403,7 @@ export type PatientWhereUniqueInput = Prisma.AtLeast<{
     childrenProfiles?: Prisma.ChildProfileListRelationFilter;
     ratings?: Prisma.RatingListRelationFilter;
     visits?: Prisma.VisitListRelationFilter;
+    medicines?: Prisma.PatientMedicineListRelationFilter;
 }, "id" | "userId">;
 export type PatientOrderByWithAggregationInput = {
     id?: Prisma.SortOrder;
@@ -361,12 +411,16 @@ export type PatientOrderByWithAggregationInput = {
     name?: Prisma.SortOrder;
     age?: Prisma.SortOrder;
     ageClassification?: Prisma.SortOrder;
+    dateOfBirth?: Prisma.SortOrderInput | Prisma.SortOrder;
     weight?: Prisma.SortOrderInput | Prisma.SortOrder;
     height?: Prisma.SortOrderInput | Prisma.SortOrder;
     gender?: Prisma.SortOrder;
     smoking?: Prisma.SortOrder;
     pregnancyWarning?: Prisma.SortOrder;
+    pregnancyStatus?: Prisma.SortOrderInput | Prisma.SortOrder;
+    trimester?: Prisma.SortOrderInput | Prisma.SortOrder;
     lactation?: Prisma.SortOrder;
+    bloodType?: Prisma.SortOrderInput | Prisma.SortOrder;
     profileCompleteness?: Prisma.SortOrder;
     createdAt?: Prisma.SortOrder;
     updatedAt?: Prisma.SortOrder;
@@ -386,12 +440,16 @@ export type PatientScalarWhereWithAggregatesInput = {
     name?: Prisma.StringWithAggregatesFilter<"Patient"> | string;
     age?: Prisma.IntWithAggregatesFilter<"Patient"> | number;
     ageClassification?: Prisma.EnumAgeClassificationWithAggregatesFilter<"Patient"> | $Enums.AgeClassification;
+    dateOfBirth?: Prisma.DateTimeNullableWithAggregatesFilter<"Patient"> | Date | string | null;
     weight?: Prisma.DecimalNullableWithAggregatesFilter<"Patient"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     height?: Prisma.DecimalNullableWithAggregatesFilter<"Patient"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     gender?: Prisma.EnumGenderWithAggregatesFilter<"Patient"> | $Enums.Gender;
     smoking?: Prisma.BoolWithAggregatesFilter<"Patient"> | boolean;
     pregnancyWarning?: Prisma.BoolWithAggregatesFilter<"Patient"> | boolean;
+    pregnancyStatus?: Prisma.BoolNullableWithAggregatesFilter<"Patient"> | boolean | null;
+    trimester?: Prisma.IntNullableWithAggregatesFilter<"Patient"> | number | null;
     lactation?: Prisma.BoolWithAggregatesFilter<"Patient"> | boolean;
+    bloodType?: Prisma.StringNullableWithAggregatesFilter<"Patient"> | string | null;
     profileCompleteness?: Prisma.IntWithAggregatesFilter<"Patient"> | number;
     createdAt?: Prisma.DateTimeWithAggregatesFilter<"Patient"> | Date | string;
     updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Patient"> | Date | string;
@@ -401,12 +459,16 @@ export type PatientCreateInput = {
     name: string;
     age: number;
     ageClassification: $Enums.AgeClassification;
+    dateOfBirth?: Date | string | null;
     weight?: runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     height?: runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     gender: $Enums.Gender;
     smoking?: boolean;
     pregnancyWarning?: boolean;
+    pregnancyStatus?: boolean | null;
+    trimester?: number | null;
     lactation?: boolean;
+    bloodType?: string | null;
     profileCompleteness?: number;
     createdAt?: Date | string;
     updatedAt?: Date | string;
@@ -416,6 +478,7 @@ export type PatientCreateInput = {
     patientDiseases?: Prisma.PatientDiseaseCreateNestedManyWithoutPatientInput;
     medicalHistories?: Prisma.MedicalHistoryCreateNestedManyWithoutPatientInput;
     familyHistories?: Prisma.FamilyHistoryCreateNestedManyWithoutPatientInput;
+    surgicalHistories?: Prisma.SurgicalHistoryCreateNestedManyWithoutPatientInput;
     lifestyle?: Prisma.LifestyleCreateNestedOneWithoutPatientInput;
     allergies?: Prisma.AllergyCreateNestedManyWithoutPatientInput;
     patientDoctors?: Prisma.PatientDoctorCreateNestedManyWithoutPatientInput;
@@ -427,6 +490,7 @@ export type PatientCreateInput = {
     childrenProfiles?: Prisma.ChildProfileCreateNestedManyWithoutParentInput;
     ratings?: Prisma.RatingCreateNestedManyWithoutPatientInput;
     visits?: Prisma.VisitCreateNestedManyWithoutPatientInput;
+    medicines?: Prisma.PatientMedicineCreateNestedManyWithoutPatientInput;
 };
 export type PatientUncheckedCreateInput = {
     id?: number;
@@ -434,12 +498,16 @@ export type PatientUncheckedCreateInput = {
     name: string;
     age: number;
     ageClassification: $Enums.AgeClassification;
+    dateOfBirth?: Date | string | null;
     weight?: runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     height?: runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     gender: $Enums.Gender;
     smoking?: boolean;
     pregnancyWarning?: boolean;
+    pregnancyStatus?: boolean | null;
+    trimester?: number | null;
     lactation?: boolean;
+    bloodType?: string | null;
     profileCompleteness?: number;
     createdAt?: Date | string;
     updatedAt?: Date | string;
@@ -448,6 +516,7 @@ export type PatientUncheckedCreateInput = {
     patientDiseases?: Prisma.PatientDiseaseUncheckedCreateNestedManyWithoutPatientInput;
     medicalHistories?: Prisma.MedicalHistoryUncheckedCreateNestedManyWithoutPatientInput;
     familyHistories?: Prisma.FamilyHistoryUncheckedCreateNestedManyWithoutPatientInput;
+    surgicalHistories?: Prisma.SurgicalHistoryUncheckedCreateNestedManyWithoutPatientInput;
     lifestyle?: Prisma.LifestyleUncheckedCreateNestedOneWithoutPatientInput;
     allergies?: Prisma.AllergyUncheckedCreateNestedManyWithoutPatientInput;
     patientDoctors?: Prisma.PatientDoctorUncheckedCreateNestedManyWithoutPatientInput;
@@ -459,17 +528,22 @@ export type PatientUncheckedCreateInput = {
     childrenProfiles?: Prisma.ChildProfileUncheckedCreateNestedManyWithoutParentInput;
     ratings?: Prisma.RatingUncheckedCreateNestedManyWithoutPatientInput;
     visits?: Prisma.VisitUncheckedCreateNestedManyWithoutPatientInput;
+    medicines?: Prisma.PatientMedicineUncheckedCreateNestedManyWithoutPatientInput;
 };
 export type PatientUpdateInput = {
     name?: Prisma.StringFieldUpdateOperationsInput | string;
     age?: Prisma.IntFieldUpdateOperationsInput | number;
     ageClassification?: Prisma.EnumAgeClassificationFieldUpdateOperationsInput | $Enums.AgeClassification;
+    dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
     weight?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     height?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender;
     smoking?: Prisma.BoolFieldUpdateOperationsInput | boolean;
     pregnancyWarning?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    pregnancyStatus?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null;
+    trimester?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
     lactation?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    bloodType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     profileCompleteness?: Prisma.IntFieldUpdateOperationsInput | number;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -479,6 +553,7 @@ export type PatientUpdateInput = {
     patientDiseases?: Prisma.PatientDiseaseUpdateManyWithoutPatientNestedInput;
     medicalHistories?: Prisma.MedicalHistoryUpdateManyWithoutPatientNestedInput;
     familyHistories?: Prisma.FamilyHistoryUpdateManyWithoutPatientNestedInput;
+    surgicalHistories?: Prisma.SurgicalHistoryUpdateManyWithoutPatientNestedInput;
     lifestyle?: Prisma.LifestyleUpdateOneWithoutPatientNestedInput;
     allergies?: Prisma.AllergyUpdateManyWithoutPatientNestedInput;
     patientDoctors?: Prisma.PatientDoctorUpdateManyWithoutPatientNestedInput;
@@ -490,6 +565,7 @@ export type PatientUpdateInput = {
     childrenProfiles?: Prisma.ChildProfileUpdateManyWithoutParentNestedInput;
     ratings?: Prisma.RatingUpdateManyWithoutPatientNestedInput;
     visits?: Prisma.VisitUpdateManyWithoutPatientNestedInput;
+    medicines?: Prisma.PatientMedicineUpdateManyWithoutPatientNestedInput;
 };
 export type PatientUncheckedUpdateInput = {
     id?: Prisma.IntFieldUpdateOperationsInput | number;
@@ -497,12 +573,16 @@ export type PatientUncheckedUpdateInput = {
     name?: Prisma.StringFieldUpdateOperationsInput | string;
     age?: Prisma.IntFieldUpdateOperationsInput | number;
     ageClassification?: Prisma.EnumAgeClassificationFieldUpdateOperationsInput | $Enums.AgeClassification;
+    dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
     weight?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     height?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender;
     smoking?: Prisma.BoolFieldUpdateOperationsInput | boolean;
     pregnancyWarning?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    pregnancyStatus?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null;
+    trimester?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
     lactation?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    bloodType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     profileCompleteness?: Prisma.IntFieldUpdateOperationsInput | number;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -511,6 +591,7 @@ export type PatientUncheckedUpdateInput = {
     patientDiseases?: Prisma.PatientDiseaseUncheckedUpdateManyWithoutPatientNestedInput;
     medicalHistories?: Prisma.MedicalHistoryUncheckedUpdateManyWithoutPatientNestedInput;
     familyHistories?: Prisma.FamilyHistoryUncheckedUpdateManyWithoutPatientNestedInput;
+    surgicalHistories?: Prisma.SurgicalHistoryUncheckedUpdateManyWithoutPatientNestedInput;
     lifestyle?: Prisma.LifestyleUncheckedUpdateOneWithoutPatientNestedInput;
     allergies?: Prisma.AllergyUncheckedUpdateManyWithoutPatientNestedInput;
     patientDoctors?: Prisma.PatientDoctorUncheckedUpdateManyWithoutPatientNestedInput;
@@ -522,6 +603,7 @@ export type PatientUncheckedUpdateInput = {
     childrenProfiles?: Prisma.ChildProfileUncheckedUpdateManyWithoutParentNestedInput;
     ratings?: Prisma.RatingUncheckedUpdateManyWithoutPatientNestedInput;
     visits?: Prisma.VisitUncheckedUpdateManyWithoutPatientNestedInput;
+    medicines?: Prisma.PatientMedicineUncheckedUpdateManyWithoutPatientNestedInput;
 };
 export type PatientCreateManyInput = {
     id?: number;
@@ -529,12 +611,16 @@ export type PatientCreateManyInput = {
     name: string;
     age: number;
     ageClassification: $Enums.AgeClassification;
+    dateOfBirth?: Date | string | null;
     weight?: runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     height?: runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     gender: $Enums.Gender;
     smoking?: boolean;
     pregnancyWarning?: boolean;
+    pregnancyStatus?: boolean | null;
+    trimester?: number | null;
     lactation?: boolean;
+    bloodType?: string | null;
     profileCompleteness?: number;
     createdAt?: Date | string;
     updatedAt?: Date | string;
@@ -544,12 +630,16 @@ export type PatientUpdateManyMutationInput = {
     name?: Prisma.StringFieldUpdateOperationsInput | string;
     age?: Prisma.IntFieldUpdateOperationsInput | number;
     ageClassification?: Prisma.EnumAgeClassificationFieldUpdateOperationsInput | $Enums.AgeClassification;
+    dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
     weight?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     height?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender;
     smoking?: Prisma.BoolFieldUpdateOperationsInput | boolean;
     pregnancyWarning?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    pregnancyStatus?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null;
+    trimester?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
     lactation?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    bloodType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     profileCompleteness?: Prisma.IntFieldUpdateOperationsInput | number;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -561,12 +651,16 @@ export type PatientUncheckedUpdateManyInput = {
     name?: Prisma.StringFieldUpdateOperationsInput | string;
     age?: Prisma.IntFieldUpdateOperationsInput | number;
     ageClassification?: Prisma.EnumAgeClassificationFieldUpdateOperationsInput | $Enums.AgeClassification;
+    dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
     weight?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     height?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender;
     smoking?: Prisma.BoolFieldUpdateOperationsInput | boolean;
     pregnancyWarning?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    pregnancyStatus?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null;
+    trimester?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
     lactation?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    bloodType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     profileCompleteness?: Prisma.IntFieldUpdateOperationsInput | number;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -582,12 +676,16 @@ export type PatientCountOrderByAggregateInput = {
     name?: Prisma.SortOrder;
     age?: Prisma.SortOrder;
     ageClassification?: Prisma.SortOrder;
+    dateOfBirth?: Prisma.SortOrder;
     weight?: Prisma.SortOrder;
     height?: Prisma.SortOrder;
     gender?: Prisma.SortOrder;
     smoking?: Prisma.SortOrder;
     pregnancyWarning?: Prisma.SortOrder;
+    pregnancyStatus?: Prisma.SortOrder;
+    trimester?: Prisma.SortOrder;
     lactation?: Prisma.SortOrder;
+    bloodType?: Prisma.SortOrder;
     profileCompleteness?: Prisma.SortOrder;
     createdAt?: Prisma.SortOrder;
     updatedAt?: Prisma.SortOrder;
@@ -599,6 +697,7 @@ export type PatientAvgOrderByAggregateInput = {
     age?: Prisma.SortOrder;
     weight?: Prisma.SortOrder;
     height?: Prisma.SortOrder;
+    trimester?: Prisma.SortOrder;
     profileCompleteness?: Prisma.SortOrder;
 };
 export type PatientMaxOrderByAggregateInput = {
@@ -607,12 +706,16 @@ export type PatientMaxOrderByAggregateInput = {
     name?: Prisma.SortOrder;
     age?: Prisma.SortOrder;
     ageClassification?: Prisma.SortOrder;
+    dateOfBirth?: Prisma.SortOrder;
     weight?: Prisma.SortOrder;
     height?: Prisma.SortOrder;
     gender?: Prisma.SortOrder;
     smoking?: Prisma.SortOrder;
     pregnancyWarning?: Prisma.SortOrder;
+    pregnancyStatus?: Prisma.SortOrder;
+    trimester?: Prisma.SortOrder;
     lactation?: Prisma.SortOrder;
+    bloodType?: Prisma.SortOrder;
     profileCompleteness?: Prisma.SortOrder;
     createdAt?: Prisma.SortOrder;
     updatedAt?: Prisma.SortOrder;
@@ -624,12 +727,16 @@ export type PatientMinOrderByAggregateInput = {
     name?: Prisma.SortOrder;
     age?: Prisma.SortOrder;
     ageClassification?: Prisma.SortOrder;
+    dateOfBirth?: Prisma.SortOrder;
     weight?: Prisma.SortOrder;
     height?: Prisma.SortOrder;
     gender?: Prisma.SortOrder;
     smoking?: Prisma.SortOrder;
     pregnancyWarning?: Prisma.SortOrder;
+    pregnancyStatus?: Prisma.SortOrder;
+    trimester?: Prisma.SortOrder;
     lactation?: Prisma.SortOrder;
+    bloodType?: Prisma.SortOrder;
     profileCompleteness?: Prisma.SortOrder;
     createdAt?: Prisma.SortOrder;
     updatedAt?: Prisma.SortOrder;
@@ -641,6 +748,7 @@ export type PatientSumOrderByAggregateInput = {
     age?: Prisma.SortOrder;
     weight?: Prisma.SortOrder;
     height?: Prisma.SortOrder;
+    trimester?: Prisma.SortOrder;
     profileCompleteness?: Prisma.SortOrder;
 };
 export type PatientScalarRelationFilter = {
@@ -681,6 +789,16 @@ export type EnumAgeClassificationFieldUpdateOperationsInput = {
 export type EnumGenderFieldUpdateOperationsInput = {
     set?: $Enums.Gender;
 };
+export type NullableBoolFieldUpdateOperationsInput = {
+    set?: boolean | null;
+};
+export type NullableIntFieldUpdateOperationsInput = {
+    set?: number | null;
+    increment?: number;
+    decrement?: number;
+    multiply?: number;
+    divide?: number;
+};
 export type PatientCreateNestedOneWithoutMedicalHistoriesInput = {
     create?: Prisma.XOR<Prisma.PatientCreateWithoutMedicalHistoriesInput, Prisma.PatientUncheckedCreateWithoutMedicalHistoriesInput>;
     connectOrCreate?: Prisma.PatientCreateOrConnectWithoutMedicalHistoriesInput;
@@ -704,6 +822,18 @@ export type PatientUpdateOneRequiredWithoutFamilyHistoriesNestedInput = {
     upsert?: Prisma.PatientUpsertWithoutFamilyHistoriesInput;
     connect?: Prisma.PatientWhereUniqueInput;
     update?: Prisma.XOR<Prisma.XOR<Prisma.PatientUpdateToOneWithWhereWithoutFamilyHistoriesInput, Prisma.PatientUpdateWithoutFamilyHistoriesInput>, Prisma.PatientUncheckedUpdateWithoutFamilyHistoriesInput>;
+};
+export type PatientCreateNestedOneWithoutSurgicalHistoriesInput = {
+    create?: Prisma.XOR<Prisma.PatientCreateWithoutSurgicalHistoriesInput, Prisma.PatientUncheckedCreateWithoutSurgicalHistoriesInput>;
+    connectOrCreate?: Prisma.PatientCreateOrConnectWithoutSurgicalHistoriesInput;
+    connect?: Prisma.PatientWhereUniqueInput;
+};
+export type PatientUpdateOneRequiredWithoutSurgicalHistoriesNestedInput = {
+    create?: Prisma.XOR<Prisma.PatientCreateWithoutSurgicalHistoriesInput, Prisma.PatientUncheckedCreateWithoutSurgicalHistoriesInput>;
+    connectOrCreate?: Prisma.PatientCreateOrConnectWithoutSurgicalHistoriesInput;
+    upsert?: Prisma.PatientUpsertWithoutSurgicalHistoriesInput;
+    connect?: Prisma.PatientWhereUniqueInput;
+    update?: Prisma.XOR<Prisma.XOR<Prisma.PatientUpdateToOneWithWhereWithoutSurgicalHistoriesInput, Prisma.PatientUpdateWithoutSurgicalHistoriesInput>, Prisma.PatientUncheckedUpdateWithoutSurgicalHistoriesInput>;
 };
 export type PatientCreateNestedOneWithoutLifestyleInput = {
     create?: Prisma.XOR<Prisma.PatientCreateWithoutLifestyleInput, Prisma.PatientUncheckedCreateWithoutLifestyleInput>;
@@ -863,16 +993,32 @@ export type PatientUpdateOneRequiredWithoutVisitsNestedInput = {
     connect?: Prisma.PatientWhereUniqueInput;
     update?: Prisma.XOR<Prisma.XOR<Prisma.PatientUpdateToOneWithWhereWithoutVisitsInput, Prisma.PatientUpdateWithoutVisitsInput>, Prisma.PatientUncheckedUpdateWithoutVisitsInput>;
 };
+export type PatientCreateNestedOneWithoutMedicinesInput = {
+    create?: Prisma.XOR<Prisma.PatientCreateWithoutMedicinesInput, Prisma.PatientUncheckedCreateWithoutMedicinesInput>;
+    connectOrCreate?: Prisma.PatientCreateOrConnectWithoutMedicinesInput;
+    connect?: Prisma.PatientWhereUniqueInput;
+};
+export type PatientUpdateOneRequiredWithoutMedicinesNestedInput = {
+    create?: Prisma.XOR<Prisma.PatientCreateWithoutMedicinesInput, Prisma.PatientUncheckedCreateWithoutMedicinesInput>;
+    connectOrCreate?: Prisma.PatientCreateOrConnectWithoutMedicinesInput;
+    upsert?: Prisma.PatientUpsertWithoutMedicinesInput;
+    connect?: Prisma.PatientWhereUniqueInput;
+    update?: Prisma.XOR<Prisma.XOR<Prisma.PatientUpdateToOneWithWhereWithoutMedicinesInput, Prisma.PatientUpdateWithoutMedicinesInput>, Prisma.PatientUncheckedUpdateWithoutMedicinesInput>;
+};
 export type PatientCreateWithoutUserInput = {
     name: string;
     age: number;
     ageClassification: $Enums.AgeClassification;
+    dateOfBirth?: Date | string | null;
     weight?: runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     height?: runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     gender: $Enums.Gender;
     smoking?: boolean;
     pregnancyWarning?: boolean;
+    pregnancyStatus?: boolean | null;
+    trimester?: number | null;
     lactation?: boolean;
+    bloodType?: string | null;
     profileCompleteness?: number;
     createdAt?: Date | string;
     updatedAt?: Date | string;
@@ -881,6 +1027,7 @@ export type PatientCreateWithoutUserInput = {
     patientDiseases?: Prisma.PatientDiseaseCreateNestedManyWithoutPatientInput;
     medicalHistories?: Prisma.MedicalHistoryCreateNestedManyWithoutPatientInput;
     familyHistories?: Prisma.FamilyHistoryCreateNestedManyWithoutPatientInput;
+    surgicalHistories?: Prisma.SurgicalHistoryCreateNestedManyWithoutPatientInput;
     lifestyle?: Prisma.LifestyleCreateNestedOneWithoutPatientInput;
     allergies?: Prisma.AllergyCreateNestedManyWithoutPatientInput;
     patientDoctors?: Prisma.PatientDoctorCreateNestedManyWithoutPatientInput;
@@ -892,18 +1039,23 @@ export type PatientCreateWithoutUserInput = {
     childrenProfiles?: Prisma.ChildProfileCreateNestedManyWithoutParentInput;
     ratings?: Prisma.RatingCreateNestedManyWithoutPatientInput;
     visits?: Prisma.VisitCreateNestedManyWithoutPatientInput;
+    medicines?: Prisma.PatientMedicineCreateNestedManyWithoutPatientInput;
 };
 export type PatientUncheckedCreateWithoutUserInput = {
     id?: number;
     name: string;
     age: number;
     ageClassification: $Enums.AgeClassification;
+    dateOfBirth?: Date | string | null;
     weight?: runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     height?: runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     gender: $Enums.Gender;
     smoking?: boolean;
     pregnancyWarning?: boolean;
+    pregnancyStatus?: boolean | null;
+    trimester?: number | null;
     lactation?: boolean;
+    bloodType?: string | null;
     profileCompleteness?: number;
     createdAt?: Date | string;
     updatedAt?: Date | string;
@@ -912,6 +1064,7 @@ export type PatientUncheckedCreateWithoutUserInput = {
     patientDiseases?: Prisma.PatientDiseaseUncheckedCreateNestedManyWithoutPatientInput;
     medicalHistories?: Prisma.MedicalHistoryUncheckedCreateNestedManyWithoutPatientInput;
     familyHistories?: Prisma.FamilyHistoryUncheckedCreateNestedManyWithoutPatientInput;
+    surgicalHistories?: Prisma.SurgicalHistoryUncheckedCreateNestedManyWithoutPatientInput;
     lifestyle?: Prisma.LifestyleUncheckedCreateNestedOneWithoutPatientInput;
     allergies?: Prisma.AllergyUncheckedCreateNestedManyWithoutPatientInput;
     patientDoctors?: Prisma.PatientDoctorUncheckedCreateNestedManyWithoutPatientInput;
@@ -923,6 +1076,7 @@ export type PatientUncheckedCreateWithoutUserInput = {
     childrenProfiles?: Prisma.ChildProfileUncheckedCreateNestedManyWithoutParentInput;
     ratings?: Prisma.RatingUncheckedCreateNestedManyWithoutPatientInput;
     visits?: Prisma.VisitUncheckedCreateNestedManyWithoutPatientInput;
+    medicines?: Prisma.PatientMedicineUncheckedCreateNestedManyWithoutPatientInput;
 };
 export type PatientCreateOrConnectWithoutUserInput = {
     where: Prisma.PatientWhereUniqueInput;
@@ -941,12 +1095,16 @@ export type PatientUpdateWithoutUserInput = {
     name?: Prisma.StringFieldUpdateOperationsInput | string;
     age?: Prisma.IntFieldUpdateOperationsInput | number;
     ageClassification?: Prisma.EnumAgeClassificationFieldUpdateOperationsInput | $Enums.AgeClassification;
+    dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
     weight?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     height?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender;
     smoking?: Prisma.BoolFieldUpdateOperationsInput | boolean;
     pregnancyWarning?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    pregnancyStatus?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null;
+    trimester?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
     lactation?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    bloodType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     profileCompleteness?: Prisma.IntFieldUpdateOperationsInput | number;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -955,6 +1113,7 @@ export type PatientUpdateWithoutUserInput = {
     patientDiseases?: Prisma.PatientDiseaseUpdateManyWithoutPatientNestedInput;
     medicalHistories?: Prisma.MedicalHistoryUpdateManyWithoutPatientNestedInput;
     familyHistories?: Prisma.FamilyHistoryUpdateManyWithoutPatientNestedInput;
+    surgicalHistories?: Prisma.SurgicalHistoryUpdateManyWithoutPatientNestedInput;
     lifestyle?: Prisma.LifestyleUpdateOneWithoutPatientNestedInput;
     allergies?: Prisma.AllergyUpdateManyWithoutPatientNestedInput;
     patientDoctors?: Prisma.PatientDoctorUpdateManyWithoutPatientNestedInput;
@@ -966,18 +1125,23 @@ export type PatientUpdateWithoutUserInput = {
     childrenProfiles?: Prisma.ChildProfileUpdateManyWithoutParentNestedInput;
     ratings?: Prisma.RatingUpdateManyWithoutPatientNestedInput;
     visits?: Prisma.VisitUpdateManyWithoutPatientNestedInput;
+    medicines?: Prisma.PatientMedicineUpdateManyWithoutPatientNestedInput;
 };
 export type PatientUncheckedUpdateWithoutUserInput = {
     id?: Prisma.IntFieldUpdateOperationsInput | number;
     name?: Prisma.StringFieldUpdateOperationsInput | string;
     age?: Prisma.IntFieldUpdateOperationsInput | number;
     ageClassification?: Prisma.EnumAgeClassificationFieldUpdateOperationsInput | $Enums.AgeClassification;
+    dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
     weight?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     height?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender;
     smoking?: Prisma.BoolFieldUpdateOperationsInput | boolean;
     pregnancyWarning?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    pregnancyStatus?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null;
+    trimester?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
     lactation?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    bloodType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     profileCompleteness?: Prisma.IntFieldUpdateOperationsInput | number;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -986,6 +1150,7 @@ export type PatientUncheckedUpdateWithoutUserInput = {
     patientDiseases?: Prisma.PatientDiseaseUncheckedUpdateManyWithoutPatientNestedInput;
     medicalHistories?: Prisma.MedicalHistoryUncheckedUpdateManyWithoutPatientNestedInput;
     familyHistories?: Prisma.FamilyHistoryUncheckedUpdateManyWithoutPatientNestedInput;
+    surgicalHistories?: Prisma.SurgicalHistoryUncheckedUpdateManyWithoutPatientNestedInput;
     lifestyle?: Prisma.LifestyleUncheckedUpdateOneWithoutPatientNestedInput;
     allergies?: Prisma.AllergyUncheckedUpdateManyWithoutPatientNestedInput;
     patientDoctors?: Prisma.PatientDoctorUncheckedUpdateManyWithoutPatientNestedInput;
@@ -997,17 +1162,22 @@ export type PatientUncheckedUpdateWithoutUserInput = {
     childrenProfiles?: Prisma.ChildProfileUncheckedUpdateManyWithoutParentNestedInput;
     ratings?: Prisma.RatingUncheckedUpdateManyWithoutPatientNestedInput;
     visits?: Prisma.VisitUncheckedUpdateManyWithoutPatientNestedInput;
+    medicines?: Prisma.PatientMedicineUncheckedUpdateManyWithoutPatientNestedInput;
 };
 export type PatientCreateWithoutMedicalHistoriesInput = {
     name: string;
     age: number;
     ageClassification: $Enums.AgeClassification;
+    dateOfBirth?: Date | string | null;
     weight?: runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     height?: runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     gender: $Enums.Gender;
     smoking?: boolean;
     pregnancyWarning?: boolean;
+    pregnancyStatus?: boolean | null;
+    trimester?: number | null;
     lactation?: boolean;
+    bloodType?: string | null;
     profileCompleteness?: number;
     createdAt?: Date | string;
     updatedAt?: Date | string;
@@ -1016,6 +1186,7 @@ export type PatientCreateWithoutMedicalHistoriesInput = {
     prescriptions?: Prisma.PrescriptionCreateNestedManyWithoutPatientInput;
     patientDiseases?: Prisma.PatientDiseaseCreateNestedManyWithoutPatientInput;
     familyHistories?: Prisma.FamilyHistoryCreateNestedManyWithoutPatientInput;
+    surgicalHistories?: Prisma.SurgicalHistoryCreateNestedManyWithoutPatientInput;
     lifestyle?: Prisma.LifestyleCreateNestedOneWithoutPatientInput;
     allergies?: Prisma.AllergyCreateNestedManyWithoutPatientInput;
     patientDoctors?: Prisma.PatientDoctorCreateNestedManyWithoutPatientInput;
@@ -1027,6 +1198,7 @@ export type PatientCreateWithoutMedicalHistoriesInput = {
     childrenProfiles?: Prisma.ChildProfileCreateNestedManyWithoutParentInput;
     ratings?: Prisma.RatingCreateNestedManyWithoutPatientInput;
     visits?: Prisma.VisitCreateNestedManyWithoutPatientInput;
+    medicines?: Prisma.PatientMedicineCreateNestedManyWithoutPatientInput;
 };
 export type PatientUncheckedCreateWithoutMedicalHistoriesInput = {
     id?: number;
@@ -1034,12 +1206,16 @@ export type PatientUncheckedCreateWithoutMedicalHistoriesInput = {
     name: string;
     age: number;
     ageClassification: $Enums.AgeClassification;
+    dateOfBirth?: Date | string | null;
     weight?: runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     height?: runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     gender: $Enums.Gender;
     smoking?: boolean;
     pregnancyWarning?: boolean;
+    pregnancyStatus?: boolean | null;
+    trimester?: number | null;
     lactation?: boolean;
+    bloodType?: string | null;
     profileCompleteness?: number;
     createdAt?: Date | string;
     updatedAt?: Date | string;
@@ -1047,6 +1223,7 @@ export type PatientUncheckedCreateWithoutMedicalHistoriesInput = {
     prescriptions?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutPatientInput;
     patientDiseases?: Prisma.PatientDiseaseUncheckedCreateNestedManyWithoutPatientInput;
     familyHistories?: Prisma.FamilyHistoryUncheckedCreateNestedManyWithoutPatientInput;
+    surgicalHistories?: Prisma.SurgicalHistoryUncheckedCreateNestedManyWithoutPatientInput;
     lifestyle?: Prisma.LifestyleUncheckedCreateNestedOneWithoutPatientInput;
     allergies?: Prisma.AllergyUncheckedCreateNestedManyWithoutPatientInput;
     patientDoctors?: Prisma.PatientDoctorUncheckedCreateNestedManyWithoutPatientInput;
@@ -1058,6 +1235,7 @@ export type PatientUncheckedCreateWithoutMedicalHistoriesInput = {
     childrenProfiles?: Prisma.ChildProfileUncheckedCreateNestedManyWithoutParentInput;
     ratings?: Prisma.RatingUncheckedCreateNestedManyWithoutPatientInput;
     visits?: Prisma.VisitUncheckedCreateNestedManyWithoutPatientInput;
+    medicines?: Prisma.PatientMedicineUncheckedCreateNestedManyWithoutPatientInput;
 };
 export type PatientCreateOrConnectWithoutMedicalHistoriesInput = {
     where: Prisma.PatientWhereUniqueInput;
@@ -1076,12 +1254,16 @@ export type PatientUpdateWithoutMedicalHistoriesInput = {
     name?: Prisma.StringFieldUpdateOperationsInput | string;
     age?: Prisma.IntFieldUpdateOperationsInput | number;
     ageClassification?: Prisma.EnumAgeClassificationFieldUpdateOperationsInput | $Enums.AgeClassification;
+    dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
     weight?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     height?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender;
     smoking?: Prisma.BoolFieldUpdateOperationsInput | boolean;
     pregnancyWarning?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    pregnancyStatus?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null;
+    trimester?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
     lactation?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    bloodType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     profileCompleteness?: Prisma.IntFieldUpdateOperationsInput | number;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -1090,6 +1272,7 @@ export type PatientUpdateWithoutMedicalHistoriesInput = {
     prescriptions?: Prisma.PrescriptionUpdateManyWithoutPatientNestedInput;
     patientDiseases?: Prisma.PatientDiseaseUpdateManyWithoutPatientNestedInput;
     familyHistories?: Prisma.FamilyHistoryUpdateManyWithoutPatientNestedInput;
+    surgicalHistories?: Prisma.SurgicalHistoryUpdateManyWithoutPatientNestedInput;
     lifestyle?: Prisma.LifestyleUpdateOneWithoutPatientNestedInput;
     allergies?: Prisma.AllergyUpdateManyWithoutPatientNestedInput;
     patientDoctors?: Prisma.PatientDoctorUpdateManyWithoutPatientNestedInput;
@@ -1101,6 +1284,7 @@ export type PatientUpdateWithoutMedicalHistoriesInput = {
     childrenProfiles?: Prisma.ChildProfileUpdateManyWithoutParentNestedInput;
     ratings?: Prisma.RatingUpdateManyWithoutPatientNestedInput;
     visits?: Prisma.VisitUpdateManyWithoutPatientNestedInput;
+    medicines?: Prisma.PatientMedicineUpdateManyWithoutPatientNestedInput;
 };
 export type PatientUncheckedUpdateWithoutMedicalHistoriesInput = {
     id?: Prisma.IntFieldUpdateOperationsInput | number;
@@ -1108,12 +1292,16 @@ export type PatientUncheckedUpdateWithoutMedicalHistoriesInput = {
     name?: Prisma.StringFieldUpdateOperationsInput | string;
     age?: Prisma.IntFieldUpdateOperationsInput | number;
     ageClassification?: Prisma.EnumAgeClassificationFieldUpdateOperationsInput | $Enums.AgeClassification;
+    dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
     weight?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     height?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender;
     smoking?: Prisma.BoolFieldUpdateOperationsInput | boolean;
     pregnancyWarning?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    pregnancyStatus?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null;
+    trimester?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
     lactation?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    bloodType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     profileCompleteness?: Prisma.IntFieldUpdateOperationsInput | number;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -1121,6 +1309,7 @@ export type PatientUncheckedUpdateWithoutMedicalHistoriesInput = {
     prescriptions?: Prisma.PrescriptionUncheckedUpdateManyWithoutPatientNestedInput;
     patientDiseases?: Prisma.PatientDiseaseUncheckedUpdateManyWithoutPatientNestedInput;
     familyHistories?: Prisma.FamilyHistoryUncheckedUpdateManyWithoutPatientNestedInput;
+    surgicalHistories?: Prisma.SurgicalHistoryUncheckedUpdateManyWithoutPatientNestedInput;
     lifestyle?: Prisma.LifestyleUncheckedUpdateOneWithoutPatientNestedInput;
     allergies?: Prisma.AllergyUncheckedUpdateManyWithoutPatientNestedInput;
     patientDoctors?: Prisma.PatientDoctorUncheckedUpdateManyWithoutPatientNestedInput;
@@ -1132,17 +1321,22 @@ export type PatientUncheckedUpdateWithoutMedicalHistoriesInput = {
     childrenProfiles?: Prisma.ChildProfileUncheckedUpdateManyWithoutParentNestedInput;
     ratings?: Prisma.RatingUncheckedUpdateManyWithoutPatientNestedInput;
     visits?: Prisma.VisitUncheckedUpdateManyWithoutPatientNestedInput;
+    medicines?: Prisma.PatientMedicineUncheckedUpdateManyWithoutPatientNestedInput;
 };
 export type PatientCreateWithoutFamilyHistoriesInput = {
     name: string;
     age: number;
     ageClassification: $Enums.AgeClassification;
+    dateOfBirth?: Date | string | null;
     weight?: runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     height?: runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     gender: $Enums.Gender;
     smoking?: boolean;
     pregnancyWarning?: boolean;
+    pregnancyStatus?: boolean | null;
+    trimester?: number | null;
     lactation?: boolean;
+    bloodType?: string | null;
     profileCompleteness?: number;
     createdAt?: Date | string;
     updatedAt?: Date | string;
@@ -1151,6 +1345,7 @@ export type PatientCreateWithoutFamilyHistoriesInput = {
     prescriptions?: Prisma.PrescriptionCreateNestedManyWithoutPatientInput;
     patientDiseases?: Prisma.PatientDiseaseCreateNestedManyWithoutPatientInput;
     medicalHistories?: Prisma.MedicalHistoryCreateNestedManyWithoutPatientInput;
+    surgicalHistories?: Prisma.SurgicalHistoryCreateNestedManyWithoutPatientInput;
     lifestyle?: Prisma.LifestyleCreateNestedOneWithoutPatientInput;
     allergies?: Prisma.AllergyCreateNestedManyWithoutPatientInput;
     patientDoctors?: Prisma.PatientDoctorCreateNestedManyWithoutPatientInput;
@@ -1162,6 +1357,7 @@ export type PatientCreateWithoutFamilyHistoriesInput = {
     childrenProfiles?: Prisma.ChildProfileCreateNestedManyWithoutParentInput;
     ratings?: Prisma.RatingCreateNestedManyWithoutPatientInput;
     visits?: Prisma.VisitCreateNestedManyWithoutPatientInput;
+    medicines?: Prisma.PatientMedicineCreateNestedManyWithoutPatientInput;
 };
 export type PatientUncheckedCreateWithoutFamilyHistoriesInput = {
     id?: number;
@@ -1169,12 +1365,16 @@ export type PatientUncheckedCreateWithoutFamilyHistoriesInput = {
     name: string;
     age: number;
     ageClassification: $Enums.AgeClassification;
+    dateOfBirth?: Date | string | null;
     weight?: runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     height?: runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     gender: $Enums.Gender;
     smoking?: boolean;
     pregnancyWarning?: boolean;
+    pregnancyStatus?: boolean | null;
+    trimester?: number | null;
     lactation?: boolean;
+    bloodType?: string | null;
     profileCompleteness?: number;
     createdAt?: Date | string;
     updatedAt?: Date | string;
@@ -1182,6 +1382,7 @@ export type PatientUncheckedCreateWithoutFamilyHistoriesInput = {
     prescriptions?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutPatientInput;
     patientDiseases?: Prisma.PatientDiseaseUncheckedCreateNestedManyWithoutPatientInput;
     medicalHistories?: Prisma.MedicalHistoryUncheckedCreateNestedManyWithoutPatientInput;
+    surgicalHistories?: Prisma.SurgicalHistoryUncheckedCreateNestedManyWithoutPatientInput;
     lifestyle?: Prisma.LifestyleUncheckedCreateNestedOneWithoutPatientInput;
     allergies?: Prisma.AllergyUncheckedCreateNestedManyWithoutPatientInput;
     patientDoctors?: Prisma.PatientDoctorUncheckedCreateNestedManyWithoutPatientInput;
@@ -1193,6 +1394,7 @@ export type PatientUncheckedCreateWithoutFamilyHistoriesInput = {
     childrenProfiles?: Prisma.ChildProfileUncheckedCreateNestedManyWithoutParentInput;
     ratings?: Prisma.RatingUncheckedCreateNestedManyWithoutPatientInput;
     visits?: Prisma.VisitUncheckedCreateNestedManyWithoutPatientInput;
+    medicines?: Prisma.PatientMedicineUncheckedCreateNestedManyWithoutPatientInput;
 };
 export type PatientCreateOrConnectWithoutFamilyHistoriesInput = {
     where: Prisma.PatientWhereUniqueInput;
@@ -1211,12 +1413,16 @@ export type PatientUpdateWithoutFamilyHistoriesInput = {
     name?: Prisma.StringFieldUpdateOperationsInput | string;
     age?: Prisma.IntFieldUpdateOperationsInput | number;
     ageClassification?: Prisma.EnumAgeClassificationFieldUpdateOperationsInput | $Enums.AgeClassification;
+    dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
     weight?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     height?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender;
     smoking?: Prisma.BoolFieldUpdateOperationsInput | boolean;
     pregnancyWarning?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    pregnancyStatus?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null;
+    trimester?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
     lactation?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    bloodType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     profileCompleteness?: Prisma.IntFieldUpdateOperationsInput | number;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -1225,6 +1431,7 @@ export type PatientUpdateWithoutFamilyHistoriesInput = {
     prescriptions?: Prisma.PrescriptionUpdateManyWithoutPatientNestedInput;
     patientDiseases?: Prisma.PatientDiseaseUpdateManyWithoutPatientNestedInput;
     medicalHistories?: Prisma.MedicalHistoryUpdateManyWithoutPatientNestedInput;
+    surgicalHistories?: Prisma.SurgicalHistoryUpdateManyWithoutPatientNestedInput;
     lifestyle?: Prisma.LifestyleUpdateOneWithoutPatientNestedInput;
     allergies?: Prisma.AllergyUpdateManyWithoutPatientNestedInput;
     patientDoctors?: Prisma.PatientDoctorUpdateManyWithoutPatientNestedInput;
@@ -1236,6 +1443,7 @@ export type PatientUpdateWithoutFamilyHistoriesInput = {
     childrenProfiles?: Prisma.ChildProfileUpdateManyWithoutParentNestedInput;
     ratings?: Prisma.RatingUpdateManyWithoutPatientNestedInput;
     visits?: Prisma.VisitUpdateManyWithoutPatientNestedInput;
+    medicines?: Prisma.PatientMedicineUpdateManyWithoutPatientNestedInput;
 };
 export type PatientUncheckedUpdateWithoutFamilyHistoriesInput = {
     id?: Prisma.IntFieldUpdateOperationsInput | number;
@@ -1243,12 +1451,16 @@ export type PatientUncheckedUpdateWithoutFamilyHistoriesInput = {
     name?: Prisma.StringFieldUpdateOperationsInput | string;
     age?: Prisma.IntFieldUpdateOperationsInput | number;
     ageClassification?: Prisma.EnumAgeClassificationFieldUpdateOperationsInput | $Enums.AgeClassification;
+    dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
     weight?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     height?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender;
     smoking?: Prisma.BoolFieldUpdateOperationsInput | boolean;
     pregnancyWarning?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    pregnancyStatus?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null;
+    trimester?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
     lactation?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    bloodType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     profileCompleteness?: Prisma.IntFieldUpdateOperationsInput | number;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -1256,6 +1468,7 @@ export type PatientUncheckedUpdateWithoutFamilyHistoriesInput = {
     prescriptions?: Prisma.PrescriptionUncheckedUpdateManyWithoutPatientNestedInput;
     patientDiseases?: Prisma.PatientDiseaseUncheckedUpdateManyWithoutPatientNestedInput;
     medicalHistories?: Prisma.MedicalHistoryUncheckedUpdateManyWithoutPatientNestedInput;
+    surgicalHistories?: Prisma.SurgicalHistoryUncheckedUpdateManyWithoutPatientNestedInput;
     lifestyle?: Prisma.LifestyleUncheckedUpdateOneWithoutPatientNestedInput;
     allergies?: Prisma.AllergyUncheckedUpdateManyWithoutPatientNestedInput;
     patientDoctors?: Prisma.PatientDoctorUncheckedUpdateManyWithoutPatientNestedInput;
@@ -1267,17 +1480,22 @@ export type PatientUncheckedUpdateWithoutFamilyHistoriesInput = {
     childrenProfiles?: Prisma.ChildProfileUncheckedUpdateManyWithoutParentNestedInput;
     ratings?: Prisma.RatingUncheckedUpdateManyWithoutPatientNestedInput;
     visits?: Prisma.VisitUncheckedUpdateManyWithoutPatientNestedInput;
+    medicines?: Prisma.PatientMedicineUncheckedUpdateManyWithoutPatientNestedInput;
 };
-export type PatientCreateWithoutLifestyleInput = {
+export type PatientCreateWithoutSurgicalHistoriesInput = {
     name: string;
     age: number;
     ageClassification: $Enums.AgeClassification;
+    dateOfBirth?: Date | string | null;
     weight?: runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     height?: runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     gender: $Enums.Gender;
     smoking?: boolean;
     pregnancyWarning?: boolean;
+    pregnancyStatus?: boolean | null;
+    trimester?: number | null;
     lactation?: boolean;
+    bloodType?: string | null;
     profileCompleteness?: number;
     createdAt?: Date | string;
     updatedAt?: Date | string;
@@ -1287,6 +1505,7 @@ export type PatientCreateWithoutLifestyleInput = {
     patientDiseases?: Prisma.PatientDiseaseCreateNestedManyWithoutPatientInput;
     medicalHistories?: Prisma.MedicalHistoryCreateNestedManyWithoutPatientInput;
     familyHistories?: Prisma.FamilyHistoryCreateNestedManyWithoutPatientInput;
+    lifestyle?: Prisma.LifestyleCreateNestedOneWithoutPatientInput;
     allergies?: Prisma.AllergyCreateNestedManyWithoutPatientInput;
     patientDoctors?: Prisma.PatientDoctorCreateNestedManyWithoutPatientInput;
     consultations?: Prisma.ConsultationCreateNestedManyWithoutPatientInput;
@@ -1297,19 +1516,24 @@ export type PatientCreateWithoutLifestyleInput = {
     childrenProfiles?: Prisma.ChildProfileCreateNestedManyWithoutParentInput;
     ratings?: Prisma.RatingCreateNestedManyWithoutPatientInput;
     visits?: Prisma.VisitCreateNestedManyWithoutPatientInput;
+    medicines?: Prisma.PatientMedicineCreateNestedManyWithoutPatientInput;
 };
-export type PatientUncheckedCreateWithoutLifestyleInput = {
+export type PatientUncheckedCreateWithoutSurgicalHistoriesInput = {
     id?: number;
     userId: number;
     name: string;
     age: number;
     ageClassification: $Enums.AgeClassification;
+    dateOfBirth?: Date | string | null;
     weight?: runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     height?: runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     gender: $Enums.Gender;
     smoking?: boolean;
     pregnancyWarning?: boolean;
+    pregnancyStatus?: boolean | null;
+    trimester?: number | null;
     lactation?: boolean;
+    bloodType?: string | null;
     profileCompleteness?: number;
     createdAt?: Date | string;
     updatedAt?: Date | string;
@@ -1318,6 +1542,7 @@ export type PatientUncheckedCreateWithoutLifestyleInput = {
     patientDiseases?: Prisma.PatientDiseaseUncheckedCreateNestedManyWithoutPatientInput;
     medicalHistories?: Prisma.MedicalHistoryUncheckedCreateNestedManyWithoutPatientInput;
     familyHistories?: Prisma.FamilyHistoryUncheckedCreateNestedManyWithoutPatientInput;
+    lifestyle?: Prisma.LifestyleUncheckedCreateNestedOneWithoutPatientInput;
     allergies?: Prisma.AllergyUncheckedCreateNestedManyWithoutPatientInput;
     patientDoctors?: Prisma.PatientDoctorUncheckedCreateNestedManyWithoutPatientInput;
     consultations?: Prisma.ConsultationUncheckedCreateNestedManyWithoutPatientInput;
@@ -1328,6 +1553,166 @@ export type PatientUncheckedCreateWithoutLifestyleInput = {
     childrenProfiles?: Prisma.ChildProfileUncheckedCreateNestedManyWithoutParentInput;
     ratings?: Prisma.RatingUncheckedCreateNestedManyWithoutPatientInput;
     visits?: Prisma.VisitUncheckedCreateNestedManyWithoutPatientInput;
+    medicines?: Prisma.PatientMedicineUncheckedCreateNestedManyWithoutPatientInput;
+};
+export type PatientCreateOrConnectWithoutSurgicalHistoriesInput = {
+    where: Prisma.PatientWhereUniqueInput;
+    create: Prisma.XOR<Prisma.PatientCreateWithoutSurgicalHistoriesInput, Prisma.PatientUncheckedCreateWithoutSurgicalHistoriesInput>;
+};
+export type PatientUpsertWithoutSurgicalHistoriesInput = {
+    update: Prisma.XOR<Prisma.PatientUpdateWithoutSurgicalHistoriesInput, Prisma.PatientUncheckedUpdateWithoutSurgicalHistoriesInput>;
+    create: Prisma.XOR<Prisma.PatientCreateWithoutSurgicalHistoriesInput, Prisma.PatientUncheckedCreateWithoutSurgicalHistoriesInput>;
+    where?: Prisma.PatientWhereInput;
+};
+export type PatientUpdateToOneWithWhereWithoutSurgicalHistoriesInput = {
+    where?: Prisma.PatientWhereInput;
+    data: Prisma.XOR<Prisma.PatientUpdateWithoutSurgicalHistoriesInput, Prisma.PatientUncheckedUpdateWithoutSurgicalHistoriesInput>;
+};
+export type PatientUpdateWithoutSurgicalHistoriesInput = {
+    name?: Prisma.StringFieldUpdateOperationsInput | string;
+    age?: Prisma.IntFieldUpdateOperationsInput | number;
+    ageClassification?: Prisma.EnumAgeClassificationFieldUpdateOperationsInput | $Enums.AgeClassification;
+    dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    weight?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null;
+    height?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null;
+    gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender;
+    smoking?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    pregnancyWarning?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    pregnancyStatus?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null;
+    trimester?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
+    lactation?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    bloodType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    profileCompleteness?: Prisma.IntFieldUpdateOperationsInput | number;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    user?: Prisma.UserUpdateOneRequiredWithoutPatientNestedInput;
+    prescriptions?: Prisma.PrescriptionUpdateManyWithoutPatientNestedInput;
+    patientDiseases?: Prisma.PatientDiseaseUpdateManyWithoutPatientNestedInput;
+    medicalHistories?: Prisma.MedicalHistoryUpdateManyWithoutPatientNestedInput;
+    familyHistories?: Prisma.FamilyHistoryUpdateManyWithoutPatientNestedInput;
+    lifestyle?: Prisma.LifestyleUpdateOneWithoutPatientNestedInput;
+    allergies?: Prisma.AllergyUpdateManyWithoutPatientNestedInput;
+    patientDoctors?: Prisma.PatientDoctorUpdateManyWithoutPatientNestedInput;
+    consultations?: Prisma.ConsultationUpdateManyWithoutPatientNestedInput;
+    appointments?: Prisma.AppointmentUpdateManyWithoutPatientNestedInput;
+    medicalReports?: Prisma.MedicalReportUpdateManyWithoutPatientNestedInput;
+    shareLinks?: Prisma.PatientShareLinkUpdateManyWithoutPatientNestedInput;
+    adverseReactions?: Prisma.AdverseDrugReactionUpdateManyWithoutPatientNestedInput;
+    childrenProfiles?: Prisma.ChildProfileUpdateManyWithoutParentNestedInput;
+    ratings?: Prisma.RatingUpdateManyWithoutPatientNestedInput;
+    visits?: Prisma.VisitUpdateManyWithoutPatientNestedInput;
+    medicines?: Prisma.PatientMedicineUpdateManyWithoutPatientNestedInput;
+};
+export type PatientUncheckedUpdateWithoutSurgicalHistoriesInput = {
+    id?: Prisma.IntFieldUpdateOperationsInput | number;
+    userId?: Prisma.IntFieldUpdateOperationsInput | number;
+    name?: Prisma.StringFieldUpdateOperationsInput | string;
+    age?: Prisma.IntFieldUpdateOperationsInput | number;
+    ageClassification?: Prisma.EnumAgeClassificationFieldUpdateOperationsInput | $Enums.AgeClassification;
+    dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    weight?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null;
+    height?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null;
+    gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender;
+    smoking?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    pregnancyWarning?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    pregnancyStatus?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null;
+    trimester?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
+    lactation?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    bloodType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    profileCompleteness?: Prisma.IntFieldUpdateOperationsInput | number;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    prescriptions?: Prisma.PrescriptionUncheckedUpdateManyWithoutPatientNestedInput;
+    patientDiseases?: Prisma.PatientDiseaseUncheckedUpdateManyWithoutPatientNestedInput;
+    medicalHistories?: Prisma.MedicalHistoryUncheckedUpdateManyWithoutPatientNestedInput;
+    familyHistories?: Prisma.FamilyHistoryUncheckedUpdateManyWithoutPatientNestedInput;
+    lifestyle?: Prisma.LifestyleUncheckedUpdateOneWithoutPatientNestedInput;
+    allergies?: Prisma.AllergyUncheckedUpdateManyWithoutPatientNestedInput;
+    patientDoctors?: Prisma.PatientDoctorUncheckedUpdateManyWithoutPatientNestedInput;
+    consultations?: Prisma.ConsultationUncheckedUpdateManyWithoutPatientNestedInput;
+    appointments?: Prisma.AppointmentUncheckedUpdateManyWithoutPatientNestedInput;
+    medicalReports?: Prisma.MedicalReportUncheckedUpdateManyWithoutPatientNestedInput;
+    shareLinks?: Prisma.PatientShareLinkUncheckedUpdateManyWithoutPatientNestedInput;
+    adverseReactions?: Prisma.AdverseDrugReactionUncheckedUpdateManyWithoutPatientNestedInput;
+    childrenProfiles?: Prisma.ChildProfileUncheckedUpdateManyWithoutParentNestedInput;
+    ratings?: Prisma.RatingUncheckedUpdateManyWithoutPatientNestedInput;
+    visits?: Prisma.VisitUncheckedUpdateManyWithoutPatientNestedInput;
+    medicines?: Prisma.PatientMedicineUncheckedUpdateManyWithoutPatientNestedInput;
+};
+export type PatientCreateWithoutLifestyleInput = {
+    name: string;
+    age: number;
+    ageClassification: $Enums.AgeClassification;
+    dateOfBirth?: Date | string | null;
+    weight?: runtime.Decimal | runtime.DecimalJsLike | number | string | null;
+    height?: runtime.Decimal | runtime.DecimalJsLike | number | string | null;
+    gender: $Enums.Gender;
+    smoking?: boolean;
+    pregnancyWarning?: boolean;
+    pregnancyStatus?: boolean | null;
+    trimester?: number | null;
+    lactation?: boolean;
+    bloodType?: string | null;
+    profileCompleteness?: number;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+    deletedAt?: Date | string | null;
+    user: Prisma.UserCreateNestedOneWithoutPatientInput;
+    prescriptions?: Prisma.PrescriptionCreateNestedManyWithoutPatientInput;
+    patientDiseases?: Prisma.PatientDiseaseCreateNestedManyWithoutPatientInput;
+    medicalHistories?: Prisma.MedicalHistoryCreateNestedManyWithoutPatientInput;
+    familyHistories?: Prisma.FamilyHistoryCreateNestedManyWithoutPatientInput;
+    surgicalHistories?: Prisma.SurgicalHistoryCreateNestedManyWithoutPatientInput;
+    allergies?: Prisma.AllergyCreateNestedManyWithoutPatientInput;
+    patientDoctors?: Prisma.PatientDoctorCreateNestedManyWithoutPatientInput;
+    consultations?: Prisma.ConsultationCreateNestedManyWithoutPatientInput;
+    appointments?: Prisma.AppointmentCreateNestedManyWithoutPatientInput;
+    medicalReports?: Prisma.MedicalReportCreateNestedManyWithoutPatientInput;
+    shareLinks?: Prisma.PatientShareLinkCreateNestedManyWithoutPatientInput;
+    adverseReactions?: Prisma.AdverseDrugReactionCreateNestedManyWithoutPatientInput;
+    childrenProfiles?: Prisma.ChildProfileCreateNestedManyWithoutParentInput;
+    ratings?: Prisma.RatingCreateNestedManyWithoutPatientInput;
+    visits?: Prisma.VisitCreateNestedManyWithoutPatientInput;
+    medicines?: Prisma.PatientMedicineCreateNestedManyWithoutPatientInput;
+};
+export type PatientUncheckedCreateWithoutLifestyleInput = {
+    id?: number;
+    userId: number;
+    name: string;
+    age: number;
+    ageClassification: $Enums.AgeClassification;
+    dateOfBirth?: Date | string | null;
+    weight?: runtime.Decimal | runtime.DecimalJsLike | number | string | null;
+    height?: runtime.Decimal | runtime.DecimalJsLike | number | string | null;
+    gender: $Enums.Gender;
+    smoking?: boolean;
+    pregnancyWarning?: boolean;
+    pregnancyStatus?: boolean | null;
+    trimester?: number | null;
+    lactation?: boolean;
+    bloodType?: string | null;
+    profileCompleteness?: number;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+    deletedAt?: Date | string | null;
+    prescriptions?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutPatientInput;
+    patientDiseases?: Prisma.PatientDiseaseUncheckedCreateNestedManyWithoutPatientInput;
+    medicalHistories?: Prisma.MedicalHistoryUncheckedCreateNestedManyWithoutPatientInput;
+    familyHistories?: Prisma.FamilyHistoryUncheckedCreateNestedManyWithoutPatientInput;
+    surgicalHistories?: Prisma.SurgicalHistoryUncheckedCreateNestedManyWithoutPatientInput;
+    allergies?: Prisma.AllergyUncheckedCreateNestedManyWithoutPatientInput;
+    patientDoctors?: Prisma.PatientDoctorUncheckedCreateNestedManyWithoutPatientInput;
+    consultations?: Prisma.ConsultationUncheckedCreateNestedManyWithoutPatientInput;
+    appointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutPatientInput;
+    medicalReports?: Prisma.MedicalReportUncheckedCreateNestedManyWithoutPatientInput;
+    shareLinks?: Prisma.PatientShareLinkUncheckedCreateNestedManyWithoutPatientInput;
+    adverseReactions?: Prisma.AdverseDrugReactionUncheckedCreateNestedManyWithoutPatientInput;
+    childrenProfiles?: Prisma.ChildProfileUncheckedCreateNestedManyWithoutParentInput;
+    ratings?: Prisma.RatingUncheckedCreateNestedManyWithoutPatientInput;
+    visits?: Prisma.VisitUncheckedCreateNestedManyWithoutPatientInput;
+    medicines?: Prisma.PatientMedicineUncheckedCreateNestedManyWithoutPatientInput;
 };
 export type PatientCreateOrConnectWithoutLifestyleInput = {
     where: Prisma.PatientWhereUniqueInput;
@@ -1346,12 +1731,16 @@ export type PatientUpdateWithoutLifestyleInput = {
     name?: Prisma.StringFieldUpdateOperationsInput | string;
     age?: Prisma.IntFieldUpdateOperationsInput | number;
     ageClassification?: Prisma.EnumAgeClassificationFieldUpdateOperationsInput | $Enums.AgeClassification;
+    dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
     weight?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     height?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender;
     smoking?: Prisma.BoolFieldUpdateOperationsInput | boolean;
     pregnancyWarning?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    pregnancyStatus?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null;
+    trimester?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
     lactation?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    bloodType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     profileCompleteness?: Prisma.IntFieldUpdateOperationsInput | number;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -1361,6 +1750,7 @@ export type PatientUpdateWithoutLifestyleInput = {
     patientDiseases?: Prisma.PatientDiseaseUpdateManyWithoutPatientNestedInput;
     medicalHistories?: Prisma.MedicalHistoryUpdateManyWithoutPatientNestedInput;
     familyHistories?: Prisma.FamilyHistoryUpdateManyWithoutPatientNestedInput;
+    surgicalHistories?: Prisma.SurgicalHistoryUpdateManyWithoutPatientNestedInput;
     allergies?: Prisma.AllergyUpdateManyWithoutPatientNestedInput;
     patientDoctors?: Prisma.PatientDoctorUpdateManyWithoutPatientNestedInput;
     consultations?: Prisma.ConsultationUpdateManyWithoutPatientNestedInput;
@@ -1371,6 +1761,7 @@ export type PatientUpdateWithoutLifestyleInput = {
     childrenProfiles?: Prisma.ChildProfileUpdateManyWithoutParentNestedInput;
     ratings?: Prisma.RatingUpdateManyWithoutPatientNestedInput;
     visits?: Prisma.VisitUpdateManyWithoutPatientNestedInput;
+    medicines?: Prisma.PatientMedicineUpdateManyWithoutPatientNestedInput;
 };
 export type PatientUncheckedUpdateWithoutLifestyleInput = {
     id?: Prisma.IntFieldUpdateOperationsInput | number;
@@ -1378,12 +1769,16 @@ export type PatientUncheckedUpdateWithoutLifestyleInput = {
     name?: Prisma.StringFieldUpdateOperationsInput | string;
     age?: Prisma.IntFieldUpdateOperationsInput | number;
     ageClassification?: Prisma.EnumAgeClassificationFieldUpdateOperationsInput | $Enums.AgeClassification;
+    dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
     weight?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     height?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender;
     smoking?: Prisma.BoolFieldUpdateOperationsInput | boolean;
     pregnancyWarning?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    pregnancyStatus?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null;
+    trimester?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
     lactation?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    bloodType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     profileCompleteness?: Prisma.IntFieldUpdateOperationsInput | number;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -1392,6 +1787,7 @@ export type PatientUncheckedUpdateWithoutLifestyleInput = {
     patientDiseases?: Prisma.PatientDiseaseUncheckedUpdateManyWithoutPatientNestedInput;
     medicalHistories?: Prisma.MedicalHistoryUncheckedUpdateManyWithoutPatientNestedInput;
     familyHistories?: Prisma.FamilyHistoryUncheckedUpdateManyWithoutPatientNestedInput;
+    surgicalHistories?: Prisma.SurgicalHistoryUncheckedUpdateManyWithoutPatientNestedInput;
     allergies?: Prisma.AllergyUncheckedUpdateManyWithoutPatientNestedInput;
     patientDoctors?: Prisma.PatientDoctorUncheckedUpdateManyWithoutPatientNestedInput;
     consultations?: Prisma.ConsultationUncheckedUpdateManyWithoutPatientNestedInput;
@@ -1402,17 +1798,22 @@ export type PatientUncheckedUpdateWithoutLifestyleInput = {
     childrenProfiles?: Prisma.ChildProfileUncheckedUpdateManyWithoutParentNestedInput;
     ratings?: Prisma.RatingUncheckedUpdateManyWithoutPatientNestedInput;
     visits?: Prisma.VisitUncheckedUpdateManyWithoutPatientNestedInput;
+    medicines?: Prisma.PatientMedicineUncheckedUpdateManyWithoutPatientNestedInput;
 };
 export type PatientCreateWithoutAllergiesInput = {
     name: string;
     age: number;
     ageClassification: $Enums.AgeClassification;
+    dateOfBirth?: Date | string | null;
     weight?: runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     height?: runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     gender: $Enums.Gender;
     smoking?: boolean;
     pregnancyWarning?: boolean;
+    pregnancyStatus?: boolean | null;
+    trimester?: number | null;
     lactation?: boolean;
+    bloodType?: string | null;
     profileCompleteness?: number;
     createdAt?: Date | string;
     updatedAt?: Date | string;
@@ -1422,6 +1823,7 @@ export type PatientCreateWithoutAllergiesInput = {
     patientDiseases?: Prisma.PatientDiseaseCreateNestedManyWithoutPatientInput;
     medicalHistories?: Prisma.MedicalHistoryCreateNestedManyWithoutPatientInput;
     familyHistories?: Prisma.FamilyHistoryCreateNestedManyWithoutPatientInput;
+    surgicalHistories?: Prisma.SurgicalHistoryCreateNestedManyWithoutPatientInput;
     lifestyle?: Prisma.LifestyleCreateNestedOneWithoutPatientInput;
     patientDoctors?: Prisma.PatientDoctorCreateNestedManyWithoutPatientInput;
     consultations?: Prisma.ConsultationCreateNestedManyWithoutPatientInput;
@@ -1432,6 +1834,7 @@ export type PatientCreateWithoutAllergiesInput = {
     childrenProfiles?: Prisma.ChildProfileCreateNestedManyWithoutParentInput;
     ratings?: Prisma.RatingCreateNestedManyWithoutPatientInput;
     visits?: Prisma.VisitCreateNestedManyWithoutPatientInput;
+    medicines?: Prisma.PatientMedicineCreateNestedManyWithoutPatientInput;
 };
 export type PatientUncheckedCreateWithoutAllergiesInput = {
     id?: number;
@@ -1439,12 +1842,16 @@ export type PatientUncheckedCreateWithoutAllergiesInput = {
     name: string;
     age: number;
     ageClassification: $Enums.AgeClassification;
+    dateOfBirth?: Date | string | null;
     weight?: runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     height?: runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     gender: $Enums.Gender;
     smoking?: boolean;
     pregnancyWarning?: boolean;
+    pregnancyStatus?: boolean | null;
+    trimester?: number | null;
     lactation?: boolean;
+    bloodType?: string | null;
     profileCompleteness?: number;
     createdAt?: Date | string;
     updatedAt?: Date | string;
@@ -1453,6 +1860,7 @@ export type PatientUncheckedCreateWithoutAllergiesInput = {
     patientDiseases?: Prisma.PatientDiseaseUncheckedCreateNestedManyWithoutPatientInput;
     medicalHistories?: Prisma.MedicalHistoryUncheckedCreateNestedManyWithoutPatientInput;
     familyHistories?: Prisma.FamilyHistoryUncheckedCreateNestedManyWithoutPatientInput;
+    surgicalHistories?: Prisma.SurgicalHistoryUncheckedCreateNestedManyWithoutPatientInput;
     lifestyle?: Prisma.LifestyleUncheckedCreateNestedOneWithoutPatientInput;
     patientDoctors?: Prisma.PatientDoctorUncheckedCreateNestedManyWithoutPatientInput;
     consultations?: Prisma.ConsultationUncheckedCreateNestedManyWithoutPatientInput;
@@ -1463,6 +1871,7 @@ export type PatientUncheckedCreateWithoutAllergiesInput = {
     childrenProfiles?: Prisma.ChildProfileUncheckedCreateNestedManyWithoutParentInput;
     ratings?: Prisma.RatingUncheckedCreateNestedManyWithoutPatientInput;
     visits?: Prisma.VisitUncheckedCreateNestedManyWithoutPatientInput;
+    medicines?: Prisma.PatientMedicineUncheckedCreateNestedManyWithoutPatientInput;
 };
 export type PatientCreateOrConnectWithoutAllergiesInput = {
     where: Prisma.PatientWhereUniqueInput;
@@ -1481,12 +1890,16 @@ export type PatientUpdateWithoutAllergiesInput = {
     name?: Prisma.StringFieldUpdateOperationsInput | string;
     age?: Prisma.IntFieldUpdateOperationsInput | number;
     ageClassification?: Prisma.EnumAgeClassificationFieldUpdateOperationsInput | $Enums.AgeClassification;
+    dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
     weight?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     height?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender;
     smoking?: Prisma.BoolFieldUpdateOperationsInput | boolean;
     pregnancyWarning?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    pregnancyStatus?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null;
+    trimester?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
     lactation?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    bloodType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     profileCompleteness?: Prisma.IntFieldUpdateOperationsInput | number;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -1496,6 +1909,7 @@ export type PatientUpdateWithoutAllergiesInput = {
     patientDiseases?: Prisma.PatientDiseaseUpdateManyWithoutPatientNestedInput;
     medicalHistories?: Prisma.MedicalHistoryUpdateManyWithoutPatientNestedInput;
     familyHistories?: Prisma.FamilyHistoryUpdateManyWithoutPatientNestedInput;
+    surgicalHistories?: Prisma.SurgicalHistoryUpdateManyWithoutPatientNestedInput;
     lifestyle?: Prisma.LifestyleUpdateOneWithoutPatientNestedInput;
     patientDoctors?: Prisma.PatientDoctorUpdateManyWithoutPatientNestedInput;
     consultations?: Prisma.ConsultationUpdateManyWithoutPatientNestedInput;
@@ -1506,6 +1920,7 @@ export type PatientUpdateWithoutAllergiesInput = {
     childrenProfiles?: Prisma.ChildProfileUpdateManyWithoutParentNestedInput;
     ratings?: Prisma.RatingUpdateManyWithoutPatientNestedInput;
     visits?: Prisma.VisitUpdateManyWithoutPatientNestedInput;
+    medicines?: Prisma.PatientMedicineUpdateManyWithoutPatientNestedInput;
 };
 export type PatientUncheckedUpdateWithoutAllergiesInput = {
     id?: Prisma.IntFieldUpdateOperationsInput | number;
@@ -1513,12 +1928,16 @@ export type PatientUncheckedUpdateWithoutAllergiesInput = {
     name?: Prisma.StringFieldUpdateOperationsInput | string;
     age?: Prisma.IntFieldUpdateOperationsInput | number;
     ageClassification?: Prisma.EnumAgeClassificationFieldUpdateOperationsInput | $Enums.AgeClassification;
+    dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
     weight?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     height?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender;
     smoking?: Prisma.BoolFieldUpdateOperationsInput | boolean;
     pregnancyWarning?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    pregnancyStatus?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null;
+    trimester?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
     lactation?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    bloodType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     profileCompleteness?: Prisma.IntFieldUpdateOperationsInput | number;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -1527,6 +1946,7 @@ export type PatientUncheckedUpdateWithoutAllergiesInput = {
     patientDiseases?: Prisma.PatientDiseaseUncheckedUpdateManyWithoutPatientNestedInput;
     medicalHistories?: Prisma.MedicalHistoryUncheckedUpdateManyWithoutPatientNestedInput;
     familyHistories?: Prisma.FamilyHistoryUncheckedUpdateManyWithoutPatientNestedInput;
+    surgicalHistories?: Prisma.SurgicalHistoryUncheckedUpdateManyWithoutPatientNestedInput;
     lifestyle?: Prisma.LifestyleUncheckedUpdateOneWithoutPatientNestedInput;
     patientDoctors?: Prisma.PatientDoctorUncheckedUpdateManyWithoutPatientNestedInput;
     consultations?: Prisma.ConsultationUncheckedUpdateManyWithoutPatientNestedInput;
@@ -1537,17 +1957,22 @@ export type PatientUncheckedUpdateWithoutAllergiesInput = {
     childrenProfiles?: Prisma.ChildProfileUncheckedUpdateManyWithoutParentNestedInput;
     ratings?: Prisma.RatingUncheckedUpdateManyWithoutPatientNestedInput;
     visits?: Prisma.VisitUncheckedUpdateManyWithoutPatientNestedInput;
+    medicines?: Prisma.PatientMedicineUncheckedUpdateManyWithoutPatientNestedInput;
 };
 export type PatientCreateWithoutPatientDoctorsInput = {
     name: string;
     age: number;
     ageClassification: $Enums.AgeClassification;
+    dateOfBirth?: Date | string | null;
     weight?: runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     height?: runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     gender: $Enums.Gender;
     smoking?: boolean;
     pregnancyWarning?: boolean;
+    pregnancyStatus?: boolean | null;
+    trimester?: number | null;
     lactation?: boolean;
+    bloodType?: string | null;
     profileCompleteness?: number;
     createdAt?: Date | string;
     updatedAt?: Date | string;
@@ -1557,6 +1982,7 @@ export type PatientCreateWithoutPatientDoctorsInput = {
     patientDiseases?: Prisma.PatientDiseaseCreateNestedManyWithoutPatientInput;
     medicalHistories?: Prisma.MedicalHistoryCreateNestedManyWithoutPatientInput;
     familyHistories?: Prisma.FamilyHistoryCreateNestedManyWithoutPatientInput;
+    surgicalHistories?: Prisma.SurgicalHistoryCreateNestedManyWithoutPatientInput;
     lifestyle?: Prisma.LifestyleCreateNestedOneWithoutPatientInput;
     allergies?: Prisma.AllergyCreateNestedManyWithoutPatientInput;
     consultations?: Prisma.ConsultationCreateNestedManyWithoutPatientInput;
@@ -1567,6 +1993,7 @@ export type PatientCreateWithoutPatientDoctorsInput = {
     childrenProfiles?: Prisma.ChildProfileCreateNestedManyWithoutParentInput;
     ratings?: Prisma.RatingCreateNestedManyWithoutPatientInput;
     visits?: Prisma.VisitCreateNestedManyWithoutPatientInput;
+    medicines?: Prisma.PatientMedicineCreateNestedManyWithoutPatientInput;
 };
 export type PatientUncheckedCreateWithoutPatientDoctorsInput = {
     id?: number;
@@ -1574,12 +2001,16 @@ export type PatientUncheckedCreateWithoutPatientDoctorsInput = {
     name: string;
     age: number;
     ageClassification: $Enums.AgeClassification;
+    dateOfBirth?: Date | string | null;
     weight?: runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     height?: runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     gender: $Enums.Gender;
     smoking?: boolean;
     pregnancyWarning?: boolean;
+    pregnancyStatus?: boolean | null;
+    trimester?: number | null;
     lactation?: boolean;
+    bloodType?: string | null;
     profileCompleteness?: number;
     createdAt?: Date | string;
     updatedAt?: Date | string;
@@ -1588,6 +2019,7 @@ export type PatientUncheckedCreateWithoutPatientDoctorsInput = {
     patientDiseases?: Prisma.PatientDiseaseUncheckedCreateNestedManyWithoutPatientInput;
     medicalHistories?: Prisma.MedicalHistoryUncheckedCreateNestedManyWithoutPatientInput;
     familyHistories?: Prisma.FamilyHistoryUncheckedCreateNestedManyWithoutPatientInput;
+    surgicalHistories?: Prisma.SurgicalHistoryUncheckedCreateNestedManyWithoutPatientInput;
     lifestyle?: Prisma.LifestyleUncheckedCreateNestedOneWithoutPatientInput;
     allergies?: Prisma.AllergyUncheckedCreateNestedManyWithoutPatientInput;
     consultations?: Prisma.ConsultationUncheckedCreateNestedManyWithoutPatientInput;
@@ -1598,6 +2030,7 @@ export type PatientUncheckedCreateWithoutPatientDoctorsInput = {
     childrenProfiles?: Prisma.ChildProfileUncheckedCreateNestedManyWithoutParentInput;
     ratings?: Prisma.RatingUncheckedCreateNestedManyWithoutPatientInput;
     visits?: Prisma.VisitUncheckedCreateNestedManyWithoutPatientInput;
+    medicines?: Prisma.PatientMedicineUncheckedCreateNestedManyWithoutPatientInput;
 };
 export type PatientCreateOrConnectWithoutPatientDoctorsInput = {
     where: Prisma.PatientWhereUniqueInput;
@@ -1616,12 +2049,16 @@ export type PatientUpdateWithoutPatientDoctorsInput = {
     name?: Prisma.StringFieldUpdateOperationsInput | string;
     age?: Prisma.IntFieldUpdateOperationsInput | number;
     ageClassification?: Prisma.EnumAgeClassificationFieldUpdateOperationsInput | $Enums.AgeClassification;
+    dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
     weight?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     height?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender;
     smoking?: Prisma.BoolFieldUpdateOperationsInput | boolean;
     pregnancyWarning?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    pregnancyStatus?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null;
+    trimester?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
     lactation?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    bloodType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     profileCompleteness?: Prisma.IntFieldUpdateOperationsInput | number;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -1631,6 +2068,7 @@ export type PatientUpdateWithoutPatientDoctorsInput = {
     patientDiseases?: Prisma.PatientDiseaseUpdateManyWithoutPatientNestedInput;
     medicalHistories?: Prisma.MedicalHistoryUpdateManyWithoutPatientNestedInput;
     familyHistories?: Prisma.FamilyHistoryUpdateManyWithoutPatientNestedInput;
+    surgicalHistories?: Prisma.SurgicalHistoryUpdateManyWithoutPatientNestedInput;
     lifestyle?: Prisma.LifestyleUpdateOneWithoutPatientNestedInput;
     allergies?: Prisma.AllergyUpdateManyWithoutPatientNestedInput;
     consultations?: Prisma.ConsultationUpdateManyWithoutPatientNestedInput;
@@ -1641,6 +2079,7 @@ export type PatientUpdateWithoutPatientDoctorsInput = {
     childrenProfiles?: Prisma.ChildProfileUpdateManyWithoutParentNestedInput;
     ratings?: Prisma.RatingUpdateManyWithoutPatientNestedInput;
     visits?: Prisma.VisitUpdateManyWithoutPatientNestedInput;
+    medicines?: Prisma.PatientMedicineUpdateManyWithoutPatientNestedInput;
 };
 export type PatientUncheckedUpdateWithoutPatientDoctorsInput = {
     id?: Prisma.IntFieldUpdateOperationsInput | number;
@@ -1648,12 +2087,16 @@ export type PatientUncheckedUpdateWithoutPatientDoctorsInput = {
     name?: Prisma.StringFieldUpdateOperationsInput | string;
     age?: Prisma.IntFieldUpdateOperationsInput | number;
     ageClassification?: Prisma.EnumAgeClassificationFieldUpdateOperationsInput | $Enums.AgeClassification;
+    dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
     weight?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     height?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender;
     smoking?: Prisma.BoolFieldUpdateOperationsInput | boolean;
     pregnancyWarning?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    pregnancyStatus?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null;
+    trimester?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
     lactation?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    bloodType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     profileCompleteness?: Prisma.IntFieldUpdateOperationsInput | number;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -1662,6 +2105,7 @@ export type PatientUncheckedUpdateWithoutPatientDoctorsInput = {
     patientDiseases?: Prisma.PatientDiseaseUncheckedUpdateManyWithoutPatientNestedInput;
     medicalHistories?: Prisma.MedicalHistoryUncheckedUpdateManyWithoutPatientNestedInput;
     familyHistories?: Prisma.FamilyHistoryUncheckedUpdateManyWithoutPatientNestedInput;
+    surgicalHistories?: Prisma.SurgicalHistoryUncheckedUpdateManyWithoutPatientNestedInput;
     lifestyle?: Prisma.LifestyleUncheckedUpdateOneWithoutPatientNestedInput;
     allergies?: Prisma.AllergyUncheckedUpdateManyWithoutPatientNestedInput;
     consultations?: Prisma.ConsultationUncheckedUpdateManyWithoutPatientNestedInput;
@@ -1672,17 +2116,22 @@ export type PatientUncheckedUpdateWithoutPatientDoctorsInput = {
     childrenProfiles?: Prisma.ChildProfileUncheckedUpdateManyWithoutParentNestedInput;
     ratings?: Prisma.RatingUncheckedUpdateManyWithoutPatientNestedInput;
     visits?: Prisma.VisitUncheckedUpdateManyWithoutPatientNestedInput;
+    medicines?: Prisma.PatientMedicineUncheckedUpdateManyWithoutPatientNestedInput;
 };
 export type PatientCreateWithoutConsultationsInput = {
     name: string;
     age: number;
     ageClassification: $Enums.AgeClassification;
+    dateOfBirth?: Date | string | null;
     weight?: runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     height?: runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     gender: $Enums.Gender;
     smoking?: boolean;
     pregnancyWarning?: boolean;
+    pregnancyStatus?: boolean | null;
+    trimester?: number | null;
     lactation?: boolean;
+    bloodType?: string | null;
     profileCompleteness?: number;
     createdAt?: Date | string;
     updatedAt?: Date | string;
@@ -1692,6 +2141,7 @@ export type PatientCreateWithoutConsultationsInput = {
     patientDiseases?: Prisma.PatientDiseaseCreateNestedManyWithoutPatientInput;
     medicalHistories?: Prisma.MedicalHistoryCreateNestedManyWithoutPatientInput;
     familyHistories?: Prisma.FamilyHistoryCreateNestedManyWithoutPatientInput;
+    surgicalHistories?: Prisma.SurgicalHistoryCreateNestedManyWithoutPatientInput;
     lifestyle?: Prisma.LifestyleCreateNestedOneWithoutPatientInput;
     allergies?: Prisma.AllergyCreateNestedManyWithoutPatientInput;
     patientDoctors?: Prisma.PatientDoctorCreateNestedManyWithoutPatientInput;
@@ -1702,6 +2152,7 @@ export type PatientCreateWithoutConsultationsInput = {
     childrenProfiles?: Prisma.ChildProfileCreateNestedManyWithoutParentInput;
     ratings?: Prisma.RatingCreateNestedManyWithoutPatientInput;
     visits?: Prisma.VisitCreateNestedManyWithoutPatientInput;
+    medicines?: Prisma.PatientMedicineCreateNestedManyWithoutPatientInput;
 };
 export type PatientUncheckedCreateWithoutConsultationsInput = {
     id?: number;
@@ -1709,12 +2160,16 @@ export type PatientUncheckedCreateWithoutConsultationsInput = {
     name: string;
     age: number;
     ageClassification: $Enums.AgeClassification;
+    dateOfBirth?: Date | string | null;
     weight?: runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     height?: runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     gender: $Enums.Gender;
     smoking?: boolean;
     pregnancyWarning?: boolean;
+    pregnancyStatus?: boolean | null;
+    trimester?: number | null;
     lactation?: boolean;
+    bloodType?: string | null;
     profileCompleteness?: number;
     createdAt?: Date | string;
     updatedAt?: Date | string;
@@ -1723,6 +2178,7 @@ export type PatientUncheckedCreateWithoutConsultationsInput = {
     patientDiseases?: Prisma.PatientDiseaseUncheckedCreateNestedManyWithoutPatientInput;
     medicalHistories?: Prisma.MedicalHistoryUncheckedCreateNestedManyWithoutPatientInput;
     familyHistories?: Prisma.FamilyHistoryUncheckedCreateNestedManyWithoutPatientInput;
+    surgicalHistories?: Prisma.SurgicalHistoryUncheckedCreateNestedManyWithoutPatientInput;
     lifestyle?: Prisma.LifestyleUncheckedCreateNestedOneWithoutPatientInput;
     allergies?: Prisma.AllergyUncheckedCreateNestedManyWithoutPatientInput;
     patientDoctors?: Prisma.PatientDoctorUncheckedCreateNestedManyWithoutPatientInput;
@@ -1733,6 +2189,7 @@ export type PatientUncheckedCreateWithoutConsultationsInput = {
     childrenProfiles?: Prisma.ChildProfileUncheckedCreateNestedManyWithoutParentInput;
     ratings?: Prisma.RatingUncheckedCreateNestedManyWithoutPatientInput;
     visits?: Prisma.VisitUncheckedCreateNestedManyWithoutPatientInput;
+    medicines?: Prisma.PatientMedicineUncheckedCreateNestedManyWithoutPatientInput;
 };
 export type PatientCreateOrConnectWithoutConsultationsInput = {
     where: Prisma.PatientWhereUniqueInput;
@@ -1751,12 +2208,16 @@ export type PatientUpdateWithoutConsultationsInput = {
     name?: Prisma.StringFieldUpdateOperationsInput | string;
     age?: Prisma.IntFieldUpdateOperationsInput | number;
     ageClassification?: Prisma.EnumAgeClassificationFieldUpdateOperationsInput | $Enums.AgeClassification;
+    dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
     weight?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     height?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender;
     smoking?: Prisma.BoolFieldUpdateOperationsInput | boolean;
     pregnancyWarning?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    pregnancyStatus?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null;
+    trimester?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
     lactation?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    bloodType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     profileCompleteness?: Prisma.IntFieldUpdateOperationsInput | number;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -1766,6 +2227,7 @@ export type PatientUpdateWithoutConsultationsInput = {
     patientDiseases?: Prisma.PatientDiseaseUpdateManyWithoutPatientNestedInput;
     medicalHistories?: Prisma.MedicalHistoryUpdateManyWithoutPatientNestedInput;
     familyHistories?: Prisma.FamilyHistoryUpdateManyWithoutPatientNestedInput;
+    surgicalHistories?: Prisma.SurgicalHistoryUpdateManyWithoutPatientNestedInput;
     lifestyle?: Prisma.LifestyleUpdateOneWithoutPatientNestedInput;
     allergies?: Prisma.AllergyUpdateManyWithoutPatientNestedInput;
     patientDoctors?: Prisma.PatientDoctorUpdateManyWithoutPatientNestedInput;
@@ -1776,6 +2238,7 @@ export type PatientUpdateWithoutConsultationsInput = {
     childrenProfiles?: Prisma.ChildProfileUpdateManyWithoutParentNestedInput;
     ratings?: Prisma.RatingUpdateManyWithoutPatientNestedInput;
     visits?: Prisma.VisitUpdateManyWithoutPatientNestedInput;
+    medicines?: Prisma.PatientMedicineUpdateManyWithoutPatientNestedInput;
 };
 export type PatientUncheckedUpdateWithoutConsultationsInput = {
     id?: Prisma.IntFieldUpdateOperationsInput | number;
@@ -1783,12 +2246,16 @@ export type PatientUncheckedUpdateWithoutConsultationsInput = {
     name?: Prisma.StringFieldUpdateOperationsInput | string;
     age?: Prisma.IntFieldUpdateOperationsInput | number;
     ageClassification?: Prisma.EnumAgeClassificationFieldUpdateOperationsInput | $Enums.AgeClassification;
+    dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
     weight?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     height?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender;
     smoking?: Prisma.BoolFieldUpdateOperationsInput | boolean;
     pregnancyWarning?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    pregnancyStatus?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null;
+    trimester?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
     lactation?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    bloodType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     profileCompleteness?: Prisma.IntFieldUpdateOperationsInput | number;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -1797,6 +2264,7 @@ export type PatientUncheckedUpdateWithoutConsultationsInput = {
     patientDiseases?: Prisma.PatientDiseaseUncheckedUpdateManyWithoutPatientNestedInput;
     medicalHistories?: Prisma.MedicalHistoryUncheckedUpdateManyWithoutPatientNestedInput;
     familyHistories?: Prisma.FamilyHistoryUncheckedUpdateManyWithoutPatientNestedInput;
+    surgicalHistories?: Prisma.SurgicalHistoryUncheckedUpdateManyWithoutPatientNestedInput;
     lifestyle?: Prisma.LifestyleUncheckedUpdateOneWithoutPatientNestedInput;
     allergies?: Prisma.AllergyUncheckedUpdateManyWithoutPatientNestedInput;
     patientDoctors?: Prisma.PatientDoctorUncheckedUpdateManyWithoutPatientNestedInput;
@@ -1807,17 +2275,22 @@ export type PatientUncheckedUpdateWithoutConsultationsInput = {
     childrenProfiles?: Prisma.ChildProfileUncheckedUpdateManyWithoutParentNestedInput;
     ratings?: Prisma.RatingUncheckedUpdateManyWithoutPatientNestedInput;
     visits?: Prisma.VisitUncheckedUpdateManyWithoutPatientNestedInput;
+    medicines?: Prisma.PatientMedicineUncheckedUpdateManyWithoutPatientNestedInput;
 };
 export type PatientCreateWithoutAppointmentsInput = {
     name: string;
     age: number;
     ageClassification: $Enums.AgeClassification;
+    dateOfBirth?: Date | string | null;
     weight?: runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     height?: runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     gender: $Enums.Gender;
     smoking?: boolean;
     pregnancyWarning?: boolean;
+    pregnancyStatus?: boolean | null;
+    trimester?: number | null;
     lactation?: boolean;
+    bloodType?: string | null;
     profileCompleteness?: number;
     createdAt?: Date | string;
     updatedAt?: Date | string;
@@ -1827,6 +2300,7 @@ export type PatientCreateWithoutAppointmentsInput = {
     patientDiseases?: Prisma.PatientDiseaseCreateNestedManyWithoutPatientInput;
     medicalHistories?: Prisma.MedicalHistoryCreateNestedManyWithoutPatientInput;
     familyHistories?: Prisma.FamilyHistoryCreateNestedManyWithoutPatientInput;
+    surgicalHistories?: Prisma.SurgicalHistoryCreateNestedManyWithoutPatientInput;
     lifestyle?: Prisma.LifestyleCreateNestedOneWithoutPatientInput;
     allergies?: Prisma.AllergyCreateNestedManyWithoutPatientInput;
     patientDoctors?: Prisma.PatientDoctorCreateNestedManyWithoutPatientInput;
@@ -1837,6 +2311,7 @@ export type PatientCreateWithoutAppointmentsInput = {
     childrenProfiles?: Prisma.ChildProfileCreateNestedManyWithoutParentInput;
     ratings?: Prisma.RatingCreateNestedManyWithoutPatientInput;
     visits?: Prisma.VisitCreateNestedManyWithoutPatientInput;
+    medicines?: Prisma.PatientMedicineCreateNestedManyWithoutPatientInput;
 };
 export type PatientUncheckedCreateWithoutAppointmentsInput = {
     id?: number;
@@ -1844,12 +2319,16 @@ export type PatientUncheckedCreateWithoutAppointmentsInput = {
     name: string;
     age: number;
     ageClassification: $Enums.AgeClassification;
+    dateOfBirth?: Date | string | null;
     weight?: runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     height?: runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     gender: $Enums.Gender;
     smoking?: boolean;
     pregnancyWarning?: boolean;
+    pregnancyStatus?: boolean | null;
+    trimester?: number | null;
     lactation?: boolean;
+    bloodType?: string | null;
     profileCompleteness?: number;
     createdAt?: Date | string;
     updatedAt?: Date | string;
@@ -1858,6 +2337,7 @@ export type PatientUncheckedCreateWithoutAppointmentsInput = {
     patientDiseases?: Prisma.PatientDiseaseUncheckedCreateNestedManyWithoutPatientInput;
     medicalHistories?: Prisma.MedicalHistoryUncheckedCreateNestedManyWithoutPatientInput;
     familyHistories?: Prisma.FamilyHistoryUncheckedCreateNestedManyWithoutPatientInput;
+    surgicalHistories?: Prisma.SurgicalHistoryUncheckedCreateNestedManyWithoutPatientInput;
     lifestyle?: Prisma.LifestyleUncheckedCreateNestedOneWithoutPatientInput;
     allergies?: Prisma.AllergyUncheckedCreateNestedManyWithoutPatientInput;
     patientDoctors?: Prisma.PatientDoctorUncheckedCreateNestedManyWithoutPatientInput;
@@ -1868,6 +2348,7 @@ export type PatientUncheckedCreateWithoutAppointmentsInput = {
     childrenProfiles?: Prisma.ChildProfileUncheckedCreateNestedManyWithoutParentInput;
     ratings?: Prisma.RatingUncheckedCreateNestedManyWithoutPatientInput;
     visits?: Prisma.VisitUncheckedCreateNestedManyWithoutPatientInput;
+    medicines?: Prisma.PatientMedicineUncheckedCreateNestedManyWithoutPatientInput;
 };
 export type PatientCreateOrConnectWithoutAppointmentsInput = {
     where: Prisma.PatientWhereUniqueInput;
@@ -1886,12 +2367,16 @@ export type PatientUpdateWithoutAppointmentsInput = {
     name?: Prisma.StringFieldUpdateOperationsInput | string;
     age?: Prisma.IntFieldUpdateOperationsInput | number;
     ageClassification?: Prisma.EnumAgeClassificationFieldUpdateOperationsInput | $Enums.AgeClassification;
+    dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
     weight?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     height?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender;
     smoking?: Prisma.BoolFieldUpdateOperationsInput | boolean;
     pregnancyWarning?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    pregnancyStatus?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null;
+    trimester?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
     lactation?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    bloodType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     profileCompleteness?: Prisma.IntFieldUpdateOperationsInput | number;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -1901,6 +2386,7 @@ export type PatientUpdateWithoutAppointmentsInput = {
     patientDiseases?: Prisma.PatientDiseaseUpdateManyWithoutPatientNestedInput;
     medicalHistories?: Prisma.MedicalHistoryUpdateManyWithoutPatientNestedInput;
     familyHistories?: Prisma.FamilyHistoryUpdateManyWithoutPatientNestedInput;
+    surgicalHistories?: Prisma.SurgicalHistoryUpdateManyWithoutPatientNestedInput;
     lifestyle?: Prisma.LifestyleUpdateOneWithoutPatientNestedInput;
     allergies?: Prisma.AllergyUpdateManyWithoutPatientNestedInput;
     patientDoctors?: Prisma.PatientDoctorUpdateManyWithoutPatientNestedInput;
@@ -1911,6 +2397,7 @@ export type PatientUpdateWithoutAppointmentsInput = {
     childrenProfiles?: Prisma.ChildProfileUpdateManyWithoutParentNestedInput;
     ratings?: Prisma.RatingUpdateManyWithoutPatientNestedInput;
     visits?: Prisma.VisitUpdateManyWithoutPatientNestedInput;
+    medicines?: Prisma.PatientMedicineUpdateManyWithoutPatientNestedInput;
 };
 export type PatientUncheckedUpdateWithoutAppointmentsInput = {
     id?: Prisma.IntFieldUpdateOperationsInput | number;
@@ -1918,12 +2405,16 @@ export type PatientUncheckedUpdateWithoutAppointmentsInput = {
     name?: Prisma.StringFieldUpdateOperationsInput | string;
     age?: Prisma.IntFieldUpdateOperationsInput | number;
     ageClassification?: Prisma.EnumAgeClassificationFieldUpdateOperationsInput | $Enums.AgeClassification;
+    dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
     weight?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     height?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender;
     smoking?: Prisma.BoolFieldUpdateOperationsInput | boolean;
     pregnancyWarning?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    pregnancyStatus?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null;
+    trimester?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
     lactation?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    bloodType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     profileCompleteness?: Prisma.IntFieldUpdateOperationsInput | number;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -1932,6 +2423,7 @@ export type PatientUncheckedUpdateWithoutAppointmentsInput = {
     patientDiseases?: Prisma.PatientDiseaseUncheckedUpdateManyWithoutPatientNestedInput;
     medicalHistories?: Prisma.MedicalHistoryUncheckedUpdateManyWithoutPatientNestedInput;
     familyHistories?: Prisma.FamilyHistoryUncheckedUpdateManyWithoutPatientNestedInput;
+    surgicalHistories?: Prisma.SurgicalHistoryUncheckedUpdateManyWithoutPatientNestedInput;
     lifestyle?: Prisma.LifestyleUncheckedUpdateOneWithoutPatientNestedInput;
     allergies?: Prisma.AllergyUncheckedUpdateManyWithoutPatientNestedInput;
     patientDoctors?: Prisma.PatientDoctorUncheckedUpdateManyWithoutPatientNestedInput;
@@ -1942,17 +2434,22 @@ export type PatientUncheckedUpdateWithoutAppointmentsInput = {
     childrenProfiles?: Prisma.ChildProfileUncheckedUpdateManyWithoutParentNestedInput;
     ratings?: Prisma.RatingUncheckedUpdateManyWithoutPatientNestedInput;
     visits?: Prisma.VisitUncheckedUpdateManyWithoutPatientNestedInput;
+    medicines?: Prisma.PatientMedicineUncheckedUpdateManyWithoutPatientNestedInput;
 };
 export type PatientCreateWithoutPatientDiseasesInput = {
     name: string;
     age: number;
     ageClassification: $Enums.AgeClassification;
+    dateOfBirth?: Date | string | null;
     weight?: runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     height?: runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     gender: $Enums.Gender;
     smoking?: boolean;
     pregnancyWarning?: boolean;
+    pregnancyStatus?: boolean | null;
+    trimester?: number | null;
     lactation?: boolean;
+    bloodType?: string | null;
     profileCompleteness?: number;
     createdAt?: Date | string;
     updatedAt?: Date | string;
@@ -1961,6 +2458,7 @@ export type PatientCreateWithoutPatientDiseasesInput = {
     prescriptions?: Prisma.PrescriptionCreateNestedManyWithoutPatientInput;
     medicalHistories?: Prisma.MedicalHistoryCreateNestedManyWithoutPatientInput;
     familyHistories?: Prisma.FamilyHistoryCreateNestedManyWithoutPatientInput;
+    surgicalHistories?: Prisma.SurgicalHistoryCreateNestedManyWithoutPatientInput;
     lifestyle?: Prisma.LifestyleCreateNestedOneWithoutPatientInput;
     allergies?: Prisma.AllergyCreateNestedManyWithoutPatientInput;
     patientDoctors?: Prisma.PatientDoctorCreateNestedManyWithoutPatientInput;
@@ -1972,6 +2470,7 @@ export type PatientCreateWithoutPatientDiseasesInput = {
     childrenProfiles?: Prisma.ChildProfileCreateNestedManyWithoutParentInput;
     ratings?: Prisma.RatingCreateNestedManyWithoutPatientInput;
     visits?: Prisma.VisitCreateNestedManyWithoutPatientInput;
+    medicines?: Prisma.PatientMedicineCreateNestedManyWithoutPatientInput;
 };
 export type PatientUncheckedCreateWithoutPatientDiseasesInput = {
     id?: number;
@@ -1979,12 +2478,16 @@ export type PatientUncheckedCreateWithoutPatientDiseasesInput = {
     name: string;
     age: number;
     ageClassification: $Enums.AgeClassification;
+    dateOfBirth?: Date | string | null;
     weight?: runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     height?: runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     gender: $Enums.Gender;
     smoking?: boolean;
     pregnancyWarning?: boolean;
+    pregnancyStatus?: boolean | null;
+    trimester?: number | null;
     lactation?: boolean;
+    bloodType?: string | null;
     profileCompleteness?: number;
     createdAt?: Date | string;
     updatedAt?: Date | string;
@@ -1992,6 +2495,7 @@ export type PatientUncheckedCreateWithoutPatientDiseasesInput = {
     prescriptions?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutPatientInput;
     medicalHistories?: Prisma.MedicalHistoryUncheckedCreateNestedManyWithoutPatientInput;
     familyHistories?: Prisma.FamilyHistoryUncheckedCreateNestedManyWithoutPatientInput;
+    surgicalHistories?: Prisma.SurgicalHistoryUncheckedCreateNestedManyWithoutPatientInput;
     lifestyle?: Prisma.LifestyleUncheckedCreateNestedOneWithoutPatientInput;
     allergies?: Prisma.AllergyUncheckedCreateNestedManyWithoutPatientInput;
     patientDoctors?: Prisma.PatientDoctorUncheckedCreateNestedManyWithoutPatientInput;
@@ -2003,6 +2507,7 @@ export type PatientUncheckedCreateWithoutPatientDiseasesInput = {
     childrenProfiles?: Prisma.ChildProfileUncheckedCreateNestedManyWithoutParentInput;
     ratings?: Prisma.RatingUncheckedCreateNestedManyWithoutPatientInput;
     visits?: Prisma.VisitUncheckedCreateNestedManyWithoutPatientInput;
+    medicines?: Prisma.PatientMedicineUncheckedCreateNestedManyWithoutPatientInput;
 };
 export type PatientCreateOrConnectWithoutPatientDiseasesInput = {
     where: Prisma.PatientWhereUniqueInput;
@@ -2021,12 +2526,16 @@ export type PatientUpdateWithoutPatientDiseasesInput = {
     name?: Prisma.StringFieldUpdateOperationsInput | string;
     age?: Prisma.IntFieldUpdateOperationsInput | number;
     ageClassification?: Prisma.EnumAgeClassificationFieldUpdateOperationsInput | $Enums.AgeClassification;
+    dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
     weight?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     height?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender;
     smoking?: Prisma.BoolFieldUpdateOperationsInput | boolean;
     pregnancyWarning?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    pregnancyStatus?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null;
+    trimester?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
     lactation?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    bloodType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     profileCompleteness?: Prisma.IntFieldUpdateOperationsInput | number;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -2035,6 +2544,7 @@ export type PatientUpdateWithoutPatientDiseasesInput = {
     prescriptions?: Prisma.PrescriptionUpdateManyWithoutPatientNestedInput;
     medicalHistories?: Prisma.MedicalHistoryUpdateManyWithoutPatientNestedInput;
     familyHistories?: Prisma.FamilyHistoryUpdateManyWithoutPatientNestedInput;
+    surgicalHistories?: Prisma.SurgicalHistoryUpdateManyWithoutPatientNestedInput;
     lifestyle?: Prisma.LifestyleUpdateOneWithoutPatientNestedInput;
     allergies?: Prisma.AllergyUpdateManyWithoutPatientNestedInput;
     patientDoctors?: Prisma.PatientDoctorUpdateManyWithoutPatientNestedInput;
@@ -2046,6 +2556,7 @@ export type PatientUpdateWithoutPatientDiseasesInput = {
     childrenProfiles?: Prisma.ChildProfileUpdateManyWithoutParentNestedInput;
     ratings?: Prisma.RatingUpdateManyWithoutPatientNestedInput;
     visits?: Prisma.VisitUpdateManyWithoutPatientNestedInput;
+    medicines?: Prisma.PatientMedicineUpdateManyWithoutPatientNestedInput;
 };
 export type PatientUncheckedUpdateWithoutPatientDiseasesInput = {
     id?: Prisma.IntFieldUpdateOperationsInput | number;
@@ -2053,12 +2564,16 @@ export type PatientUncheckedUpdateWithoutPatientDiseasesInput = {
     name?: Prisma.StringFieldUpdateOperationsInput | string;
     age?: Prisma.IntFieldUpdateOperationsInput | number;
     ageClassification?: Prisma.EnumAgeClassificationFieldUpdateOperationsInput | $Enums.AgeClassification;
+    dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
     weight?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     height?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender;
     smoking?: Prisma.BoolFieldUpdateOperationsInput | boolean;
     pregnancyWarning?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    pregnancyStatus?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null;
+    trimester?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
     lactation?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    bloodType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     profileCompleteness?: Prisma.IntFieldUpdateOperationsInput | number;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -2066,6 +2581,7 @@ export type PatientUncheckedUpdateWithoutPatientDiseasesInput = {
     prescriptions?: Prisma.PrescriptionUncheckedUpdateManyWithoutPatientNestedInput;
     medicalHistories?: Prisma.MedicalHistoryUncheckedUpdateManyWithoutPatientNestedInput;
     familyHistories?: Prisma.FamilyHistoryUncheckedUpdateManyWithoutPatientNestedInput;
+    surgicalHistories?: Prisma.SurgicalHistoryUncheckedUpdateManyWithoutPatientNestedInput;
     lifestyle?: Prisma.LifestyleUncheckedUpdateOneWithoutPatientNestedInput;
     allergies?: Prisma.AllergyUncheckedUpdateManyWithoutPatientNestedInput;
     patientDoctors?: Prisma.PatientDoctorUncheckedUpdateManyWithoutPatientNestedInput;
@@ -2077,17 +2593,22 @@ export type PatientUncheckedUpdateWithoutPatientDiseasesInput = {
     childrenProfiles?: Prisma.ChildProfileUncheckedUpdateManyWithoutParentNestedInput;
     ratings?: Prisma.RatingUncheckedUpdateManyWithoutPatientNestedInput;
     visits?: Prisma.VisitUncheckedUpdateManyWithoutPatientNestedInput;
+    medicines?: Prisma.PatientMedicineUncheckedUpdateManyWithoutPatientNestedInput;
 };
 export type PatientCreateWithoutPrescriptionsInput = {
     name: string;
     age: number;
     ageClassification: $Enums.AgeClassification;
+    dateOfBirth?: Date | string | null;
     weight?: runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     height?: runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     gender: $Enums.Gender;
     smoking?: boolean;
     pregnancyWarning?: boolean;
+    pregnancyStatus?: boolean | null;
+    trimester?: number | null;
     lactation?: boolean;
+    bloodType?: string | null;
     profileCompleteness?: number;
     createdAt?: Date | string;
     updatedAt?: Date | string;
@@ -2096,6 +2617,7 @@ export type PatientCreateWithoutPrescriptionsInput = {
     patientDiseases?: Prisma.PatientDiseaseCreateNestedManyWithoutPatientInput;
     medicalHistories?: Prisma.MedicalHistoryCreateNestedManyWithoutPatientInput;
     familyHistories?: Prisma.FamilyHistoryCreateNestedManyWithoutPatientInput;
+    surgicalHistories?: Prisma.SurgicalHistoryCreateNestedManyWithoutPatientInput;
     lifestyle?: Prisma.LifestyleCreateNestedOneWithoutPatientInput;
     allergies?: Prisma.AllergyCreateNestedManyWithoutPatientInput;
     patientDoctors?: Prisma.PatientDoctorCreateNestedManyWithoutPatientInput;
@@ -2107,6 +2629,7 @@ export type PatientCreateWithoutPrescriptionsInput = {
     childrenProfiles?: Prisma.ChildProfileCreateNestedManyWithoutParentInput;
     ratings?: Prisma.RatingCreateNestedManyWithoutPatientInput;
     visits?: Prisma.VisitCreateNestedManyWithoutPatientInput;
+    medicines?: Prisma.PatientMedicineCreateNestedManyWithoutPatientInput;
 };
 export type PatientUncheckedCreateWithoutPrescriptionsInput = {
     id?: number;
@@ -2114,12 +2637,16 @@ export type PatientUncheckedCreateWithoutPrescriptionsInput = {
     name: string;
     age: number;
     ageClassification: $Enums.AgeClassification;
+    dateOfBirth?: Date | string | null;
     weight?: runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     height?: runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     gender: $Enums.Gender;
     smoking?: boolean;
     pregnancyWarning?: boolean;
+    pregnancyStatus?: boolean | null;
+    trimester?: number | null;
     lactation?: boolean;
+    bloodType?: string | null;
     profileCompleteness?: number;
     createdAt?: Date | string;
     updatedAt?: Date | string;
@@ -2127,6 +2654,7 @@ export type PatientUncheckedCreateWithoutPrescriptionsInput = {
     patientDiseases?: Prisma.PatientDiseaseUncheckedCreateNestedManyWithoutPatientInput;
     medicalHistories?: Prisma.MedicalHistoryUncheckedCreateNestedManyWithoutPatientInput;
     familyHistories?: Prisma.FamilyHistoryUncheckedCreateNestedManyWithoutPatientInput;
+    surgicalHistories?: Prisma.SurgicalHistoryUncheckedCreateNestedManyWithoutPatientInput;
     lifestyle?: Prisma.LifestyleUncheckedCreateNestedOneWithoutPatientInput;
     allergies?: Prisma.AllergyUncheckedCreateNestedManyWithoutPatientInput;
     patientDoctors?: Prisma.PatientDoctorUncheckedCreateNestedManyWithoutPatientInput;
@@ -2138,6 +2666,7 @@ export type PatientUncheckedCreateWithoutPrescriptionsInput = {
     childrenProfiles?: Prisma.ChildProfileUncheckedCreateNestedManyWithoutParentInput;
     ratings?: Prisma.RatingUncheckedCreateNestedManyWithoutPatientInput;
     visits?: Prisma.VisitUncheckedCreateNestedManyWithoutPatientInput;
+    medicines?: Prisma.PatientMedicineUncheckedCreateNestedManyWithoutPatientInput;
 };
 export type PatientCreateOrConnectWithoutPrescriptionsInput = {
     where: Prisma.PatientWhereUniqueInput;
@@ -2156,12 +2685,16 @@ export type PatientUpdateWithoutPrescriptionsInput = {
     name?: Prisma.StringFieldUpdateOperationsInput | string;
     age?: Prisma.IntFieldUpdateOperationsInput | number;
     ageClassification?: Prisma.EnumAgeClassificationFieldUpdateOperationsInput | $Enums.AgeClassification;
+    dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
     weight?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     height?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender;
     smoking?: Prisma.BoolFieldUpdateOperationsInput | boolean;
     pregnancyWarning?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    pregnancyStatus?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null;
+    trimester?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
     lactation?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    bloodType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     profileCompleteness?: Prisma.IntFieldUpdateOperationsInput | number;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -2170,6 +2703,7 @@ export type PatientUpdateWithoutPrescriptionsInput = {
     patientDiseases?: Prisma.PatientDiseaseUpdateManyWithoutPatientNestedInput;
     medicalHistories?: Prisma.MedicalHistoryUpdateManyWithoutPatientNestedInput;
     familyHistories?: Prisma.FamilyHistoryUpdateManyWithoutPatientNestedInput;
+    surgicalHistories?: Prisma.SurgicalHistoryUpdateManyWithoutPatientNestedInput;
     lifestyle?: Prisma.LifestyleUpdateOneWithoutPatientNestedInput;
     allergies?: Prisma.AllergyUpdateManyWithoutPatientNestedInput;
     patientDoctors?: Prisma.PatientDoctorUpdateManyWithoutPatientNestedInput;
@@ -2181,6 +2715,7 @@ export type PatientUpdateWithoutPrescriptionsInput = {
     childrenProfiles?: Prisma.ChildProfileUpdateManyWithoutParentNestedInput;
     ratings?: Prisma.RatingUpdateManyWithoutPatientNestedInput;
     visits?: Prisma.VisitUpdateManyWithoutPatientNestedInput;
+    medicines?: Prisma.PatientMedicineUpdateManyWithoutPatientNestedInput;
 };
 export type PatientUncheckedUpdateWithoutPrescriptionsInput = {
     id?: Prisma.IntFieldUpdateOperationsInput | number;
@@ -2188,12 +2723,16 @@ export type PatientUncheckedUpdateWithoutPrescriptionsInput = {
     name?: Prisma.StringFieldUpdateOperationsInput | string;
     age?: Prisma.IntFieldUpdateOperationsInput | number;
     ageClassification?: Prisma.EnumAgeClassificationFieldUpdateOperationsInput | $Enums.AgeClassification;
+    dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
     weight?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     height?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender;
     smoking?: Prisma.BoolFieldUpdateOperationsInput | boolean;
     pregnancyWarning?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    pregnancyStatus?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null;
+    trimester?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
     lactation?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    bloodType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     profileCompleteness?: Prisma.IntFieldUpdateOperationsInput | number;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -2201,6 +2740,7 @@ export type PatientUncheckedUpdateWithoutPrescriptionsInput = {
     patientDiseases?: Prisma.PatientDiseaseUncheckedUpdateManyWithoutPatientNestedInput;
     medicalHistories?: Prisma.MedicalHistoryUncheckedUpdateManyWithoutPatientNestedInput;
     familyHistories?: Prisma.FamilyHistoryUncheckedUpdateManyWithoutPatientNestedInput;
+    surgicalHistories?: Prisma.SurgicalHistoryUncheckedUpdateManyWithoutPatientNestedInput;
     lifestyle?: Prisma.LifestyleUncheckedUpdateOneWithoutPatientNestedInput;
     allergies?: Prisma.AllergyUncheckedUpdateManyWithoutPatientNestedInput;
     patientDoctors?: Prisma.PatientDoctorUncheckedUpdateManyWithoutPatientNestedInput;
@@ -2212,17 +2752,22 @@ export type PatientUncheckedUpdateWithoutPrescriptionsInput = {
     childrenProfiles?: Prisma.ChildProfileUncheckedUpdateManyWithoutParentNestedInput;
     ratings?: Prisma.RatingUncheckedUpdateManyWithoutPatientNestedInput;
     visits?: Prisma.VisitUncheckedUpdateManyWithoutPatientNestedInput;
+    medicines?: Prisma.PatientMedicineUncheckedUpdateManyWithoutPatientNestedInput;
 };
 export type PatientCreateWithoutMedicalReportsInput = {
     name: string;
     age: number;
     ageClassification: $Enums.AgeClassification;
+    dateOfBirth?: Date | string | null;
     weight?: runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     height?: runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     gender: $Enums.Gender;
     smoking?: boolean;
     pregnancyWarning?: boolean;
+    pregnancyStatus?: boolean | null;
+    trimester?: number | null;
     lactation?: boolean;
+    bloodType?: string | null;
     profileCompleteness?: number;
     createdAt?: Date | string;
     updatedAt?: Date | string;
@@ -2232,6 +2777,7 @@ export type PatientCreateWithoutMedicalReportsInput = {
     patientDiseases?: Prisma.PatientDiseaseCreateNestedManyWithoutPatientInput;
     medicalHistories?: Prisma.MedicalHistoryCreateNestedManyWithoutPatientInput;
     familyHistories?: Prisma.FamilyHistoryCreateNestedManyWithoutPatientInput;
+    surgicalHistories?: Prisma.SurgicalHistoryCreateNestedManyWithoutPatientInput;
     lifestyle?: Prisma.LifestyleCreateNestedOneWithoutPatientInput;
     allergies?: Prisma.AllergyCreateNestedManyWithoutPatientInput;
     patientDoctors?: Prisma.PatientDoctorCreateNestedManyWithoutPatientInput;
@@ -2242,6 +2788,7 @@ export type PatientCreateWithoutMedicalReportsInput = {
     childrenProfiles?: Prisma.ChildProfileCreateNestedManyWithoutParentInput;
     ratings?: Prisma.RatingCreateNestedManyWithoutPatientInput;
     visits?: Prisma.VisitCreateNestedManyWithoutPatientInput;
+    medicines?: Prisma.PatientMedicineCreateNestedManyWithoutPatientInput;
 };
 export type PatientUncheckedCreateWithoutMedicalReportsInput = {
     id?: number;
@@ -2249,12 +2796,16 @@ export type PatientUncheckedCreateWithoutMedicalReportsInput = {
     name: string;
     age: number;
     ageClassification: $Enums.AgeClassification;
+    dateOfBirth?: Date | string | null;
     weight?: runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     height?: runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     gender: $Enums.Gender;
     smoking?: boolean;
     pregnancyWarning?: boolean;
+    pregnancyStatus?: boolean | null;
+    trimester?: number | null;
     lactation?: boolean;
+    bloodType?: string | null;
     profileCompleteness?: number;
     createdAt?: Date | string;
     updatedAt?: Date | string;
@@ -2263,6 +2814,7 @@ export type PatientUncheckedCreateWithoutMedicalReportsInput = {
     patientDiseases?: Prisma.PatientDiseaseUncheckedCreateNestedManyWithoutPatientInput;
     medicalHistories?: Prisma.MedicalHistoryUncheckedCreateNestedManyWithoutPatientInput;
     familyHistories?: Prisma.FamilyHistoryUncheckedCreateNestedManyWithoutPatientInput;
+    surgicalHistories?: Prisma.SurgicalHistoryUncheckedCreateNestedManyWithoutPatientInput;
     lifestyle?: Prisma.LifestyleUncheckedCreateNestedOneWithoutPatientInput;
     allergies?: Prisma.AllergyUncheckedCreateNestedManyWithoutPatientInput;
     patientDoctors?: Prisma.PatientDoctorUncheckedCreateNestedManyWithoutPatientInput;
@@ -2273,6 +2825,7 @@ export type PatientUncheckedCreateWithoutMedicalReportsInput = {
     childrenProfiles?: Prisma.ChildProfileUncheckedCreateNestedManyWithoutParentInput;
     ratings?: Prisma.RatingUncheckedCreateNestedManyWithoutPatientInput;
     visits?: Prisma.VisitUncheckedCreateNestedManyWithoutPatientInput;
+    medicines?: Prisma.PatientMedicineUncheckedCreateNestedManyWithoutPatientInput;
 };
 export type PatientCreateOrConnectWithoutMedicalReportsInput = {
     where: Prisma.PatientWhereUniqueInput;
@@ -2291,12 +2844,16 @@ export type PatientUpdateWithoutMedicalReportsInput = {
     name?: Prisma.StringFieldUpdateOperationsInput | string;
     age?: Prisma.IntFieldUpdateOperationsInput | number;
     ageClassification?: Prisma.EnumAgeClassificationFieldUpdateOperationsInput | $Enums.AgeClassification;
+    dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
     weight?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     height?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender;
     smoking?: Prisma.BoolFieldUpdateOperationsInput | boolean;
     pregnancyWarning?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    pregnancyStatus?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null;
+    trimester?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
     lactation?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    bloodType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     profileCompleteness?: Prisma.IntFieldUpdateOperationsInput | number;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -2306,6 +2863,7 @@ export type PatientUpdateWithoutMedicalReportsInput = {
     patientDiseases?: Prisma.PatientDiseaseUpdateManyWithoutPatientNestedInput;
     medicalHistories?: Prisma.MedicalHistoryUpdateManyWithoutPatientNestedInput;
     familyHistories?: Prisma.FamilyHistoryUpdateManyWithoutPatientNestedInput;
+    surgicalHistories?: Prisma.SurgicalHistoryUpdateManyWithoutPatientNestedInput;
     lifestyle?: Prisma.LifestyleUpdateOneWithoutPatientNestedInput;
     allergies?: Prisma.AllergyUpdateManyWithoutPatientNestedInput;
     patientDoctors?: Prisma.PatientDoctorUpdateManyWithoutPatientNestedInput;
@@ -2316,6 +2874,7 @@ export type PatientUpdateWithoutMedicalReportsInput = {
     childrenProfiles?: Prisma.ChildProfileUpdateManyWithoutParentNestedInput;
     ratings?: Prisma.RatingUpdateManyWithoutPatientNestedInput;
     visits?: Prisma.VisitUpdateManyWithoutPatientNestedInput;
+    medicines?: Prisma.PatientMedicineUpdateManyWithoutPatientNestedInput;
 };
 export type PatientUncheckedUpdateWithoutMedicalReportsInput = {
     id?: Prisma.IntFieldUpdateOperationsInput | number;
@@ -2323,12 +2882,16 @@ export type PatientUncheckedUpdateWithoutMedicalReportsInput = {
     name?: Prisma.StringFieldUpdateOperationsInput | string;
     age?: Prisma.IntFieldUpdateOperationsInput | number;
     ageClassification?: Prisma.EnumAgeClassificationFieldUpdateOperationsInput | $Enums.AgeClassification;
+    dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
     weight?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     height?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender;
     smoking?: Prisma.BoolFieldUpdateOperationsInput | boolean;
     pregnancyWarning?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    pregnancyStatus?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null;
+    trimester?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
     lactation?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    bloodType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     profileCompleteness?: Prisma.IntFieldUpdateOperationsInput | number;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -2337,6 +2900,7 @@ export type PatientUncheckedUpdateWithoutMedicalReportsInput = {
     patientDiseases?: Prisma.PatientDiseaseUncheckedUpdateManyWithoutPatientNestedInput;
     medicalHistories?: Prisma.MedicalHistoryUncheckedUpdateManyWithoutPatientNestedInput;
     familyHistories?: Prisma.FamilyHistoryUncheckedUpdateManyWithoutPatientNestedInput;
+    surgicalHistories?: Prisma.SurgicalHistoryUncheckedUpdateManyWithoutPatientNestedInput;
     lifestyle?: Prisma.LifestyleUncheckedUpdateOneWithoutPatientNestedInput;
     allergies?: Prisma.AllergyUncheckedUpdateManyWithoutPatientNestedInput;
     patientDoctors?: Prisma.PatientDoctorUncheckedUpdateManyWithoutPatientNestedInput;
@@ -2347,17 +2911,22 @@ export type PatientUncheckedUpdateWithoutMedicalReportsInput = {
     childrenProfiles?: Prisma.ChildProfileUncheckedUpdateManyWithoutParentNestedInput;
     ratings?: Prisma.RatingUncheckedUpdateManyWithoutPatientNestedInput;
     visits?: Prisma.VisitUncheckedUpdateManyWithoutPatientNestedInput;
+    medicines?: Prisma.PatientMedicineUncheckedUpdateManyWithoutPatientNestedInput;
 };
 export type PatientCreateWithoutShareLinksInput = {
     name: string;
     age: number;
     ageClassification: $Enums.AgeClassification;
+    dateOfBirth?: Date | string | null;
     weight?: runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     height?: runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     gender: $Enums.Gender;
     smoking?: boolean;
     pregnancyWarning?: boolean;
+    pregnancyStatus?: boolean | null;
+    trimester?: number | null;
     lactation?: boolean;
+    bloodType?: string | null;
     profileCompleteness?: number;
     createdAt?: Date | string;
     updatedAt?: Date | string;
@@ -2367,6 +2936,7 @@ export type PatientCreateWithoutShareLinksInput = {
     patientDiseases?: Prisma.PatientDiseaseCreateNestedManyWithoutPatientInput;
     medicalHistories?: Prisma.MedicalHistoryCreateNestedManyWithoutPatientInput;
     familyHistories?: Prisma.FamilyHistoryCreateNestedManyWithoutPatientInput;
+    surgicalHistories?: Prisma.SurgicalHistoryCreateNestedManyWithoutPatientInput;
     lifestyle?: Prisma.LifestyleCreateNestedOneWithoutPatientInput;
     allergies?: Prisma.AllergyCreateNestedManyWithoutPatientInput;
     patientDoctors?: Prisma.PatientDoctorCreateNestedManyWithoutPatientInput;
@@ -2377,6 +2947,7 @@ export type PatientCreateWithoutShareLinksInput = {
     childrenProfiles?: Prisma.ChildProfileCreateNestedManyWithoutParentInput;
     ratings?: Prisma.RatingCreateNestedManyWithoutPatientInput;
     visits?: Prisma.VisitCreateNestedManyWithoutPatientInput;
+    medicines?: Prisma.PatientMedicineCreateNestedManyWithoutPatientInput;
 };
 export type PatientUncheckedCreateWithoutShareLinksInput = {
     id?: number;
@@ -2384,12 +2955,16 @@ export type PatientUncheckedCreateWithoutShareLinksInput = {
     name: string;
     age: number;
     ageClassification: $Enums.AgeClassification;
+    dateOfBirth?: Date | string | null;
     weight?: runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     height?: runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     gender: $Enums.Gender;
     smoking?: boolean;
     pregnancyWarning?: boolean;
+    pregnancyStatus?: boolean | null;
+    trimester?: number | null;
     lactation?: boolean;
+    bloodType?: string | null;
     profileCompleteness?: number;
     createdAt?: Date | string;
     updatedAt?: Date | string;
@@ -2398,6 +2973,7 @@ export type PatientUncheckedCreateWithoutShareLinksInput = {
     patientDiseases?: Prisma.PatientDiseaseUncheckedCreateNestedManyWithoutPatientInput;
     medicalHistories?: Prisma.MedicalHistoryUncheckedCreateNestedManyWithoutPatientInput;
     familyHistories?: Prisma.FamilyHistoryUncheckedCreateNestedManyWithoutPatientInput;
+    surgicalHistories?: Prisma.SurgicalHistoryUncheckedCreateNestedManyWithoutPatientInput;
     lifestyle?: Prisma.LifestyleUncheckedCreateNestedOneWithoutPatientInput;
     allergies?: Prisma.AllergyUncheckedCreateNestedManyWithoutPatientInput;
     patientDoctors?: Prisma.PatientDoctorUncheckedCreateNestedManyWithoutPatientInput;
@@ -2408,6 +2984,7 @@ export type PatientUncheckedCreateWithoutShareLinksInput = {
     childrenProfiles?: Prisma.ChildProfileUncheckedCreateNestedManyWithoutParentInput;
     ratings?: Prisma.RatingUncheckedCreateNestedManyWithoutPatientInput;
     visits?: Prisma.VisitUncheckedCreateNestedManyWithoutPatientInput;
+    medicines?: Prisma.PatientMedicineUncheckedCreateNestedManyWithoutPatientInput;
 };
 export type PatientCreateOrConnectWithoutShareLinksInput = {
     where: Prisma.PatientWhereUniqueInput;
@@ -2426,12 +3003,16 @@ export type PatientUpdateWithoutShareLinksInput = {
     name?: Prisma.StringFieldUpdateOperationsInput | string;
     age?: Prisma.IntFieldUpdateOperationsInput | number;
     ageClassification?: Prisma.EnumAgeClassificationFieldUpdateOperationsInput | $Enums.AgeClassification;
+    dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
     weight?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     height?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender;
     smoking?: Prisma.BoolFieldUpdateOperationsInput | boolean;
     pregnancyWarning?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    pregnancyStatus?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null;
+    trimester?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
     lactation?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    bloodType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     profileCompleteness?: Prisma.IntFieldUpdateOperationsInput | number;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -2441,6 +3022,7 @@ export type PatientUpdateWithoutShareLinksInput = {
     patientDiseases?: Prisma.PatientDiseaseUpdateManyWithoutPatientNestedInput;
     medicalHistories?: Prisma.MedicalHistoryUpdateManyWithoutPatientNestedInput;
     familyHistories?: Prisma.FamilyHistoryUpdateManyWithoutPatientNestedInput;
+    surgicalHistories?: Prisma.SurgicalHistoryUpdateManyWithoutPatientNestedInput;
     lifestyle?: Prisma.LifestyleUpdateOneWithoutPatientNestedInput;
     allergies?: Prisma.AllergyUpdateManyWithoutPatientNestedInput;
     patientDoctors?: Prisma.PatientDoctorUpdateManyWithoutPatientNestedInput;
@@ -2451,6 +3033,7 @@ export type PatientUpdateWithoutShareLinksInput = {
     childrenProfiles?: Prisma.ChildProfileUpdateManyWithoutParentNestedInput;
     ratings?: Prisma.RatingUpdateManyWithoutPatientNestedInput;
     visits?: Prisma.VisitUpdateManyWithoutPatientNestedInput;
+    medicines?: Prisma.PatientMedicineUpdateManyWithoutPatientNestedInput;
 };
 export type PatientUncheckedUpdateWithoutShareLinksInput = {
     id?: Prisma.IntFieldUpdateOperationsInput | number;
@@ -2458,12 +3041,16 @@ export type PatientUncheckedUpdateWithoutShareLinksInput = {
     name?: Prisma.StringFieldUpdateOperationsInput | string;
     age?: Prisma.IntFieldUpdateOperationsInput | number;
     ageClassification?: Prisma.EnumAgeClassificationFieldUpdateOperationsInput | $Enums.AgeClassification;
+    dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
     weight?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     height?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender;
     smoking?: Prisma.BoolFieldUpdateOperationsInput | boolean;
     pregnancyWarning?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    pregnancyStatus?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null;
+    trimester?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
     lactation?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    bloodType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     profileCompleteness?: Prisma.IntFieldUpdateOperationsInput | number;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -2472,6 +3059,7 @@ export type PatientUncheckedUpdateWithoutShareLinksInput = {
     patientDiseases?: Prisma.PatientDiseaseUncheckedUpdateManyWithoutPatientNestedInput;
     medicalHistories?: Prisma.MedicalHistoryUncheckedUpdateManyWithoutPatientNestedInput;
     familyHistories?: Prisma.FamilyHistoryUncheckedUpdateManyWithoutPatientNestedInput;
+    surgicalHistories?: Prisma.SurgicalHistoryUncheckedUpdateManyWithoutPatientNestedInput;
     lifestyle?: Prisma.LifestyleUncheckedUpdateOneWithoutPatientNestedInput;
     allergies?: Prisma.AllergyUncheckedUpdateManyWithoutPatientNestedInput;
     patientDoctors?: Prisma.PatientDoctorUncheckedUpdateManyWithoutPatientNestedInput;
@@ -2482,17 +3070,22 @@ export type PatientUncheckedUpdateWithoutShareLinksInput = {
     childrenProfiles?: Prisma.ChildProfileUncheckedUpdateManyWithoutParentNestedInput;
     ratings?: Prisma.RatingUncheckedUpdateManyWithoutPatientNestedInput;
     visits?: Prisma.VisitUncheckedUpdateManyWithoutPatientNestedInput;
+    medicines?: Prisma.PatientMedicineUncheckedUpdateManyWithoutPatientNestedInput;
 };
 export type PatientCreateWithoutAdverseReactionsInput = {
     name: string;
     age: number;
     ageClassification: $Enums.AgeClassification;
+    dateOfBirth?: Date | string | null;
     weight?: runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     height?: runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     gender: $Enums.Gender;
     smoking?: boolean;
     pregnancyWarning?: boolean;
+    pregnancyStatus?: boolean | null;
+    trimester?: number | null;
     lactation?: boolean;
+    bloodType?: string | null;
     profileCompleteness?: number;
     createdAt?: Date | string;
     updatedAt?: Date | string;
@@ -2502,6 +3095,7 @@ export type PatientCreateWithoutAdverseReactionsInput = {
     patientDiseases?: Prisma.PatientDiseaseCreateNestedManyWithoutPatientInput;
     medicalHistories?: Prisma.MedicalHistoryCreateNestedManyWithoutPatientInput;
     familyHistories?: Prisma.FamilyHistoryCreateNestedManyWithoutPatientInput;
+    surgicalHistories?: Prisma.SurgicalHistoryCreateNestedManyWithoutPatientInput;
     lifestyle?: Prisma.LifestyleCreateNestedOneWithoutPatientInput;
     allergies?: Prisma.AllergyCreateNestedManyWithoutPatientInput;
     patientDoctors?: Prisma.PatientDoctorCreateNestedManyWithoutPatientInput;
@@ -2512,6 +3106,7 @@ export type PatientCreateWithoutAdverseReactionsInput = {
     childrenProfiles?: Prisma.ChildProfileCreateNestedManyWithoutParentInput;
     ratings?: Prisma.RatingCreateNestedManyWithoutPatientInput;
     visits?: Prisma.VisitCreateNestedManyWithoutPatientInput;
+    medicines?: Prisma.PatientMedicineCreateNestedManyWithoutPatientInput;
 };
 export type PatientUncheckedCreateWithoutAdverseReactionsInput = {
     id?: number;
@@ -2519,12 +3114,16 @@ export type PatientUncheckedCreateWithoutAdverseReactionsInput = {
     name: string;
     age: number;
     ageClassification: $Enums.AgeClassification;
+    dateOfBirth?: Date | string | null;
     weight?: runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     height?: runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     gender: $Enums.Gender;
     smoking?: boolean;
     pregnancyWarning?: boolean;
+    pregnancyStatus?: boolean | null;
+    trimester?: number | null;
     lactation?: boolean;
+    bloodType?: string | null;
     profileCompleteness?: number;
     createdAt?: Date | string;
     updatedAt?: Date | string;
@@ -2533,6 +3132,7 @@ export type PatientUncheckedCreateWithoutAdverseReactionsInput = {
     patientDiseases?: Prisma.PatientDiseaseUncheckedCreateNestedManyWithoutPatientInput;
     medicalHistories?: Prisma.MedicalHistoryUncheckedCreateNestedManyWithoutPatientInput;
     familyHistories?: Prisma.FamilyHistoryUncheckedCreateNestedManyWithoutPatientInput;
+    surgicalHistories?: Prisma.SurgicalHistoryUncheckedCreateNestedManyWithoutPatientInput;
     lifestyle?: Prisma.LifestyleUncheckedCreateNestedOneWithoutPatientInput;
     allergies?: Prisma.AllergyUncheckedCreateNestedManyWithoutPatientInput;
     patientDoctors?: Prisma.PatientDoctorUncheckedCreateNestedManyWithoutPatientInput;
@@ -2543,6 +3143,7 @@ export type PatientUncheckedCreateWithoutAdverseReactionsInput = {
     childrenProfiles?: Prisma.ChildProfileUncheckedCreateNestedManyWithoutParentInput;
     ratings?: Prisma.RatingUncheckedCreateNestedManyWithoutPatientInput;
     visits?: Prisma.VisitUncheckedCreateNestedManyWithoutPatientInput;
+    medicines?: Prisma.PatientMedicineUncheckedCreateNestedManyWithoutPatientInput;
 };
 export type PatientCreateOrConnectWithoutAdverseReactionsInput = {
     where: Prisma.PatientWhereUniqueInput;
@@ -2561,12 +3162,16 @@ export type PatientUpdateWithoutAdverseReactionsInput = {
     name?: Prisma.StringFieldUpdateOperationsInput | string;
     age?: Prisma.IntFieldUpdateOperationsInput | number;
     ageClassification?: Prisma.EnumAgeClassificationFieldUpdateOperationsInput | $Enums.AgeClassification;
+    dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
     weight?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     height?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender;
     smoking?: Prisma.BoolFieldUpdateOperationsInput | boolean;
     pregnancyWarning?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    pregnancyStatus?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null;
+    trimester?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
     lactation?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    bloodType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     profileCompleteness?: Prisma.IntFieldUpdateOperationsInput | number;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -2576,6 +3181,7 @@ export type PatientUpdateWithoutAdverseReactionsInput = {
     patientDiseases?: Prisma.PatientDiseaseUpdateManyWithoutPatientNestedInput;
     medicalHistories?: Prisma.MedicalHistoryUpdateManyWithoutPatientNestedInput;
     familyHistories?: Prisma.FamilyHistoryUpdateManyWithoutPatientNestedInput;
+    surgicalHistories?: Prisma.SurgicalHistoryUpdateManyWithoutPatientNestedInput;
     lifestyle?: Prisma.LifestyleUpdateOneWithoutPatientNestedInput;
     allergies?: Prisma.AllergyUpdateManyWithoutPatientNestedInput;
     patientDoctors?: Prisma.PatientDoctorUpdateManyWithoutPatientNestedInput;
@@ -2586,6 +3192,7 @@ export type PatientUpdateWithoutAdverseReactionsInput = {
     childrenProfiles?: Prisma.ChildProfileUpdateManyWithoutParentNestedInput;
     ratings?: Prisma.RatingUpdateManyWithoutPatientNestedInput;
     visits?: Prisma.VisitUpdateManyWithoutPatientNestedInput;
+    medicines?: Prisma.PatientMedicineUpdateManyWithoutPatientNestedInput;
 };
 export type PatientUncheckedUpdateWithoutAdverseReactionsInput = {
     id?: Prisma.IntFieldUpdateOperationsInput | number;
@@ -2593,12 +3200,16 @@ export type PatientUncheckedUpdateWithoutAdverseReactionsInput = {
     name?: Prisma.StringFieldUpdateOperationsInput | string;
     age?: Prisma.IntFieldUpdateOperationsInput | number;
     ageClassification?: Prisma.EnumAgeClassificationFieldUpdateOperationsInput | $Enums.AgeClassification;
+    dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
     weight?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     height?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender;
     smoking?: Prisma.BoolFieldUpdateOperationsInput | boolean;
     pregnancyWarning?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    pregnancyStatus?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null;
+    trimester?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
     lactation?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    bloodType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     profileCompleteness?: Prisma.IntFieldUpdateOperationsInput | number;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -2607,6 +3218,7 @@ export type PatientUncheckedUpdateWithoutAdverseReactionsInput = {
     patientDiseases?: Prisma.PatientDiseaseUncheckedUpdateManyWithoutPatientNestedInput;
     medicalHistories?: Prisma.MedicalHistoryUncheckedUpdateManyWithoutPatientNestedInput;
     familyHistories?: Prisma.FamilyHistoryUncheckedUpdateManyWithoutPatientNestedInput;
+    surgicalHistories?: Prisma.SurgicalHistoryUncheckedUpdateManyWithoutPatientNestedInput;
     lifestyle?: Prisma.LifestyleUncheckedUpdateOneWithoutPatientNestedInput;
     allergies?: Prisma.AllergyUncheckedUpdateManyWithoutPatientNestedInput;
     patientDoctors?: Prisma.PatientDoctorUncheckedUpdateManyWithoutPatientNestedInput;
@@ -2617,17 +3229,22 @@ export type PatientUncheckedUpdateWithoutAdverseReactionsInput = {
     childrenProfiles?: Prisma.ChildProfileUncheckedUpdateManyWithoutParentNestedInput;
     ratings?: Prisma.RatingUncheckedUpdateManyWithoutPatientNestedInput;
     visits?: Prisma.VisitUncheckedUpdateManyWithoutPatientNestedInput;
+    medicines?: Prisma.PatientMedicineUncheckedUpdateManyWithoutPatientNestedInput;
 };
 export type PatientCreateWithoutChildrenProfilesInput = {
     name: string;
     age: number;
     ageClassification: $Enums.AgeClassification;
+    dateOfBirth?: Date | string | null;
     weight?: runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     height?: runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     gender: $Enums.Gender;
     smoking?: boolean;
     pregnancyWarning?: boolean;
+    pregnancyStatus?: boolean | null;
+    trimester?: number | null;
     lactation?: boolean;
+    bloodType?: string | null;
     profileCompleteness?: number;
     createdAt?: Date | string;
     updatedAt?: Date | string;
@@ -2637,6 +3254,7 @@ export type PatientCreateWithoutChildrenProfilesInput = {
     patientDiseases?: Prisma.PatientDiseaseCreateNestedManyWithoutPatientInput;
     medicalHistories?: Prisma.MedicalHistoryCreateNestedManyWithoutPatientInput;
     familyHistories?: Prisma.FamilyHistoryCreateNestedManyWithoutPatientInput;
+    surgicalHistories?: Prisma.SurgicalHistoryCreateNestedManyWithoutPatientInput;
     lifestyle?: Prisma.LifestyleCreateNestedOneWithoutPatientInput;
     allergies?: Prisma.AllergyCreateNestedManyWithoutPatientInput;
     patientDoctors?: Prisma.PatientDoctorCreateNestedManyWithoutPatientInput;
@@ -2647,6 +3265,7 @@ export type PatientCreateWithoutChildrenProfilesInput = {
     adverseReactions?: Prisma.AdverseDrugReactionCreateNestedManyWithoutPatientInput;
     ratings?: Prisma.RatingCreateNestedManyWithoutPatientInput;
     visits?: Prisma.VisitCreateNestedManyWithoutPatientInput;
+    medicines?: Prisma.PatientMedicineCreateNestedManyWithoutPatientInput;
 };
 export type PatientUncheckedCreateWithoutChildrenProfilesInput = {
     id?: number;
@@ -2654,12 +3273,16 @@ export type PatientUncheckedCreateWithoutChildrenProfilesInput = {
     name: string;
     age: number;
     ageClassification: $Enums.AgeClassification;
+    dateOfBirth?: Date | string | null;
     weight?: runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     height?: runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     gender: $Enums.Gender;
     smoking?: boolean;
     pregnancyWarning?: boolean;
+    pregnancyStatus?: boolean | null;
+    trimester?: number | null;
     lactation?: boolean;
+    bloodType?: string | null;
     profileCompleteness?: number;
     createdAt?: Date | string;
     updatedAt?: Date | string;
@@ -2668,6 +3291,7 @@ export type PatientUncheckedCreateWithoutChildrenProfilesInput = {
     patientDiseases?: Prisma.PatientDiseaseUncheckedCreateNestedManyWithoutPatientInput;
     medicalHistories?: Prisma.MedicalHistoryUncheckedCreateNestedManyWithoutPatientInput;
     familyHistories?: Prisma.FamilyHistoryUncheckedCreateNestedManyWithoutPatientInput;
+    surgicalHistories?: Prisma.SurgicalHistoryUncheckedCreateNestedManyWithoutPatientInput;
     lifestyle?: Prisma.LifestyleUncheckedCreateNestedOneWithoutPatientInput;
     allergies?: Prisma.AllergyUncheckedCreateNestedManyWithoutPatientInput;
     patientDoctors?: Prisma.PatientDoctorUncheckedCreateNestedManyWithoutPatientInput;
@@ -2678,6 +3302,7 @@ export type PatientUncheckedCreateWithoutChildrenProfilesInput = {
     adverseReactions?: Prisma.AdverseDrugReactionUncheckedCreateNestedManyWithoutPatientInput;
     ratings?: Prisma.RatingUncheckedCreateNestedManyWithoutPatientInput;
     visits?: Prisma.VisitUncheckedCreateNestedManyWithoutPatientInput;
+    medicines?: Prisma.PatientMedicineUncheckedCreateNestedManyWithoutPatientInput;
 };
 export type PatientCreateOrConnectWithoutChildrenProfilesInput = {
     where: Prisma.PatientWhereUniqueInput;
@@ -2696,12 +3321,16 @@ export type PatientUpdateWithoutChildrenProfilesInput = {
     name?: Prisma.StringFieldUpdateOperationsInput | string;
     age?: Prisma.IntFieldUpdateOperationsInput | number;
     ageClassification?: Prisma.EnumAgeClassificationFieldUpdateOperationsInput | $Enums.AgeClassification;
+    dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
     weight?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     height?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender;
     smoking?: Prisma.BoolFieldUpdateOperationsInput | boolean;
     pregnancyWarning?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    pregnancyStatus?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null;
+    trimester?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
     lactation?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    bloodType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     profileCompleteness?: Prisma.IntFieldUpdateOperationsInput | number;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -2711,6 +3340,7 @@ export type PatientUpdateWithoutChildrenProfilesInput = {
     patientDiseases?: Prisma.PatientDiseaseUpdateManyWithoutPatientNestedInput;
     medicalHistories?: Prisma.MedicalHistoryUpdateManyWithoutPatientNestedInput;
     familyHistories?: Prisma.FamilyHistoryUpdateManyWithoutPatientNestedInput;
+    surgicalHistories?: Prisma.SurgicalHistoryUpdateManyWithoutPatientNestedInput;
     lifestyle?: Prisma.LifestyleUpdateOneWithoutPatientNestedInput;
     allergies?: Prisma.AllergyUpdateManyWithoutPatientNestedInput;
     patientDoctors?: Prisma.PatientDoctorUpdateManyWithoutPatientNestedInput;
@@ -2721,6 +3351,7 @@ export type PatientUpdateWithoutChildrenProfilesInput = {
     adverseReactions?: Prisma.AdverseDrugReactionUpdateManyWithoutPatientNestedInput;
     ratings?: Prisma.RatingUpdateManyWithoutPatientNestedInput;
     visits?: Prisma.VisitUpdateManyWithoutPatientNestedInput;
+    medicines?: Prisma.PatientMedicineUpdateManyWithoutPatientNestedInput;
 };
 export type PatientUncheckedUpdateWithoutChildrenProfilesInput = {
     id?: Prisma.IntFieldUpdateOperationsInput | number;
@@ -2728,12 +3359,16 @@ export type PatientUncheckedUpdateWithoutChildrenProfilesInput = {
     name?: Prisma.StringFieldUpdateOperationsInput | string;
     age?: Prisma.IntFieldUpdateOperationsInput | number;
     ageClassification?: Prisma.EnumAgeClassificationFieldUpdateOperationsInput | $Enums.AgeClassification;
+    dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
     weight?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     height?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender;
     smoking?: Prisma.BoolFieldUpdateOperationsInput | boolean;
     pregnancyWarning?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    pregnancyStatus?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null;
+    trimester?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
     lactation?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    bloodType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     profileCompleteness?: Prisma.IntFieldUpdateOperationsInput | number;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -2742,6 +3377,7 @@ export type PatientUncheckedUpdateWithoutChildrenProfilesInput = {
     patientDiseases?: Prisma.PatientDiseaseUncheckedUpdateManyWithoutPatientNestedInput;
     medicalHistories?: Prisma.MedicalHistoryUncheckedUpdateManyWithoutPatientNestedInput;
     familyHistories?: Prisma.FamilyHistoryUncheckedUpdateManyWithoutPatientNestedInput;
+    surgicalHistories?: Prisma.SurgicalHistoryUncheckedUpdateManyWithoutPatientNestedInput;
     lifestyle?: Prisma.LifestyleUncheckedUpdateOneWithoutPatientNestedInput;
     allergies?: Prisma.AllergyUncheckedUpdateManyWithoutPatientNestedInput;
     patientDoctors?: Prisma.PatientDoctorUncheckedUpdateManyWithoutPatientNestedInput;
@@ -2752,17 +3388,22 @@ export type PatientUncheckedUpdateWithoutChildrenProfilesInput = {
     adverseReactions?: Prisma.AdverseDrugReactionUncheckedUpdateManyWithoutPatientNestedInput;
     ratings?: Prisma.RatingUncheckedUpdateManyWithoutPatientNestedInput;
     visits?: Prisma.VisitUncheckedUpdateManyWithoutPatientNestedInput;
+    medicines?: Prisma.PatientMedicineUncheckedUpdateManyWithoutPatientNestedInput;
 };
 export type PatientCreateWithoutRatingsInput = {
     name: string;
     age: number;
     ageClassification: $Enums.AgeClassification;
+    dateOfBirth?: Date | string | null;
     weight?: runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     height?: runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     gender: $Enums.Gender;
     smoking?: boolean;
     pregnancyWarning?: boolean;
+    pregnancyStatus?: boolean | null;
+    trimester?: number | null;
     lactation?: boolean;
+    bloodType?: string | null;
     profileCompleteness?: number;
     createdAt?: Date | string;
     updatedAt?: Date | string;
@@ -2772,6 +3413,7 @@ export type PatientCreateWithoutRatingsInput = {
     patientDiseases?: Prisma.PatientDiseaseCreateNestedManyWithoutPatientInput;
     medicalHistories?: Prisma.MedicalHistoryCreateNestedManyWithoutPatientInput;
     familyHistories?: Prisma.FamilyHistoryCreateNestedManyWithoutPatientInput;
+    surgicalHistories?: Prisma.SurgicalHistoryCreateNestedManyWithoutPatientInput;
     lifestyle?: Prisma.LifestyleCreateNestedOneWithoutPatientInput;
     allergies?: Prisma.AllergyCreateNestedManyWithoutPatientInput;
     patientDoctors?: Prisma.PatientDoctorCreateNestedManyWithoutPatientInput;
@@ -2782,6 +3424,7 @@ export type PatientCreateWithoutRatingsInput = {
     adverseReactions?: Prisma.AdverseDrugReactionCreateNestedManyWithoutPatientInput;
     childrenProfiles?: Prisma.ChildProfileCreateNestedManyWithoutParentInput;
     visits?: Prisma.VisitCreateNestedManyWithoutPatientInput;
+    medicines?: Prisma.PatientMedicineCreateNestedManyWithoutPatientInput;
 };
 export type PatientUncheckedCreateWithoutRatingsInput = {
     id?: number;
@@ -2789,12 +3432,16 @@ export type PatientUncheckedCreateWithoutRatingsInput = {
     name: string;
     age: number;
     ageClassification: $Enums.AgeClassification;
+    dateOfBirth?: Date | string | null;
     weight?: runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     height?: runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     gender: $Enums.Gender;
     smoking?: boolean;
     pregnancyWarning?: boolean;
+    pregnancyStatus?: boolean | null;
+    trimester?: number | null;
     lactation?: boolean;
+    bloodType?: string | null;
     profileCompleteness?: number;
     createdAt?: Date | string;
     updatedAt?: Date | string;
@@ -2803,6 +3450,7 @@ export type PatientUncheckedCreateWithoutRatingsInput = {
     patientDiseases?: Prisma.PatientDiseaseUncheckedCreateNestedManyWithoutPatientInput;
     medicalHistories?: Prisma.MedicalHistoryUncheckedCreateNestedManyWithoutPatientInput;
     familyHistories?: Prisma.FamilyHistoryUncheckedCreateNestedManyWithoutPatientInput;
+    surgicalHistories?: Prisma.SurgicalHistoryUncheckedCreateNestedManyWithoutPatientInput;
     lifestyle?: Prisma.LifestyleUncheckedCreateNestedOneWithoutPatientInput;
     allergies?: Prisma.AllergyUncheckedCreateNestedManyWithoutPatientInput;
     patientDoctors?: Prisma.PatientDoctorUncheckedCreateNestedManyWithoutPatientInput;
@@ -2813,6 +3461,7 @@ export type PatientUncheckedCreateWithoutRatingsInput = {
     adverseReactions?: Prisma.AdverseDrugReactionUncheckedCreateNestedManyWithoutPatientInput;
     childrenProfiles?: Prisma.ChildProfileUncheckedCreateNestedManyWithoutParentInput;
     visits?: Prisma.VisitUncheckedCreateNestedManyWithoutPatientInput;
+    medicines?: Prisma.PatientMedicineUncheckedCreateNestedManyWithoutPatientInput;
 };
 export type PatientCreateOrConnectWithoutRatingsInput = {
     where: Prisma.PatientWhereUniqueInput;
@@ -2831,12 +3480,16 @@ export type PatientUpdateWithoutRatingsInput = {
     name?: Prisma.StringFieldUpdateOperationsInput | string;
     age?: Prisma.IntFieldUpdateOperationsInput | number;
     ageClassification?: Prisma.EnumAgeClassificationFieldUpdateOperationsInput | $Enums.AgeClassification;
+    dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
     weight?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     height?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender;
     smoking?: Prisma.BoolFieldUpdateOperationsInput | boolean;
     pregnancyWarning?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    pregnancyStatus?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null;
+    trimester?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
     lactation?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    bloodType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     profileCompleteness?: Prisma.IntFieldUpdateOperationsInput | number;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -2846,6 +3499,7 @@ export type PatientUpdateWithoutRatingsInput = {
     patientDiseases?: Prisma.PatientDiseaseUpdateManyWithoutPatientNestedInput;
     medicalHistories?: Prisma.MedicalHistoryUpdateManyWithoutPatientNestedInput;
     familyHistories?: Prisma.FamilyHistoryUpdateManyWithoutPatientNestedInput;
+    surgicalHistories?: Prisma.SurgicalHistoryUpdateManyWithoutPatientNestedInput;
     lifestyle?: Prisma.LifestyleUpdateOneWithoutPatientNestedInput;
     allergies?: Prisma.AllergyUpdateManyWithoutPatientNestedInput;
     patientDoctors?: Prisma.PatientDoctorUpdateManyWithoutPatientNestedInput;
@@ -2856,6 +3510,7 @@ export type PatientUpdateWithoutRatingsInput = {
     adverseReactions?: Prisma.AdverseDrugReactionUpdateManyWithoutPatientNestedInput;
     childrenProfiles?: Prisma.ChildProfileUpdateManyWithoutParentNestedInput;
     visits?: Prisma.VisitUpdateManyWithoutPatientNestedInput;
+    medicines?: Prisma.PatientMedicineUpdateManyWithoutPatientNestedInput;
 };
 export type PatientUncheckedUpdateWithoutRatingsInput = {
     id?: Prisma.IntFieldUpdateOperationsInput | number;
@@ -2863,12 +3518,16 @@ export type PatientUncheckedUpdateWithoutRatingsInput = {
     name?: Prisma.StringFieldUpdateOperationsInput | string;
     age?: Prisma.IntFieldUpdateOperationsInput | number;
     ageClassification?: Prisma.EnumAgeClassificationFieldUpdateOperationsInput | $Enums.AgeClassification;
+    dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
     weight?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     height?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender;
     smoking?: Prisma.BoolFieldUpdateOperationsInput | boolean;
     pregnancyWarning?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    pregnancyStatus?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null;
+    trimester?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
     lactation?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    bloodType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     profileCompleteness?: Prisma.IntFieldUpdateOperationsInput | number;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -2877,6 +3536,7 @@ export type PatientUncheckedUpdateWithoutRatingsInput = {
     patientDiseases?: Prisma.PatientDiseaseUncheckedUpdateManyWithoutPatientNestedInput;
     medicalHistories?: Prisma.MedicalHistoryUncheckedUpdateManyWithoutPatientNestedInput;
     familyHistories?: Prisma.FamilyHistoryUncheckedUpdateManyWithoutPatientNestedInput;
+    surgicalHistories?: Prisma.SurgicalHistoryUncheckedUpdateManyWithoutPatientNestedInput;
     lifestyle?: Prisma.LifestyleUncheckedUpdateOneWithoutPatientNestedInput;
     allergies?: Prisma.AllergyUncheckedUpdateManyWithoutPatientNestedInput;
     patientDoctors?: Prisma.PatientDoctorUncheckedUpdateManyWithoutPatientNestedInput;
@@ -2887,17 +3547,22 @@ export type PatientUncheckedUpdateWithoutRatingsInput = {
     adverseReactions?: Prisma.AdverseDrugReactionUncheckedUpdateManyWithoutPatientNestedInput;
     childrenProfiles?: Prisma.ChildProfileUncheckedUpdateManyWithoutParentNestedInput;
     visits?: Prisma.VisitUncheckedUpdateManyWithoutPatientNestedInput;
+    medicines?: Prisma.PatientMedicineUncheckedUpdateManyWithoutPatientNestedInput;
 };
 export type PatientCreateWithoutVisitsInput = {
     name: string;
     age: number;
     ageClassification: $Enums.AgeClassification;
+    dateOfBirth?: Date | string | null;
     weight?: runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     height?: runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     gender: $Enums.Gender;
     smoking?: boolean;
     pregnancyWarning?: boolean;
+    pregnancyStatus?: boolean | null;
+    trimester?: number | null;
     lactation?: boolean;
+    bloodType?: string | null;
     profileCompleteness?: number;
     createdAt?: Date | string;
     updatedAt?: Date | string;
@@ -2907,6 +3572,7 @@ export type PatientCreateWithoutVisitsInput = {
     patientDiseases?: Prisma.PatientDiseaseCreateNestedManyWithoutPatientInput;
     medicalHistories?: Prisma.MedicalHistoryCreateNestedManyWithoutPatientInput;
     familyHistories?: Prisma.FamilyHistoryCreateNestedManyWithoutPatientInput;
+    surgicalHistories?: Prisma.SurgicalHistoryCreateNestedManyWithoutPatientInput;
     lifestyle?: Prisma.LifestyleCreateNestedOneWithoutPatientInput;
     allergies?: Prisma.AllergyCreateNestedManyWithoutPatientInput;
     patientDoctors?: Prisma.PatientDoctorCreateNestedManyWithoutPatientInput;
@@ -2917,6 +3583,7 @@ export type PatientCreateWithoutVisitsInput = {
     adverseReactions?: Prisma.AdverseDrugReactionCreateNestedManyWithoutPatientInput;
     childrenProfiles?: Prisma.ChildProfileCreateNestedManyWithoutParentInput;
     ratings?: Prisma.RatingCreateNestedManyWithoutPatientInput;
+    medicines?: Prisma.PatientMedicineCreateNestedManyWithoutPatientInput;
 };
 export type PatientUncheckedCreateWithoutVisitsInput = {
     id?: number;
@@ -2924,12 +3591,16 @@ export type PatientUncheckedCreateWithoutVisitsInput = {
     name: string;
     age: number;
     ageClassification: $Enums.AgeClassification;
+    dateOfBirth?: Date | string | null;
     weight?: runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     height?: runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     gender: $Enums.Gender;
     smoking?: boolean;
     pregnancyWarning?: boolean;
+    pregnancyStatus?: boolean | null;
+    trimester?: number | null;
     lactation?: boolean;
+    bloodType?: string | null;
     profileCompleteness?: number;
     createdAt?: Date | string;
     updatedAt?: Date | string;
@@ -2938,6 +3609,7 @@ export type PatientUncheckedCreateWithoutVisitsInput = {
     patientDiseases?: Prisma.PatientDiseaseUncheckedCreateNestedManyWithoutPatientInput;
     medicalHistories?: Prisma.MedicalHistoryUncheckedCreateNestedManyWithoutPatientInput;
     familyHistories?: Prisma.FamilyHistoryUncheckedCreateNestedManyWithoutPatientInput;
+    surgicalHistories?: Prisma.SurgicalHistoryUncheckedCreateNestedManyWithoutPatientInput;
     lifestyle?: Prisma.LifestyleUncheckedCreateNestedOneWithoutPatientInput;
     allergies?: Prisma.AllergyUncheckedCreateNestedManyWithoutPatientInput;
     patientDoctors?: Prisma.PatientDoctorUncheckedCreateNestedManyWithoutPatientInput;
@@ -2948,6 +3620,7 @@ export type PatientUncheckedCreateWithoutVisitsInput = {
     adverseReactions?: Prisma.AdverseDrugReactionUncheckedCreateNestedManyWithoutPatientInput;
     childrenProfiles?: Prisma.ChildProfileUncheckedCreateNestedManyWithoutParentInput;
     ratings?: Prisma.RatingUncheckedCreateNestedManyWithoutPatientInput;
+    medicines?: Prisma.PatientMedicineUncheckedCreateNestedManyWithoutPatientInput;
 };
 export type PatientCreateOrConnectWithoutVisitsInput = {
     where: Prisma.PatientWhereUniqueInput;
@@ -2966,12 +3639,16 @@ export type PatientUpdateWithoutVisitsInput = {
     name?: Prisma.StringFieldUpdateOperationsInput | string;
     age?: Prisma.IntFieldUpdateOperationsInput | number;
     ageClassification?: Prisma.EnumAgeClassificationFieldUpdateOperationsInput | $Enums.AgeClassification;
+    dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
     weight?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     height?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender;
     smoking?: Prisma.BoolFieldUpdateOperationsInput | boolean;
     pregnancyWarning?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    pregnancyStatus?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null;
+    trimester?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
     lactation?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    bloodType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     profileCompleteness?: Prisma.IntFieldUpdateOperationsInput | number;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -2981,6 +3658,7 @@ export type PatientUpdateWithoutVisitsInput = {
     patientDiseases?: Prisma.PatientDiseaseUpdateManyWithoutPatientNestedInput;
     medicalHistories?: Prisma.MedicalHistoryUpdateManyWithoutPatientNestedInput;
     familyHistories?: Prisma.FamilyHistoryUpdateManyWithoutPatientNestedInput;
+    surgicalHistories?: Prisma.SurgicalHistoryUpdateManyWithoutPatientNestedInput;
     lifestyle?: Prisma.LifestyleUpdateOneWithoutPatientNestedInput;
     allergies?: Prisma.AllergyUpdateManyWithoutPatientNestedInput;
     patientDoctors?: Prisma.PatientDoctorUpdateManyWithoutPatientNestedInput;
@@ -2991,6 +3669,7 @@ export type PatientUpdateWithoutVisitsInput = {
     adverseReactions?: Prisma.AdverseDrugReactionUpdateManyWithoutPatientNestedInput;
     childrenProfiles?: Prisma.ChildProfileUpdateManyWithoutParentNestedInput;
     ratings?: Prisma.RatingUpdateManyWithoutPatientNestedInput;
+    medicines?: Prisma.PatientMedicineUpdateManyWithoutPatientNestedInput;
 };
 export type PatientUncheckedUpdateWithoutVisitsInput = {
     id?: Prisma.IntFieldUpdateOperationsInput | number;
@@ -2998,12 +3677,16 @@ export type PatientUncheckedUpdateWithoutVisitsInput = {
     name?: Prisma.StringFieldUpdateOperationsInput | string;
     age?: Prisma.IntFieldUpdateOperationsInput | number;
     ageClassification?: Prisma.EnumAgeClassificationFieldUpdateOperationsInput | $Enums.AgeClassification;
+    dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
     weight?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     height?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null;
     gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender;
     smoking?: Prisma.BoolFieldUpdateOperationsInput | boolean;
     pregnancyWarning?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    pregnancyStatus?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null;
+    trimester?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
     lactation?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    bloodType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     profileCompleteness?: Prisma.IntFieldUpdateOperationsInput | number;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -3012,6 +3695,7 @@ export type PatientUncheckedUpdateWithoutVisitsInput = {
     patientDiseases?: Prisma.PatientDiseaseUncheckedUpdateManyWithoutPatientNestedInput;
     medicalHistories?: Prisma.MedicalHistoryUncheckedUpdateManyWithoutPatientNestedInput;
     familyHistories?: Prisma.FamilyHistoryUncheckedUpdateManyWithoutPatientNestedInput;
+    surgicalHistories?: Prisma.SurgicalHistoryUncheckedUpdateManyWithoutPatientNestedInput;
     lifestyle?: Prisma.LifestyleUncheckedUpdateOneWithoutPatientNestedInput;
     allergies?: Prisma.AllergyUncheckedUpdateManyWithoutPatientNestedInput;
     patientDoctors?: Prisma.PatientDoctorUncheckedUpdateManyWithoutPatientNestedInput;
@@ -3022,6 +3706,166 @@ export type PatientUncheckedUpdateWithoutVisitsInput = {
     adverseReactions?: Prisma.AdverseDrugReactionUncheckedUpdateManyWithoutPatientNestedInput;
     childrenProfiles?: Prisma.ChildProfileUncheckedUpdateManyWithoutParentNestedInput;
     ratings?: Prisma.RatingUncheckedUpdateManyWithoutPatientNestedInput;
+    medicines?: Prisma.PatientMedicineUncheckedUpdateManyWithoutPatientNestedInput;
+};
+export type PatientCreateWithoutMedicinesInput = {
+    name: string;
+    age: number;
+    ageClassification: $Enums.AgeClassification;
+    dateOfBirth?: Date | string | null;
+    weight?: runtime.Decimal | runtime.DecimalJsLike | number | string | null;
+    height?: runtime.Decimal | runtime.DecimalJsLike | number | string | null;
+    gender: $Enums.Gender;
+    smoking?: boolean;
+    pregnancyWarning?: boolean;
+    pregnancyStatus?: boolean | null;
+    trimester?: number | null;
+    lactation?: boolean;
+    bloodType?: string | null;
+    profileCompleteness?: number;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+    deletedAt?: Date | string | null;
+    user: Prisma.UserCreateNestedOneWithoutPatientInput;
+    prescriptions?: Prisma.PrescriptionCreateNestedManyWithoutPatientInput;
+    patientDiseases?: Prisma.PatientDiseaseCreateNestedManyWithoutPatientInput;
+    medicalHistories?: Prisma.MedicalHistoryCreateNestedManyWithoutPatientInput;
+    familyHistories?: Prisma.FamilyHistoryCreateNestedManyWithoutPatientInput;
+    surgicalHistories?: Prisma.SurgicalHistoryCreateNestedManyWithoutPatientInput;
+    lifestyle?: Prisma.LifestyleCreateNestedOneWithoutPatientInput;
+    allergies?: Prisma.AllergyCreateNestedManyWithoutPatientInput;
+    patientDoctors?: Prisma.PatientDoctorCreateNestedManyWithoutPatientInput;
+    consultations?: Prisma.ConsultationCreateNestedManyWithoutPatientInput;
+    appointments?: Prisma.AppointmentCreateNestedManyWithoutPatientInput;
+    medicalReports?: Prisma.MedicalReportCreateNestedManyWithoutPatientInput;
+    shareLinks?: Prisma.PatientShareLinkCreateNestedManyWithoutPatientInput;
+    adverseReactions?: Prisma.AdverseDrugReactionCreateNestedManyWithoutPatientInput;
+    childrenProfiles?: Prisma.ChildProfileCreateNestedManyWithoutParentInput;
+    ratings?: Prisma.RatingCreateNestedManyWithoutPatientInput;
+    visits?: Prisma.VisitCreateNestedManyWithoutPatientInput;
+};
+export type PatientUncheckedCreateWithoutMedicinesInput = {
+    id?: number;
+    userId: number;
+    name: string;
+    age: number;
+    ageClassification: $Enums.AgeClassification;
+    dateOfBirth?: Date | string | null;
+    weight?: runtime.Decimal | runtime.DecimalJsLike | number | string | null;
+    height?: runtime.Decimal | runtime.DecimalJsLike | number | string | null;
+    gender: $Enums.Gender;
+    smoking?: boolean;
+    pregnancyWarning?: boolean;
+    pregnancyStatus?: boolean | null;
+    trimester?: number | null;
+    lactation?: boolean;
+    bloodType?: string | null;
+    profileCompleteness?: number;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+    deletedAt?: Date | string | null;
+    prescriptions?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutPatientInput;
+    patientDiseases?: Prisma.PatientDiseaseUncheckedCreateNestedManyWithoutPatientInput;
+    medicalHistories?: Prisma.MedicalHistoryUncheckedCreateNestedManyWithoutPatientInput;
+    familyHistories?: Prisma.FamilyHistoryUncheckedCreateNestedManyWithoutPatientInput;
+    surgicalHistories?: Prisma.SurgicalHistoryUncheckedCreateNestedManyWithoutPatientInput;
+    lifestyle?: Prisma.LifestyleUncheckedCreateNestedOneWithoutPatientInput;
+    allergies?: Prisma.AllergyUncheckedCreateNestedManyWithoutPatientInput;
+    patientDoctors?: Prisma.PatientDoctorUncheckedCreateNestedManyWithoutPatientInput;
+    consultations?: Prisma.ConsultationUncheckedCreateNestedManyWithoutPatientInput;
+    appointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutPatientInput;
+    medicalReports?: Prisma.MedicalReportUncheckedCreateNestedManyWithoutPatientInput;
+    shareLinks?: Prisma.PatientShareLinkUncheckedCreateNestedManyWithoutPatientInput;
+    adverseReactions?: Prisma.AdverseDrugReactionUncheckedCreateNestedManyWithoutPatientInput;
+    childrenProfiles?: Prisma.ChildProfileUncheckedCreateNestedManyWithoutParentInput;
+    ratings?: Prisma.RatingUncheckedCreateNestedManyWithoutPatientInput;
+    visits?: Prisma.VisitUncheckedCreateNestedManyWithoutPatientInput;
+};
+export type PatientCreateOrConnectWithoutMedicinesInput = {
+    where: Prisma.PatientWhereUniqueInput;
+    create: Prisma.XOR<Prisma.PatientCreateWithoutMedicinesInput, Prisma.PatientUncheckedCreateWithoutMedicinesInput>;
+};
+export type PatientUpsertWithoutMedicinesInput = {
+    update: Prisma.XOR<Prisma.PatientUpdateWithoutMedicinesInput, Prisma.PatientUncheckedUpdateWithoutMedicinesInput>;
+    create: Prisma.XOR<Prisma.PatientCreateWithoutMedicinesInput, Prisma.PatientUncheckedCreateWithoutMedicinesInput>;
+    where?: Prisma.PatientWhereInput;
+};
+export type PatientUpdateToOneWithWhereWithoutMedicinesInput = {
+    where?: Prisma.PatientWhereInput;
+    data: Prisma.XOR<Prisma.PatientUpdateWithoutMedicinesInput, Prisma.PatientUncheckedUpdateWithoutMedicinesInput>;
+};
+export type PatientUpdateWithoutMedicinesInput = {
+    name?: Prisma.StringFieldUpdateOperationsInput | string;
+    age?: Prisma.IntFieldUpdateOperationsInput | number;
+    ageClassification?: Prisma.EnumAgeClassificationFieldUpdateOperationsInput | $Enums.AgeClassification;
+    dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    weight?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null;
+    height?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null;
+    gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender;
+    smoking?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    pregnancyWarning?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    pregnancyStatus?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null;
+    trimester?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
+    lactation?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    bloodType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    profileCompleteness?: Prisma.IntFieldUpdateOperationsInput | number;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    user?: Prisma.UserUpdateOneRequiredWithoutPatientNestedInput;
+    prescriptions?: Prisma.PrescriptionUpdateManyWithoutPatientNestedInput;
+    patientDiseases?: Prisma.PatientDiseaseUpdateManyWithoutPatientNestedInput;
+    medicalHistories?: Prisma.MedicalHistoryUpdateManyWithoutPatientNestedInput;
+    familyHistories?: Prisma.FamilyHistoryUpdateManyWithoutPatientNestedInput;
+    surgicalHistories?: Prisma.SurgicalHistoryUpdateManyWithoutPatientNestedInput;
+    lifestyle?: Prisma.LifestyleUpdateOneWithoutPatientNestedInput;
+    allergies?: Prisma.AllergyUpdateManyWithoutPatientNestedInput;
+    patientDoctors?: Prisma.PatientDoctorUpdateManyWithoutPatientNestedInput;
+    consultations?: Prisma.ConsultationUpdateManyWithoutPatientNestedInput;
+    appointments?: Prisma.AppointmentUpdateManyWithoutPatientNestedInput;
+    medicalReports?: Prisma.MedicalReportUpdateManyWithoutPatientNestedInput;
+    shareLinks?: Prisma.PatientShareLinkUpdateManyWithoutPatientNestedInput;
+    adverseReactions?: Prisma.AdverseDrugReactionUpdateManyWithoutPatientNestedInput;
+    childrenProfiles?: Prisma.ChildProfileUpdateManyWithoutParentNestedInput;
+    ratings?: Prisma.RatingUpdateManyWithoutPatientNestedInput;
+    visits?: Prisma.VisitUpdateManyWithoutPatientNestedInput;
+};
+export type PatientUncheckedUpdateWithoutMedicinesInput = {
+    id?: Prisma.IntFieldUpdateOperationsInput | number;
+    userId?: Prisma.IntFieldUpdateOperationsInput | number;
+    name?: Prisma.StringFieldUpdateOperationsInput | string;
+    age?: Prisma.IntFieldUpdateOperationsInput | number;
+    ageClassification?: Prisma.EnumAgeClassificationFieldUpdateOperationsInput | $Enums.AgeClassification;
+    dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    weight?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null;
+    height?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null;
+    gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender;
+    smoking?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    pregnancyWarning?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    pregnancyStatus?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null;
+    trimester?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
+    lactation?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    bloodType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    profileCompleteness?: Prisma.IntFieldUpdateOperationsInput | number;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    prescriptions?: Prisma.PrescriptionUncheckedUpdateManyWithoutPatientNestedInput;
+    patientDiseases?: Prisma.PatientDiseaseUncheckedUpdateManyWithoutPatientNestedInput;
+    medicalHistories?: Prisma.MedicalHistoryUncheckedUpdateManyWithoutPatientNestedInput;
+    familyHistories?: Prisma.FamilyHistoryUncheckedUpdateManyWithoutPatientNestedInput;
+    surgicalHistories?: Prisma.SurgicalHistoryUncheckedUpdateManyWithoutPatientNestedInput;
+    lifestyle?: Prisma.LifestyleUncheckedUpdateOneWithoutPatientNestedInput;
+    allergies?: Prisma.AllergyUncheckedUpdateManyWithoutPatientNestedInput;
+    patientDoctors?: Prisma.PatientDoctorUncheckedUpdateManyWithoutPatientNestedInput;
+    consultations?: Prisma.ConsultationUncheckedUpdateManyWithoutPatientNestedInput;
+    appointments?: Prisma.AppointmentUncheckedUpdateManyWithoutPatientNestedInput;
+    medicalReports?: Prisma.MedicalReportUncheckedUpdateManyWithoutPatientNestedInput;
+    shareLinks?: Prisma.PatientShareLinkUncheckedUpdateManyWithoutPatientNestedInput;
+    adverseReactions?: Prisma.AdverseDrugReactionUncheckedUpdateManyWithoutPatientNestedInput;
+    childrenProfiles?: Prisma.ChildProfileUncheckedUpdateManyWithoutParentNestedInput;
+    ratings?: Prisma.RatingUncheckedUpdateManyWithoutPatientNestedInput;
+    visits?: Prisma.VisitUncheckedUpdateManyWithoutPatientNestedInput;
 };
 /**
  * Count Type PatientCountOutputType
@@ -3031,6 +3875,7 @@ export type PatientCountOutputType = {
     patientDiseases: number;
     medicalHistories: number;
     familyHistories: number;
+    surgicalHistories: number;
     allergies: number;
     patientDoctors: number;
     consultations: number;
@@ -3041,12 +3886,14 @@ export type PatientCountOutputType = {
     childrenProfiles: number;
     ratings: number;
     visits: number;
+    medicines: number;
 };
 export type PatientCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     prescriptions?: boolean | PatientCountOutputTypeCountPrescriptionsArgs;
     patientDiseases?: boolean | PatientCountOutputTypeCountPatientDiseasesArgs;
     medicalHistories?: boolean | PatientCountOutputTypeCountMedicalHistoriesArgs;
     familyHistories?: boolean | PatientCountOutputTypeCountFamilyHistoriesArgs;
+    surgicalHistories?: boolean | PatientCountOutputTypeCountSurgicalHistoriesArgs;
     allergies?: boolean | PatientCountOutputTypeCountAllergiesArgs;
     patientDoctors?: boolean | PatientCountOutputTypeCountPatientDoctorsArgs;
     consultations?: boolean | PatientCountOutputTypeCountConsultationsArgs;
@@ -3057,6 +3904,7 @@ export type PatientCountOutputTypeSelect<ExtArgs extends runtime.Types.Extension
     childrenProfiles?: boolean | PatientCountOutputTypeCountChildrenProfilesArgs;
     ratings?: boolean | PatientCountOutputTypeCountRatingsArgs;
     visits?: boolean | PatientCountOutputTypeCountVisitsArgs;
+    medicines?: boolean | PatientCountOutputTypeCountMedicinesArgs;
 };
 /**
  * PatientCountOutputType without action
@@ -3090,6 +3938,12 @@ export type PatientCountOutputTypeCountMedicalHistoriesArgs<ExtArgs extends runt
  */
 export type PatientCountOutputTypeCountFamilyHistoriesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     where?: Prisma.FamilyHistoryWhereInput;
+};
+/**
+ * PatientCountOutputType without action
+ */
+export type PatientCountOutputTypeCountSurgicalHistoriesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    where?: Prisma.SurgicalHistoryWhereInput;
 };
 /**
  * PatientCountOutputType without action
@@ -3151,18 +4005,28 @@ export type PatientCountOutputTypeCountRatingsArgs<ExtArgs extends runtime.Types
 export type PatientCountOutputTypeCountVisitsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     where?: Prisma.VisitWhereInput;
 };
+/**
+ * PatientCountOutputType without action
+ */
+export type PatientCountOutputTypeCountMedicinesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    where?: Prisma.PatientMedicineWhereInput;
+};
 export type PatientSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
     id?: boolean;
     userId?: boolean;
     name?: boolean;
     age?: boolean;
     ageClassification?: boolean;
+    dateOfBirth?: boolean;
     weight?: boolean;
     height?: boolean;
     gender?: boolean;
     smoking?: boolean;
     pregnancyWarning?: boolean;
+    pregnancyStatus?: boolean;
+    trimester?: boolean;
     lactation?: boolean;
+    bloodType?: boolean;
     profileCompleteness?: boolean;
     createdAt?: boolean;
     updatedAt?: boolean;
@@ -3172,6 +4036,7 @@ export type PatientSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     patientDiseases?: boolean | Prisma.Patient$patientDiseasesArgs<ExtArgs>;
     medicalHistories?: boolean | Prisma.Patient$medicalHistoriesArgs<ExtArgs>;
     familyHistories?: boolean | Prisma.Patient$familyHistoriesArgs<ExtArgs>;
+    surgicalHistories?: boolean | Prisma.Patient$surgicalHistoriesArgs<ExtArgs>;
     lifestyle?: boolean | Prisma.Patient$lifestyleArgs<ExtArgs>;
     allergies?: boolean | Prisma.Patient$allergiesArgs<ExtArgs>;
     patientDoctors?: boolean | Prisma.Patient$patientDoctorsArgs<ExtArgs>;
@@ -3183,6 +4048,7 @@ export type PatientSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     childrenProfiles?: boolean | Prisma.Patient$childrenProfilesArgs<ExtArgs>;
     ratings?: boolean | Prisma.Patient$ratingsArgs<ExtArgs>;
     visits?: boolean | Prisma.Patient$visitsArgs<ExtArgs>;
+    medicines?: boolean | Prisma.Patient$medicinesArgs<ExtArgs>;
     _count?: boolean | Prisma.PatientCountOutputTypeDefaultArgs<ExtArgs>;
 }, ExtArgs["result"]["patient"]>;
 export type PatientSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -3191,12 +4057,16 @@ export type PatientSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
     name?: boolean;
     age?: boolean;
     ageClassification?: boolean;
+    dateOfBirth?: boolean;
     weight?: boolean;
     height?: boolean;
     gender?: boolean;
     smoking?: boolean;
     pregnancyWarning?: boolean;
+    pregnancyStatus?: boolean;
+    trimester?: boolean;
     lactation?: boolean;
+    bloodType?: boolean;
     profileCompleteness?: boolean;
     createdAt?: boolean;
     updatedAt?: boolean;
@@ -3209,12 +4079,16 @@ export type PatientSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
     name?: boolean;
     age?: boolean;
     ageClassification?: boolean;
+    dateOfBirth?: boolean;
     weight?: boolean;
     height?: boolean;
     gender?: boolean;
     smoking?: boolean;
     pregnancyWarning?: boolean;
+    pregnancyStatus?: boolean;
+    trimester?: boolean;
     lactation?: boolean;
+    bloodType?: boolean;
     profileCompleteness?: boolean;
     createdAt?: boolean;
     updatedAt?: boolean;
@@ -3227,24 +4101,29 @@ export type PatientSelectScalar = {
     name?: boolean;
     age?: boolean;
     ageClassification?: boolean;
+    dateOfBirth?: boolean;
     weight?: boolean;
     height?: boolean;
     gender?: boolean;
     smoking?: boolean;
     pregnancyWarning?: boolean;
+    pregnancyStatus?: boolean;
+    trimester?: boolean;
     lactation?: boolean;
+    bloodType?: boolean;
     profileCompleteness?: boolean;
     createdAt?: boolean;
     updatedAt?: boolean;
     deletedAt?: boolean;
 };
-export type PatientOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "name" | "age" | "ageClassification" | "weight" | "height" | "gender" | "smoking" | "pregnancyWarning" | "lactation" | "profileCompleteness" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["patient"]>;
+export type PatientOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "name" | "age" | "ageClassification" | "dateOfBirth" | "weight" | "height" | "gender" | "smoking" | "pregnancyWarning" | "pregnancyStatus" | "trimester" | "lactation" | "bloodType" | "profileCompleteness" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["patient"]>;
 export type PatientInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     user?: boolean | Prisma.UserDefaultArgs<ExtArgs>;
     prescriptions?: boolean | Prisma.Patient$prescriptionsArgs<ExtArgs>;
     patientDiseases?: boolean | Prisma.Patient$patientDiseasesArgs<ExtArgs>;
     medicalHistories?: boolean | Prisma.Patient$medicalHistoriesArgs<ExtArgs>;
     familyHistories?: boolean | Prisma.Patient$familyHistoriesArgs<ExtArgs>;
+    surgicalHistories?: boolean | Prisma.Patient$surgicalHistoriesArgs<ExtArgs>;
     lifestyle?: boolean | Prisma.Patient$lifestyleArgs<ExtArgs>;
     allergies?: boolean | Prisma.Patient$allergiesArgs<ExtArgs>;
     patientDoctors?: boolean | Prisma.Patient$patientDoctorsArgs<ExtArgs>;
@@ -3256,6 +4135,7 @@ export type PatientInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs
     childrenProfiles?: boolean | Prisma.Patient$childrenProfilesArgs<ExtArgs>;
     ratings?: boolean | Prisma.Patient$ratingsArgs<ExtArgs>;
     visits?: boolean | Prisma.Patient$visitsArgs<ExtArgs>;
+    medicines?: boolean | Prisma.Patient$medicinesArgs<ExtArgs>;
     _count?: boolean | Prisma.PatientCountOutputTypeDefaultArgs<ExtArgs>;
 };
 export type PatientIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -3272,6 +4152,7 @@ export type $PatientPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
         patientDiseases: Prisma.$PatientDiseasePayload<ExtArgs>[];
         medicalHistories: Prisma.$MedicalHistoryPayload<ExtArgs>[];
         familyHistories: Prisma.$FamilyHistoryPayload<ExtArgs>[];
+        surgicalHistories: Prisma.$SurgicalHistoryPayload<ExtArgs>[];
         lifestyle: Prisma.$LifestylePayload<ExtArgs> | null;
         allergies: Prisma.$AllergyPayload<ExtArgs>[];
         patientDoctors: Prisma.$PatientDoctorPayload<ExtArgs>[];
@@ -3283,6 +4164,7 @@ export type $PatientPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
         childrenProfiles: Prisma.$ChildProfilePayload<ExtArgs>[];
         ratings: Prisma.$RatingPayload<ExtArgs>[];
         visits: Prisma.$VisitPayload<ExtArgs>[];
+        medicines: Prisma.$PatientMedicinePayload<ExtArgs>[];
     };
     scalars: runtime.Types.Extensions.GetPayloadResult<{
         id: number;
@@ -3290,12 +4172,16 @@ export type $PatientPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
         name: string;
         age: number;
         ageClassification: $Enums.AgeClassification;
+        dateOfBirth: Date | null;
         weight: runtime.Decimal | null;
         height: runtime.Decimal | null;
         gender: $Enums.Gender;
         smoking: boolean;
         pregnancyWarning: boolean;
+        pregnancyStatus: boolean | null;
+        trimester: number | null;
         lactation: boolean;
+        bloodType: string | null;
         profileCompleteness: number;
         createdAt: Date;
         updatedAt: Date;
@@ -3634,6 +4520,7 @@ export interface Prisma__PatientClient<T, Null = never, ExtArgs extends runtime.
     patientDiseases<T extends Prisma.Patient$patientDiseasesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Patient$patientDiseasesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PatientDiseasePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>;
     medicalHistories<T extends Prisma.Patient$medicalHistoriesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Patient$medicalHistoriesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MedicalHistoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>;
     familyHistories<T extends Prisma.Patient$familyHistoriesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Patient$familyHistoriesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FamilyHistoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>;
+    surgicalHistories<T extends Prisma.Patient$surgicalHistoriesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Patient$surgicalHistoriesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SurgicalHistoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>;
     lifestyle<T extends Prisma.Patient$lifestyleArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Patient$lifestyleArgs<ExtArgs>>): Prisma.Prisma__LifestyleClient<runtime.Types.Result.GetResult<Prisma.$LifestylePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>;
     allergies<T extends Prisma.Patient$allergiesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Patient$allergiesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AllergyPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>;
     patientDoctors<T extends Prisma.Patient$patientDoctorsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Patient$patientDoctorsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PatientDoctorPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>;
@@ -3645,6 +4532,7 @@ export interface Prisma__PatientClient<T, Null = never, ExtArgs extends runtime.
     childrenProfiles<T extends Prisma.Patient$childrenProfilesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Patient$childrenProfilesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ChildProfilePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>;
     ratings<T extends Prisma.Patient$ratingsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Patient$ratingsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RatingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>;
     visits<T extends Prisma.Patient$visitsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Patient$visitsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$VisitPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>;
+    medicines<T extends Prisma.Patient$medicinesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Patient$medicinesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PatientMedicinePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>;
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3675,12 +4563,16 @@ export interface PatientFieldRefs {
     readonly name: Prisma.FieldRef<"Patient", 'String'>;
     readonly age: Prisma.FieldRef<"Patient", 'Int'>;
     readonly ageClassification: Prisma.FieldRef<"Patient", 'AgeClassification'>;
+    readonly dateOfBirth: Prisma.FieldRef<"Patient", 'DateTime'>;
     readonly weight: Prisma.FieldRef<"Patient", 'Decimal'>;
     readonly height: Prisma.FieldRef<"Patient", 'Decimal'>;
     readonly gender: Prisma.FieldRef<"Patient", 'Gender'>;
     readonly smoking: Prisma.FieldRef<"Patient", 'Boolean'>;
     readonly pregnancyWarning: Prisma.FieldRef<"Patient", 'Boolean'>;
+    readonly pregnancyStatus: Prisma.FieldRef<"Patient", 'Boolean'>;
+    readonly trimester: Prisma.FieldRef<"Patient", 'Int'>;
     readonly lactation: Prisma.FieldRef<"Patient", 'Boolean'>;
+    readonly bloodType: Prisma.FieldRef<"Patient", 'String'>;
     readonly profileCompleteness: Prisma.FieldRef<"Patient", 'Int'>;
     readonly createdAt: Prisma.FieldRef<"Patient", 'DateTime'>;
     readonly updatedAt: Prisma.FieldRef<"Patient", 'DateTime'>;
@@ -4156,6 +5048,29 @@ export type Patient$familyHistoriesArgs<ExtArgs extends runtime.Types.Extensions
     distinct?: Prisma.FamilyHistoryScalarFieldEnum | Prisma.FamilyHistoryScalarFieldEnum[];
 };
 /**
+ * Patient.surgicalHistories
+ */
+export type Patient$surgicalHistoriesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SurgicalHistory
+     */
+    select?: Prisma.SurgicalHistorySelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the SurgicalHistory
+     */
+    omit?: Prisma.SurgicalHistoryOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: Prisma.SurgicalHistoryInclude<ExtArgs> | null;
+    where?: Prisma.SurgicalHistoryWhereInput;
+    orderBy?: Prisma.SurgicalHistoryOrderByWithRelationInput | Prisma.SurgicalHistoryOrderByWithRelationInput[];
+    cursor?: Prisma.SurgicalHistoryWhereUniqueInput;
+    take?: number;
+    skip?: number;
+    distinct?: Prisma.SurgicalHistoryScalarFieldEnum | Prisma.SurgicalHistoryScalarFieldEnum[];
+};
+/**
  * Patient.lifestyle
  */
 export type Patient$lifestyleArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -4402,6 +5317,29 @@ export type Patient$visitsArgs<ExtArgs extends runtime.Types.Extensions.Internal
     take?: number;
     skip?: number;
     distinct?: Prisma.VisitScalarFieldEnum | Prisma.VisitScalarFieldEnum[];
+};
+/**
+ * Patient.medicines
+ */
+export type Patient$medicinesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PatientMedicine
+     */
+    select?: Prisma.PatientMedicineSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the PatientMedicine
+     */
+    omit?: Prisma.PatientMedicineOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: Prisma.PatientMedicineInclude<ExtArgs> | null;
+    where?: Prisma.PatientMedicineWhereInput;
+    orderBy?: Prisma.PatientMedicineOrderByWithRelationInput | Prisma.PatientMedicineOrderByWithRelationInput[];
+    cursor?: Prisma.PatientMedicineWhereUniqueInput;
+    take?: number;
+    skip?: number;
+    distinct?: Prisma.PatientMedicineScalarFieldEnum | Prisma.PatientMedicineScalarFieldEnum[];
 };
 /**
  * Patient without action

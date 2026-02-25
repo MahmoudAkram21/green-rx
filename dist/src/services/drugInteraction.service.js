@@ -141,8 +141,8 @@ class DrugInteractionService {
         const warnings = [];
         for (const patientDisease of patient.patientDiseases) {
             const diseaseWarnings = patientDisease.disease.diseaseActiveSubstanceWarnings;
+            // Check database-driven warnings only
             for (const warning of diseaseWarnings) {
-                // Check the specific warning field mentioned in the database
                 const warningFieldValue = drug[warning.warningFieldName];
                 if (warningFieldValue) {
                     warnings.push({
@@ -150,26 +150,6 @@ class DrugInteractionService {
                         severity: warning.severity.toLowerCase(),
                         message: `Disease Warning (${patientDisease.disease.name}): ${warning.warningMessage}. ` +
                             `Additional info: ${warningFieldValue}`,
-                        affectedDrug: drug.activeSubstance
-                    });
-                }
-            }
-            // Additional general disease checks
-            if (patientDisease.disease.name.toLowerCase().includes('renal') && drug.renalWarning) {
-                warnings.push({
-                    type: 'renal',
-                    severity: 'high',
-                    message: `Renal Disease Warning: ${drug.renalWarning}`,
-                    affectedDrug: drug.activeSubstance
-                });
-            }
-            if (patientDisease.disease.name.toLowerCase().includes('liver') ||
-                patientDisease.disease.name.toLowerCase().includes('hepatic')) {
-                if (drug.hepaticWarning) {
-                    warnings.push({
-                        type: 'hepatic',
-                        severity: 'high',
-                        message: `Hepatic Disease Warning: ${drug.hepaticWarning}`,
                         affectedDrug: drug.activeSubstance
                     });
                 }
@@ -185,32 +165,100 @@ class DrugInteractionService {
         const alerts = [];
         // Get current medications
         const currentMeds = patient.prescriptions.map((p) => p.tradeName.activeSubstance);
+        // All interaction fields from the database schema
+        const jsonInteractionFields = [
+            'interactionVitaminsFood', 'interactionBisphosphonates', 'interactionAlcohol',
+            'interactionMuscleRelaxant', 'interactionRetinoids', 'interactionCorticosteroids',
+            'interactionXanthines', 'interactionSympathomimetics', 'interactionAnticholinergic',
+            'interactionChemotherapy', 'interactionAntibiotics', 'interactionHormones',
+            'interactionStatins', 'interactionAntihypertensive', 'interactionAntidiuretics',
+            'interactionAntidepressant', 'interactionAntidiabetic', 'interactionLowBloodSugarAgents',
+            'interactionDigoxin', 'interactionAnticoagulant', 'interactionNSAIDs',
+            'interactionImmunosuppressive', 'interactionAntacids', 'interactionUricosurics',
+            'interactionProtectants', 'interactionAntiParkinson', 'interactionHIVProtease',
+            'interactionBloodProduct', 'interactionVaccines', 'interactionAnthelmintics',
+            'interactionPDE5Inhibitors'
+        ];
+        const stringInteractionFields = ['ironChelator'];
+        // Field name to readable class mapping
+        const fieldToClassMap = {
+            'interactionVitaminsFood': 'Vitamins/Food',
+            'interactionBisphosphonates': 'Bisphosphonate',
+            'interactionAlcohol': 'Alcohol',
+            'interactionMuscleRelaxant': 'Muscle Relaxant',
+            'interactionRetinoids': 'Retinoid',
+            'interactionCorticosteroids': 'Corticosteroid',
+            'interactionXanthines': 'Xanthine',
+            'interactionSympathomimetics': 'Sympathomimetic',
+            'interactionAnticholinergic': 'Anticholinergic',
+            'interactionChemotherapy': 'Chemotherapy',
+            'interactionAntibiotics': 'Antibiotic',
+            'interactionHormones': 'Hormone',
+            'interactionStatins': 'Statin',
+            'interactionAntihypertensive': 'Antihypertensive',
+            'interactionAntidiuretics': 'Antidiuretic',
+            'interactionAntidepressant': 'Antidepressant',
+            'interactionAntidiabetic': 'Antidiabetic',
+            'interactionLowBloodSugarAgents': 'Low Blood Sugar Agent',
+            'interactionDigoxin': 'Digoxin',
+            'interactionAnticoagulant': 'Anticoagulant',
+            'interactionNSAIDs': 'NSAID',
+            'interactionImmunosuppressive': 'Immunosuppressive',
+            'interactionAntacids': 'Antacid',
+            'interactionUricosurics': 'Uricosuric',
+            'interactionProtectants': 'Protectant',
+            'interactionAntiParkinson': 'Anti-Parkinson',
+            'interactionHIVProtease': 'HIV Protease Inhibitor',
+            'interactionBloodProduct': 'Blood Product',
+            'interactionVaccines': 'Vaccine',
+            'interactionAnthelmintics': 'Anthelmintic',
+            'interactionPDE5Inhibitors': 'PDE5 Inhibitor',
+            'ironChelator': 'Iron Chelator'
+        };
+        // Check all interaction fields for each current medication
         for (const currentDrug of currentMeds) {
-            // Check various interaction categories
-            const interactionChecks = [
-                { field: 'drugInteractionStatins', drugClass: 'Statin', drugNames: ['atorvastatin', 'rosuvastatin', 'simvastatin'] },
-                { field: 'drugInteractionAntibiotics', drugClass: 'Antibiotic', drugNames: ['amoxicillin', 'azithromycin'] },
-                { field: 'drugInteractionAntihypertensive', drugClass: 'Antihypertensive', drugNames: ['amlodipine', 'losartan'] },
-                { field: 'drugInteractionNSAIDs', drugClass: 'NSAID', drugNames: ['ibuprofen', 'diclofenac'] },
-                { field: 'drugInteractionAnticoagulant', drugClass: 'Anticoagulant', drugNames: ['warfarin'] },
-                { field: 'drugInteractionAntidiabetic', drugClass: 'Antidiabetic', drugNames: ['metformin', 'insulin'] }
-            ];
-            for (const check of interactionChecks) {
-                if (this.drugMatchesClass(currentDrug, check.drugNames) && newDrug[check.field]) {
-                    const interaction = newDrug[check.field];
-                    warnings.push({
-                        type: 'interaction',
-                        severity: 'high',
-                        message: `Drug Interaction with ${check.drugClass}: ${interaction}`,
-                        affectedDrug: newDrug.activeSubstance,
-                        conflictingDrug: currentDrug.activeSubstance
-                    });
-                    alerts.push({
-                        interactionType: check.drugClass,
-                        severity: 'Major',
-                        message: `Interaction detected between ${newDrug.activeSubstance} and ${currentDrug.activeSubstance}`,
-                        requiresAcknowledgement: true
-                    });
+            const allInteractionFields = [...jsonInteractionFields, ...stringInteractionFields];
+            for (const field of allInteractionFields) {
+                const interactionData = newDrug[field];
+                if (interactionData) {
+                    let searchText = '';
+                    let interactionText = '';
+                    try {
+                        if (jsonInteractionFields.includes(field)) {
+                            // Handle JSON field with translations
+                            const parsed = typeof interactionData === 'string'
+                                ? JSON.parse(interactionData)
+                                : interactionData;
+                            searchText = parsed.en || '';
+                            interactionText = parsed.en || '';
+                        }
+                        else {
+                            // Handle string field
+                            searchText = interactionData;
+                            interactionText = interactionData;
+                        }
+                        // Search for current drug name in the interaction text (case-insensitive)
+                        if (searchText.toLowerCase().includes(currentDrug.activeSubstance.toLowerCase())) {
+                            const drugClass = fieldToClassMap[field] || field.replace('interaction', '');
+                            warnings.push({
+                                type: 'interaction',
+                                severity: 'high',
+                                message: `Drug Interaction with ${drugClass}: ${interactionText}`,
+                                affectedDrug: newDrug.activeSubstance,
+                                conflictingDrug: currentDrug.activeSubstance
+                            });
+                            alerts.push({
+                                interactionType: drugClass,
+                                severity: 'Major',
+                                message: `Interaction detected between ${newDrug.activeSubstance} and ${currentDrug.activeSubstance}`,
+                                requiresAcknowledgement: true
+                            });
+                        }
+                    }
+                    catch (error) {
+                        console.warn(`Error parsing interaction data for field ${field}:`, error);
+                        // Continue with next field if JSON parsing fails
+                    }
                 }
             }
         }
@@ -273,15 +321,6 @@ class DrugInteractionService {
             }
         }
         return warnings;
-    }
-    /**
-     * Helper method to check if drug matches a class
-     */
-    drugMatchesClass(drug, drugNames) {
-        const drugLower = drug.activeSubstance?.toLowerCase() || '';
-        const classLower = drug.classification?.toLowerCase() || '';
-        return drugNames.some(name => drugLower.includes(name.toLowerCase()) ||
-            classLower.includes(name.toLowerCase()));
     }
     /**
      * Create drug interaction alert in database

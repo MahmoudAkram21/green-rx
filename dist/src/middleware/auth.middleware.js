@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.authorize = exports.authenticate = void 0;
 const jwt_util_1 = require("../utils/jwt.util");
+const prisma_1 = require("../lib/prisma");
 const authenticate = async (req, res, next) => {
     try {
         const authHeader = req.headers.authorization;
@@ -12,11 +13,11 @@ const authenticate = async (req, res, next) => {
         const token = authHeader.split(' ')[1];
         try {
             const decoded = (0, jwt_util_1.verifyAccessToken)(token);
-            // Optional: Check if user still exists and is active
-            // const user = await prisma.user.findUnique({ where: { id: decoded.userId } });
-            // if (!user || !user.isActive) {
-            //   return res.status(401).json({ error: 'Unauthorized: User not found or inactive' });
-            // }
+            const user = await prisma_1.prisma.user.findUnique({ where: { id: decoded.userId } });
+            if (!user || !user.isActive) {
+                res.status(401).json({ error: 'Unauthorized: Account is inactive or deleted' });
+                return;
+            }
             req.user = decoded;
             next();
         }

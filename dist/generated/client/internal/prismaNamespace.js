@@ -48,8 +48,8 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.AppSettingScalarFieldEnum = exports.RolePermissionScalarFieldEnum = exports.PermissionScalarFieldEnum = exports.AuditLogScalarFieldEnum = exports.NotificationScalarFieldEnum = exports.DrugInteractionAlertScalarFieldEnum = exports.PrescriptionVersionScalarFieldEnum = exports.PrescriptionScalarFieldEnum = exports.ContractingCompanyTradeNameScalarFieldEnum = exports.ContractingCompanyScalarFieldEnum = exports.CompanyScalarFieldEnum = exports.TradeNameScalarFieldEnum = exports.MedicineAlternativeScalarFieldEnum = exports.DiseaseActiveSubstanceWarningScalarFieldEnum = exports.ActiveSubstanceScalarFieldEnum = exports.DiseaseWarningRuleScalarFieldEnum = exports.PatientDiseaseScalarFieldEnum = exports.DiseaseScalarFieldEnum = exports.AppointmentScalarFieldEnum = exports.ConsultationScalarFieldEnum = exports.PatientDoctorScalarFieldEnum = exports.DoctorScalarFieldEnum = exports.AllergyScalarFieldEnum = exports.LifestyleScalarFieldEnum = exports.FamilyHistoryScalarFieldEnum = exports.MedicalHistoryScalarFieldEnum = exports.PatientScalarFieldEnum = exports.PaymentScalarFieldEnum = exports.SubscriptionScalarFieldEnum = exports.PricingPlanScalarFieldEnum = exports.UserScalarFieldEnum = exports.TransactionIsolationLevel = exports.ModelName = exports.AnyNull = exports.JsonNull = exports.DbNull = exports.NullTypes = exports.prismaVersion = exports.getExtensionContext = exports.Decimal = exports.Sql = exports.raw = exports.join = exports.empty = exports.sql = exports.PrismaClientValidationError = exports.PrismaClientInitializationError = exports.PrismaClientRustPanicError = exports.PrismaClientUnknownRequestError = exports.PrismaClientKnownRequestError = void 0;
-exports.defineExtension = exports.JsonNullValueFilter = exports.NullsOrder = exports.QueryMode = exports.JsonNullValueInput = exports.NullableJsonNullValueInput = exports.SortOrder = exports.ExportHistoryScalarFieldEnum = exports.MedicineSuggestionScalarFieldEnum = exports.ImportHistoryScalarFieldEnum = exports.BatchHistoryScalarFieldEnum = exports.ContraindicationTermMappingScalarFieldEnum = exports.VisitScalarFieldEnum = exports.RatingScalarFieldEnum = exports.ChildProfileScalarFieldEnum = exports.AdverseDrugReactionScalarFieldEnum = exports.PatientShareLinkScalarFieldEnum = exports.MedicalReportScalarFieldEnum = exports.PharmacistScalarFieldEnum = exports.SessionScalarFieldEnum = void 0;
+exports.RolePermissionScalarFieldEnum = exports.PermissionScalarFieldEnum = exports.AuditLogScalarFieldEnum = exports.NotificationScalarFieldEnum = exports.DrugInteractionAlertScalarFieldEnum = exports.PrescriptionVersionScalarFieldEnum = exports.PrescriptionScalarFieldEnum = exports.ContractingCompanyTradeNameScalarFieldEnum = exports.ContractingCompanyScalarFieldEnum = exports.CompanyScalarFieldEnum = exports.TradeNameScalarFieldEnum = exports.MedicineAlternativeScalarFieldEnum = exports.DiseaseActiveSubstanceWarningScalarFieldEnum = exports.ActiveSubstanceScalarFieldEnum = exports.DiseaseWarningRuleScalarFieldEnum = exports.PatientDiseaseScalarFieldEnum = exports.DiseaseScalarFieldEnum = exports.AppointmentScalarFieldEnum = exports.ConsultationScalarFieldEnum = exports.PatientDoctorScalarFieldEnum = exports.DoctorScalarFieldEnum = exports.AllergyScalarFieldEnum = exports.LifestyleScalarFieldEnum = exports.SurgicalHistoryScalarFieldEnum = exports.FamilyHistoryScalarFieldEnum = exports.MedicalHistoryScalarFieldEnum = exports.PatientScalarFieldEnum = exports.PaymentScalarFieldEnum = exports.SubscriptionScalarFieldEnum = exports.PricingPlanScalarFieldEnum = exports.UserScalarFieldEnum = exports.TransactionIsolationLevel = exports.ModelName = exports.AnyNull = exports.JsonNull = exports.DbNull = exports.NullTypes = exports.prismaVersion = exports.getExtensionContext = exports.Decimal = exports.Sql = exports.raw = exports.join = exports.empty = exports.sql = exports.PrismaClientValidationError = exports.PrismaClientInitializationError = exports.PrismaClientRustPanicError = exports.PrismaClientUnknownRequestError = exports.PrismaClientKnownRequestError = void 0;
+exports.defineExtension = exports.JsonNullValueFilter = exports.NullsOrder = exports.QueryMode = exports.JsonNullValueInput = exports.NullableJsonNullValueInput = exports.SortOrder = exports.ExportHistoryScalarFieldEnum = exports.MedicineSuggestionScalarFieldEnum = exports.ImportHistoryScalarFieldEnum = exports.BatchHistoryScalarFieldEnum = exports.ContraindicationTermMappingScalarFieldEnum = exports.PatientMedicineScalarFieldEnum = exports.VisitScalarFieldEnum = exports.RatingScalarFieldEnum = exports.ChildProfileScalarFieldEnum = exports.AdverseDrugReactionScalarFieldEnum = exports.PatientShareLinkScalarFieldEnum = exports.MedicalReportScalarFieldEnum = exports.PharmacistScalarFieldEnum = exports.SessionScalarFieldEnum = exports.AppSettingScalarFieldEnum = void 0;
 const runtime = __importStar(require("@prisma/client/runtime/client"));
 /**
  * Prisma Errors
@@ -111,6 +111,7 @@ exports.ModelName = {
     Patient: 'Patient',
     MedicalHistory: 'MedicalHistory',
     FamilyHistory: 'FamilyHistory',
+    SurgicalHistory: 'SurgicalHistory',
     Lifestyle: 'Lifestyle',
     Allergy: 'Allergy',
     Doctor: 'Doctor',
@@ -143,6 +144,7 @@ exports.ModelName = {
     ChildProfile: 'ChildProfile',
     Rating: 'Rating',
     Visit: 'Visit',
+    PatientMedicine: 'PatientMedicine',
     ContraindicationTermMapping: 'ContraindicationTermMapping',
     BatchHistory: 'BatchHistory',
     ImportHistory: 'ImportHistory',
@@ -161,6 +163,7 @@ exports.TransactionIsolationLevel = runtime.makeStrictEnum({
 exports.UserScalarFieldEnum = {
     id: 'id',
     email: 'email',
+    phone: 'phone',
     passwordHash: 'passwordHash',
     role: 'role',
     emailVerified: 'emailVerified',
@@ -215,12 +218,16 @@ exports.PatientScalarFieldEnum = {
     name: 'name',
     age: 'age',
     ageClassification: 'ageClassification',
+    dateOfBirth: 'dateOfBirth',
     weight: 'weight',
     height: 'height',
     gender: 'gender',
     smoking: 'smoking',
     pregnancyWarning: 'pregnancyWarning',
+    pregnancyStatus: 'pregnancyStatus',
+    trimester: 'trimester',
     lactation: 'lactation',
+    bloodType: 'bloodType',
     profileCompleteness: 'profileCompleteness',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
@@ -248,6 +255,14 @@ exports.FamilyHistoryScalarFieldEnum = {
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
 };
+exports.SurgicalHistoryScalarFieldEnum = {
+    id: 'id',
+    patientId: 'patientId',
+    operationName: 'operationName',
+    surgeryDate: 'surgeryDate',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+};
 exports.LifestyleScalarFieldEnum = {
     id: 'id',
     patientId: 'patientId',
@@ -259,6 +274,8 @@ exports.LifestyleScalarFieldEnum = {
     annualVaccination: 'annualVaccination',
     surgeriesLast3Months: 'surgeriesLast3Months',
     surgeriesDetails: 'surgeriesDetails',
+    physicalActivity: 'physicalActivity',
+    dietaryHabits: 'dietaryHabits',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
 };
@@ -266,6 +283,7 @@ exports.AllergyScalarFieldEnum = {
     id: 'id',
     patientId: 'patientId',
     allergen: 'allergen',
+    allergenType: 'allergenType',
     severity: 'severity',
     reactionType: 'reactionType',
     notes: 'notes',
@@ -596,6 +614,9 @@ exports.CompanyScalarFieldEnum = {
     id: 'id',
     name: 'name',
     contactInfo: 'contactInfo',
+    address: 'address',
+    governorate: 'governorate',
+    country: 'country',
     isActive: 'isActive',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
@@ -814,6 +835,26 @@ exports.VisitScalarFieldEnum = {
     diagnosis: 'diagnosis',
     treatmentPlan: 'treatmentPlan',
     notes: 'notes',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+};
+exports.PatientMedicineScalarFieldEnum = {
+    id: 'id',
+    patientId: 'patientId',
+    tradeNameId: 'tradeNameId',
+    activeSubstanceId: 'activeSubstanceId',
+    medicineName: 'medicineName',
+    dosage: 'dosage',
+    frequency: 'frequency',
+    startDate: 'startDate',
+    endDate: 'endDate',
+    isOngoing: 'isOngoing',
+    notes: 'notes',
+    imageUrl: 'imageUrl',
+    imageFileName: 'imageFileName',
+    isVerified: 'isVerified',
+    verifiedBy: 'verifiedBy',
+    verifiedAt: 'verifiedAt',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
 };

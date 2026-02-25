@@ -19,9 +19,13 @@ export declare const createPatientSchema: z.ZodObject<{
     }>;
     weight: z.ZodOptional<z.ZodNumber>;
     height: z.ZodOptional<z.ZodNumber>;
+    dateOfBirth: z.ZodOptional<z.ZodString>;
+    pregnancyStatus: z.ZodOptional<z.ZodBoolean>;
+    trimester: z.ZodOptional<z.ZodNumber>;
     smoking: z.ZodOptional<z.ZodBoolean>;
     pregnancyWarning: z.ZodOptional<z.ZodBoolean>;
     lactation: z.ZodOptional<z.ZodBoolean>;
+    bloodType: z.ZodOptional<z.ZodString>;
 }, z.core.$strip>;
 export declare const medicalHistorySchema: z.ZodObject<{
     diseaseId: z.ZodNumber;
@@ -63,18 +67,49 @@ export declare const lifestyleSchema: z.ZodObject<{
     noiseExposure: z.ZodOptional<z.ZodBoolean>;
     chemicalExposure: z.ZodOptional<z.ZodBoolean>;
     radiationExposure: z.ZodOptional<z.ZodBoolean>;
+    physicalActivity: z.ZodOptional<z.ZodString>;
+    dietaryHabits: z.ZodOptional<z.ZodString>;
 }, z.core.$strip>;
 export declare const allergySchema: z.ZodObject<{
     allergen: z.ZodString;
-    reaction: z.ZodString;
-    severity: z.ZodEnum<{
+    allergenType: z.ZodNullable<z.ZodOptional<z.ZodEnum<{
+        Other: "Other";
+        Drug: "Drug";
+        Food: "Food";
+        Pollen: "Pollen";
+        Dust: "Dust";
+        Pet: "Pet";
+        Fragrance: "Fragrance";
+    }>>>;
+    reaction: z.ZodOptional<z.ZodString>;
+    severity: z.ZodOptional<z.ZodEnum<{
         readonly Mild: "Mild";
         readonly Moderate: "Moderate";
         readonly Severe: "Severe";
         readonly LifeThreatening: "LifeThreatening";
-    }>;
+    }>>;
     notes: z.ZodOptional<z.ZodString>;
 }, z.core.$strip>;
+export declare const batchAllergySchema: z.ZodArray<z.ZodObject<{
+    allergen: z.ZodString;
+    allergenType: z.ZodNullable<z.ZodOptional<z.ZodEnum<{
+        Other: "Other";
+        Drug: "Drug";
+        Food: "Food";
+        Pollen: "Pollen";
+        Dust: "Dust";
+        Pet: "Pet";
+        Fragrance: "Fragrance";
+    }>>>;
+    reaction: z.ZodOptional<z.ZodString>;
+    severity: z.ZodOptional<z.ZodEnum<{
+        readonly Mild: "Mild";
+        readonly Moderate: "Moderate";
+        readonly Severe: "Severe";
+        readonly LifeThreatening: "LifeThreatening";
+    }>>;
+    notes: z.ZodOptional<z.ZodString>;
+}, z.core.$strip>>;
 export declare const childProfileSchema: z.ZodObject<{
     name: z.ZodString;
     dateOfBirth: z.ZodString;

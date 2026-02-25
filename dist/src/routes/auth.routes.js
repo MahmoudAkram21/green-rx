@@ -11,6 +11,8 @@ const router = express_1.default.Router();
 router.post('/register', auth_controller_1.register);
 router.post('/login', auth_controller_1.login);
 router.post('/refresh', auth_controller_1.refresh);
+// Dev only: reset superadmin password (server-side hash so login works)
+router.post('/dev-reset-superadmin-password', auth_controller_1.devResetSuperAdminPassword);
 // Protected routes
 router.post('/logout', auth_middleware_1.authenticate, auth_controller_1.logout);
 router.get('/me', auth_middleware_1.authenticate, auth_controller_1.getMe);

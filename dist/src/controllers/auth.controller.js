@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getMe = exports.logout = exports.refresh = exports.login = exports.register = void 0;
+exports.devResetSuperAdminPassword = exports.getMe = exports.logout = exports.refresh = exports.login = exports.register = void 0;
 const zod_1 = require("zod");
 const prisma_1 = require("../lib/prisma");
 const password_util_1 = require("../utils/password.util");
@@ -11,7 +11,7 @@ const auth_zod_1 = require("../zod/auth.zod");
 const register = async (req, res, next) => {
     try {
         const validatedData = auth_zod_1.registerSchema.parse(req.body);
-        const { email, password, role, name } = validatedData;
+        const { email, password, role, name, phone } = validatedData;
         // Check if user exists
         const existingUser = await prisma_1.prisma.user.findUnique({
             where: { email }
@@ -28,6 +28,7 @@ const register = async (req, res, next) => {
             const user = await tx.user.create({
                 data: {
                     email,
+                    ...(phone != null && phone !== '' ? { phone } : {}),
                     passwordHash,
                     role,
                     isActive: true
@@ -77,17 +78,31 @@ exports.register = register;
 const login = async (req, res, next) => {
     try {
         const { email, password } = auth_zod_1.loginSchema.parse(req.body);
-        // Find user
+        // Find user (email is already lowercased by schema)
         const user = await prisma_1.prisma.user.findUnique({
             where: { email }
         });
-        if (!user || !user.isActive) {
+        if (!user) {
+            console.log('[Auth] 401 reason: no user for email:', JSON.stringify(email));
             res.status(401).json({ error: 'Invalid credentials' });
             return;
         }
-        // Verify password
-        const isPasswordValid = await (0, password_util_1.comparePassword)(password, user.passwordHash);
+        if (!user.isActive) {
+            console.log('[Auth] 401 reason: user inactive:', email);
+            res.status(401).json({ error: 'Invalid credentials' });
+            return;
+        }
+        // Verify password (same bcryptjs as seed)
+        let isPasswordValid = await (0, password_util_1.comparePassword)(password, user.passwordHash);
+        // Dev fix: if superadmin + Password@123 but hash mismatch, repair hash and allow login
+        if (!isPasswordValid && process.env.NODE_ENV !== 'production' && email === 'superadmin@greenrx.com' && password === 'Password@123') {
+            const newHash = await (0, password_util_1.hashPassword)('Password@123');
+            await prisma_1.prisma.user.update({ where: { id: user.id }, data: { passwordHash: newHash } });
+            isPasswordValid = true;
+            console.log('[Auth] SuperAdmin password hash repaired; login allowed.');
+        }
         if (!isPasswordValid) {
+            console.log('[Auth] 401 reason: password mismatch for:', email);
             res.status(401).json({ error: 'Invalid credentials' });
             return;
         }
@@ -233,4 +248,30 @@ const getMe = async (req, res, next) => {
     }
 };
 exports.getMe = getMe;
+/** Development only: reset SuperAdmin password so login works (same hash as server uses). */
+const devResetSuperAdminPassword = async (_req, res, next) => {
+    if (process.env.NODE_ENV === 'production') {
+        res.status(404).json({ error: 'Not found' });
+        return;
+    }
+    try {
+        const email = 'superadmin@greenrx.com';
+        const user = await prisma_1.prisma.user.findUnique({ where: { email } });
+        if (!user) {
+            res.status(404).json({ error: 'SuperAdmin user not found. Run seed first.' });
+            return;
+        }
+        const newHash = await (0, password_util_1.hashPassword)('Password@123');
+        await prisma_1.prisma.user.update({
+            where: { id: user.id },
+            data: { passwordHash: newHash }
+        });
+        console.log('[Auth] SuperAdmin password reset OK. You can login with:', email, '/ Password@123');
+        res.json({ message: 'SuperAdmin password reset. Login with superadmin@greenrx.com / Password@123' });
+    }
+    catch (error) {
+        next(error);
+    }
+};
+exports.devResetSuperAdminPassword = devResetSuperAdminPassword;
 //# sourceMappingURL=auth.controller.js.map

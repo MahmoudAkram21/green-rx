@@ -1,6 +1,6 @@
 export { createActiveSubstanceSchema, updateActiveSubstanceSchema, } from "./createActiveSubstance.zod";
 export { createTradeNameSchema, updateTradeNameSchema } from "./tradeName.zod";
-export { createPatientSchema, medicalHistorySchema, familyHistorySchema, lifestyleSchema, allergySchema, childProfileSchema, } from "./patient.zod";
+export { createPatientSchema, medicalHistorySchema, familyHistorySchema, lifestyleSchema, allergySchema, batchAllergySchema, childProfileSchema, } from "./patient.zod";
 export { registerSchema, loginSchema, refreshTokenSchema, } from "./auth.zod";
 export { createDoctorSchema, updateDoctorSchema, verifyDoctorSchema, assignPatientSchema, } from "./doctor.zod";
 export { createDiseaseSchema, updateDiseaseSchema, createWarningSchema, updateWarningSchema, } from "./disease.zod";

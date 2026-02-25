@@ -22,6 +22,7 @@ export type UserSumAggregateOutputType = {
 export type UserMinAggregateOutputType = {
     id: number | null;
     email: string | null;
+    phone: string | null;
     passwordHash: string | null;
     role: $Enums.UserRole | null;
     emailVerified: boolean | null;
@@ -37,6 +38,7 @@ export type UserMinAggregateOutputType = {
 export type UserMaxAggregateOutputType = {
     id: number | null;
     email: string | null;
+    phone: string | null;
     passwordHash: string | null;
     role: $Enums.UserRole | null;
     emailVerified: boolean | null;
@@ -52,6 +54,7 @@ export type UserMaxAggregateOutputType = {
 export type UserCountAggregateOutputType = {
     id: number;
     email: number;
+    phone: number;
     passwordHash: number;
     role: number;
     emailVerified: number;
@@ -74,6 +77,7 @@ export type UserSumAggregateInputType = {
 export type UserMinAggregateInputType = {
     id?: true;
     email?: true;
+    phone?: true;
     passwordHash?: true;
     role?: true;
     emailVerified?: true;
@@ -89,6 +93,7 @@ export type UserMinAggregateInputType = {
 export type UserMaxAggregateInputType = {
     id?: true;
     email?: true;
+    phone?: true;
     passwordHash?: true;
     role?: true;
     emailVerified?: true;
@@ -104,6 +109,7 @@ export type UserMaxAggregateInputType = {
 export type UserCountAggregateInputType = {
     id?: true;
     email?: true;
+    phone?: true;
     passwordHash?: true;
     role?: true;
     emailVerified?: true;
@@ -196,6 +202,7 @@ export type UserGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalArg
 export type UserGroupByOutputType = {
     id: number;
     email: string;
+    phone: string | null;
     passwordHash: string;
     role: $Enums.UserRole;
     emailVerified: boolean;
@@ -222,6 +229,7 @@ export type UserWhereInput = {
     NOT?: Prisma.UserWhereInput | Prisma.UserWhereInput[];
     id?: Prisma.IntFilter<"User"> | number;
     email?: Prisma.StringFilter<"User"> | string;
+    phone?: Prisma.StringNullableFilter<"User"> | string | null;
     passwordHash?: Prisma.StringFilter<"User"> | string;
     role?: Prisma.EnumUserRoleFilter<"User"> | $Enums.UserRole;
     emailVerified?: Prisma.BoolFilter<"User"> | boolean;
@@ -245,10 +253,12 @@ export type UserWhereInput = {
     uploadedReports?: Prisma.MedicalReportListRelationFilter;
     diseaseWarningRules?: Prisma.DiseaseWarningRuleListRelationFilter;
     reviewedSuggestions?: Prisma.MedicineSuggestionListRelationFilter;
+    verifiedMedicines?: Prisma.PatientMedicineListRelationFilter;
 };
 export type UserOrderByWithRelationInput = {
     id?: Prisma.SortOrder;
     email?: Prisma.SortOrder;
+    phone?: Prisma.SortOrderInput | Prisma.SortOrder;
     passwordHash?: Prisma.SortOrder;
     role?: Prisma.SortOrder;
     emailVerified?: Prisma.SortOrder;
@@ -272,6 +282,7 @@ export type UserOrderByWithRelationInput = {
     uploadedReports?: Prisma.MedicalReportOrderByRelationAggregateInput;
     diseaseWarningRules?: Prisma.DiseaseWarningRuleOrderByRelationAggregateInput;
     reviewedSuggestions?: Prisma.MedicineSuggestionOrderByRelationAggregateInput;
+    verifiedMedicines?: Prisma.PatientMedicineOrderByRelationAggregateInput;
 };
 export type UserWhereUniqueInput = Prisma.AtLeast<{
     id?: number;
@@ -279,6 +290,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
     AND?: Prisma.UserWhereInput | Prisma.UserWhereInput[];
     OR?: Prisma.UserWhereInput[];
     NOT?: Prisma.UserWhereInput | Prisma.UserWhereInput[];
+    phone?: Prisma.StringNullableFilter<"User"> | string | null;
     passwordHash?: Prisma.StringFilter<"User"> | string;
     role?: Prisma.EnumUserRoleFilter<"User"> | $Enums.UserRole;
     emailVerified?: Prisma.BoolFilter<"User"> | boolean;
@@ -302,10 +314,12 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
     uploadedReports?: Prisma.MedicalReportListRelationFilter;
     diseaseWarningRules?: Prisma.DiseaseWarningRuleListRelationFilter;
     reviewedSuggestions?: Prisma.MedicineSuggestionListRelationFilter;
+    verifiedMedicines?: Prisma.PatientMedicineListRelationFilter;
 }, "id" | "email">;
 export type UserOrderByWithAggregationInput = {
     id?: Prisma.SortOrder;
     email?: Prisma.SortOrder;
+    phone?: Prisma.SortOrderInput | Prisma.SortOrder;
     passwordHash?: Prisma.SortOrder;
     role?: Prisma.SortOrder;
     emailVerified?: Prisma.SortOrder;
@@ -329,6 +343,7 @@ export type UserScalarWhereWithAggregatesInput = {
     NOT?: Prisma.UserScalarWhereWithAggregatesInput | Prisma.UserScalarWhereWithAggregatesInput[];
     id?: Prisma.IntWithAggregatesFilter<"User"> | number;
     email?: Prisma.StringWithAggregatesFilter<"User"> | string;
+    phone?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null;
     passwordHash?: Prisma.StringWithAggregatesFilter<"User"> | string;
     role?: Prisma.EnumUserRoleWithAggregatesFilter<"User"> | $Enums.UserRole;
     emailVerified?: Prisma.BoolWithAggregatesFilter<"User"> | boolean;
@@ -343,6 +358,7 @@ export type UserScalarWhereWithAggregatesInput = {
 };
 export type UserCreateInput = {
     email: string;
+    phone?: string | null;
     passwordHash: string;
     role: $Enums.UserRole;
     emailVerified?: boolean;
@@ -366,10 +382,12 @@ export type UserCreateInput = {
     uploadedReports?: Prisma.MedicalReportCreateNestedManyWithoutUploaderInput;
     diseaseWarningRules?: Prisma.DiseaseWarningRuleCreateNestedManyWithoutCreatorInput;
     reviewedSuggestions?: Prisma.MedicineSuggestionCreateNestedManyWithoutReviewerInput;
+    verifiedMedicines?: Prisma.PatientMedicineCreateNestedManyWithoutVerifierInput;
 };
 export type UserUncheckedCreateInput = {
     id?: number;
     email: string;
+    phone?: string | null;
     passwordHash: string;
     role: $Enums.UserRole;
     emailVerified?: boolean;
@@ -393,9 +411,11 @@ export type UserUncheckedCreateInput = {
     uploadedReports?: Prisma.MedicalReportUncheckedCreateNestedManyWithoutUploaderInput;
     diseaseWarningRules?: Prisma.DiseaseWarningRuleUncheckedCreateNestedManyWithoutCreatorInput;
     reviewedSuggestions?: Prisma.MedicineSuggestionUncheckedCreateNestedManyWithoutReviewerInput;
+    verifiedMedicines?: Prisma.PatientMedicineUncheckedCreateNestedManyWithoutVerifierInput;
 };
 export type UserUpdateInput = {
     email?: Prisma.StringFieldUpdateOperationsInput | string;
+    phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     passwordHash?: Prisma.StringFieldUpdateOperationsInput | string;
     role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole;
     emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean;
@@ -419,10 +439,12 @@ export type UserUpdateInput = {
     uploadedReports?: Prisma.MedicalReportUpdateManyWithoutUploaderNestedInput;
     diseaseWarningRules?: Prisma.DiseaseWarningRuleUpdateManyWithoutCreatorNestedInput;
     reviewedSuggestions?: Prisma.MedicineSuggestionUpdateManyWithoutReviewerNestedInput;
+    verifiedMedicines?: Prisma.PatientMedicineUpdateManyWithoutVerifierNestedInput;
 };
 export type UserUncheckedUpdateInput = {
     id?: Prisma.IntFieldUpdateOperationsInput | number;
     email?: Prisma.StringFieldUpdateOperationsInput | string;
+    phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     passwordHash?: Prisma.StringFieldUpdateOperationsInput | string;
     role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole;
     emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean;
@@ -446,10 +468,12 @@ export type UserUncheckedUpdateInput = {
     uploadedReports?: Prisma.MedicalReportUncheckedUpdateManyWithoutUploaderNestedInput;
     diseaseWarningRules?: Prisma.DiseaseWarningRuleUncheckedUpdateManyWithoutCreatorNestedInput;
     reviewedSuggestions?: Prisma.MedicineSuggestionUncheckedUpdateManyWithoutReviewerNestedInput;
+    verifiedMedicines?: Prisma.PatientMedicineUncheckedUpdateManyWithoutVerifierNestedInput;
 };
 export type UserCreateManyInput = {
     id?: number;
     email: string;
+    phone?: string | null;
     passwordHash: string;
     role: $Enums.UserRole;
     emailVerified?: boolean;
@@ -464,6 +488,7 @@ export type UserCreateManyInput = {
 };
 export type UserUpdateManyMutationInput = {
     email?: Prisma.StringFieldUpdateOperationsInput | string;
+    phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     passwordHash?: Prisma.StringFieldUpdateOperationsInput | string;
     role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole;
     emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean;
@@ -479,6 +504,7 @@ export type UserUpdateManyMutationInput = {
 export type UserUncheckedUpdateManyInput = {
     id?: Prisma.IntFieldUpdateOperationsInput | number;
     email?: Prisma.StringFieldUpdateOperationsInput | string;
+    phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     passwordHash?: Prisma.StringFieldUpdateOperationsInput | string;
     role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole;
     emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean;
@@ -494,6 +520,7 @@ export type UserUncheckedUpdateManyInput = {
 export type UserCountOrderByAggregateInput = {
     id?: Prisma.SortOrder;
     email?: Prisma.SortOrder;
+    phone?: Prisma.SortOrder;
     passwordHash?: Prisma.SortOrder;
     role?: Prisma.SortOrder;
     emailVerified?: Prisma.SortOrder;
@@ -512,6 +539,7 @@ export type UserAvgOrderByAggregateInput = {
 export type UserMaxOrderByAggregateInput = {
     id?: Prisma.SortOrder;
     email?: Prisma.SortOrder;
+    phone?: Prisma.SortOrder;
     passwordHash?: Prisma.SortOrder;
     role?: Prisma.SortOrder;
     emailVerified?: Prisma.SortOrder;
@@ -527,6 +555,7 @@ export type UserMaxOrderByAggregateInput = {
 export type UserMinOrderByAggregateInput = {
     id?: Prisma.SortOrder;
     email?: Prisma.SortOrder;
+    phone?: Prisma.SortOrder;
     passwordHash?: Prisma.SortOrder;
     role?: Prisma.SortOrder;
     emailVerified?: Prisma.SortOrder;
@@ -553,14 +582,14 @@ export type UserNullableScalarRelationFilter = {
 export type StringFieldUpdateOperationsInput = {
     set?: string;
 };
+export type NullableStringFieldUpdateOperationsInput = {
+    set?: string | null;
+};
 export type EnumUserRoleFieldUpdateOperationsInput = {
     set?: $Enums.UserRole;
 };
 export type BoolFieldUpdateOperationsInput = {
     set?: boolean;
-};
-export type NullableStringFieldUpdateOperationsInput = {
-    set?: string | null;
 };
 export type NullableDateTimeFieldUpdateOperationsInput = {
     set?: Date | string | null;
@@ -685,6 +714,20 @@ export type UserUpdateOneRequiredWithoutUploadedReportsNestedInput = {
     connect?: Prisma.UserWhereUniqueInput;
     update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutUploadedReportsInput, Prisma.UserUpdateWithoutUploadedReportsInput>, Prisma.UserUncheckedUpdateWithoutUploadedReportsInput>;
 };
+export type UserCreateNestedOneWithoutVerifiedMedicinesInput = {
+    create?: Prisma.XOR<Prisma.UserCreateWithoutVerifiedMedicinesInput, Prisma.UserUncheckedCreateWithoutVerifiedMedicinesInput>;
+    connectOrCreate?: Prisma.UserCreateOrConnectWithoutVerifiedMedicinesInput;
+    connect?: Prisma.UserWhereUniqueInput;
+};
+export type UserUpdateOneWithoutVerifiedMedicinesNestedInput = {
+    create?: Prisma.XOR<Prisma.UserCreateWithoutVerifiedMedicinesInput, Prisma.UserUncheckedCreateWithoutVerifiedMedicinesInput>;
+    connectOrCreate?: Prisma.UserCreateOrConnectWithoutVerifiedMedicinesInput;
+    upsert?: Prisma.UserUpsertWithoutVerifiedMedicinesInput;
+    disconnect?: Prisma.UserWhereInput | boolean;
+    delete?: Prisma.UserWhereInput | boolean;
+    connect?: Prisma.UserWhereUniqueInput;
+    update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutVerifiedMedicinesInput, Prisma.UserUpdateWithoutVerifiedMedicinesInput>, Prisma.UserUncheckedUpdateWithoutVerifiedMedicinesInput>;
+};
 export type UserCreateNestedOneWithoutImportHistoryInput = {
     create?: Prisma.XOR<Prisma.UserCreateWithoutImportHistoryInput, Prisma.UserUncheckedCreateWithoutImportHistoryInput>;
     connectOrCreate?: Prisma.UserCreateOrConnectWithoutImportHistoryInput;
@@ -725,6 +768,7 @@ export type UserUpdateOneRequiredWithoutExportHistoryNestedInput = {
 };
 export type UserCreateWithoutSubscriptionInput = {
     email: string;
+    phone?: string | null;
     passwordHash: string;
     role: $Enums.UserRole;
     emailVerified?: boolean;
@@ -747,10 +791,12 @@ export type UserCreateWithoutSubscriptionInput = {
     uploadedReports?: Prisma.MedicalReportCreateNestedManyWithoutUploaderInput;
     diseaseWarningRules?: Prisma.DiseaseWarningRuleCreateNestedManyWithoutCreatorInput;
     reviewedSuggestions?: Prisma.MedicineSuggestionCreateNestedManyWithoutReviewerInput;
+    verifiedMedicines?: Prisma.PatientMedicineCreateNestedManyWithoutVerifierInput;
 };
 export type UserUncheckedCreateWithoutSubscriptionInput = {
     id?: number;
     email: string;
+    phone?: string | null;
     passwordHash: string;
     role: $Enums.UserRole;
     emailVerified?: boolean;
@@ -773,6 +819,7 @@ export type UserUncheckedCreateWithoutSubscriptionInput = {
     uploadedReports?: Prisma.MedicalReportUncheckedCreateNestedManyWithoutUploaderInput;
     diseaseWarningRules?: Prisma.DiseaseWarningRuleUncheckedCreateNestedManyWithoutCreatorInput;
     reviewedSuggestions?: Prisma.MedicineSuggestionUncheckedCreateNestedManyWithoutReviewerInput;
+    verifiedMedicines?: Prisma.PatientMedicineUncheckedCreateNestedManyWithoutVerifierInput;
 };
 export type UserCreateOrConnectWithoutSubscriptionInput = {
     where: Prisma.UserWhereUniqueInput;
@@ -789,6 +836,7 @@ export type UserUpdateToOneWithWhereWithoutSubscriptionInput = {
 };
 export type UserUpdateWithoutSubscriptionInput = {
     email?: Prisma.StringFieldUpdateOperationsInput | string;
+    phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     passwordHash?: Prisma.StringFieldUpdateOperationsInput | string;
     role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole;
     emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean;
@@ -811,10 +859,12 @@ export type UserUpdateWithoutSubscriptionInput = {
     uploadedReports?: Prisma.MedicalReportUpdateManyWithoutUploaderNestedInput;
     diseaseWarningRules?: Prisma.DiseaseWarningRuleUpdateManyWithoutCreatorNestedInput;
     reviewedSuggestions?: Prisma.MedicineSuggestionUpdateManyWithoutReviewerNestedInput;
+    verifiedMedicines?: Prisma.PatientMedicineUpdateManyWithoutVerifierNestedInput;
 };
 export type UserUncheckedUpdateWithoutSubscriptionInput = {
     id?: Prisma.IntFieldUpdateOperationsInput | number;
     email?: Prisma.StringFieldUpdateOperationsInput | string;
+    phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     passwordHash?: Prisma.StringFieldUpdateOperationsInput | string;
     role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole;
     emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean;
@@ -837,9 +887,11 @@ export type UserUncheckedUpdateWithoutSubscriptionInput = {
     uploadedReports?: Prisma.MedicalReportUncheckedUpdateManyWithoutUploaderNestedInput;
     diseaseWarningRules?: Prisma.DiseaseWarningRuleUncheckedUpdateManyWithoutCreatorNestedInput;
     reviewedSuggestions?: Prisma.MedicineSuggestionUncheckedUpdateManyWithoutReviewerNestedInput;
+    verifiedMedicines?: Prisma.PatientMedicineUncheckedUpdateManyWithoutVerifierNestedInput;
 };
 export type UserCreateWithoutPatientInput = {
     email: string;
+    phone?: string | null;
     passwordHash: string;
     role: $Enums.UserRole;
     emailVerified?: boolean;
@@ -862,10 +914,12 @@ export type UserCreateWithoutPatientInput = {
     uploadedReports?: Prisma.MedicalReportCreateNestedManyWithoutUploaderInput;
     diseaseWarningRules?: Prisma.DiseaseWarningRuleCreateNestedManyWithoutCreatorInput;
     reviewedSuggestions?: Prisma.MedicineSuggestionCreateNestedManyWithoutReviewerInput;
+    verifiedMedicines?: Prisma.PatientMedicineCreateNestedManyWithoutVerifierInput;
 };
 export type UserUncheckedCreateWithoutPatientInput = {
     id?: number;
     email: string;
+    phone?: string | null;
     passwordHash: string;
     role: $Enums.UserRole;
     emailVerified?: boolean;
@@ -888,6 +942,7 @@ export type UserUncheckedCreateWithoutPatientInput = {
     uploadedReports?: Prisma.MedicalReportUncheckedCreateNestedManyWithoutUploaderInput;
     diseaseWarningRules?: Prisma.DiseaseWarningRuleUncheckedCreateNestedManyWithoutCreatorInput;
     reviewedSuggestions?: Prisma.MedicineSuggestionUncheckedCreateNestedManyWithoutReviewerInput;
+    verifiedMedicines?: Prisma.PatientMedicineUncheckedCreateNestedManyWithoutVerifierInput;
 };
 export type UserCreateOrConnectWithoutPatientInput = {
     where: Prisma.UserWhereUniqueInput;
@@ -904,6 +959,7 @@ export type UserUpdateToOneWithWhereWithoutPatientInput = {
 };
 export type UserUpdateWithoutPatientInput = {
     email?: Prisma.StringFieldUpdateOperationsInput | string;
+    phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     passwordHash?: Prisma.StringFieldUpdateOperationsInput | string;
     role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole;
     emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean;
@@ -926,10 +982,12 @@ export type UserUpdateWithoutPatientInput = {
     uploadedReports?: Prisma.MedicalReportUpdateManyWithoutUploaderNestedInput;
     diseaseWarningRules?: Prisma.DiseaseWarningRuleUpdateManyWithoutCreatorNestedInput;
     reviewedSuggestions?: Prisma.MedicineSuggestionUpdateManyWithoutReviewerNestedInput;
+    verifiedMedicines?: Prisma.PatientMedicineUpdateManyWithoutVerifierNestedInput;
 };
 export type UserUncheckedUpdateWithoutPatientInput = {
     id?: Prisma.IntFieldUpdateOperationsInput | number;
     email?: Prisma.StringFieldUpdateOperationsInput | string;
+    phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     passwordHash?: Prisma.StringFieldUpdateOperationsInput | string;
     role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole;
     emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean;
@@ -952,9 +1010,11 @@ export type UserUncheckedUpdateWithoutPatientInput = {
     uploadedReports?: Prisma.MedicalReportUncheckedUpdateManyWithoutUploaderNestedInput;
     diseaseWarningRules?: Prisma.DiseaseWarningRuleUncheckedUpdateManyWithoutCreatorNestedInput;
     reviewedSuggestions?: Prisma.MedicineSuggestionUncheckedUpdateManyWithoutReviewerNestedInput;
+    verifiedMedicines?: Prisma.PatientMedicineUncheckedUpdateManyWithoutVerifierNestedInput;
 };
 export type UserCreateWithoutDoctorInput = {
     email: string;
+    phone?: string | null;
     passwordHash: string;
     role: $Enums.UserRole;
     emailVerified?: boolean;
@@ -977,10 +1037,12 @@ export type UserCreateWithoutDoctorInput = {
     uploadedReports?: Prisma.MedicalReportCreateNestedManyWithoutUploaderInput;
     diseaseWarningRules?: Prisma.DiseaseWarningRuleCreateNestedManyWithoutCreatorInput;
     reviewedSuggestions?: Prisma.MedicineSuggestionCreateNestedManyWithoutReviewerInput;
+    verifiedMedicines?: Prisma.PatientMedicineCreateNestedManyWithoutVerifierInput;
 };
 export type UserUncheckedCreateWithoutDoctorInput = {
     id?: number;
     email: string;
+    phone?: string | null;
     passwordHash: string;
     role: $Enums.UserRole;
     emailVerified?: boolean;
@@ -1003,6 +1065,7 @@ export type UserUncheckedCreateWithoutDoctorInput = {
     uploadedReports?: Prisma.MedicalReportUncheckedCreateNestedManyWithoutUploaderInput;
     diseaseWarningRules?: Prisma.DiseaseWarningRuleUncheckedCreateNestedManyWithoutCreatorInput;
     reviewedSuggestions?: Prisma.MedicineSuggestionUncheckedCreateNestedManyWithoutReviewerInput;
+    verifiedMedicines?: Prisma.PatientMedicineUncheckedCreateNestedManyWithoutVerifierInput;
 };
 export type UserCreateOrConnectWithoutDoctorInput = {
     where: Prisma.UserWhereUniqueInput;
@@ -1019,6 +1082,7 @@ export type UserUpdateToOneWithWhereWithoutDoctorInput = {
 };
 export type UserUpdateWithoutDoctorInput = {
     email?: Prisma.StringFieldUpdateOperationsInput | string;
+    phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     passwordHash?: Prisma.StringFieldUpdateOperationsInput | string;
     role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole;
     emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean;
@@ -1041,10 +1105,12 @@ export type UserUpdateWithoutDoctorInput = {
     uploadedReports?: Prisma.MedicalReportUpdateManyWithoutUploaderNestedInput;
     diseaseWarningRules?: Prisma.DiseaseWarningRuleUpdateManyWithoutCreatorNestedInput;
     reviewedSuggestions?: Prisma.MedicineSuggestionUpdateManyWithoutReviewerNestedInput;
+    verifiedMedicines?: Prisma.PatientMedicineUpdateManyWithoutVerifierNestedInput;
 };
 export type UserUncheckedUpdateWithoutDoctorInput = {
     id?: Prisma.IntFieldUpdateOperationsInput | number;
     email?: Prisma.StringFieldUpdateOperationsInput | string;
+    phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     passwordHash?: Prisma.StringFieldUpdateOperationsInput | string;
     role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole;
     emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean;
@@ -1067,9 +1133,11 @@ export type UserUncheckedUpdateWithoutDoctorInput = {
     uploadedReports?: Prisma.MedicalReportUncheckedUpdateManyWithoutUploaderNestedInput;
     diseaseWarningRules?: Prisma.DiseaseWarningRuleUncheckedUpdateManyWithoutCreatorNestedInput;
     reviewedSuggestions?: Prisma.MedicineSuggestionUncheckedUpdateManyWithoutReviewerNestedInput;
+    verifiedMedicines?: Prisma.PatientMedicineUncheckedUpdateManyWithoutVerifierNestedInput;
 };
 export type UserCreateWithoutDiseaseWarningRulesInput = {
     email: string;
+    phone?: string | null;
     passwordHash: string;
     role: $Enums.UserRole;
     emailVerified?: boolean;
@@ -1092,10 +1160,12 @@ export type UserCreateWithoutDiseaseWarningRulesInput = {
     exportHistory?: Prisma.ExportHistoryCreateNestedManyWithoutUserInput;
     uploadedReports?: Prisma.MedicalReportCreateNestedManyWithoutUploaderInput;
     reviewedSuggestions?: Prisma.MedicineSuggestionCreateNestedManyWithoutReviewerInput;
+    verifiedMedicines?: Prisma.PatientMedicineCreateNestedManyWithoutVerifierInput;
 };
 export type UserUncheckedCreateWithoutDiseaseWarningRulesInput = {
     id?: number;
     email: string;
+    phone?: string | null;
     passwordHash: string;
     role: $Enums.UserRole;
     emailVerified?: boolean;
@@ -1118,6 +1188,7 @@ export type UserUncheckedCreateWithoutDiseaseWarningRulesInput = {
     exportHistory?: Prisma.ExportHistoryUncheckedCreateNestedManyWithoutUserInput;
     uploadedReports?: Prisma.MedicalReportUncheckedCreateNestedManyWithoutUploaderInput;
     reviewedSuggestions?: Prisma.MedicineSuggestionUncheckedCreateNestedManyWithoutReviewerInput;
+    verifiedMedicines?: Prisma.PatientMedicineUncheckedCreateNestedManyWithoutVerifierInput;
 };
 export type UserCreateOrConnectWithoutDiseaseWarningRulesInput = {
     where: Prisma.UserWhereUniqueInput;
@@ -1134,6 +1205,7 @@ export type UserUpdateToOneWithWhereWithoutDiseaseWarningRulesInput = {
 };
 export type UserUpdateWithoutDiseaseWarningRulesInput = {
     email?: Prisma.StringFieldUpdateOperationsInput | string;
+    phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     passwordHash?: Prisma.StringFieldUpdateOperationsInput | string;
     role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole;
     emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean;
@@ -1156,10 +1228,12 @@ export type UserUpdateWithoutDiseaseWarningRulesInput = {
     exportHistory?: Prisma.ExportHistoryUpdateManyWithoutUserNestedInput;
     uploadedReports?: Prisma.MedicalReportUpdateManyWithoutUploaderNestedInput;
     reviewedSuggestions?: Prisma.MedicineSuggestionUpdateManyWithoutReviewerNestedInput;
+    verifiedMedicines?: Prisma.PatientMedicineUpdateManyWithoutVerifierNestedInput;
 };
 export type UserUncheckedUpdateWithoutDiseaseWarningRulesInput = {
     id?: Prisma.IntFieldUpdateOperationsInput | number;
     email?: Prisma.StringFieldUpdateOperationsInput | string;
+    phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     passwordHash?: Prisma.StringFieldUpdateOperationsInput | string;
     role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole;
     emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean;
@@ -1182,9 +1256,11 @@ export type UserUncheckedUpdateWithoutDiseaseWarningRulesInput = {
     exportHistory?: Prisma.ExportHistoryUncheckedUpdateManyWithoutUserNestedInput;
     uploadedReports?: Prisma.MedicalReportUncheckedUpdateManyWithoutUploaderNestedInput;
     reviewedSuggestions?: Prisma.MedicineSuggestionUncheckedUpdateManyWithoutReviewerNestedInput;
+    verifiedMedicines?: Prisma.PatientMedicineUncheckedUpdateManyWithoutVerifierNestedInput;
 };
 export type UserCreateWithoutNotificationsInput = {
     email: string;
+    phone?: string | null;
     passwordHash: string;
     role: $Enums.UserRole;
     emailVerified?: boolean;
@@ -1207,10 +1283,12 @@ export type UserCreateWithoutNotificationsInput = {
     uploadedReports?: Prisma.MedicalReportCreateNestedManyWithoutUploaderInput;
     diseaseWarningRules?: Prisma.DiseaseWarningRuleCreateNestedManyWithoutCreatorInput;
     reviewedSuggestions?: Prisma.MedicineSuggestionCreateNestedManyWithoutReviewerInput;
+    verifiedMedicines?: Prisma.PatientMedicineCreateNestedManyWithoutVerifierInput;
 };
 export type UserUncheckedCreateWithoutNotificationsInput = {
     id?: number;
     email: string;
+    phone?: string | null;
     passwordHash: string;
     role: $Enums.UserRole;
     emailVerified?: boolean;
@@ -1233,6 +1311,7 @@ export type UserUncheckedCreateWithoutNotificationsInput = {
     uploadedReports?: Prisma.MedicalReportUncheckedCreateNestedManyWithoutUploaderInput;
     diseaseWarningRules?: Prisma.DiseaseWarningRuleUncheckedCreateNestedManyWithoutCreatorInput;
     reviewedSuggestions?: Prisma.MedicineSuggestionUncheckedCreateNestedManyWithoutReviewerInput;
+    verifiedMedicines?: Prisma.PatientMedicineUncheckedCreateNestedManyWithoutVerifierInput;
 };
 export type UserCreateOrConnectWithoutNotificationsInput = {
     where: Prisma.UserWhereUniqueInput;
@@ -1249,6 +1328,7 @@ export type UserUpdateToOneWithWhereWithoutNotificationsInput = {
 };
 export type UserUpdateWithoutNotificationsInput = {
     email?: Prisma.StringFieldUpdateOperationsInput | string;
+    phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     passwordHash?: Prisma.StringFieldUpdateOperationsInput | string;
     role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole;
     emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean;
@@ -1271,10 +1351,12 @@ export type UserUpdateWithoutNotificationsInput = {
     uploadedReports?: Prisma.MedicalReportUpdateManyWithoutUploaderNestedInput;
     diseaseWarningRules?: Prisma.DiseaseWarningRuleUpdateManyWithoutCreatorNestedInput;
     reviewedSuggestions?: Prisma.MedicineSuggestionUpdateManyWithoutReviewerNestedInput;
+    verifiedMedicines?: Prisma.PatientMedicineUpdateManyWithoutVerifierNestedInput;
 };
 export type UserUncheckedUpdateWithoutNotificationsInput = {
     id?: Prisma.IntFieldUpdateOperationsInput | number;
     email?: Prisma.StringFieldUpdateOperationsInput | string;
+    phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     passwordHash?: Prisma.StringFieldUpdateOperationsInput | string;
     role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole;
     emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean;
@@ -1297,9 +1379,11 @@ export type UserUncheckedUpdateWithoutNotificationsInput = {
     uploadedReports?: Prisma.MedicalReportUncheckedUpdateManyWithoutUploaderNestedInput;
     diseaseWarningRules?: Prisma.DiseaseWarningRuleUncheckedUpdateManyWithoutCreatorNestedInput;
     reviewedSuggestions?: Prisma.MedicineSuggestionUncheckedUpdateManyWithoutReviewerNestedInput;
+    verifiedMedicines?: Prisma.PatientMedicineUncheckedUpdateManyWithoutVerifierNestedInput;
 };
 export type UserCreateWithoutAuditLogsInput = {
     email: string;
+    phone?: string | null;
     passwordHash: string;
     role: $Enums.UserRole;
     emailVerified?: boolean;
@@ -1322,10 +1406,12 @@ export type UserCreateWithoutAuditLogsInput = {
     uploadedReports?: Prisma.MedicalReportCreateNestedManyWithoutUploaderInput;
     diseaseWarningRules?: Prisma.DiseaseWarningRuleCreateNestedManyWithoutCreatorInput;
     reviewedSuggestions?: Prisma.MedicineSuggestionCreateNestedManyWithoutReviewerInput;
+    verifiedMedicines?: Prisma.PatientMedicineCreateNestedManyWithoutVerifierInput;
 };
 export type UserUncheckedCreateWithoutAuditLogsInput = {
     id?: number;
     email: string;
+    phone?: string | null;
     passwordHash: string;
     role: $Enums.UserRole;
     emailVerified?: boolean;
@@ -1348,6 +1434,7 @@ export type UserUncheckedCreateWithoutAuditLogsInput = {
     uploadedReports?: Prisma.MedicalReportUncheckedCreateNestedManyWithoutUploaderInput;
     diseaseWarningRules?: Prisma.DiseaseWarningRuleUncheckedCreateNestedManyWithoutCreatorInput;
     reviewedSuggestions?: Prisma.MedicineSuggestionUncheckedCreateNestedManyWithoutReviewerInput;
+    verifiedMedicines?: Prisma.PatientMedicineUncheckedCreateNestedManyWithoutVerifierInput;
 };
 export type UserCreateOrConnectWithoutAuditLogsInput = {
     where: Prisma.UserWhereUniqueInput;
@@ -1364,6 +1451,7 @@ export type UserUpdateToOneWithWhereWithoutAuditLogsInput = {
 };
 export type UserUpdateWithoutAuditLogsInput = {
     email?: Prisma.StringFieldUpdateOperationsInput | string;
+    phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     passwordHash?: Prisma.StringFieldUpdateOperationsInput | string;
     role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole;
     emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean;
@@ -1386,10 +1474,12 @@ export type UserUpdateWithoutAuditLogsInput = {
     uploadedReports?: Prisma.MedicalReportUpdateManyWithoutUploaderNestedInput;
     diseaseWarningRules?: Prisma.DiseaseWarningRuleUpdateManyWithoutCreatorNestedInput;
     reviewedSuggestions?: Prisma.MedicineSuggestionUpdateManyWithoutReviewerNestedInput;
+    verifiedMedicines?: Prisma.PatientMedicineUpdateManyWithoutVerifierNestedInput;
 };
 export type UserUncheckedUpdateWithoutAuditLogsInput = {
     id?: Prisma.IntFieldUpdateOperationsInput | number;
     email?: Prisma.StringFieldUpdateOperationsInput | string;
+    phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     passwordHash?: Prisma.StringFieldUpdateOperationsInput | string;
     role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole;
     emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean;
@@ -1412,9 +1502,11 @@ export type UserUncheckedUpdateWithoutAuditLogsInput = {
     uploadedReports?: Prisma.MedicalReportUncheckedUpdateManyWithoutUploaderNestedInput;
     diseaseWarningRules?: Prisma.DiseaseWarningRuleUncheckedUpdateManyWithoutCreatorNestedInput;
     reviewedSuggestions?: Prisma.MedicineSuggestionUncheckedUpdateManyWithoutReviewerNestedInput;
+    verifiedMedicines?: Prisma.PatientMedicineUncheckedUpdateManyWithoutVerifierNestedInput;
 };
 export type UserCreateWithoutSessionsInput = {
     email: string;
+    phone?: string | null;
     passwordHash: string;
     role: $Enums.UserRole;
     emailVerified?: boolean;
@@ -1437,10 +1529,12 @@ export type UserCreateWithoutSessionsInput = {
     uploadedReports?: Prisma.MedicalReportCreateNestedManyWithoutUploaderInput;
     diseaseWarningRules?: Prisma.DiseaseWarningRuleCreateNestedManyWithoutCreatorInput;
     reviewedSuggestions?: Prisma.MedicineSuggestionCreateNestedManyWithoutReviewerInput;
+    verifiedMedicines?: Prisma.PatientMedicineCreateNestedManyWithoutVerifierInput;
 };
 export type UserUncheckedCreateWithoutSessionsInput = {
     id?: number;
     email: string;
+    phone?: string | null;
     passwordHash: string;
     role: $Enums.UserRole;
     emailVerified?: boolean;
@@ -1463,6 +1557,7 @@ export type UserUncheckedCreateWithoutSessionsInput = {
     uploadedReports?: Prisma.MedicalReportUncheckedCreateNestedManyWithoutUploaderInput;
     diseaseWarningRules?: Prisma.DiseaseWarningRuleUncheckedCreateNestedManyWithoutCreatorInput;
     reviewedSuggestions?: Prisma.MedicineSuggestionUncheckedCreateNestedManyWithoutReviewerInput;
+    verifiedMedicines?: Prisma.PatientMedicineUncheckedCreateNestedManyWithoutVerifierInput;
 };
 export type UserCreateOrConnectWithoutSessionsInput = {
     where: Prisma.UserWhereUniqueInput;
@@ -1479,6 +1574,7 @@ export type UserUpdateToOneWithWhereWithoutSessionsInput = {
 };
 export type UserUpdateWithoutSessionsInput = {
     email?: Prisma.StringFieldUpdateOperationsInput | string;
+    phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     passwordHash?: Prisma.StringFieldUpdateOperationsInput | string;
     role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole;
     emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean;
@@ -1501,10 +1597,12 @@ export type UserUpdateWithoutSessionsInput = {
     uploadedReports?: Prisma.MedicalReportUpdateManyWithoutUploaderNestedInput;
     diseaseWarningRules?: Prisma.DiseaseWarningRuleUpdateManyWithoutCreatorNestedInput;
     reviewedSuggestions?: Prisma.MedicineSuggestionUpdateManyWithoutReviewerNestedInput;
+    verifiedMedicines?: Prisma.PatientMedicineUpdateManyWithoutVerifierNestedInput;
 };
 export type UserUncheckedUpdateWithoutSessionsInput = {
     id?: Prisma.IntFieldUpdateOperationsInput | number;
     email?: Prisma.StringFieldUpdateOperationsInput | string;
+    phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     passwordHash?: Prisma.StringFieldUpdateOperationsInput | string;
     role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole;
     emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean;
@@ -1527,9 +1625,11 @@ export type UserUncheckedUpdateWithoutSessionsInput = {
     uploadedReports?: Prisma.MedicalReportUncheckedUpdateManyWithoutUploaderNestedInput;
     diseaseWarningRules?: Prisma.DiseaseWarningRuleUncheckedUpdateManyWithoutCreatorNestedInput;
     reviewedSuggestions?: Prisma.MedicineSuggestionUncheckedUpdateManyWithoutReviewerNestedInput;
+    verifiedMedicines?: Prisma.PatientMedicineUncheckedUpdateManyWithoutVerifierNestedInput;
 };
 export type UserCreateWithoutPharmacistInput = {
     email: string;
+    phone?: string | null;
     passwordHash: string;
     role: $Enums.UserRole;
     emailVerified?: boolean;
@@ -1552,10 +1652,12 @@ export type UserCreateWithoutPharmacistInput = {
     uploadedReports?: Prisma.MedicalReportCreateNestedManyWithoutUploaderInput;
     diseaseWarningRules?: Prisma.DiseaseWarningRuleCreateNestedManyWithoutCreatorInput;
     reviewedSuggestions?: Prisma.MedicineSuggestionCreateNestedManyWithoutReviewerInput;
+    verifiedMedicines?: Prisma.PatientMedicineCreateNestedManyWithoutVerifierInput;
 };
 export type UserUncheckedCreateWithoutPharmacistInput = {
     id?: number;
     email: string;
+    phone?: string | null;
     passwordHash: string;
     role: $Enums.UserRole;
     emailVerified?: boolean;
@@ -1578,6 +1680,7 @@ export type UserUncheckedCreateWithoutPharmacistInput = {
     uploadedReports?: Prisma.MedicalReportUncheckedCreateNestedManyWithoutUploaderInput;
     diseaseWarningRules?: Prisma.DiseaseWarningRuleUncheckedCreateNestedManyWithoutCreatorInput;
     reviewedSuggestions?: Prisma.MedicineSuggestionUncheckedCreateNestedManyWithoutReviewerInput;
+    verifiedMedicines?: Prisma.PatientMedicineUncheckedCreateNestedManyWithoutVerifierInput;
 };
 export type UserCreateOrConnectWithoutPharmacistInput = {
     where: Prisma.UserWhereUniqueInput;
@@ -1594,6 +1697,7 @@ export type UserUpdateToOneWithWhereWithoutPharmacistInput = {
 };
 export type UserUpdateWithoutPharmacistInput = {
     email?: Prisma.StringFieldUpdateOperationsInput | string;
+    phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     passwordHash?: Prisma.StringFieldUpdateOperationsInput | string;
     role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole;
     emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean;
@@ -1616,10 +1720,12 @@ export type UserUpdateWithoutPharmacistInput = {
     uploadedReports?: Prisma.MedicalReportUpdateManyWithoutUploaderNestedInput;
     diseaseWarningRules?: Prisma.DiseaseWarningRuleUpdateManyWithoutCreatorNestedInput;
     reviewedSuggestions?: Prisma.MedicineSuggestionUpdateManyWithoutReviewerNestedInput;
+    verifiedMedicines?: Prisma.PatientMedicineUpdateManyWithoutVerifierNestedInput;
 };
 export type UserUncheckedUpdateWithoutPharmacistInput = {
     id?: Prisma.IntFieldUpdateOperationsInput | number;
     email?: Prisma.StringFieldUpdateOperationsInput | string;
+    phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     passwordHash?: Prisma.StringFieldUpdateOperationsInput | string;
     role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole;
     emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean;
@@ -1642,9 +1748,11 @@ export type UserUncheckedUpdateWithoutPharmacistInput = {
     uploadedReports?: Prisma.MedicalReportUncheckedUpdateManyWithoutUploaderNestedInput;
     diseaseWarningRules?: Prisma.DiseaseWarningRuleUncheckedUpdateManyWithoutCreatorNestedInput;
     reviewedSuggestions?: Prisma.MedicineSuggestionUncheckedUpdateManyWithoutReviewerNestedInput;
+    verifiedMedicines?: Prisma.PatientMedicineUncheckedUpdateManyWithoutVerifierNestedInput;
 };
 export type UserCreateWithoutUploadedReportsInput = {
     email: string;
+    phone?: string | null;
     passwordHash: string;
     role: $Enums.UserRole;
     emailVerified?: boolean;
@@ -1667,10 +1775,12 @@ export type UserCreateWithoutUploadedReportsInput = {
     exportHistory?: Prisma.ExportHistoryCreateNestedManyWithoutUserInput;
     diseaseWarningRules?: Prisma.DiseaseWarningRuleCreateNestedManyWithoutCreatorInput;
     reviewedSuggestions?: Prisma.MedicineSuggestionCreateNestedManyWithoutReviewerInput;
+    verifiedMedicines?: Prisma.PatientMedicineCreateNestedManyWithoutVerifierInput;
 };
 export type UserUncheckedCreateWithoutUploadedReportsInput = {
     id?: number;
     email: string;
+    phone?: string | null;
     passwordHash: string;
     role: $Enums.UserRole;
     emailVerified?: boolean;
@@ -1693,6 +1803,7 @@ export type UserUncheckedCreateWithoutUploadedReportsInput = {
     exportHistory?: Prisma.ExportHistoryUncheckedCreateNestedManyWithoutUserInput;
     diseaseWarningRules?: Prisma.DiseaseWarningRuleUncheckedCreateNestedManyWithoutCreatorInput;
     reviewedSuggestions?: Prisma.MedicineSuggestionUncheckedCreateNestedManyWithoutReviewerInput;
+    verifiedMedicines?: Prisma.PatientMedicineUncheckedCreateNestedManyWithoutVerifierInput;
 };
 export type UserCreateOrConnectWithoutUploadedReportsInput = {
     where: Prisma.UserWhereUniqueInput;
@@ -1709,6 +1820,7 @@ export type UserUpdateToOneWithWhereWithoutUploadedReportsInput = {
 };
 export type UserUpdateWithoutUploadedReportsInput = {
     email?: Prisma.StringFieldUpdateOperationsInput | string;
+    phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     passwordHash?: Prisma.StringFieldUpdateOperationsInput | string;
     role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole;
     emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean;
@@ -1731,10 +1843,12 @@ export type UserUpdateWithoutUploadedReportsInput = {
     exportHistory?: Prisma.ExportHistoryUpdateManyWithoutUserNestedInput;
     diseaseWarningRules?: Prisma.DiseaseWarningRuleUpdateManyWithoutCreatorNestedInput;
     reviewedSuggestions?: Prisma.MedicineSuggestionUpdateManyWithoutReviewerNestedInput;
+    verifiedMedicines?: Prisma.PatientMedicineUpdateManyWithoutVerifierNestedInput;
 };
 export type UserUncheckedUpdateWithoutUploadedReportsInput = {
     id?: Prisma.IntFieldUpdateOperationsInput | number;
     email?: Prisma.StringFieldUpdateOperationsInput | string;
+    phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     passwordHash?: Prisma.StringFieldUpdateOperationsInput | string;
     role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole;
     emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean;
@@ -1757,9 +1871,134 @@ export type UserUncheckedUpdateWithoutUploadedReportsInput = {
     exportHistory?: Prisma.ExportHistoryUncheckedUpdateManyWithoutUserNestedInput;
     diseaseWarningRules?: Prisma.DiseaseWarningRuleUncheckedUpdateManyWithoutCreatorNestedInput;
     reviewedSuggestions?: Prisma.MedicineSuggestionUncheckedUpdateManyWithoutReviewerNestedInput;
+    verifiedMedicines?: Prisma.PatientMedicineUncheckedUpdateManyWithoutVerifierNestedInput;
+};
+export type UserCreateWithoutVerifiedMedicinesInput = {
+    email: string;
+    phone?: string | null;
+    passwordHash: string;
+    role: $Enums.UserRole;
+    emailVerified?: boolean;
+    emailVerificationToken?: string | null;
+    passwordResetToken?: string | null;
+    passwordResetExpires?: Date | string | null;
+    isActive?: boolean;
+    lastLoginAt?: Date | string | null;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+    deletedAt?: Date | string | null;
+    subscription?: Prisma.SubscriptionCreateNestedOneWithoutUserInput;
+    patient?: Prisma.PatientCreateNestedOneWithoutUserInput;
+    doctor?: Prisma.DoctorCreateNestedOneWithoutUserInput;
+    pharmacist?: Prisma.PharmacistCreateNestedOneWithoutUserInput;
+    notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput;
+    auditLogs?: Prisma.AuditLogCreateNestedManyWithoutUserInput;
+    sessions?: Prisma.SessionCreateNestedManyWithoutUserInput;
+    importHistory?: Prisma.ImportHistoryCreateNestedManyWithoutImporterInput;
+    exportHistory?: Prisma.ExportHistoryCreateNestedManyWithoutUserInput;
+    uploadedReports?: Prisma.MedicalReportCreateNestedManyWithoutUploaderInput;
+    diseaseWarningRules?: Prisma.DiseaseWarningRuleCreateNestedManyWithoutCreatorInput;
+    reviewedSuggestions?: Prisma.MedicineSuggestionCreateNestedManyWithoutReviewerInput;
+};
+export type UserUncheckedCreateWithoutVerifiedMedicinesInput = {
+    id?: number;
+    email: string;
+    phone?: string | null;
+    passwordHash: string;
+    role: $Enums.UserRole;
+    emailVerified?: boolean;
+    emailVerificationToken?: string | null;
+    passwordResetToken?: string | null;
+    passwordResetExpires?: Date | string | null;
+    isActive?: boolean;
+    lastLoginAt?: Date | string | null;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+    deletedAt?: Date | string | null;
+    subscription?: Prisma.SubscriptionUncheckedCreateNestedOneWithoutUserInput;
+    patient?: Prisma.PatientUncheckedCreateNestedOneWithoutUserInput;
+    doctor?: Prisma.DoctorUncheckedCreateNestedOneWithoutUserInput;
+    pharmacist?: Prisma.PharmacistUncheckedCreateNestedOneWithoutUserInput;
+    notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput;
+    auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutUserInput;
+    sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput;
+    importHistory?: Prisma.ImportHistoryUncheckedCreateNestedManyWithoutImporterInput;
+    exportHistory?: Prisma.ExportHistoryUncheckedCreateNestedManyWithoutUserInput;
+    uploadedReports?: Prisma.MedicalReportUncheckedCreateNestedManyWithoutUploaderInput;
+    diseaseWarningRules?: Prisma.DiseaseWarningRuleUncheckedCreateNestedManyWithoutCreatorInput;
+    reviewedSuggestions?: Prisma.MedicineSuggestionUncheckedCreateNestedManyWithoutReviewerInput;
+};
+export type UserCreateOrConnectWithoutVerifiedMedicinesInput = {
+    where: Prisma.UserWhereUniqueInput;
+    create: Prisma.XOR<Prisma.UserCreateWithoutVerifiedMedicinesInput, Prisma.UserUncheckedCreateWithoutVerifiedMedicinesInput>;
+};
+export type UserUpsertWithoutVerifiedMedicinesInput = {
+    update: Prisma.XOR<Prisma.UserUpdateWithoutVerifiedMedicinesInput, Prisma.UserUncheckedUpdateWithoutVerifiedMedicinesInput>;
+    create: Prisma.XOR<Prisma.UserCreateWithoutVerifiedMedicinesInput, Prisma.UserUncheckedCreateWithoutVerifiedMedicinesInput>;
+    where?: Prisma.UserWhereInput;
+};
+export type UserUpdateToOneWithWhereWithoutVerifiedMedicinesInput = {
+    where?: Prisma.UserWhereInput;
+    data: Prisma.XOR<Prisma.UserUpdateWithoutVerifiedMedicinesInput, Prisma.UserUncheckedUpdateWithoutVerifiedMedicinesInput>;
+};
+export type UserUpdateWithoutVerifiedMedicinesInput = {
+    email?: Prisma.StringFieldUpdateOperationsInput | string;
+    phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    passwordHash?: Prisma.StringFieldUpdateOperationsInput | string;
+    role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole;
+    emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    emailVerificationToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    passwordResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    passwordResetExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    subscription?: Prisma.SubscriptionUpdateOneWithoutUserNestedInput;
+    patient?: Prisma.PatientUpdateOneWithoutUserNestedInput;
+    doctor?: Prisma.DoctorUpdateOneWithoutUserNestedInput;
+    pharmacist?: Prisma.PharmacistUpdateOneWithoutUserNestedInput;
+    notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput;
+    auditLogs?: Prisma.AuditLogUpdateManyWithoutUserNestedInput;
+    sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput;
+    importHistory?: Prisma.ImportHistoryUpdateManyWithoutImporterNestedInput;
+    exportHistory?: Prisma.ExportHistoryUpdateManyWithoutUserNestedInput;
+    uploadedReports?: Prisma.MedicalReportUpdateManyWithoutUploaderNestedInput;
+    diseaseWarningRules?: Prisma.DiseaseWarningRuleUpdateManyWithoutCreatorNestedInput;
+    reviewedSuggestions?: Prisma.MedicineSuggestionUpdateManyWithoutReviewerNestedInput;
+};
+export type UserUncheckedUpdateWithoutVerifiedMedicinesInput = {
+    id?: Prisma.IntFieldUpdateOperationsInput | number;
+    email?: Prisma.StringFieldUpdateOperationsInput | string;
+    phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    passwordHash?: Prisma.StringFieldUpdateOperationsInput | string;
+    role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole;
+    emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    emailVerificationToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    passwordResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    passwordResetExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    subscription?: Prisma.SubscriptionUncheckedUpdateOneWithoutUserNestedInput;
+    patient?: Prisma.PatientUncheckedUpdateOneWithoutUserNestedInput;
+    doctor?: Prisma.DoctorUncheckedUpdateOneWithoutUserNestedInput;
+    pharmacist?: Prisma.PharmacistUncheckedUpdateOneWithoutUserNestedInput;
+    notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput;
+    auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutUserNestedInput;
+    sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput;
+    importHistory?: Prisma.ImportHistoryUncheckedUpdateManyWithoutImporterNestedInput;
+    exportHistory?: Prisma.ExportHistoryUncheckedUpdateManyWithoutUserNestedInput;
+    uploadedReports?: Prisma.MedicalReportUncheckedUpdateManyWithoutUploaderNestedInput;
+    diseaseWarningRules?: Prisma.DiseaseWarningRuleUncheckedUpdateManyWithoutCreatorNestedInput;
+    reviewedSuggestions?: Prisma.MedicineSuggestionUncheckedUpdateManyWithoutReviewerNestedInput;
 };
 export type UserCreateWithoutImportHistoryInput = {
     email: string;
+    phone?: string | null;
     passwordHash: string;
     role: $Enums.UserRole;
     emailVerified?: boolean;
@@ -1782,10 +2021,12 @@ export type UserCreateWithoutImportHistoryInput = {
     uploadedReports?: Prisma.MedicalReportCreateNestedManyWithoutUploaderInput;
     diseaseWarningRules?: Prisma.DiseaseWarningRuleCreateNestedManyWithoutCreatorInput;
     reviewedSuggestions?: Prisma.MedicineSuggestionCreateNestedManyWithoutReviewerInput;
+    verifiedMedicines?: Prisma.PatientMedicineCreateNestedManyWithoutVerifierInput;
 };
 export type UserUncheckedCreateWithoutImportHistoryInput = {
     id?: number;
     email: string;
+    phone?: string | null;
     passwordHash: string;
     role: $Enums.UserRole;
     emailVerified?: boolean;
@@ -1808,6 +2049,7 @@ export type UserUncheckedCreateWithoutImportHistoryInput = {
     uploadedReports?: Prisma.MedicalReportUncheckedCreateNestedManyWithoutUploaderInput;
     diseaseWarningRules?: Prisma.DiseaseWarningRuleUncheckedCreateNestedManyWithoutCreatorInput;
     reviewedSuggestions?: Prisma.MedicineSuggestionUncheckedCreateNestedManyWithoutReviewerInput;
+    verifiedMedicines?: Prisma.PatientMedicineUncheckedCreateNestedManyWithoutVerifierInput;
 };
 export type UserCreateOrConnectWithoutImportHistoryInput = {
     where: Prisma.UserWhereUniqueInput;
@@ -1824,6 +2066,7 @@ export type UserUpdateToOneWithWhereWithoutImportHistoryInput = {
 };
 export type UserUpdateWithoutImportHistoryInput = {
     email?: Prisma.StringFieldUpdateOperationsInput | string;
+    phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     passwordHash?: Prisma.StringFieldUpdateOperationsInput | string;
     role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole;
     emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean;
@@ -1846,10 +2089,12 @@ export type UserUpdateWithoutImportHistoryInput = {
     uploadedReports?: Prisma.MedicalReportUpdateManyWithoutUploaderNestedInput;
     diseaseWarningRules?: Prisma.DiseaseWarningRuleUpdateManyWithoutCreatorNestedInput;
     reviewedSuggestions?: Prisma.MedicineSuggestionUpdateManyWithoutReviewerNestedInput;
+    verifiedMedicines?: Prisma.PatientMedicineUpdateManyWithoutVerifierNestedInput;
 };
 export type UserUncheckedUpdateWithoutImportHistoryInput = {
     id?: Prisma.IntFieldUpdateOperationsInput | number;
     email?: Prisma.StringFieldUpdateOperationsInput | string;
+    phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     passwordHash?: Prisma.StringFieldUpdateOperationsInput | string;
     role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole;
     emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean;
@@ -1872,9 +2117,11 @@ export type UserUncheckedUpdateWithoutImportHistoryInput = {
     uploadedReports?: Prisma.MedicalReportUncheckedUpdateManyWithoutUploaderNestedInput;
     diseaseWarningRules?: Prisma.DiseaseWarningRuleUncheckedUpdateManyWithoutCreatorNestedInput;
     reviewedSuggestions?: Prisma.MedicineSuggestionUncheckedUpdateManyWithoutReviewerNestedInput;
+    verifiedMedicines?: Prisma.PatientMedicineUncheckedUpdateManyWithoutVerifierNestedInput;
 };
 export type UserCreateWithoutReviewedSuggestionsInput = {
     email: string;
+    phone?: string | null;
     passwordHash: string;
     role: $Enums.UserRole;
     emailVerified?: boolean;
@@ -1897,10 +2144,12 @@ export type UserCreateWithoutReviewedSuggestionsInput = {
     exportHistory?: Prisma.ExportHistoryCreateNestedManyWithoutUserInput;
     uploadedReports?: Prisma.MedicalReportCreateNestedManyWithoutUploaderInput;
     diseaseWarningRules?: Prisma.DiseaseWarningRuleCreateNestedManyWithoutCreatorInput;
+    verifiedMedicines?: Prisma.PatientMedicineCreateNestedManyWithoutVerifierInput;
 };
 export type UserUncheckedCreateWithoutReviewedSuggestionsInput = {
     id?: number;
     email: string;
+    phone?: string | null;
     passwordHash: string;
     role: $Enums.UserRole;
     emailVerified?: boolean;
@@ -1923,6 +2172,7 @@ export type UserUncheckedCreateWithoutReviewedSuggestionsInput = {
     exportHistory?: Prisma.ExportHistoryUncheckedCreateNestedManyWithoutUserInput;
     uploadedReports?: Prisma.MedicalReportUncheckedCreateNestedManyWithoutUploaderInput;
     diseaseWarningRules?: Prisma.DiseaseWarningRuleUncheckedCreateNestedManyWithoutCreatorInput;
+    verifiedMedicines?: Prisma.PatientMedicineUncheckedCreateNestedManyWithoutVerifierInput;
 };
 export type UserCreateOrConnectWithoutReviewedSuggestionsInput = {
     where: Prisma.UserWhereUniqueInput;
@@ -1939,6 +2189,7 @@ export type UserUpdateToOneWithWhereWithoutReviewedSuggestionsInput = {
 };
 export type UserUpdateWithoutReviewedSuggestionsInput = {
     email?: Prisma.StringFieldUpdateOperationsInput | string;
+    phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     passwordHash?: Prisma.StringFieldUpdateOperationsInput | string;
     role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole;
     emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean;
@@ -1961,10 +2212,12 @@ export type UserUpdateWithoutReviewedSuggestionsInput = {
     exportHistory?: Prisma.ExportHistoryUpdateManyWithoutUserNestedInput;
     uploadedReports?: Prisma.MedicalReportUpdateManyWithoutUploaderNestedInput;
     diseaseWarningRules?: Prisma.DiseaseWarningRuleUpdateManyWithoutCreatorNestedInput;
+    verifiedMedicines?: Prisma.PatientMedicineUpdateManyWithoutVerifierNestedInput;
 };
 export type UserUncheckedUpdateWithoutReviewedSuggestionsInput = {
     id?: Prisma.IntFieldUpdateOperationsInput | number;
     email?: Prisma.StringFieldUpdateOperationsInput | string;
+    phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     passwordHash?: Prisma.StringFieldUpdateOperationsInput | string;
     role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole;
     emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean;
@@ -1987,9 +2240,11 @@ export type UserUncheckedUpdateWithoutReviewedSuggestionsInput = {
     exportHistory?: Prisma.ExportHistoryUncheckedUpdateManyWithoutUserNestedInput;
     uploadedReports?: Prisma.MedicalReportUncheckedUpdateManyWithoutUploaderNestedInput;
     diseaseWarningRules?: Prisma.DiseaseWarningRuleUncheckedUpdateManyWithoutCreatorNestedInput;
+    verifiedMedicines?: Prisma.PatientMedicineUncheckedUpdateManyWithoutVerifierNestedInput;
 };
 export type UserCreateWithoutExportHistoryInput = {
     email: string;
+    phone?: string | null;
     passwordHash: string;
     role: $Enums.UserRole;
     emailVerified?: boolean;
@@ -2012,10 +2267,12 @@ export type UserCreateWithoutExportHistoryInput = {
     uploadedReports?: Prisma.MedicalReportCreateNestedManyWithoutUploaderInput;
     diseaseWarningRules?: Prisma.DiseaseWarningRuleCreateNestedManyWithoutCreatorInput;
     reviewedSuggestions?: Prisma.MedicineSuggestionCreateNestedManyWithoutReviewerInput;
+    verifiedMedicines?: Prisma.PatientMedicineCreateNestedManyWithoutVerifierInput;
 };
 export type UserUncheckedCreateWithoutExportHistoryInput = {
     id?: number;
     email: string;
+    phone?: string | null;
     passwordHash: string;
     role: $Enums.UserRole;
     emailVerified?: boolean;
@@ -2038,6 +2295,7 @@ export type UserUncheckedCreateWithoutExportHistoryInput = {
     uploadedReports?: Prisma.MedicalReportUncheckedCreateNestedManyWithoutUploaderInput;
     diseaseWarningRules?: Prisma.DiseaseWarningRuleUncheckedCreateNestedManyWithoutCreatorInput;
     reviewedSuggestions?: Prisma.MedicineSuggestionUncheckedCreateNestedManyWithoutReviewerInput;
+    verifiedMedicines?: Prisma.PatientMedicineUncheckedCreateNestedManyWithoutVerifierInput;
 };
 export type UserCreateOrConnectWithoutExportHistoryInput = {
     where: Prisma.UserWhereUniqueInput;
@@ -2054,6 +2312,7 @@ export type UserUpdateToOneWithWhereWithoutExportHistoryInput = {
 };
 export type UserUpdateWithoutExportHistoryInput = {
     email?: Prisma.StringFieldUpdateOperationsInput | string;
+    phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     passwordHash?: Prisma.StringFieldUpdateOperationsInput | string;
     role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole;
     emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean;
@@ -2076,10 +2335,12 @@ export type UserUpdateWithoutExportHistoryInput = {
     uploadedReports?: Prisma.MedicalReportUpdateManyWithoutUploaderNestedInput;
     diseaseWarningRules?: Prisma.DiseaseWarningRuleUpdateManyWithoutCreatorNestedInput;
     reviewedSuggestions?: Prisma.MedicineSuggestionUpdateManyWithoutReviewerNestedInput;
+    verifiedMedicines?: Prisma.PatientMedicineUpdateManyWithoutVerifierNestedInput;
 };
 export type UserUncheckedUpdateWithoutExportHistoryInput = {
     id?: Prisma.IntFieldUpdateOperationsInput | number;
     email?: Prisma.StringFieldUpdateOperationsInput | string;
+    phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     passwordHash?: Prisma.StringFieldUpdateOperationsInput | string;
     role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole;
     emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean;
@@ -2102,6 +2363,7 @@ export type UserUncheckedUpdateWithoutExportHistoryInput = {
     uploadedReports?: Prisma.MedicalReportUncheckedUpdateManyWithoutUploaderNestedInput;
     diseaseWarningRules?: Prisma.DiseaseWarningRuleUncheckedUpdateManyWithoutCreatorNestedInput;
     reviewedSuggestions?: Prisma.MedicineSuggestionUncheckedUpdateManyWithoutReviewerNestedInput;
+    verifiedMedicines?: Prisma.PatientMedicineUncheckedUpdateManyWithoutVerifierNestedInput;
 };
 /**
  * Count Type UserCountOutputType
@@ -2115,6 +2377,7 @@ export type UserCountOutputType = {
     uploadedReports: number;
     diseaseWarningRules: number;
     reviewedSuggestions: number;
+    verifiedMedicines: number;
 };
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     notifications?: boolean | UserCountOutputTypeCountNotificationsArgs;
@@ -2125,6 +2388,7 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
     uploadedReports?: boolean | UserCountOutputTypeCountUploadedReportsArgs;
     diseaseWarningRules?: boolean | UserCountOutputTypeCountDiseaseWarningRulesArgs;
     reviewedSuggestions?: boolean | UserCountOutputTypeCountReviewedSuggestionsArgs;
+    verifiedMedicines?: boolean | UserCountOutputTypeCountVerifiedMedicinesArgs;
 };
 /**
  * UserCountOutputType without action
@@ -2183,9 +2447,16 @@ export type UserCountOutputTypeCountDiseaseWarningRulesArgs<ExtArgs extends runt
 export type UserCountOutputTypeCountReviewedSuggestionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     where?: Prisma.MedicineSuggestionWhereInput;
 };
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountVerifiedMedicinesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    where?: Prisma.PatientMedicineWhereInput;
+};
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
     id?: boolean;
     email?: boolean;
+    phone?: boolean;
     passwordHash?: boolean;
     role?: boolean;
     emailVerified?: boolean;
@@ -2209,11 +2480,13 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
     uploadedReports?: boolean | Prisma.User$uploadedReportsArgs<ExtArgs>;
     diseaseWarningRules?: boolean | Prisma.User$diseaseWarningRulesArgs<ExtArgs>;
     reviewedSuggestions?: boolean | Prisma.User$reviewedSuggestionsArgs<ExtArgs>;
+    verifiedMedicines?: boolean | Prisma.User$verifiedMedicinesArgs<ExtArgs>;
     _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>;
 }, ExtArgs["result"]["user"]>;
 export type UserSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
     id?: boolean;
     email?: boolean;
+    phone?: boolean;
     passwordHash?: boolean;
     role?: boolean;
     emailVerified?: boolean;
@@ -2229,6 +2502,7 @@ export type UserSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
 export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
     id?: boolean;
     email?: boolean;
+    phone?: boolean;
     passwordHash?: boolean;
     role?: boolean;
     emailVerified?: boolean;
@@ -2244,6 +2518,7 @@ export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
 export type UserSelectScalar = {
     id?: boolean;
     email?: boolean;
+    phone?: boolean;
     passwordHash?: boolean;
     role?: boolean;
     emailVerified?: boolean;
@@ -2256,7 +2531,7 @@ export type UserSelectScalar = {
     updatedAt?: boolean;
     deletedAt?: boolean;
 };
-export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "email" | "passwordHash" | "role" | "emailVerified" | "emailVerificationToken" | "passwordResetToken" | "passwordResetExpires" | "isActive" | "lastLoginAt" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["user"]>;
+export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "email" | "phone" | "passwordHash" | "role" | "emailVerified" | "emailVerificationToken" | "passwordResetToken" | "passwordResetExpires" | "isActive" | "lastLoginAt" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["user"]>;
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     subscription?: boolean | Prisma.User$subscriptionArgs<ExtArgs>;
     patient?: boolean | Prisma.User$patientArgs<ExtArgs>;
@@ -2270,6 +2545,7 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
     uploadedReports?: boolean | Prisma.User$uploadedReportsArgs<ExtArgs>;
     diseaseWarningRules?: boolean | Prisma.User$diseaseWarningRulesArgs<ExtArgs>;
     reviewedSuggestions?: boolean | Prisma.User$reviewedSuggestionsArgs<ExtArgs>;
+    verifiedMedicines?: boolean | Prisma.User$verifiedMedicinesArgs<ExtArgs>;
     _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>;
 };
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {};
@@ -2289,10 +2565,12 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
         uploadedReports: Prisma.$MedicalReportPayload<ExtArgs>[];
         diseaseWarningRules: Prisma.$DiseaseWarningRulePayload<ExtArgs>[];
         reviewedSuggestions: Prisma.$MedicineSuggestionPayload<ExtArgs>[];
+        verifiedMedicines: Prisma.$PatientMedicinePayload<ExtArgs>[];
     };
     scalars: runtime.Types.Extensions.GetPayloadResult<{
         id: number;
         email: string;
+        phone: string | null;
         passwordHash: string;
         role: $Enums.UserRole;
         emailVerified: boolean;
@@ -2645,6 +2923,7 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
     uploadedReports<T extends Prisma.User$uploadedReportsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$uploadedReportsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MedicalReportPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>;
     diseaseWarningRules<T extends Prisma.User$diseaseWarningRulesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$diseaseWarningRulesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DiseaseWarningRulePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>;
     reviewedSuggestions<T extends Prisma.User$reviewedSuggestionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$reviewedSuggestionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MedicineSuggestionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>;
+    verifiedMedicines<T extends Prisma.User$verifiedMedicinesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$verifiedMedicinesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PatientMedicinePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>;
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2672,6 +2951,7 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
 export interface UserFieldRefs {
     readonly id: Prisma.FieldRef<"User", 'Int'>;
     readonly email: Prisma.FieldRef<"User", 'String'>;
+    readonly phone: Prisma.FieldRef<"User", 'String'>;
     readonly passwordHash: Prisma.FieldRef<"User", 'String'>;
     readonly role: Prisma.FieldRef<"User", 'UserRole'>;
     readonly emailVerified: Prisma.FieldRef<"User", 'Boolean'>;
@@ -3308,6 +3588,29 @@ export type User$reviewedSuggestionsArgs<ExtArgs extends runtime.Types.Extension
     take?: number;
     skip?: number;
     distinct?: Prisma.MedicineSuggestionScalarFieldEnum | Prisma.MedicineSuggestionScalarFieldEnum[];
+};
+/**
+ * User.verifiedMedicines
+ */
+export type User$verifiedMedicinesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PatientMedicine
+     */
+    select?: Prisma.PatientMedicineSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the PatientMedicine
+     */
+    omit?: Prisma.PatientMedicineOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: Prisma.PatientMedicineInclude<ExtArgs> | null;
+    where?: Prisma.PatientMedicineWhereInput;
+    orderBy?: Prisma.PatientMedicineOrderByWithRelationInput | Prisma.PatientMedicineOrderByWithRelationInput[];
+    cursor?: Prisma.PatientMedicineWhereUniqueInput;
+    take?: number;
+    skip?: number;
+    distinct?: Prisma.PatientMedicineScalarFieldEnum | Prisma.PatientMedicineScalarFieldEnum[];
 };
 /**
  * User without action

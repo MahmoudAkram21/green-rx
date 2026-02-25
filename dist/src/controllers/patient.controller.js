@@ -1,9 +1,18 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteChildProfile = exports.getChildProfiles = exports.addChildProfile = exports.deleteAllergy = exports.addAllergy = exports.updateLifestyle = exports.addFamilyHistory = exports.getMedicalHistories = exports.addMedicalHistory = exports.getPatientByUserId = exports.getPatientById = exports.getAllPatients = exports.createOrUpdatePatient = void 0;
+exports.deleteChildProfile = exports.getChildProfiles = exports.addChildProfile = exports.deleteAllergy = exports.addAllergiesBatch = exports.addAllergy = exports.updateLifestyle = exports.getFamilyHistories = exports.addFamilyHistory = exports.getMedicalHistories = exports.addMedicalHistory = exports.getPatientByUserId = exports.getPatientById = exports.getAllPatients = exports.createOrUpdatePatient = void 0;
 const zod_1 = require("zod");
 const prisma_1 = require("../lib/prisma");
 const patient_zod_1 = require("../zod/patient.zod");
+const client_1 = require("../../generated/client/client");
+function computeBmi(weight, height) {
+    const w = weight != null ? Number(weight) : NaN;
+    const h = height != null ? Number(height) : NaN; // expect cm
+    if (!Number.isFinite(w) || !Number.isFinite(h) || h <= 0)
+        return null;
+    const heightM = h / 100;
+    return Math.round((w / (heightM * heightM)) * 100) / 100;
+}
 // Create or Update Patient Profile
 const createOrUpdatePatient = async (req, res, next) => {
     try {
@@ -119,7 +128,8 @@ const getPatientById = async (req, res, next) => {
             res.status(404).json({ error: 'Patient not found' });
             return;
         }
-        res.json(patient);
+        const bodyMassIndex = computeBmi(patient.weight, patient.height);
+        res.json({ ...patient, bodyMassIndex: bodyMassIndex ?? undefined });
     }
     catch (error) {
         next(error);
@@ -147,7 +157,8 @@ const getPatientByUserId = async (req, res, next) => {
             res.status(404).json({ error: 'Patient not found' });
             return;
         }
-        res.json(patient);
+        const bodyMassIndex = computeBmi(patient.weight, patient.height);
+        res.json({ ...patient, bodyMassIndex: bodyMassIndex ?? undefined });
     }
     catch (error) {
         next(error);
@@ -254,6 +265,22 @@ const addFamilyHistory = async (req, res, next) => {
     }
 };
 exports.addFamilyHistory = addFamilyHistory;
+// Get All Family Histories for a Patient
+const getFamilyHistories = async (req, res, next) => {
+    try {
+        const { patientId } = req.params;
+        const list = await prisma_1.prisma.familyHistory.findMany({
+            where: { patientId: parseInt(patientId) },
+            include: { disease: true },
+            orderBy: { createdAt: 'desc' },
+        });
+        res.json(list);
+    }
+    catch (error) {
+        next(error);
+    }
+};
+exports.getFamilyHistories = getFamilyHistories;
 // Update or Create Lifestyle
 const updateLifestyle = async (req, res, next) => {
     try {
@@ -300,12 +327,21 @@ const updateLifestyle = async (req, res, next) => {
     }
 };
 exports.updateLifestyle = updateLifestyle;
+function toAllergyCreateData(patientId, v) {
+    const { reaction, allergenType, severity, ...rest } = v;
+    return {
+        patientId,
+        ...rest,
+        allergenType: allergenType ?? undefined,
+        reactionType: reaction ?? null,
+        severity: severity ?? client_1.AllergySeverity.Mild,
+    };
+}
 // Add Allergy
 const addAllergy = async (req, res, next) => {
     try {
         const { patientId } = req.params;
         const validatedData = patient_zod_1.allergySchema.parse(req.body);
-        // Check if patient exists
         const patient = await prisma_1.prisma.patient.findUnique({
             where: { id: parseInt(patientId) }
         });
@@ -313,13 +349,8 @@ const addAllergy = async (req, res, next) => {
             res.status(404).json({ error: 'Patient not found' });
             return;
         }
-        const { reaction, ...rest } = validatedData;
         const allergy = await prisma_1.prisma.allergy.create({
-            data: {
-                patientId: parseInt(patientId),
-                ...rest,
-                reactionType: reaction ?? null
-            }
+            data: toAllergyCreateData(parseInt(patientId), validatedData)
         });
         res.status(201).json({
             message: 'Allergy added successfully',
@@ -335,6 +366,36 @@ const addAllergy = async (req, res, next) => {
     }
 };
 exports.addAllergy = addAllergy;
+// Add Allergies (batch)
+const addAllergiesBatch = async (req, res, next) => {
+    try {
+        const { patientId } = req.params;
+        const validatedItems = patient_zod_1.batchAllergySchema.parse(req.body);
+        const patient = await prisma_1.prisma.patient.findUnique({
+            where: { id: parseInt(patientId) }
+        });
+        if (!patient) {
+            res.status(404).json({ error: 'Patient not found' });
+            return;
+        }
+        const pid = parseInt(patientId);
+        const data = validatedItems.map((v) => toAllergyCreateData(pid, v));
+        const allergies = await prisma_1.prisma.allergy.createManyAndReturn({ data });
+        res.status(201).json({
+            message: `${allergies.length} allergy/allergies added successfully`,
+            count: allergies.length,
+            allergies
+        });
+    }
+    catch (error) {
+        if (error instanceof zod_1.z.ZodError) {
+            res.status(400).json({ error: error.issues });
+            return;
+        }
+        next(error);
+    }
+};
+exports.addAllergiesBatch = addAllergiesBatch;
 // Delete Allergy
 const deleteAllergy = async (req, res, next) => {
     try {

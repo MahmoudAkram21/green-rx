@@ -398,6 +398,22 @@ model Lifestyle {
   @@map("lifestyles")
 }
 
+// Admin-managed options for "Enter Lifestyle Details" dropdowns (physical activity, dietary habits)
+model LifestyleOption {
+  id        Int      @id @default(autoincrement())
+  type      String   // "physical_activity" | "dietary_habits"
+  label     String   // display text, e.g. "Sedentary", "Vegetarian"
+  value     String?  // optional value to store (defaults to label if null)
+  sortOrder Int      @default(0)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([type])
+  @@index([type, isActive])
+  @@map("lifestyle_options")
+}
+
 model Allergy {
   id           Int             @id @default(autoincrement())
   patientId    Int

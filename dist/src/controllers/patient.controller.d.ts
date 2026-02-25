@@ -6,8 +6,10 @@ export declare const getPatientByUserId: (req: Request, res: Response, next: Nex
 export declare const addMedicalHistory: (req: Request, res: Response, next: NextFunction) => Promise<void>;
 export declare const getMedicalHistories: (req: Request, res: Response, next: NextFunction) => Promise<void>;
 export declare const addFamilyHistory: (req: Request, res: Response, next: NextFunction) => Promise<void>;
+export declare const getFamilyHistories: (req: Request, res: Response, next: NextFunction) => Promise<void>;
 export declare const updateLifestyle: (req: Request, res: Response, next: NextFunction) => Promise<void>;
 export declare const addAllergy: (req: Request, res: Response, next: NextFunction) => Promise<void>;
+export declare const addAllergiesBatch: (req: Request, res: Response, next: NextFunction) => Promise<void>;
 export declare const deleteAllergy: (req: Request, res: Response, next: NextFunction) => Promise<void>;
 export declare const addChildProfile: (req: Request, res: Response, next: NextFunction) => Promise<void>;
 export declare const getChildProfiles: (req: Request, res: Response, next: NextFunction) => Promise<void>;
