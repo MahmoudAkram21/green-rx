@@ -1,14 +1,22 @@
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
+import { z } from 'zod';
 import prisma from '../config/database';
 import { DiseaseSeverity, DiseaseStatus } from '../../generated/client/client';
+import { addPatientDiseaseSchema } from '../zod/patient.zod';
 
-// Create or update patient disease
-export const addPatientDisease = async (req: Request, res: Response) => {
+/** Normalize body to array (accept single object or array of objects) */
+function normalizeToArray<T>(raw: unknown): T[] {
+    return Array.isArray(raw) ? (raw as T[]) : raw != null ? [raw as T] : [];
+}
+
+// Create or update patient disease(s) — accepts single object or array (batch)
+export const addPatientDisease = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const patientId = parseInt(req.params.patientId);
-        const { diseaseId, diagnosisDate, severity, status, notes } = req.body;
+        const raw = req.body;
+        const items = normalizeToArray(raw);
+        const validatedItems = z.array(addPatientDiseaseSchema).min(1).parse(items);
 
-        // Validate patient exists
         const patient = await prisma.patient.findUnique({
             where: { id: patientId }
         });
@@ -17,60 +25,61 @@ export const addPatientDisease = async (req: Request, res: Response) => {
             return res.status(404).json({ error: 'Patient not found' });
         }
 
-        // Validate disease exists
-        const disease = await prisma.disease.findUnique({
-            where: { id: diseaseId }
-        });
+        const results: Awaited<ReturnType<typeof prisma.patientDisease.create>>[] = [];
 
-        if (!disease) {
-            return res.status(404).json({ error: 'Disease not found' });
-        }
+        for (const v of validatedItems) {
+            const { diseaseId, diagnosisDate, severity, status, notes } = v;
 
-        // Check if patient already has this disease
-        const existing = await prisma.patientDisease.findFirst({
-            where: {
-                patientId,
-                diseaseId
+            const disease = await prisma.disease.findUnique({
+                where: { id: diseaseId }
+            });
+            if (!disease) {
+                return res.status(404).json({ error: `Disease not found: ${diseaseId}` });
             }
-        });
 
-        if (existing) {
-            // Update existing
-            const updated = await prisma.patientDisease.update({
-                where: { id: existing.id },
-                data: {
-                    diagnosisDate: diagnosisDate ? new Date(diagnosisDate) : existing.diagnosisDate,
-                    severity: severity || existing.severity,
-                    status: status || existing.status,
-                    notes: notes !== undefined ? notes : existing.notes
-                },
-                include: {
-                    disease: true
-                }
+            const existing = await prisma.patientDisease.findFirst({
+                where: { patientId, diseaseId }
             });
 
-            return res.json(updated);
+            if (existing) {
+                const updated = await prisma.patientDisease.update({
+                    where: { id: existing.id },
+                    data: {
+                        diagnosisDate: diagnosisDate ? new Date(diagnosisDate) : existing.diagnosisDate,
+                        severity: severity ?? existing.severity,
+                        status: status ?? existing.status,
+                        notes: notes !== undefined ? notes : existing.notes
+                    },
+                    include: { disease: true }
+                });
+                results.push(updated);
+            } else {
+                const created = await prisma.patientDisease.create({
+                    data: {
+                        patientId,
+                        diseaseId,
+                        diagnosisDate: diagnosisDate ? new Date(diagnosisDate) : new Date(),
+                        severity: severity as DiseaseSeverity,
+                        status: status as DiseaseStatus,
+                        notes
+                    },
+                    include: { disease: true }
+                });
+                results.push(created);
+            }
         }
 
-        // Create new patient disease
-        const patientDisease = await prisma.patientDisease.create({
-            data: {
-                patientId,
-                diseaseId,
-                diagnosisDate: new Date(diagnosisDate),
-                severity: severity as DiseaseSeverity,
-                status: status as DiseaseStatus,
-                notes
-            },
-            include: {
-                disease: true
-            }
-        });
-
-        return res.status(201).json(patientDisease);
+        return res.status(201).json(
+            results.length === 1
+                ? results[0]
+                : { message: `${results.length} diseases added/updated`, patientDiseases: results }
+        );
     } catch (error) {
+        if (error instanceof z.ZodError) {
+            return res.status(400).json({ error: error.issues });
+        }
         console.error('Error adding patient disease:', error);
-        return res.status(500).json({ error: 'Failed to add patient disease' });
+        return next(error);
     }
 };
 

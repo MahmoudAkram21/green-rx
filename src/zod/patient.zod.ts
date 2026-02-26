@@ -5,6 +5,7 @@ import {
   AllergySeverity,
   DiseaseStatus,
   DiseaseSeverity,
+  FamilyRelation,
 } from "../../generated/client/client";
 
 export const createPatientSchema = z.object({
@@ -34,9 +35,17 @@ export const medicalHistorySchema = z.object({
 });
 
 export const familyHistorySchema = z.object({
-  relation: z.string().min(1), // e.g., "Father", "Mother", "Sibling"
+  relation: z.nativeEnum(FamilyRelation),
   diseaseId: z.number().int().positive(),
   severity: z.nativeEnum(DiseaseSeverity),
+  notes: z.string().optional(),
+});
+
+export const addPatientDiseaseSchema = z.object({
+  diseaseId: z.number().int().positive(),
+  severity: z.nativeEnum(DiseaseSeverity),
+  status: z.nativeEnum(DiseaseStatus),
+  diagnosisDate: z.string().datetime().optional(),
   notes: z.string().optional(),
 });
 

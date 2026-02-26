@@ -53,6 +53,18 @@ enum DiseaseStatus {
   Chronic
 }
 
+enum FamilyRelation {
+  Father
+  Mother
+  Sibling
+  Grandfather
+  Grandmother
+  Uncle
+  Aunt
+  Child
+  Other
+}
+
 enum PrescriptionStatus {
   Draft
   Pending
@@ -345,7 +357,7 @@ model MedicalHistory {
 model FamilyHistory {
   id        Int             @id @default(autoincrement())
   patientId Int
-  relation  String // e.g., "Father", "Mother", "Sibling"
+  relation  FamilyRelation
   diseaseId Int
   severity  DiseaseSeverity
   notes     String?

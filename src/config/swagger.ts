@@ -136,7 +136,10 @@ s('/patients/{patientId}/medical-history', 'post', PATIENT_TAGS.PROFILE, 'Add a 
 
 // PATIENTS — Family History
 s('/patients/{patientId}/family-history', 'get', PATIENT_TAGS.FAMILY_HISTORY, 'Get family history entries', true, [p('patientId')]);
-s('/patients/{patientId}/family-history', 'post', PATIENT_TAGS.FAMILY_HISTORY, 'Add a family history entry', true, [p('patientId')], { schemaRef: 'FamilyHistoryRequest' });
+s('/patients/{patientId}/family-history', 'post', PATIENT_TAGS.FAMILY_HISTORY, 'Add family history entries (single object or array)', true, [p('patientId')], { schemaRef: 'BatchFamilyHistoryRequest' });
+
+// FAMILY RELATIONS (enum options for family history dropdown)
+s('/family-relations', 'get', [PATIENT_TAGS.FAMILY_HISTORY, ADMIN_TAG], 'List family relation enum values for dropdowns (Father, Mother, Sibling, etc.)', true);
 
 // PATIENTS — Surgical History
 s('/patients/{patientId}/surgeries', 'get', PATIENT_TAGS.SURGERIES, 'Get previous surgeries', true, [p('patientId')]);
@@ -197,7 +200,7 @@ s('/patients/allergies/{allergyId}', 'delete', PATIENT_TAGS.ALLERGIES, 'Remove a
 
 // PATIENT DISEASES (Current diseases)
 s('/patient-diseases/patient/{patientId}', 'get', PATIENT_TAGS.CURRENT_DISEASES, 'Get diseases for a patient', true, [p('patientId')]);
-s('/patient-diseases/patient/{patientId}', 'post', PATIENT_TAGS.CURRENT_DISEASES, 'Add a disease to patient', true, [p('patientId')], { schemaRef: 'AddPatientDiseaseRequest' });
+s('/patient-diseases/patient/{patientId}', 'post', PATIENT_TAGS.CURRENT_DISEASES, 'Add current diseases (single object or array)', true, [p('patientId')], { schemaRef: 'BatchPatientDiseasesRequest' });
 s('/patient-diseases/patient/{patientId}/active', 'get', PATIENT_TAGS.CURRENT_DISEASES, 'Get only active diseases for a patient', true, [p('patientId')]);
 s('/patient-diseases/{id}', 'patch', PATIENT_TAGS.CURRENT_DISEASES, 'Update patient disease status', true, [p('id')], { schemaRef: 'UpdatePatientDiseaseRequest' });
 s('/patient-diseases/{id}', 'delete', PATIENT_TAGS.CURRENT_DISEASES, 'Remove patient disease', true, [p('id')]);
@@ -416,7 +419,7 @@ const options: Record<string, unknown> = {
     info: {
       title: 'Green RX Backend API',
       version: '1.0.0',
-      description: 'Full API documentation for the Green RX platform.'
+      description: 'Full API documentation for the Green RX platform. **Request bodies:** Each schema lists Required vs Optional fields. Where IDs or enums are needed (e.g. diseaseId, relation, tradeNameId), the description points to the endpoint to get values (e.g. GET /diseases, GET /family-relations, GET /trade-names/search). Update requests typically accept partial bodies (all fields optional).'
     },
     servers: [
       { url: 'https://green-back.developteam.site/api', description: 'Production server' },
@@ -461,59 +464,99 @@ const options: Record<string, unknown> = {
       schemas: {
         // ── Auth request bodies
         RegisterRequest: {
+          description: 'Create a new user account. Required: email, password. Optional: role, name, phone. After success, use returned tokens or GET /auth/me for userId.',
           type: 'object',
           required: ['email', 'password'],
           properties: {
-            email:    { type: 'string', format: 'email', example: 'user@example.com' },
-            password: { type: 'string', minLength: 6,    example: 'secret123' },
-            role:     { type: 'string', enum: ['Patient', 'Doctor', 'Pharmacist', 'Admin', 'SuperAdmin'], default: 'Patient' },
-            name:     { type: 'string', minLength: 2,    example: 'John Doe' },
-            phone:    { type: 'string', example: '+201145441141', description: 'Optional e.g. E.164' }
+            email:    { type: 'string', format: 'email', example: 'user@example.com', description: 'Required.' },
+            password: { type: 'string', minLength: 6,    example: 'secret123', description: 'Required. Min 6 characters.' },
+            role:     { type: 'string', enum: ['Patient', 'Doctor', 'Pharmacist', 'Admin', 'SuperAdmin'], default: 'Patient', description: 'Optional. Default: Patient.' },
+            name:     { type: 'string', minLength: 2,    example: 'John Doe', description: 'Optional.' },
+            phone:    { type: 'string', example: '+201145441141', description: 'Optional. E.164 format.' }
           }
         },
         LoginRequest: {
+          description: 'Authenticate and get tokens. Required: email, password.',
           type: 'object',
           required: ['email', 'password'],
           properties: {
-            email:    { type: 'string', format: 'email', example: 'user@example.com' },
-            password: { type: 'string',                  example: 'secret123' }
+            email:    { type: 'string', format: 'email', example: 'user@example.com', description: 'Required.' },
+            password: { type: 'string', example: 'secret123', description: 'Required.' }
           }
         },
         RefreshTokenRequest: {
+          description: 'Get a new access token. Required: refreshToken (from login/register response).',
           type: 'object',
           required: ['refreshToken'],
           properties: {
-            refreshToken: { type: 'string', example: 'eyJhbGci...' }
+            refreshToken: { type: 'string', example: 'eyJhbGci...', description: 'Required.' }
           }
         },
         CreatePatientRequest: {
-          description: 'Step 1 "Enter Your Personal Information": send userId (from auth), name, age, ageClassification, gender. Optional: dateOfBirth, height, weight (BMI computed from height/weight in GET patient), bloodType, smoking, pregnancy/lactation fields.',
+          description: 'Step 1 "Enter Your Personal Information". Required: userId, name, age, ageClassification, gender. Optional: dateOfBirth, height, weight (BMI from GET /patients), bloodType, smoking, pregnancy/lactation. Get userId from GET /auth/me or register response.',
           type: 'object',
           required: ['userId', 'name', 'age', 'ageClassification', 'gender'],
           properties: {
-            userId:           { type: 'integer', description: 'From GET /auth/me or register response' },
-            name:             { type: 'string', example: 'Heba Yasser' },
-            age:              { type: 'integer', minimum: 0, maximum: 150, description: 'Age in years' },
-            ageClassification: { type: 'string', enum: ['Neonates', 'Infants', 'Toddlers', 'Children', 'Adolescents', 'Adults', 'Elderly'] },
-            gender:           { type: 'string', enum: ['Male', 'Female', 'Other'] },
-            dateOfBirth:      { type: 'string', format: 'date-time', description: 'Date of birth (ISO 8601)' },
-            height:           { type: 'number', description: 'Height in cm (used for BMI)' },
-            weight:           { type: 'number', description: 'Weight in kg (used for BMI)' },
-            bloodType:        { type: 'string', example: 'AB', description: 'e.g. A+, A-, B+, B-, AB+, AB-, O+, O-' },
-            smoking:          { type: 'boolean', default: false },
-            pregnancyWarning: { type: 'boolean', default: false },
-            pregnancyStatus:  { type: 'boolean' },
-            trimester:        { type: 'integer', minimum: 1, maximum: 3 },
-            lactation:        { type: 'boolean', default: false }
+            userId:           { type: 'integer', description: 'Required. From GET /auth/me or register response.' },
+            name:             { type: 'string', example: 'Heba Yasser', description: 'Required.' },
+            age:              { type: 'integer', minimum: 0, maximum: 150, description: 'Required. Age in years.' },
+            ageClassification: { type: 'string', enum: ['Neonates', 'Infants', 'Toddlers', 'Children', 'Adolescents', 'Adults', 'Elderly'], description: 'Required.' },
+            gender:           { type: 'string', enum: ['Male', 'Female', 'Other'], description: 'Required.' },
+            dateOfBirth:      { type: 'string', format: 'date-time', description: 'Optional. ISO 8601.' },
+            height:           { type: 'number', description: 'Optional. Height in cm (used for BMI).' },
+            weight:           { type: 'number', description: 'Optional. Weight in kg (used for BMI).' },
+            bloodType:        { type: 'string', example: 'AB', description: 'Optional. e.g. A+, A-, B+, B-, AB+, AB-, O+, O-' },
+            smoking:          { type: 'boolean', default: false, description: 'Optional.' },
+            pregnancyWarning: { type: 'boolean', default: false, description: 'Optional.' },
+            pregnancyStatus:  { type: 'boolean', description: 'Optional.' },
+            trimester:        { type: 'integer', minimum: 1, maximum: 3, description: 'Optional. 1–3.' },
+            lactation:        { type: 'boolean', default: false, description: 'Optional.' }
           }
         },
         // ── User
         CreateUserRequest: { type: 'object', required: ['email', 'role'], properties: { email: { type: 'string', format: 'email' }, passwordHash: { type: 'string' }, role: { type: 'string', enum: ['Patient', 'Doctor', 'Pharmacist', 'Admin', 'SuperAdmin'] } } },
-        UpdateUserRequest: { type: 'object', properties: { email: { type: 'string', format: 'email' }, isActive: { type: 'boolean' } } },
+        UpdateUserRequest: { description: 'All fields optional. Send only fields to update.', type: 'object', properties: { email: { type: 'string', format: 'email' }, isActive: { type: 'boolean' } } },
         // ── Patient profile & history
-        MedicalHistoryRequest: { type: 'object', required: ['diseaseId', 'severity', 'status'], properties: { diseaseId: { type: 'integer' }, severity: { type: 'string', enum: ['None', 'Mild', 'Moderate', 'Severe'] }, diagnosisDate: { type: 'string', format: 'date-time' }, treatment: { type: 'string' }, status: { type: 'string', enum: ['Active', 'Resolved', 'Chronic', 'Unknown'] }, notes: { type: 'string' } } },
-        FamilyHistoryRequest: { type: 'object', required: ['relation', 'diseaseId', 'severity'], properties: { relation: { type: 'string', example: 'Father' }, diseaseId: { type: 'integer' }, severity: { type: 'string', enum: ['None', 'Mild', 'Moderate', 'Severe'] }, notes: { type: 'string' } } },
-        SurgicalHistoryRequest: { type: 'object', required: ['operationName', 'surgeryDate'], properties: { operationName: { type: 'string' }, surgeryDate: { type: 'string', format: 'date-time' } } },
+        MedicalHistoryRequest: {
+          description: 'One medical history entry. Required: diseaseId, severity, status. Optional: diagnosisDate, treatment, notes. Get diseaseId from GET /diseases.',
+          type: 'object',
+          required: ['diseaseId', 'severity', 'status'],
+          properties: {
+            diseaseId:    { type: 'integer', description: 'Required. Get IDs from GET /diseases.' },
+            severity:     { type: 'string', enum: ['None', 'Mild', 'Moderate', 'Severe'], description: 'Required.' },
+            status:       { type: 'string', enum: ['Active', 'Resolved', 'Chronic', 'Unknown'], description: 'Required.' },
+            diagnosisDate: { type: 'string', format: 'date-time', description: 'Optional.' },
+            treatment:    { type: 'string', description: 'Optional.' },
+            notes:        { type: 'string', description: 'Optional.' }
+          }
+        },
+        FamilyRelationEnum: {
+          type: 'string',
+          enum: ['Father', 'Mother', 'Sibling', 'Grandfather', 'Grandmother', 'Uncle', 'Aunt', 'Child', 'Other'],
+          description: 'Allowed values: Father, Mother, Sibling, Grandfather, Grandmother, Uncle, Aunt, Child, Other. Request the full list from GET /family-relations.'
+        },
+        FamilyHistoryRequest: {
+          description: 'One family history entry. Required: relation, diseaseId, severity. Optional: notes. Get relation options from GET /family-relations. Get diseaseId from GET /diseases.',
+          type: 'object',
+          required: ['relation', 'diseaseId', 'severity'],
+          properties: {
+            relation: { $ref: '#/components/schemas/FamilyRelationEnum', description: 'Required. One of: Father, Mother, Sibling, Grandfather, Grandmother, Uncle, Aunt, Child, Other. Get list from GET /family-relations.' },
+            diseaseId: { type: 'integer', description: 'Required. Get IDs from GET /diseases.' },
+            severity: { type: 'string', enum: ['None', 'Mild', 'Moderate', 'Severe'], description: 'Required.' },
+            notes: { type: 'string', description: 'Optional.' }
+          }
+        },
+        BatchFamilyHistoryRequest: { type: 'array', minItems: 1, items: { $ref: '#/components/schemas/FamilyHistoryRequest' }, description: 'Send multiple family history entries in one request. Body: array of FamilyHistoryRequest.' },
+        FamilyRelationsResponse: { type: 'array', items: { $ref: '#/components/schemas/FamilyRelationEnum' }, description: 'List of family relation values for dropdowns' },
+        SurgicalHistoryRequest: {
+          description: 'One previous surgery. Required: operationName, surgeryDate. Optional: none. Send array for multiple surgeries (same endpoint accepts single or array).',
+          type: 'object',
+          required: ['operationName', 'surgeryDate'],
+          properties: {
+            operationName: { type: 'string', description: 'Required. Name of the operation.' },
+            surgeryDate:   { type: 'string', format: 'date-time', description: 'Required. ISO 8601.' }
+          }
+        },
         LifestyleRequest: {
           description: 'Enter Lifestyle Details screen. Use values from GET /lifestyle-options (physicalActivity from type=physical_activity, dietaryHabits from type=dietary_habits).',
           type: 'object',
@@ -526,7 +569,7 @@ const options: Record<string, unknown> = {
           properties: { type: { type: 'string', enum: ['physical_activity', 'dietary_habits'], description: 'Which dropdown this option belongs to' }, label: { type: 'string', description: 'Display text e.g. Sedentary, Vegetarian' }, value: { type: 'string', description: 'Stored value (defaults to label if omitted)' }, sortOrder: { type: 'integer', description: 'Display order' }, isActive: { type: 'boolean', default: true } }
         },
         UpdateLifestyleOptionRequest: {
-          description: 'Admin updates an existing lifestyle option.',
+          description: 'Admin updates an existing lifestyle option. All fields optional; send only fields to update.',
           type: 'object',
           properties: { type: { type: 'string', enum: ['physical_activity', 'dietary_habits'] }, label: { type: 'string' }, value: { type: 'string' }, sortOrder: { type: 'integer' }, isActive: { type: 'boolean' } }
         },
@@ -537,44 +580,123 @@ const options: Record<string, unknown> = {
         },
         ChildProfileRequest: { type: 'object', required: ['name', 'dateOfBirth', 'gender', 'ageClassification'], properties: { name: { type: 'string' }, dateOfBirth: { type: 'string', format: 'date-time' }, gender: { type: 'string', enum: ['Male', 'Female', 'Other'] }, ageClassification: { type: 'string', enum: ['Neonates', 'Infants', 'Toddlers', 'Children', 'Adolescents', 'Adults', 'Elderly'] }, weight: { type: 'number' }, height: { type: 'number' }, allergies: {}, diseases: {}, medicalHistory: {} } },
         // ── Doctor & Pharmacist
-        CreateDoctorRequest: { type: 'object', required: ['userId', 'name', 'specialization', 'licenseNumber'], properties: { userId: { type: 'integer' }, name: { type: 'string' }, specialization: { type: 'string' }, licenseNumber: { type: 'string' }, phoneNumber: { type: 'string' }, clinicAddress: { type: 'string' }, yearsOfExperience: { type: 'integer' }, qualifications: { type: 'string' }, consultationFee: { type: 'number' } } },
-        AssignPatientRequest: { type: 'object', required: ['patientId', 'relationshipType'], properties: { patientId: { type: 'integer' }, relationshipType: { type: 'string', enum: ['PrimaryCare', 'Specialist', 'Consultation', 'Other'] }, startDate: { type: 'string', format: 'date-time' }, endDate: { type: 'string', format: 'date-time' } } },
-        CreatePharmacistRequest: { type: 'object', required: ['userId', 'name', 'licenseNumber'], properties: { userId: { type: 'integer' }, name: { type: 'string' }, licenseNumber: { type: 'string' }, phoneNumber: { type: 'string' }, pharmacyName: { type: 'string' }, pharmacyAddress: { type: 'string' } } },
+        CreateDoctorRequest: {
+          description: 'Create/update doctor profile. Required: userId, name, specialization, licenseNumber. Optional: phoneNumber, clinicAddress, yearsOfExperience, qualifications, consultationFee. Get userId from GET /auth/me.',
+          type: 'object',
+          required: ['userId', 'name', 'specialization', 'licenseNumber'],
+          properties: { userId: { type: 'integer', description: 'Required. From GET /auth/me.' }, name: { type: 'string', description: 'Required.' }, specialization: { type: 'string', description: 'Required.' }, licenseNumber: { type: 'string', description: 'Required.' }, phoneNumber: { type: 'string', description: 'Optional.' }, clinicAddress: { type: 'string', description: 'Optional.' }, yearsOfExperience: { type: 'integer', description: 'Optional.' }, qualifications: { type: 'string', description: 'Optional.' }, consultationFee: { type: 'number', description: 'Optional.' } }
+        },
+        AssignPatientRequest: {
+          description: 'Assign patient to doctor. Required: patientId, relationshipType. Optional: startDate, endDate. Used in POST /doctors/:doctorId/patients.',
+          type: 'object',
+          required: ['patientId', 'relationshipType'],
+          properties: { patientId: { type: 'integer', description: 'Required.' }, relationshipType: { type: 'string', enum: ['PrimaryCare', 'Specialist', 'Consultation', 'Other'], description: 'Required.' }, startDate: { type: 'string', format: 'date-time', description: 'Optional.' }, endDate: { type: 'string', format: 'date-time', description: 'Optional.' } }
+        },
+        CreatePharmacistRequest: {
+          description: 'Create/update pharmacist profile. Required: userId, name, licenseNumber. Optional: phoneNumber, pharmacyName, pharmacyAddress. Get userId from GET /auth/me.',
+          type: 'object',
+          required: ['userId', 'name', 'licenseNumber'],
+          properties: { userId: { type: 'integer', description: 'Required.' }, name: { type: 'string', description: 'Required.' }, licenseNumber: { type: 'string', description: 'Required.' }, phoneNumber: { type: 'string', description: 'Optional.' }, pharmacyName: { type: 'string', description: 'Optional.' }, pharmacyAddress: { type: 'string', description: 'Optional.' } }
+        },
         // ── Patient-Doctor
-        CreatePatientDoctorRequest: { type: 'object', required: ['patientId', 'doctorId', 'relationshipType'], properties: { patientId: { type: 'integer' }, doctorId: { type: 'integer' }, relationshipType: { type: 'string', enum: ['PrimaryCare', 'Specialist', 'Consultation', 'Other'] } } },
-        UpdatePatientDoctorRequest: { type: 'object', properties: { relationshipType: { type: 'string' }, isActive: { type: 'boolean' }, endDate: { type: 'string', format: 'date-time' } } },
+        CreatePatientDoctorRequest: {
+          description: 'Create patient-doctor relationship. Required: patientId, doctorId, relationshipType. Get doctor IDs from GET /doctors/search.',
+          type: 'object',
+          required: ['patientId', 'doctorId', 'relationshipType'],
+          properties: { patientId: { type: 'integer', description: 'Required.' }, doctorId: { type: 'integer', description: 'Required. Get from GET /doctors/search.' }, relationshipType: { type: 'string', enum: ['PrimaryCare', 'Specialist', 'Consultation', 'Other'], description: 'Required.' } }
+        },
+        UpdatePatientDoctorRequest: { description: 'All fields optional. Send only fields to update.', type: 'object', properties: { relationshipType: { type: 'string', enum: ['PrimaryCare', 'Specialist', 'Consultation', 'Other'] }, isActive: { type: 'boolean' }, endDate: { type: 'string', format: 'date-time' } } },
         // ── Allergies
-        AllergyRequest: { type: 'object', required: ['allergen'], properties: { allergen: { type: 'string' }, allergenType: { type: 'string', enum: ['Drug', 'Food', 'Pollen', 'Dust', 'Pet', 'Fragrance', 'Other'] }, reaction: { type: 'string' }, severity: { type: 'string', enum: ['Mild', 'Moderate', 'Severe', 'LifeThreatening'] }, notes: { type: 'string' } } },
+        AllergyRequest: {
+          description: 'One allergy. Required: allergen. Optional: allergenType, reaction, severity, notes.',
+          type: 'object',
+          required: ['allergen'],
+          properties: {
+            allergen:    { type: 'string', description: 'Required. e.g. Penicillin, Peanuts.' },
+            allergenType: { type: 'string', enum: ['Drug', 'Food', 'Pollen', 'Dust', 'Pet', 'Fragrance', 'Other'], description: 'Optional.' },
+            reaction:   { type: 'string', description: 'Optional.' },
+            severity:   { type: 'string', enum: ['Mild', 'Moderate', 'Severe', 'LifeThreatening'], description: 'Optional.' },
+            notes:      { type: 'string', description: 'Optional.' }
+          }
+        },
         BatchAllergyRequest: { type: 'array', items: { $ref: '#/components/schemas/AllergyRequest' } },
-        UpdateAllergyRequest: { type: 'object', properties: { allergen: { type: 'string' }, severity: { type: 'string' }, reactionType: { type: 'string' }, notes: { type: 'string' } } },
+        UpdateAllergyRequest: { description: 'All fields optional. Send only fields to update.', type: 'object', properties: { allergen: { type: 'string' }, severity: { type: 'string' }, reactionType: { type: 'string' }, notes: { type: 'string' } } },
         // ── Patient diseases
-        AddPatientDiseaseRequest: { type: 'object', required: ['diseaseId', 'severity', 'status'], properties: { diseaseId: { type: 'integer' }, diagnosisDate: { type: 'string', format: 'date-time' }, severity: { type: 'string', enum: ['None', 'Mild', 'Moderate', 'Severe'] }, status: { type: 'string', enum: ['Active', 'Resolved', 'Chronic'] }, notes: { type: 'string' } } },
-        UpdatePatientDiseaseRequest: { type: 'object', properties: { status: { type: 'string' }, severity: { type: 'string' }, notes: { type: 'string' } } },
+        AddPatientDiseaseRequest: {
+          description: 'One current disease. Required: diseaseId, severity, status. Optional: diagnosisDate, notes. Get diseaseId from GET /diseases.',
+          type: 'object',
+          required: ['diseaseId', 'severity', 'status'],
+          properties: {
+            diseaseId:    { type: 'integer', description: 'Required. Get IDs from GET /diseases.' },
+            severity:    { type: 'string', enum: ['None', 'Mild', 'Moderate', 'Severe'], description: 'Required.' },
+            status:      { type: 'string', enum: ['Active', 'Resolved', 'Chronic'], description: 'Required.' },
+            diagnosisDate: { type: 'string', format: 'date-time', description: 'Optional. ISO 8601.' },
+            notes:       { type: 'string', description: 'Optional.' }
+          }
+        },
+        BatchPatientDiseasesRequest: { type: 'array', minItems: 1, items: { $ref: '#/components/schemas/AddPatientDiseaseRequest' }, description: 'Send multiple current diseases in one request. Body: array of AddPatientDiseaseRequest. Single object also accepted.' },
+        UpdatePatientDiseaseRequest: { description: 'All fields optional. Send only fields to update. status: Active|Resolved|Chronic|Unknown.', type: 'object', properties: { status: { type: 'string' }, severity: { type: 'string' }, notes: { type: 'string' } } },
         // ── Patient medicines
-        AddPatientMedicineRequest: { type: 'object', required: ['medicineName'], properties: { medicineName: { type: 'string' }, tradeNameId: { type: 'integer' }, dosage: { type: 'string' }, frequency: { type: 'string' }, startDate: { type: 'string', format: 'date-time' }, endDate: { type: 'string', format: 'date-time' }, isOngoing: { type: 'boolean' }, notes: { type: 'string' } } },
-        UpdatePatientMedicineRequest: { type: 'object', properties: { medicineName: { type: 'string' }, dosage: { type: 'string' }, frequency: { type: 'string' }, startDate: { type: 'string' }, endDate: { type: 'string' }, isOngoing: { type: 'boolean' }, notes: { type: 'string' } } },
+        AddPatientMedicineRequest: {
+          description: 'One medication. Required: medicineName. Optional: tradeNameId (get from GET /trade-names/search), dosage, frequency, startDate, endDate, isOngoing, notes.',
+          type: 'object',
+          required: ['medicineName'],
+          properties: {
+            medicineName: { type: 'string', description: 'Required.' },
+            tradeNameId:  { type: 'integer', description: 'Optional. Get IDs from GET /trade-names/search?q=...' },
+            dosage:      { type: 'string', description: 'Optional.' },
+            frequency:   { type: 'string', description: 'Optional.' },
+            startDate:   { type: 'string', format: 'date-time', description: 'Optional.' },
+            endDate:     { type: 'string', format: 'date-time', description: 'Optional.' },
+            isOngoing:   { type: 'boolean', description: 'Optional.' },
+            notes:       { type: 'string', description: 'Optional.' }
+          }
+        },
+        UpdatePatientMedicineRequest: { description: 'All fields optional. Send only fields to update.', type: 'object', properties: { medicineName: { type: 'string' }, dosage: { type: 'string' }, frequency: { type: 'string' }, startDate: { type: 'string' }, endDate: { type: 'string' }, isOngoing: { type: 'boolean' }, notes: { type: 'string' } } },
         // ── Prescriptions
-        CreatePrescriptionRequest: { type: 'object', required: ['doctorId', 'patientId', 'tradeNameId'], properties: { doctorId: { type: 'integer' }, patientId: { type: 'integer' }, tradeNameId: { type: 'integer' }, dosage: { type: 'string' }, frequency: { type: 'string' }, duration: { type: 'string' }, instructions: { type: 'string' }, validFrom: { type: 'string', format: 'date-time' }, validUntil: { type: 'string', format: 'date-time' }, maxRefills: { type: 'integer' }, notes: { type: 'string' } } },
-        BatchPrescriptionsRequest: { type: 'object', required: ['doctorId', 'patientId', 'medicines'], properties: { doctorId: { type: 'integer' }, patientId: { type: 'integer' }, medicines: { type: 'array', items: { type: 'object', properties: { tradeNameId: { type: 'integer' }, dosage: { type: 'string' }, frequency: { type: 'string' }, duration: { type: 'string' }, instructions: { type: 'string' }, notes: { type: 'string' } } } }, validFrom: { type: 'string', format: 'date-time' }, validUntil: { type: 'string', format: 'date-time' }, maxRefills: { type: 'integer' } } },
-        UpdatePrescriptionRequest: { type: 'object', properties: { status: { type: 'string' }, dosage: { type: 'string' }, frequency: { type: 'string' }, duration: { type: 'string' }, instructions: { type: 'string' }, notes: { type: 'string' }, changedBy: { type: 'string' } } },
+        CreatePrescriptionRequest: {
+          description: 'One prescription. Required: doctorId, patientId, tradeNameId. Optional: dosage, frequency, duration, instructions, validFrom, validUntil, maxRefills, notes. Get tradeNameId from GET /trade-names/search.',
+          type: 'object',
+          required: ['doctorId', 'patientId', 'tradeNameId'],
+          properties: {
+            doctorId:    { type: 'integer', description: 'Required.' },
+            patientId:   { type: 'integer', description: 'Required.' },
+            tradeNameId: { type: 'integer', description: 'Required. Get IDs from GET /trade-names/search?q=...' },
+            dosage:      { type: 'string', description: 'Optional.' },
+            frequency:   { type: 'string', description: 'Optional.' },
+            duration:   { type: 'string', description: 'Optional.' },
+            instructions: { type: 'string', description: 'Optional.' },
+            validFrom:   { type: 'string', format: 'date-time', description: 'Optional.' },
+            validUntil:  { type: 'string', format: 'date-time', description: 'Optional.' },
+            maxRefills:  { type: 'integer', description: 'Optional.' },
+            notes:       { type: 'string', description: 'Optional.' }
+          }
+        },
+        BatchPrescriptionsRequest: {
+          description: 'Batch prescriptions. Required: doctorId, patientId, medicines (array). Optional: validFrom, validUntil, maxRefills. Each medicine: tradeNameId (get from GET /trade-names/search), dosage, frequency, duration, instructions, notes.',
+          type: 'object',
+          required: ['doctorId', 'patientId', 'medicines'],
+          properties: { doctorId: { type: 'integer' }, patientId: { type: 'integer' }, medicines: { type: 'array', items: { type: 'object', properties: { tradeNameId: { type: 'integer' }, dosage: { type: 'string' }, frequency: { type: 'string' }, duration: { type: 'string' }, instructions: { type: 'string' }, notes: { type: 'string' } } } }, validFrom: { type: 'string', format: 'date-time' }, validUntil: { type: 'string', format: 'date-time' }, maxRefills: { type: 'integer' } }
+        },
+        UpdatePrescriptionRequest: { description: 'All fields optional. Send only fields to update.', type: 'object', properties: { status: { type: 'string' }, dosage: { type: 'string' }, frequency: { type: 'string' }, duration: { type: 'string' }, instructions: { type: 'string' }, notes: { type: 'string' }, changedBy: { type: 'string' } } },
         CreatePrescriptionVersionRequest: { type: 'object', properties: { changes: { type: 'string' } } },
         // ── Appointments
-        CreateAppointmentRequest: { type: 'object', required: ['patientId', 'doctorId', 'appointmentDate'], properties: { patientId: { type: 'integer' }, doctorId: { type: 'integer' }, appointmentDate: { type: 'string', format: 'date-time' }, duration: { type: 'integer' }, notes: { type: 'string' } } },
-        UpdateAppointmentRequest: { type: 'object', properties: { appointmentDate: { type: 'string', format: 'date-time' }, duration: { type: 'integer' }, status: { type: 'string' }, notes: { type: 'string' } } },
+        CreateAppointmentRequest: { description: 'Required: patientId, doctorId, appointmentDate. Optional: duration, notes. Get doctorId from GET /doctors/search.', type: 'object', required: ['patientId', 'doctorId', 'appointmentDate'], properties: { patientId: { type: 'integer', description: 'Required.' }, doctorId: { type: 'integer', description: 'Required. Get from GET /doctors/search.' }, appointmentDate: { type: 'string', format: 'date-time', description: 'Required. ISO 8601.' }, duration: { type: 'integer', description: 'Optional. Minutes.' }, notes: { type: 'string', description: 'Optional.' } } },
+        UpdateAppointmentRequest: { description: 'All fields optional. Send only fields to update.', type: 'object', properties: { appointmentDate: { type: 'string', format: 'date-time' }, duration: { type: 'integer' }, status: { type: 'string' }, notes: { type: 'string' } } },
         // ── Consultations
-        CreateConsultationRequest: { type: 'object', required: ['patientId', 'doctorId'], properties: { patientId: { type: 'integer' }, doctorId: { type: 'integer' }, consultationDate: { type: 'string', format: 'date-time' }, notes: { type: 'string' }, diagnosis: { type: 'string' }, followUpRequired: { type: 'boolean' }, followUpDate: { type: 'string', format: 'date-time' } } },
-        UpdateConsultationRequest: { type: 'object', properties: { notes: { type: 'string' }, diagnosis: { type: 'string' }, followUpRequired: { type: 'boolean' }, followUpDate: { type: 'string', format: 'date-time' } } },
+        CreateConsultationRequest: { description: 'Required: patientId, doctorId. Optional: consultationDate, notes, diagnosis, followUpRequired, followUpDate. Get doctorId from GET /doctors/search.', type: 'object', required: ['patientId', 'doctorId'], properties: { patientId: { type: 'integer', description: 'Required.' }, doctorId: { type: 'integer', description: 'Required. Get from GET /doctors/search.' }, consultationDate: { type: 'string', format: 'date-time', description: 'Optional.' }, notes: { type: 'string', description: 'Optional.' }, diagnosis: { type: 'string', description: 'Optional.' }, followUpRequired: { type: 'boolean', description: 'Optional.' }, followUpDate: { type: 'string', format: 'date-time', description: 'Optional.' } } },
+        UpdateConsultationRequest: { description: 'All fields optional. Send only fields to update.', type: 'object', properties: { notes: { type: 'string' }, diagnosis: { type: 'string' }, followUpRequired: { type: 'boolean' }, followUpDate: { type: 'string', format: 'date-time' } } },
         // ── Visits
-        CreateVisitRequest: { type: 'object', required: ['patientId', 'doctorId', 'visitDate'], properties: { patientId: { type: 'integer' }, doctorId: { type: 'integer' }, visitDate: { type: 'string', format: 'date-time' }, visitType: { type: 'string', enum: ['FirstVisit', 'FollowUp', 'Emergency', 'Consultation'] }, diagnosis: { type: 'string' }, treatmentPlan: { type: 'string' }, notes: { type: 'string' } } },
-        UpdateVisitRequest: { type: 'object', properties: { visitDate: { type: 'string', format: 'date-time' }, visitType: { type: 'string' }, diagnosis: { type: 'string' }, treatmentPlan: { type: 'string' }, notes: { type: 'string' } } },
+        CreateVisitRequest: { description: 'Required: patientId, doctorId, visitDate. Optional: visitType, diagnosis, treatmentPlan, notes. Get doctorId from GET /doctors/search.', type: 'object', required: ['patientId', 'doctorId', 'visitDate'], properties: { patientId: { type: 'integer', description: 'Required.' }, doctorId: { type: 'integer', description: 'Required. Get from GET /doctors/search.' }, visitDate: { type: 'string', format: 'date-time', description: 'Required. ISO 8601.' }, visitType: { type: 'string', enum: ['FirstVisit', 'FollowUp', 'Emergency', 'Consultation'], description: 'Optional.' }, diagnosis: { type: 'string', description: 'Optional.' }, treatmentPlan: { type: 'string', description: 'Optional.' }, notes: { type: 'string', description: 'Optional.' } } },
+        UpdateVisitRequest: { description: 'All fields optional. Send only fields to update.', type: 'object', properties: { visitDate: { type: 'string', format: 'date-time' }, visitType: { type: 'string' }, diagnosis: { type: 'string' }, treatmentPlan: { type: 'string' }, notes: { type: 'string' } } },
         // ── Medical reports
-        CreateMedicalReportRequest: { type: 'object', required: ['patientId', 'fileName', 'fileUrl', 'fileType', 'uploadedBy'], properties: { patientId: { type: 'integer' }, fileName: { type: 'string' }, fileUrl: { type: 'string' }, fileType: { type: 'string' }, uploadedBy: { type: 'integer' }, reportType: { type: 'string', enum: ['LabTest', 'Imaging', 'Consultation', 'Procedure', 'Other'] }, reportDate: { type: 'string' }, notes: { type: 'string' }, fileSize: { type: 'number' } } },
-        UpdateMedicalReportRequest: { type: 'object', properties: { notes: { type: 'string' }, reportType: { type: 'string' }, reportDate: { type: 'string' } } },
+        CreateMedicalReportRequest: { description: 'Required: patientId, fileName, fileUrl, fileType, uploadedBy. Optional: reportType, reportDate, notes, fileSize. uploadedBy is the user ID (e.g. from GET /auth/me).', type: 'object', required: ['patientId', 'fileName', 'fileUrl', 'fileType', 'uploadedBy'], properties: { patientId: { type: 'integer', description: 'Required.' }, fileName: { type: 'string', description: 'Required.' }, fileUrl: { type: 'string', description: 'Required. URL of uploaded file.' }, fileType: { type: 'string', description: 'Required. MIME type.' }, uploadedBy: { type: 'integer', description: 'Required. User ID from GET /auth/me.' }, reportType: { type: 'string', enum: ['LabTest', 'Imaging', 'Consultation', 'Procedure', 'Other'], description: 'Optional.' }, reportDate: { type: 'string', description: 'Optional.' }, notes: { type: 'string', description: 'Optional.' }, fileSize: { type: 'number', description: 'Optional.' } } },
+        UpdateMedicalReportRequest: { description: 'All fields optional. Send only fields to update.', type: 'object', properties: { notes: { type: 'string' }, reportType: { type: 'string' }, reportDate: { type: 'string' } } },
         // ── Share links
         GenerateShareLinkRequest: { type: 'object', properties: { expiresInDays: { type: 'integer', default: 7 } } },
         UpdateShareLinkRequest: { type: 'object', properties: { expiresAt: { type: 'string', format: 'date-time' } } },
         // ── Ratings
-        CreateRatingRequest: { type: 'object', required: ['patientId', 'ratedType', 'rating'], properties: { patientId: { type: 'integer' }, ratedType: { type: 'string', enum: ['Doctor', 'Pharmacist'] }, doctorId: { type: 'integer' }, pharmacistId: { type: 'integer' }, rating: { type: 'integer', minimum: 1, maximum: 5 }, review: { type: 'string' } } },
+        CreateRatingRequest: { description: 'Required: patientId, ratedType, rating (1–5). For Doctor: include doctorId; for Pharmacist: include pharmacistId. Optional: review.', type: 'object', required: ['patientId', 'ratedType', 'rating'], properties: { patientId: { type: 'integer', description: 'Required.' }, ratedType: { type: 'string', enum: ['Doctor', 'Pharmacist'], description: 'Required.' }, doctorId: { type: 'integer', description: 'Required when ratedType=Doctor.' }, pharmacistId: { type: 'integer', description: 'Required when ratedType=Pharmacist.' }, rating: { type: 'integer', minimum: 1, maximum: 5, description: 'Required. 1–5.' }, review: { type: 'string', description: 'Optional.' } } },
         // ── Notifications
         CreateNotificationRequest: { type: 'object', required: ['userId', 'type', 'title', 'message'], properties: { userId: { type: 'integer' }, type: { type: 'string', enum: ['PrescriptionReady', 'DrugInteraction', 'AppointmentReminder', 'SystemAlert'] }, title: { type: 'string' }, message: { type: 'string' } } },
         // ── Drug safety

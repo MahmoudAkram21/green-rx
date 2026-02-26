@@ -36,6 +36,7 @@ import medicineSuggestionRoutes from './medicineSuggestion.routes';
 import patientMedicineRoutes from './patientMedicine.routes';
 import settingsRoutes from './settings.routes';
 import lifestyleOptionRoutes from './lifestyleOption.routes';
+import familyRelationRoutes from './familyRelation.routes';
 
 // Mount routes
 router.use('/auth', authRoutes);
@@ -72,6 +73,7 @@ router.use('/medicine-suggestions', medicineSuggestionRoutes);
 router.use('/patient-medicines', patientMedicineRoutes);
 router.use('/settings', settingsRoutes);
 router.use('/lifestyle-options', lifestyleOptionRoutes);
+router.use('/family-relations', familyRelationRoutes);
 
 // Example route
 router.get('/', (_req: Request, res: Response) => {
