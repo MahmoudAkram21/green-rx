@@ -1018,14 +1018,14 @@ async function main() {
       },
       {
         patientId: patients[0].id,
-        relation: "Maternal Grandmother",
+        relation: "Grandmother",
         diseaseId: diseases[0].id, // Diabetes
         severity: "Moderate",
         notes: "Type 2 Diabetes, diagnosed in her 60s",
       },
       {
         patientId: patients[0].id,
-        relation: "Paternal Grandfather",
+        relation: "Grandfather",
         diseaseId: diseases[7].id, // Coronary Artery Disease
         severity: "Severe",
         notes:
@@ -1033,7 +1033,7 @@ async function main() {
       },
       {
         patientId: patients[0].id,
-        relation: "Sister",
+        relation: "Sibling",
         diseaseId: diseases[0].id, // Diabetes
         severity: "Mild",
         notes: "Pre-diabetic, managing with diet and exercise",
@@ -1070,28 +1070,28 @@ async function main() {
       },
       {
         patientId: patients[1].id,
-        relation: "Brother",
+        relation: "Sibling",
         diseaseId: diseases[1].id, // Hypertension
         severity: "Mild",
         notes: "Diagnosed at age 45. On medication. Also has pre-diabetes.",
       },
       {
         patientId: patients[1].id,
-        relation: "Brother",
+        relation: "Sibling",
         diseaseId: diseases[4].id, // Hyperlipidemia
         severity: "Mild",
         notes: "Elevated cholesterol, managing with diet",
       },
       {
         patientId: patients[1].id,
-        relation: "Paternal Grandfather",
+        relation: "Grandfather",
         diseaseId: diseases[7].id, // Coronary Artery Disease
         severity: "Severe",
         notes: "Multiple heart attacks, died at age 70",
       },
       {
         patientId: patients[1].id,
-        relation: "Maternal Uncle",
+        relation: "Uncle",
         diseaseId: diseases[0].id, // Diabetes
         severity: "Moderate",
         notes: "Type 2 Diabetes, diagnosed at age 50",
@@ -1114,21 +1114,21 @@ async function main() {
       },
       {
         patientId: patients[2].id,
-        relation: "Maternal Grandmother",
+        relation: "Grandmother",
         diseaseId: diseases[6].id, // Allergic Rhinitis
         severity: "Mild",
         notes: "Chronic allergies, multiple triggers",
       },
       {
         patientId: patients[2].id,
-        relation: "Sister",
+        relation: "Sibling",
         diseaseId: diseases[6].id, // Allergic Rhinitis
         severity: "Mild",
         notes: "Similar seasonal allergy pattern",
       },
       {
         patientId: patients[2].id,
-        relation: "Daughter (Sophie)",
+        relation: "Child",
         diseaseId: diseases[6].id, // Allergic Rhinitis (potential)
         severity: "None",
         notes: "Too young to diagnose, but monitoring for allergy symptoms",
@@ -1158,14 +1158,14 @@ async function main() {
       },
       {
         patientId: patients[3].id,
-        relation: "Paternal Grandfather",
+        relation: "Grandfather",
         diseaseId: diseases[3].id, // GERD
         severity: "Moderate",
         notes: "Chronic acid reflux, Barrett's esophagus",
       },
       {
         patientId: patients[3].id,
-        relation: "Brother",
+        relation: "Sibling",
         diseaseId: diseases[3].id, // GERD
         severity: "Mild",
         notes: "Occasional heartburn, manages with OTC medications",
@@ -1187,14 +1187,14 @@ async function main() {
       },
       {
         patientId: patients[4].id,
-        relation: "Maternal Grandmother",
+        relation: "Grandmother",
         diseaseId: diseases[2].id, // Asthma
         severity: "Moderate",
         notes: "Adult-onset asthma, uses maintenance inhaler",
       },
       {
         patientId: patients[4].id,
-        relation: "Paternal Uncle",
+        relation: "Uncle",
         diseaseId: diseases[2].id, // Asthma
         severity: "Mild",
         notes: "Exercise-induced asthma",
