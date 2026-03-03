@@ -5,12 +5,18 @@ import { hashPassword, comparePassword } from '../utils/password.util';
 import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from '../utils/jwt.util';
 import { UserRole } from '../../generated/client/client';
 import { registerSchema, loginSchema, refreshTokenSchema } from '../zod/auth.zod';
+import { cleanupFile } from '../config/multer.config';
 
 // Register
 export const register = async (req: Request, res: Response, next: NextFunction) => {
     try {
+        if (req.body?.role === 'Doctor' && !req.file) {
+            res.status(400).json({ error: 'License image is required for doctor registration' });
+            return;
+        }
+
         const validatedData = registerSchema.parse(req.body);
-        const { email, password, role, name, phone } = validatedData;
+        const { email, password, role, name, phone, licenseNumber, specialization } = validatedData;
 
         // Check if user exists
         const existingUser = await prisma.user.findUnique({
@@ -18,6 +24,11 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
         });
 
         if (existingUser) {
+            if (req.file?.path) {
+                try {
+                    cleanupFile(req.file.path);
+                } catch (_) {}
+            }
             res.status(409).json({ error: 'Email already exists' });
             return;
         }
@@ -25,9 +36,13 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
         // Hash password
         const passwordHash = await hashPassword(password);
 
-        // Create user in transaction to ensure profile creation if needed
+        const licenseImageUrl =
+            role === UserRole.Doctor && req.file
+                ? `/uploads/doctor-licenses/${req.file.filename}`
+                : undefined;
+
+        // Create user in transaction; create Doctor profile when role is Doctor
         const result = await prisma.$transaction(async (tx: any) => {
-            // 1. Create User
             const user = await tx.user.create({
                 data: {
                     email,
@@ -38,10 +53,17 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
                 }
             });
 
-            // 2. Create Profile based on role (optional stub)
-            if (role === UserRole.Patient && name) {
-                // We need date of birth and gender ideally, but we can creating a minimal profile or skip until profile completion
-                // For now, let's just create the user. Profile completion will happen in next step.
+            if (role === UserRole.Doctor && name && licenseNumber && specialization && licenseImageUrl) {
+                await tx.doctor.create({
+                    data: {
+                        userId: user.id,
+                        name,
+                        licenseNumber,
+                        licenseImageUrl,
+                        specialization,
+                        isVerified: false
+                    }
+                });
             }
 
             return user;
@@ -75,6 +97,11 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
         });
 
     } catch (error: any) {
+        if (req.file?.path) {
+            try {
+                cleanupFile(req.file.path);
+            } catch (_) {}
+        }
         if (error instanceof z.ZodError) {
             res.status(400).json({ error: error.issues });
             return;

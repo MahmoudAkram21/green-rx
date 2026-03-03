@@ -6,6 +6,7 @@ export const createDoctorSchema = z.object({
   name: z.string().min(1),
   specialization: z.string().min(1),
   licenseNumber: z.string().min(1),
+  licenseImageUrl: z.string().min(1).optional(),
   phoneNumber: z.string().optional(),
   clinicAddress: z.string().optional(),
   yearsOfExperience: z.number().int().nonnegative().optional(),

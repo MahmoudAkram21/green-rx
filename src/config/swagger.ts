@@ -410,6 +410,18 @@ s('/export/diseases', 'get', ADMIN_TAG, 'Export diseases to Excel');
 s('/export/companies', 'get', ADMIN_TAG, 'Export companies to Excel');
 s('/export/history', 'get', ADMIN_TAG, 'Get export history');
 
+// Register accepts multipart when role=Doctor (license image)
+if (paths['/auth/register']?.post) {
+  paths['/auth/register'].post.requestBody = {
+    required: true,
+    content: {
+      'multipart/form-data': {
+        schema: { $ref: '#/components/schemas/RegisterRequest' }
+      }
+    }
+  };
+}
+
 // ═══════════════════════════════════════════════════════
 // OpenAPI definition
 // ═══════════════════════════════════════════════════════
@@ -464,15 +476,18 @@ const options: Record<string, unknown> = {
       schemas: {
         // ── Auth request bodies
         RegisterRequest: {
-          description: 'Create a new user account. Required: email, password. Optional: role, name, phone. After success, use returned tokens or GET /auth/me for userId.',
+          description: 'Create a new user account. Send as multipart/form-data (especially when role=Doctor). Required: email, password. Optional: role (default Patient), name, phone. When role=Doctor: name, licenseNumber (professional license number), specialization, and licenseImage (file) are required; the license image is stored under uploads/ and only its URL is saved in the database. For non-Doctor registration, licenseNumber, specialization, and licenseImage are omitted.',
           type: 'object',
           required: ['email', 'password'],
           properties: {
-            email:    { type: 'string', format: 'email', example: 'user@example.com', description: 'Required.' },
-            password: { type: 'string', minLength: 6,    example: 'secret123', description: 'Required. Min 6 characters.' },
-            role:     { type: 'string', enum: ['Patient', 'Doctor', 'Pharmacist', 'Admin', 'SuperAdmin'], default: 'Patient', description: 'Optional. Default: Patient.' },
-            name:     { type: 'string', minLength: 2,    example: 'John Doe', description: 'Optional.' },
-            phone:    { type: 'string', example: '+201145441141', description: 'Optional. E.164 format.' }
+            email:          { type: 'string', format: 'email', example: 'user@example.com', description: 'Required.' },
+            password:       { type: 'string', minLength: 6, example: 'secret123', description: 'Required. Min 6 characters.' },
+            role:           { type: 'string', enum: ['Patient', 'Doctor', 'Pharmacist', 'Admin', 'SuperAdmin'], default: 'Patient', description: 'Optional. Default: Patient.' },
+            name:           { type: 'string', minLength: 2, example: 'John Doe', description: 'Optional. Required when role=Doctor.' },
+            phone:          { type: 'string', example: '+201145441141', description: 'Optional. E.164 format.' },
+            licenseNumber:  { type: 'string', description: 'Required when role=Doctor. Professional license number.' },
+            specialization: { type: 'string', description: 'Required when role=Doctor.' },
+            licenseImage:   { type: 'string', format: 'binary', description: 'Required when role=Doctor. Image file (PNG, JPG, etc., max 10MB). Stored under uploads/doctor-licenses/.' }
           }
         },
         LoginRequest: {
@@ -581,10 +596,10 @@ const options: Record<string, unknown> = {
         ChildProfileRequest: { type: 'object', required: ['name', 'dateOfBirth', 'gender', 'ageClassification'], properties: { name: { type: 'string' }, dateOfBirth: { type: 'string', format: 'date-time' }, gender: { type: 'string', enum: ['Male', 'Female', 'Other'] }, ageClassification: { type: 'string', enum: ['Neonates', 'Infants', 'Toddlers', 'Children', 'Adolescents', 'Adults', 'Elderly'] }, weight: { type: 'number' }, height: { type: 'number' }, allergies: {}, diseases: {}, medicalHistory: {} } },
         // ── Doctor & Pharmacist
         CreateDoctorRequest: {
-          description: 'Create/update doctor profile. Required: userId, name, specialization, licenseNumber. Optional: phoneNumber, clinicAddress, yearsOfExperience, qualifications, consultationFee. Get userId from GET /auth/me.',
+          description: 'Create/update doctor profile. Required: userId, name, specialization, licenseNumber. Optional: licenseImageUrl (URL of uploaded license image, e.g. from register or /uploads/doctor-licenses/...), phoneNumber, clinicAddress, yearsOfExperience, qualifications, consultationFee. Get userId from GET /auth/me.',
           type: 'object',
           required: ['userId', 'name', 'specialization', 'licenseNumber'],
-          properties: { userId: { type: 'integer', description: 'Required. From GET /auth/me.' }, name: { type: 'string', description: 'Required.' }, specialization: { type: 'string', description: 'Required.' }, licenseNumber: { type: 'string', description: 'Required.' }, phoneNumber: { type: 'string', description: 'Optional.' }, clinicAddress: { type: 'string', description: 'Optional.' }, yearsOfExperience: { type: 'integer', description: 'Optional.' }, qualifications: { type: 'string', description: 'Optional.' }, consultationFee: { type: 'number', description: 'Optional.' } }
+          properties: { userId: { type: 'integer', description: 'Required. From GET /auth/me.' }, name: { type: 'string', description: 'Required.' }, specialization: { type: 'string', description: 'Required.' }, licenseNumber: { type: 'string', description: 'Required.' }, licenseImageUrl: { type: 'string', description: 'Optional. URL of uploaded license image (e.g. /uploads/doctor-licenses/...).' }, phoneNumber: { type: 'string', description: 'Optional.' }, clinicAddress: { type: 'string', description: 'Optional.' }, yearsOfExperience: { type: 'integer', description: 'Optional.' }, qualifications: { type: 'string', description: 'Optional.' }, consultationFee: { type: 'number', description: 'Optional.' } }
         },
         AssignPatientRequest: {
           description: 'Assign patient to doctor. Required: patientId, relationshipType. Optional: startDate, endDate. Used in POST /doctors/:doctorId/patients.',

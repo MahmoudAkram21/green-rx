@@ -454,6 +454,7 @@ model Doctor {
   userId            Int       @unique
   name              String
   licenseNumber     String    @unique
+  licenseImageUrl   String?
   specialization    String
   phoneNumber       String?
   address           String?
