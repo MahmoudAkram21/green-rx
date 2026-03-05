@@ -829,11 +829,11 @@ async function main() {
   const opCholecystectomy = await prisma.operation.create({ data: { name: "Cholecystectomy" } });
   const opCataractSurgery = await prisma.operation.create({ data: { name: "Cataract Surgery" } });
   const opKneeReplacement = await prisma.operation.create({ data: { name: "Knee Replacement" } });
-  const opCesareanSection = await prisma.operation.create({ data: { name: "Cesarean Section" } });
+  await prisma.operation.create({ data: { name: "Cesarean Section" } });
   const opTonsillectomy = await prisma.operation.create({ data: { name: "Tonsillectomy" } });
   const opHerniaRepair = await prisma.operation.create({ data: { name: "Hernia Repair" } });
-  const opHysterectomy = await prisma.operation.create({ data: { name: "Hysterectomy" } });
-  const opGallbladderRemoval = await prisma.operation.create({ data: { name: "Gallbladder Removal" } });
+  await prisma.operation.create({ data: { name: "Hysterectomy" } });
+  await prisma.operation.create({ data: { name: "Gallbladder Removal" } });
   console.log("✅ Created 9 operations");
 
   // ============================================
