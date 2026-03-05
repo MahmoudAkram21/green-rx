@@ -150,6 +150,11 @@ enum SuggestionStatus {
   Rejected
 }
 
+enum AddMedicineRequestStatus {
+  Pending
+  Resolved
+}
+
 enum ADRSeverity {
   Mild
   Moderate
@@ -211,7 +216,8 @@ model User {
   uploadedReports       MedicalReport[]      @relation("UploadedReports")
   diseaseWarningRules   DiseaseWarningRule[]
   reviewedSuggestions   MedicineSuggestion[] @relation("SuggestionReviewer")
-  verifiedMedicines     PatientMedicine[]    @relation("MedicineVerifier")
+  verifiedMedicines       PatientMedicine[]      @relation("MedicineVerifier")
+  resolvedAddMedicineReqs AddMedicineRequest[]   @relation("AddMedicineRequestResolver")
 
   @@index([role])
   @@index([deletedAt])
@@ -323,7 +329,8 @@ model Patient {
   childrenProfiles ChildProfile[]        @relation("ParentChildren")
   ratings          Rating[]
   visits           Visit[]
-  medicines        PatientMedicine[]
+  medicines            PatientMedicine[]
+  addMedicineRequests  AddMedicineRequest[]
 
   @@index([age])
   @@index([ageClassification])
@@ -861,6 +868,7 @@ model ActiveSubstance {
   alternativeTo                  MedicineAlternative[]           @relation("AlternativeSubstance")
   adverseReactions               AdverseDrugReaction[]
   patientMedicines               PatientMedicine[]
+  addMedicineRequests            AddMedicineRequest[]
 
   @@index([activeSubstance])
   @@index([isActive])
@@ -931,6 +939,7 @@ model TradeName {
   batchHistories               BatchHistory[]
   adverseReactions             AdverseDrugReaction[]
   patientMedicines             PatientMedicine[]
+  addMedicineRequests          AddMedicineRequest[]
 
   @@index([title])
   @@index([activeSubstanceId])
@@ -1413,12 +1422,47 @@ model PatientMedicine {
   patient         Patient          @relation(fields: [patientId], references: [id], onDelete: Cascade)
   tradeName       TradeName?       @relation(fields: [tradeNameId], references: [id], onDelete: SetNull)
   activeSubstance ActiveSubstance? @relation(fields: [activeSubstanceId], references: [id], onDelete: SetNull)
-  verifier        User?            @relation("MedicineVerifier", fields: [verifiedBy], references: [id], onDelete: SetNull)
+  verifier          User?                 @relation("MedicineVerifier", fields: [verifiedBy], references: [id], onDelete: SetNull)
+  addMedicineRequest AddMedicineRequest?
 
   @@index([patientId])
   @@index([tradeNameId])
   @@index([isOngoing])
   @@map("patient_medicines")
+}
+
+// ============================================
+// ADD MEDICINE REQUEST (patient upload: AI extracted data, DB match missing)
+// ============================================
+
+model AddMedicineRequest {
+  id                    Int                       @id @default(autoincrement())
+  patientId             Int
+  patientMedicineId     Int                       @unique
+  imageUrl              String?
+  extractedTradeName    String
+  extractedActiveSubstance String
+  extractedConcentration   String?
+  extractedDosageForm     String?
+  matchedTradeNameId    Int?
+  matchedActiveSubstanceId Int?
+  status                AddMedicineRequestStatus @default(Pending)
+  resolvedBy            Int?
+  resolvedAt           DateTime?
+  resolutionNotes      String?
+  createdAt            DateTime                  @default(now())
+  updatedAt            DateTime                  @updatedAt
+
+  patient         Patient          @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  patientMedicine PatientMedicine @relation(fields: [patientMedicineId], references: [id], onDelete: Cascade)
+  matchedTradeName    TradeName?       @relation(fields: [matchedTradeNameId], references: [id], onDelete: SetNull)
+  matchedActiveSubstance ActiveSubstance? @relation(fields: [matchedActiveSubstanceId], references: [id], onDelete: SetNull)
+  resolver        User?            @relation("AddMedicineRequestResolver", fields: [resolvedBy], references: [id], onDelete: SetNull)
+
+  @@index([patientId])
+  @@index([patientMedicineId])
+  @@index([status])
+  @@map("add_medicine_requests")
 }
 
 // ============================================

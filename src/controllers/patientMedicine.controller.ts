@@ -2,6 +2,8 @@ import { Request, Response, NextFunction } from 'express';
 import { prisma } from '../lib/prisma';
 import path from 'path';
 import fs from 'fs';
+import { AddMedicineRequestStatus } from '../../generated/client/client';
+import { extractMedicineFromImage } from '../services/medicineImageExtraction.service';
 
 const uploadsDir = path.join(__dirname, '../../uploads/patient-medicines');
 if (!fs.existsSync(uploadsDir)) {
@@ -60,7 +62,7 @@ export const getPatientMedicineById = async (req: Request, res: Response, next: 
 
 // ── POST /patient-medicines/patient/:patientId ────────────────────────────────
 // Patient picks a medicine that exists in the system (tradeNameId required)
-export const addPatientMedicine = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const addPatientMedicine = async (req: Request, res: Response, next: NextFunction): Promise<void> => { 
     try {
         const { patientId } = req.params;
         const {
@@ -119,11 +121,12 @@ export const addPatientMedicine = async (req: Request, res: Response, next: Next
 };
 
 // ── POST /patient-medicines/patient/:patientId/upload-image ───────────────────
-// Patient does NOT find their medicine — uploads an image instead
+// Patient uploads medicine image: AI extracts data, we search DB; if found add to patient, else create AddMedicineRequest
 export const addPatientMedicineByImage = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         const { patientId } = req.params;
         const { medicineName, dosage, frequency, startDate, endDate, isOngoing, notes } = req.body;
+        const pid = Number(patientId);
 
         if (!req.file) {
             res.status(400).json({ message: 'Image file is required for unrecognised medicine upload' });
@@ -131,11 +134,66 @@ export const addPatientMedicineByImage = async (req: Request, res: Response, nex
         }
 
         const imageUrl = `/uploads/patient-medicines/${req.file.filename}`;
+        const medicineNameFallback = medicineName || req.file.originalname;
+
+        // Read file for AI extraction (multer saved to disk)
+        const filePath = path.join(uploadsDir, req.file.filename);
+        let extracted: Awaited<ReturnType<typeof extractMedicineFromImage>> = null;
+        if (fs.existsSync(filePath)) {
+            const buffer = fs.readFileSync(filePath);
+            extracted = await extractMedicineFromImage(buffer, req.file.mimetype || 'image/jpeg');
+        }
+
+        let matchedTradeNameId: number | null = null;
+        let matchedActiveSubstanceId: number | null = null;
+        let matchedTradeNameTitle: string | null = null;
+
+        if (extracted && (extracted.tradeName || extracted.activeSubstance)) {
+            const [tradeNames, activeSubstances] = await Promise.all([
+                extracted.tradeName
+                    ? prisma.tradeName.findMany({
+                          where: {
+                              title: { contains: extracted!.tradeName, mode: 'insensitive' },
+                              isActive: true,
+                          },
+                          take: 5,
+                          include: { activeSubstance: true },
+                      })
+                    : Promise.resolve([]),
+                extracted.activeSubstance
+                    ? prisma.activeSubstance.findMany({
+                          where: {
+                              activeSubstance: { contains: extracted!.activeSubstance, mode: 'insensitive' },
+                              isActive: true,
+                          },
+                          take: 5,
+                      })
+                    : Promise.resolve([]),
+            ]);
+
+            if (tradeNames.length > 0) {
+                const chosen =
+                    tradeNames.find((t) =>
+                        t.activeSubstance.activeSubstance
+                            .toLowerCase()
+                            .includes((extracted!.activeSubstance || '').toLowerCase())
+                    ) ?? tradeNames[0];
+                matchedTradeNameId = chosen.id;
+                matchedActiveSubstanceId = chosen.activeSubstanceId;
+                matchedTradeNameTitle = chosen.title;
+            } else if (activeSubstances.length > 0) {
+                matchedActiveSubstanceId = activeSubstances[0].id;
+            }
+        }
+
+        const bothFound = matchedTradeNameId != null && matchedActiveSubstanceId != null;
 
         const medicine = await prisma.patientMedicine.create({
             data: {
-                patientId: Number(patientId),
-                medicineName: medicineName || req.file.originalname,
+                patientId: pid,
+                tradeNameId: matchedTradeNameId,
+                activeSubstanceId: matchedActiveSubstanceId,
+                medicineName: bothFound ? matchedTradeNameTitle! : (extracted?.tradeName || medicineNameFallback),
                 dosage,
                 frequency,
                 startDate: startDate ? new Date(startDate) : null,
@@ -144,11 +202,39 @@ export const addPatientMedicineByImage = async (req: Request, res: Response, nex
                 notes,
                 imageUrl,
                 imageFileName: req.file.originalname,
-                isVerified: false,
+                isVerified: bothFound,
+            },
+            include: {
+                tradeName: { include: { activeSubstance: true, company: true } },
+                activeSubstance: true,
             },
         });
 
-        res.status(201).json(medicine);
+        let addMedicineRequestId: number | undefined;
+        if (!bothFound) {
+            const request = await prisma.addMedicineRequest.create({
+                data: {
+                    patientId: pid,
+                    patientMedicineId: medicine.id,
+                    imageUrl,
+                    extractedTradeName: extracted?.tradeName ?? '',
+                    extractedActiveSubstance: extracted?.activeSubstance ?? '',
+                    extractedConcentration: extracted?.concentration ?? null,
+                    extractedDosageForm: extracted?.dosageForm ?? null,
+                    matchedTradeNameId,
+                    matchedActiveSubstanceId,
+                    status: AddMedicineRequestStatus.Pending,
+                },
+            });
+            addMedicineRequestId = request.id;
+        }
+
+        const payload: Record<string, unknown> = { ...medicine, addedToPatient: bothFound };
+        if (addMedicineRequestId != null) {
+            payload.addMedicineRequestId = addMedicineRequestId;
+            payload.requestCreatedForMissingData = true;
+        }
+        res.status(201).json(payload);
     } catch (error) {
         next(error);
     }

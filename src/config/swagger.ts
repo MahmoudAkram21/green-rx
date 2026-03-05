@@ -220,11 +220,16 @@ s('/patient-diseases/{id}', 'delete', PATIENT_TAGS.CURRENT_DISEASES, 'Remove pat
 s('/patient-medicines/patient/{patientId}', 'get', PATIENT_TAGS.MEDICATIONS, 'List all medicines for a patient', true, [p('patientId')]);
 s('/patient-medicines/{id}', 'get', PATIENT_TAGS.MEDICATIONS, 'Get a patient medicine by ID', true, [p('id')]);
 s('/patient-medicines/patient/{patientId}', 'post', PATIENT_TAGS.MEDICATIONS, 'Add a medicine to patient', true, [p('patientId')], { schemaRef: 'AddPatientMedicineRequest' });
-s('/patient-medicines/patient/{patientId}/upload-image', 'post', PATIENT_TAGS.MEDICATIONS, 'Upload medicine image (when not in system)', true, [p('patientId')], { schemaRef: 'AddPatientMedicineRequest' });
+s('/patient-medicines/patient/{patientId}/upload-image', 'post', PATIENT_TAGS.MEDICATIONS, 'Upload medicine image (when not in system)', true, [p('patientId')]);
 s('/patient-medicines/{id}', 'patch', PATIENT_TAGS.MEDICATIONS, 'Update a patient medicine', true, [p('id')], { schemaRef: 'UpdatePatientMedicineRequest' });
 s('/patient-medicines/{id}', 'delete', PATIENT_TAGS.MEDICATIONS, 'Delete a patient medicine', true, [p('id')]);
 s('/patient-medicines/{id}/verify', 'patch', ADMIN_TAG, 'Verify an uploaded medicine (Admin/Doctor)', true, [p('id')]);
 s('/patient-medicines/unverified', 'get', ADMIN_TAG, 'List unverified patient medicines (Admin)', true);
+
+// Add Medicine Requests (Admin) – from patient image upload when AI/DB match missing
+s('/add-medicine-requests', 'get', ADMIN_TAG, 'List add medicine requests (Admin)', true, [q('status'), q('page'), q('limit')]);
+s('/add-medicine-requests/{id}', 'get', ADMIN_TAG, 'Get add medicine request by ID (Admin)', true, [p('id')]);
+s('/add-medicine-requests/{id}/resolve', 'patch', ADMIN_TAG, 'Resolve request: link trade name/active substance and mark PatientMedicine verified', true, [p('id')], { schemaRef: 'ResolveAddMedicineRequestRequest' });
 
 // PRESCRIPTIONS
 s('/prescriptions', 'get', [PATIENT_TAGS.PRESCRIPTIONS, DOCTOR_TAGS.PRESCRIPTIONS], 'List prescriptions (filtered by role)', true, [q('patientId'), q('doctorId')]);
@@ -428,6 +433,31 @@ if (paths['/auth/register']?.post) {
     content: {
       'multipart/form-data': {
         schema: { $ref: '#/components/schemas/RegisterRequest' }
+      }
+    }
+  };
+}
+
+// Upload medicine image: multipart with file field "image" (AI extracts trade name + active substance)
+if (paths['/patient-medicines/patient/{patientId}/upload-image']?.post) {
+  paths['/patient-medicines/patient/{patientId}/upload-image'].post.requestBody = {
+    required: true,
+    content: {
+      'multipart/form-data': {
+        schema: {
+          type: 'object',
+          required: ['image'],
+          properties: {
+            image: { type: 'string', format: 'binary', description: 'Required. Image of the medicine package (PNG, JPG, JPEG, WebP, GIF, max 10MB).' },
+            medicineName: { type: 'string', description: 'Optional. Fallback name if AI extraction fails.' },
+            dosage: { type: 'string', description: 'Optional.' },
+            frequency: { type: 'string', description: 'Optional.' },
+            startDate: { type: 'string', format: 'date-time', description: 'Optional.' },
+            endDate: { type: 'string', format: 'date-time', description: 'Optional.' },
+            isOngoing: { type: 'boolean', description: 'Optional.' },
+            notes: { type: 'string', description: 'Optional.' }
+          }
+        }
       }
     }
   };
@@ -800,6 +830,15 @@ const options: Record<string, unknown> = {
         // ── Medicine suggestions
         CreateMedicineSuggestionRequest: { type: 'object', required: ['tradeName', 'activeSubstance'], properties: { tradeName: { type: 'string' }, activeSubstance: { type: 'string' }, concentration: { type: 'string' }, dosageForm: { type: 'string' }, manufacturer: { type: 'string' }, reason: { type: 'string' } } },
         ReviewMedicineSuggestionRequest: { type: 'object', properties: { status: { type: 'string' }, reviewNotes: { type: 'string' } } },
+        ResolveAddMedicineRequestRequest: {
+          description: 'Resolve an add medicine request: provide tradeNameId and/or activeSubstanceId (from admin-created Trade Name or Active Substance). Backend links the PatientMedicine and marks it verified, then marks the request Resolved.',
+          type: 'object',
+          properties: {
+            tradeNameId:       { type: 'integer', description: 'Optional. ID of the trade name to link (from GET /trade-names or newly created).' },
+            activeSubstanceId: { type: 'integer', description: 'Optional. ID of the active substance to link if only this was missing.' },
+            resolutionNotes:   { type: 'string', description: 'Optional notes for the resolution.' }
+          }
+        },
         // ── Active substances (minimal for doc; full schema is large)
         CreateActiveSubstanceRequest: { type: 'object', required: ['activeSubstance'], properties: { activeSubstance: { type: 'string' }, concentration: { type: 'string' }, classification: { type: 'string' }, dosageForm: { type: 'string' }, indication: { type: 'string' }, pregnancyWarning: { type: 'string' }, lactationWarning: { type: 'string' }, contraindications: {}, isActive: { type: 'boolean' } } },
         UpdateActiveSubstanceRequest: { type: 'object', properties: { activeSubstance: { type: 'string' }, concentration: { type: 'string' }, classification: { type: 'string' }, isActive: { type: 'boolean' } } },
