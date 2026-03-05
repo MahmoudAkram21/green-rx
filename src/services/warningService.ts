@@ -33,7 +33,6 @@ export async function generateWarnings(
       patientAllergies: { include: { allergen: true } },
       patientLifestyles: { include: { lifestyle: true } },
       patientDiseases: {
-        where: { status: 'Active' },
         include: {
           disease: {
             include: {

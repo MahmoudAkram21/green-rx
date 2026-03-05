@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { z } from 'zod';
 import prisma from '../config/database';
-import { DiseaseSeverity, DiseaseStatus } from '../../generated/client/client';
+import { DiseaseSeverity } from '../../generated/client/client';
 import { addPatientDiseaseSchema } from '../zod/patient.zod';
 
 /** Normalize body to array (accept single object or array of objects) */
@@ -28,7 +28,7 @@ export const addPatientDisease = async (req: Request, res: Response, next: NextF
         const results: Awaited<ReturnType<typeof prisma.patientDisease.create>>[] = [];
 
         for (const v of validatedItems) {
-            const { diseaseId, diagnosisDate, severity, status, notes } = v;
+            const { diseaseId, diagnosisDate, severity, notes } = v;
 
             const disease = await prisma.disease.findUnique({
                 where: { id: diseaseId }
@@ -47,7 +47,6 @@ export const addPatientDisease = async (req: Request, res: Response, next: NextF
                     data: {
                         diagnosisDate: diagnosisDate ? new Date(diagnosisDate) : existing.diagnosisDate,
                         severity: severity ?? existing.severity,
-                        status: status ?? existing.status,
                         notes: notes !== undefined ? notes : existing.notes
                     },
                     include: { disease: true }
@@ -60,7 +59,6 @@ export const addPatientDisease = async (req: Request, res: Response, next: NextF
                         diseaseId,
                         diagnosisDate: diagnosisDate ? new Date(diagnosisDate) : new Date(),
                         severity: severity as DiseaseSeverity,
-                        status: status as DiseaseStatus,
                         notes
                     },
                     include: { disease: true }
@@ -87,15 +85,9 @@ export const addPatientDisease = async (req: Request, res: Response, next: NextF
 export const getPatientDiseases = async (req: Request, res: Response) => {
     try {
         const patientId = parseInt(req.params.patientId);
-        const { status } = req.query;
-
-        const where: any = { patientId };
-        if (status) {
-            where.status = status;
-        }
 
         const diseases = await prisma.patientDisease.findMany({
-            where,
+            where: { patientId },
             include: {
                 disease: true
             },
@@ -117,12 +109,7 @@ export const getActivePatientDiseases = async (req: Request, res: Response) => {
         const patientId = parseInt(req.params.patientId);
 
         const activeDiseases = await prisma.patientDisease.findMany({
-            where: {
-                patientId,
-                status: {
-                    in: ['Active', 'Chronic']
-                }
-            },
+            where: { patientId },
             include: {
                 disease: true
             },
@@ -138,16 +125,15 @@ export const getActivePatientDiseases = async (req: Request, res: Response) => {
     }
 };
 
-// Update patient disease status
+// Update patient disease (severity, notes)
 export const updatePatientDiseaseStatus = async (req: Request, res: Response) => {
     try {
         const id = parseInt(req.params.id);
-        const { status, severity, notes } = req.body;
+        const { severity, notes } = req.body;
 
         const updated = await prisma.patientDisease.update({
             where: { id },
             data: {
-                status: status || undefined,
                 severity: severity || undefined,
                 notes: notes !== undefined ? notes : undefined
             },

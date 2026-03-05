@@ -613,7 +613,6 @@ model PatientDisease {
   diseaseId     Int
   diagnosisDate DateTime
   severity      DiseaseSeverity
-  status        DiseaseStatus
   notes         String?
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @updatedAt
@@ -623,7 +622,6 @@ model PatientDisease {
   disease Disease @relation(fields: [diseaseId], references: [id], onDelete: Cascade)
 
   @@index([patientId, diseaseId])
-  @@index([status])
   @@map("patient_diseases")
 }
 

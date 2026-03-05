@@ -42,7 +42,6 @@ export const familyHistorySchema = z.object({
 export const addPatientDiseaseSchema = z.object({
   diseaseId: z.number().int().positive(),
   severity: z.nativeEnum(DiseaseSeverity),
-  status: z.nativeEnum(DiseaseStatus),
   diagnosisDate: z.string().datetime().optional(),
   notes: z.string().optional(),
 });

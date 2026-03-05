@@ -212,8 +212,7 @@ s('/allergens/{id}', 'delete', ADMIN_TAG, 'Delete an allergen (Admin)', true, [p
 // PATIENT DISEASES (Current diseases)
 s('/patient-diseases/patient/{patientId}', 'get', PATIENT_TAGS.CURRENT_DISEASES, 'Get diseases for a patient', true, [p('patientId')]);
 s('/patient-diseases/patient/{patientId}', 'post', PATIENT_TAGS.CURRENT_DISEASES, 'Add current diseases (single object or array)', true, [p('patientId')], { schemaRef: 'BatchPatientDiseasesRequest' });
-s('/patient-diseases/patient/{patientId}/active', 'get', PATIENT_TAGS.CURRENT_DISEASES, 'Get only active diseases for a patient', true, [p('patientId')]);
-s('/patient-diseases/{id}', 'patch', PATIENT_TAGS.CURRENT_DISEASES, 'Update patient disease status', true, [p('id')], { schemaRef: 'UpdatePatientDiseaseRequest' });
+s('/patient-diseases/{id}', 'patch', PATIENT_TAGS.CURRENT_DISEASES, 'Update patient disease (severity, notes)', true, [p('id')], { schemaRef: 'UpdatePatientDiseaseRequest' });
 s('/patient-diseases/{id}', 'delete', PATIENT_TAGS.CURRENT_DISEASES, 'Remove patient disease', true, [p('id')]);
 
 // PATIENT MEDICINES (My medications)
@@ -588,7 +587,7 @@ const options: Record<string, unknown> = {
         DiseaseStatus: {
           type: 'string',
           enum: ['Active', 'Resolved', 'Chronic'],
-          description: 'Disease status. Used in medical history and patient diseases.'
+          description: 'Disease status. Used in medical history only (not in patient current diseases).'
         },
         MedicalHistoryRequest: {
           description: 'One medical history entry. Required: diseaseId, severity, status. Optional: diagnosisDate, treatment, notes. Get diseaseId from GET /diseases.',
@@ -746,19 +745,19 @@ const options: Record<string, unknown> = {
         },
         // ── Patient diseases
         AddPatientDiseaseRequest: {
-          description: 'One current disease. Required: diseaseId, severity, status. Optional: diagnosisDate, notes. Get diseaseId from GET /diseases.',
+          description: 'One current disease. Required: diseaseId, severity. Optional: diagnosisDate, notes. No status field (removed). Get diseaseId from GET /diseases.',
           type: 'object',
-          required: ['diseaseId', 'severity', 'status'],
+          required: ['diseaseId', 'severity'],
           properties: {
             diseaseId:    { type: 'integer', description: 'Required. Get IDs from GET /diseases.' },
             severity:    { type: 'string', enum: ['None', 'Mild', 'Moderate', 'Severe'], description: 'Required.' },
-            status:      { type: 'string', enum: ['Active', 'Resolved', 'Chronic'], description: 'Required.' },
             diagnosisDate: { type: 'string', format: 'date-time', description: 'Optional. ISO 8601.' },
             notes:       { type: 'string', description: 'Optional.' }
-          }
+          },
+          example: { diseaseId: 1, severity: 'Moderate', diagnosisDate: '2024-01-15T00:00:00.000Z', notes: 'Optional notes' }
         },
         BatchPatientDiseasesRequest: { type: 'array', minItems: 1, items: { $ref: '#/components/schemas/AddPatientDiseaseRequest' }, description: 'Send multiple current diseases in one request. Body: array of AddPatientDiseaseRequest. Single object also accepted.' },
-        UpdatePatientDiseaseRequest: { description: 'All fields optional. Send only fields to update. status: Active|Resolved|Chronic|Unknown.', type: 'object', properties: { status: { type: 'string' }, severity: { type: 'string' }, notes: { type: 'string' } } },
+        UpdatePatientDiseaseRequest: { description: 'All fields optional. Send only fields to update. severity: None|Mild|Moderate|Severe.', type: 'object', properties: { severity: { type: 'string', enum: ['None', 'Mild', 'Moderate', 'Severe'] }, notes: { type: 'string' } } },
         // ── Patient medicines
         AddPatientMedicineRequest: {
           description: 'One medication. Required: medicineName. Optional: tradeNameId (get from GET /trade-names/search), dosage, frequency, startDate, endDate, isOngoing, notes.',

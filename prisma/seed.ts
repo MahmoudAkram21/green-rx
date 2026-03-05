@@ -1247,7 +1247,6 @@ async function main() {
         diseaseId: diseases[0].id, // Diabetes
         diagnosisDate: new Date("2018-03-15"),
         severity: "Moderate",
-        status: "Chronic",
         notes:
           "Type 2 Diabetes, well controlled. HbA1c: 6.8%. Fasting glucose: 110-120 mg/dL. Patient compliant with medication and diet.",
       },
@@ -1256,7 +1255,6 @@ async function main() {
         diseaseId: diseases[1].id, // Hypertension (borderline)
         diagnosisDate: new Date("2019-05-20"),
         severity: "Mild",
-        status: "Active",
         notes:
           "Borderline hypertension. BP: 135/88 mmHg. Managing with lifestyle modifications.",
       },
@@ -1266,7 +1264,6 @@ async function main() {
         diseaseId: diseases[1].id, // Hypertension
         diagnosisDate: new Date("2015-06-20"),
         severity: "Moderate",
-        status: "Chronic",
         notes:
           "Essential hypertension. BP controlled with medication. Last reading: 130/85 mmHg. Regular monitoring required.",
       },
@@ -1275,7 +1272,6 @@ async function main() {
         diseaseId: diseases[4].id, // Hyperlipidemia
         diagnosisDate: new Date("2019-01-10"),
         severity: "Moderate",
-        status: "Chronic",
         notes:
           "Mixed hyperlipidemia. Total cholesterol: 180 mg/dL (down from 240). LDL: 110 mg/dL. Triglycerides: 150 mg/dL. Responding well to statin therapy.",
       },
@@ -1284,7 +1280,6 @@ async function main() {
         diseaseId: diseases[7].id, // Coronary Artery Disease (high risk)
         diagnosisDate: new Date("2020-08-15"),
         severity: "Mild",
-        status: "Active",
         notes:
           "High risk due to family history. Regular cardiac monitoring. Currently asymptomatic. EKG normal. Stress test pending.",
       },
@@ -1294,7 +1289,6 @@ async function main() {
         diseaseId: diseases[6].id, // Allergic Rhinitis
         diagnosisDate: new Date("2020-04-10"),
         severity: "Mild",
-        status: "Active",
         notes:
           "Seasonal allergic rhinitis. Primary triggers: pollen (spring), ragweed (fall). Symptoms include sneezing, nasal congestion, itchy eyes.",
       },
@@ -1303,7 +1297,6 @@ async function main() {
         diseaseId: diseases[2].id, // Asthma (exercise-induced)
         diagnosisDate: new Date("2021-09-05"),
         severity: "Mild",
-        status: "Active",
         notes:
           "Exercise-induced asthma. Symptoms occur during vigorous exercise. Well controlled with pre-exercise bronchodilator.",
       },
@@ -1313,7 +1306,6 @@ async function main() {
         diseaseId: diseases[3].id, // GERD
         diagnosisDate: new Date("2021-08-15"),
         severity: "Mild",
-        status: "Active",
         notes:
           "Gastroesophageal reflux disease. Symptoms well controlled with PPI therapy. No nighttime symptoms. Avoids trigger foods.",
       },
@@ -1322,7 +1314,6 @@ async function main() {
         diseaseId: diseases[1].id, // Hypertension (borderline)
         diagnosisDate: new Date("2022-01-10"),
         severity: "Mild",
-        status: "Active",
         notes:
           "Borderline hypertension. BP: 138/88 mmHg. Monitoring without medication initially. Lifestyle modifications recommended.",
       },
@@ -1332,7 +1323,6 @@ async function main() {
         diseaseId: diseases[2].id, // Asthma
         diagnosisDate: new Date("2022-02-20"),
         severity: "Mild",
-        status: "Active",
         notes:
           "Exercise-induced asthma in pediatric patient. Uses rescue inhaler before physical activity. No nighttime symptoms. Regular monitoring.",
       },
@@ -1341,7 +1331,6 @@ async function main() {
         diseaseId: diseases[6].id, // Allergic Rhinitis
         diagnosisDate: new Date("2022-03-15"),
         severity: "Mild",
-        status: "Active",
         notes:
           "Seasonal allergies, primarily in spring. Symptoms include runny nose and sneezing. Managed with pediatric dose antihistamines.",
       },
