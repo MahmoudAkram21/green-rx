@@ -45,7 +45,7 @@ router.post(
     addPatientMedicineByImage
 );
 
-// Update dosage/frequency/status
+// Update dosage, frequency, duration, or other fields
 router.patch(
     '/:id',
     authorize([UserRole.Patient, UserRole.Doctor, UserRole.Admin, UserRole.SuperAdmin]),

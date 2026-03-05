@@ -155,6 +155,21 @@ enum AddMedicineRequestStatus {
   Resolved
 }
 
+enum FrequencyUnit {
+  Hours
+  Days
+  Weeks
+  Months
+  Years
+}
+
+enum DurationUnit {
+  Days
+  Weeks
+  Months
+  Years
+}
+
 enum ADRSeverity {
   Mild
   Moderate
@@ -1401,8 +1416,12 @@ model PatientMedicine {
   tradeNameId       Int?      // null when medicine not found in system
   activeSubstanceId Int?      // derived from tradeName or manually linked
   medicineName      String    // always filled — either tradeName.title or free-text name
-  dosage            String?
-  frequency         String?
+  dosageAmount      Float?    // e.g. 1, 2, 0.5
+  frequencyCount    Int?      // number of repetitions (e.g. 2 for twice)
+  frequencyPeriod   Int?      // every X (e.g. 8 for every 8)
+  frequencyUnit     FrequencyUnit?
+  durationValue     Int?      // e.g. 7
+  durationUnit     DurationUnit?
   startDate         DateTime?
   endDate           DateTime?
   isOngoing         Boolean   @default(true)

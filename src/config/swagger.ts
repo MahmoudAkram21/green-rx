@@ -447,14 +447,18 @@ if (paths['/patient-medicines/patient/{patientId}/upload-image']?.post) {
           type: 'object',
           required: ['image'],
           properties: {
-            image: { type: 'string', format: 'binary', description: 'Required. Image of the medicine package (PNG, JPG, JPEG, WebP, GIF, max 10MB).' },
-            medicineName: { type: 'string', description: 'Optional. Fallback name if AI extraction fails.' },
-            dosage: { type: 'string', description: 'Optional.' },
-            frequency: { type: 'string', description: 'Optional.' },
-            startDate: { type: 'string', format: 'date-time', description: 'Optional.' },
-            endDate: { type: 'string', format: 'date-time', description: 'Optional.' },
-            isOngoing: { type: 'boolean', description: 'Optional.' },
-            notes: { type: 'string', description: 'Optional.' }
+            image:           { type: 'string', format: 'binary', description: 'Required. Image of the medicine package (PNG, JPG, JPEG, WebP, GIF, max 10MB).' },
+            medicineName:    { type: 'string', description: 'Optional. Fallback name if AI extraction fails.' },
+            dosageAmount:    { type: 'number', format: 'float', description: 'Optional.' },
+            frequencyCount:  { type: 'integer', description: 'Optional.' },
+            frequencyPeriod: { type: 'integer', description: 'Optional.' },
+            frequencyUnit:   { type: 'string', enum: ['Hours', 'Days', 'Weeks', 'Months', 'Years'], description: 'Optional.' },
+            durationValue:   { type: 'integer', description: 'Optional.' },
+            durationUnit:    { type: 'string', enum: ['Days', 'Weeks', 'Months', 'Years'], description: 'Optional.' },
+            startDate:       { type: 'string', format: 'date-time', description: 'Optional.' },
+            endDate:         { type: 'string', format: 'date-time', description: 'Optional.' },
+            isOngoing:       { type: 'boolean', description: 'Optional.' },
+            notes:           { type: 'string', description: 'Optional.' }
           }
         }
       }
@@ -759,22 +763,44 @@ const options: Record<string, unknown> = {
         BatchPatientDiseasesRequest: { type: 'array', minItems: 1, items: { $ref: '#/components/schemas/AddPatientDiseaseRequest' }, description: 'Send multiple current diseases in one request. Body: array of AddPatientDiseaseRequest. Single object also accepted.' },
         UpdatePatientDiseaseRequest: { description: 'All fields optional. Send only fields to update. severity: None|Mild|Moderate|Severe.', type: 'object', properties: { severity: { type: 'string', enum: ['None', 'Mild', 'Moderate', 'Severe'] }, notes: { type: 'string' } } },
         // ── Patient medicines
+        FrequencyUnit: { type: 'string', enum: ['Hours', 'Days', 'Weeks', 'Months', 'Years'], description: 'Unit for frequency (repetitions per X).' },
+        DurationUnit: { type: 'string', enum: ['Days', 'Weeks', 'Months', 'Years'], description: 'Unit for duration of treatment.' },
         AddPatientMedicineRequest: {
-          description: 'One medication. Required: medicineName. Optional: tradeNameId (get from GET /trade-names/search), dosage, frequency, startDate, endDate, isOngoing, notes.',
+          description: 'One medication. Required: medicineName. Optional: tradeNameId (GET /trade-names/search), dosageAmount (number), frequencyCount/frequencyPeriod/frequencyUnit (e.g. 2 per day = count 2, period 1, unit Days), durationValue/durationUnit (e.g. 7 days), startDate, endDate, isOngoing, notes.',
           type: 'object',
           required: ['medicineName'],
           properties: {
-            medicineName: { type: 'string', description: 'Required.' },
-            tradeNameId:  { type: 'integer', description: 'Optional. Get IDs from GET /trade-names/search?q=...' },
-            dosage:      { type: 'string', description: 'Optional.' },
-            frequency:   { type: 'string', description: 'Optional.' },
-            startDate:   { type: 'string', format: 'date-time', description: 'Optional.' },
-            endDate:     { type: 'string', format: 'date-time', description: 'Optional.' },
-            isOngoing:   { type: 'boolean', description: 'Optional.' },
-            notes:       { type: 'string', description: 'Optional.' }
+            medicineName:     { type: 'string', description: 'Required.' },
+            tradeNameId:     { type: 'integer', description: 'Optional. Get IDs from GET /trade-names/search?q=...' },
+            dosageAmount:    { type: 'number', format: 'float', description: 'Optional. Numeric dose (e.g. 500, 0.5).' },
+            frequencyCount:  { type: 'integer', description: 'Optional. Number of repetitions (e.g. 2 for twice).' },
+            frequencyPeriod: { type: 'integer', description: 'Optional. Every X (e.g. 8 for every 8 hours).' },
+            frequencyUnit:   { $ref: '#/components/schemas/FrequencyUnit' },
+            durationValue:  { type: 'integer', description: 'Optional. Length of treatment (e.g. 7).' },
+            durationUnit:   { $ref: '#/components/schemas/DurationUnit' },
+            startDate:      { type: 'string', format: 'date-time', description: 'Optional.' },
+            endDate:        { type: 'string', format: 'date-time', description: 'Optional.' },
+            isOngoing:      { type: 'boolean', description: 'Optional.' },
+            notes:          { type: 'string', description: 'Optional.' }
           }
         },
-        UpdatePatientMedicineRequest: { description: 'All fields optional. Send only fields to update.', type: 'object', properties: { medicineName: { type: 'string' }, dosage: { type: 'string' }, frequency: { type: 'string' }, startDate: { type: 'string' }, endDate: { type: 'string' }, isOngoing: { type: 'boolean' }, notes: { type: 'string' } } },
+        UpdatePatientMedicineRequest: {
+          description: 'All fields optional. Send only fields to update.',
+          type: 'object',
+          properties: {
+            medicineName:     { type: 'string' },
+            dosageAmount:     { type: 'number', format: 'float' },
+            frequencyCount:   { type: 'integer' },
+            frequencyPeriod:  { type: 'integer' },
+            frequencyUnit:    { $ref: '#/components/schemas/FrequencyUnit' },
+            durationValue:    { type: 'integer' },
+            durationUnit:     { $ref: '#/components/schemas/DurationUnit' },
+            startDate:        { type: 'string', format: 'date-time' },
+            endDate:          { type: 'string', format: 'date-time' },
+            isOngoing:        { type: 'boolean' },
+            notes:            { type: 'string' }
+          }
+        },
         // ── Prescriptions
         CreatePrescriptionRequest: {
           description: 'One prescription. Required: doctorId, patientId, tradeNameId. Optional: dosage, frequency, duration, instructions, validFrom, validUntil, maxRefills, notes. Get tradeNameId from GET /trade-names/search.',

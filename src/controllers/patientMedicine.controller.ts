@@ -68,8 +68,12 @@ export const addPatientMedicine = async (req: Request, res: Response, next: Next
         const {
             tradeNameId,
             medicineName,
-            dosage,
-            frequency,
+            dosageAmount,
+            frequencyCount,
+            frequencyPeriod,
+            frequencyUnit,
+            durationValue,
+            durationUnit,
             startDate,
             endDate,
             isOngoing,
@@ -101,8 +105,12 @@ export const addPatientMedicine = async (req: Request, res: Response, next: Next
                 tradeNameId: tradeNameId ? Number(tradeNameId) : null,
                 activeSubstanceId: activeSubstanceId ?? null,
                 medicineName,
-                dosage,
-                frequency,
+                dosageAmount: dosageAmount != null ? Number(dosageAmount) : null,
+                frequencyCount: frequencyCount != null ? Number(frequencyCount) : null,
+                frequencyPeriod: frequencyPeriod != null ? Number(frequencyPeriod) : null,
+                frequencyUnit: frequencyUnit ?? null,
+                durationValue: durationValue != null ? Number(durationValue) : null,
+                durationUnit: durationUnit ?? null,
                 startDate: startDate ? new Date(startDate) : null,
                 endDate: endDate ? new Date(endDate) : null,
                 isOngoing: isOngoing !== undefined ? Boolean(isOngoing) : true,
@@ -125,8 +133,14 @@ export const addPatientMedicine = async (req: Request, res: Response, next: Next
 export const addPatientMedicineByImage = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         const { patientId } = req.params;
-        const { medicineName, dosage, frequency, startDate, endDate, isOngoing, notes } = req.body;
+        const { medicineName, dosageAmount, frequencyCount, frequencyPeriod, frequencyUnit, durationValue, durationUnit, startDate, endDate, isOngoing, notes } = req.body;
         const pid = Number(patientId);
+
+        const patient = await prisma.patient.findUnique({ where: { id: pid }, select: { id: true } });
+        if (!patient) {
+            res.status(404).json({ message: 'Patient not found' });
+            return;
+        }
 
         if (!req.file) {
             res.status(400).json({ message: 'Image file is required for unrecognised medicine upload' });
@@ -194,8 +208,12 @@ export const addPatientMedicineByImage = async (req: Request, res: Response, nex
                 tradeNameId: matchedTradeNameId,
                 activeSubstanceId: matchedActiveSubstanceId,
                 medicineName: bothFound ? matchedTradeNameTitle! : (extracted?.tradeName || medicineNameFallback),
-                dosage,
-                frequency,
+                dosageAmount: dosageAmount != null ? Number(dosageAmount) : null,
+                frequencyCount: frequencyCount != null ? Number(frequencyCount) : null,
+                frequencyPeriod: frequencyPeriod != null ? Number(frequencyPeriod) : null,
+                frequencyUnit: frequencyUnit ?? null,
+                durationValue: durationValue != null ? Number(durationValue) : null,
+                durationUnit: durationUnit ?? null,
                 startDate: startDate ? new Date(startDate) : null,
                 endDate: endDate ? new Date(endDate) : null,
                 isOngoing: isOngoing !== undefined ? Boolean(isOngoing) : true,
@@ -244,7 +262,7 @@ export const addPatientMedicineByImage = async (req: Request, res: Response, nex
 export const updatePatientMedicine = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         const { id } = req.params;
-        const { dosage, frequency, startDate, endDate, isOngoing, notes, medicineName } = req.body;
+        const { dosageAmount, frequencyCount, frequencyPeriod, frequencyUnit, durationValue, durationUnit, startDate, endDate, isOngoing, notes, medicineName } = req.body;
 
         const existing = await prisma.patientMedicine.findUnique({ where: { id: Number(id) } });
         if (!existing) {
@@ -256,12 +274,16 @@ export const updatePatientMedicine = async (req: Request, res: Response, next: N
             where: { id: Number(id) },
             data: {
                 medicineName: medicineName ?? existing.medicineName,
-                dosage,
-                frequency,
-                startDate: startDate ? new Date(startDate) : existing.startDate,
-                endDate: endDate ? new Date(endDate) : existing.endDate,
+                ...(dosageAmount !== undefined && { dosageAmount: dosageAmount != null ? Number(dosageAmount) : null }),
+                ...(frequencyCount !== undefined && { frequencyCount: frequencyCount != null ? Number(frequencyCount) : null }),
+                ...(frequencyPeriod !== undefined && { frequencyPeriod: frequencyPeriod != null ? Number(frequencyPeriod) : null }),
+                ...(frequencyUnit !== undefined && { frequencyUnit: frequencyUnit }),
+                ...(durationValue !== undefined && { durationValue: durationValue != null ? Number(durationValue) : null }),
+                ...(durationUnit !== undefined && { durationUnit: durationUnit }),
+                startDate: startDate !== undefined ? (startDate ? new Date(startDate) : null) : existing.startDate,
+                endDate: endDate !== undefined ? (endDate ? new Date(endDate) : null) : existing.endDate,
                 isOngoing: isOngoing !== undefined ? Boolean(isOngoing) : existing.isOngoing,
-                notes,
+                notes: notes !== undefined ? notes : existing.notes,
             },
             include: {
                 tradeName: { include: { activeSubstance: true } },
