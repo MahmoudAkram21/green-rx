@@ -6,6 +6,7 @@ import routes from './routes/index';
 import { morganMiddleware } from './config/morgan';
 import logger from './config/logger';
 import { prisma } from './lib/prisma';
+import { startMedicineReminderJob } from './services/medicineReminderJob';
 import { hashPassword } from './utils/password.util';
 
 const DEFAULT_ADMIN_EMAIL = 'superadmin@greenrx.com';
@@ -101,6 +102,7 @@ app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
   console.log(`Health check: http://localhost:${PORT}/api/health`);
   logger.info(`Server is running on port ${PORT}`);
+  startMedicineReminderJob();
   ensureDefaultAdmin().catch((err) => {
     logger.error('ensureDefaultAdmin failed (server still running)', err);
     console.error('[RMMSY] Default admin setup failed:', err?.message ?? err);

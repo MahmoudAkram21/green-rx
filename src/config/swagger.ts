@@ -458,7 +458,9 @@ if (paths['/patient-medicines/patient/{patientId}/upload-image']?.post) {
             startDate:       { type: 'string', format: 'date-time', description: 'Optional.' },
             endDate:         { type: 'string', format: 'date-time', description: 'Optional.' },
             isOngoing:       { type: 'boolean', description: 'Optional.' },
-            notes:           { type: 'string', description: 'Optional.' }
+            notes:           { type: 'string', description: 'Optional.' },
+            reminderEnabled: { type: 'boolean', description: 'Optional. Enable in-app medicine reminders.' },
+            reminderTimes:   { type: 'array', items: { type: 'string' }, description: 'Optional. Daily times HH:mm (e.g. ["08:00","14:00","20:00"]).' }
           }
         }
       }
@@ -766,7 +768,7 @@ const options: Record<string, unknown> = {
         FrequencyUnit: { type: 'string', enum: ['Hours', 'Days', 'Weeks', 'Months', 'Years'], description: 'Unit for frequency (repetitions per X).' },
         DurationUnit: { type: 'string', enum: ['Days', 'Weeks', 'Months', 'Years'], description: 'Unit for duration of treatment.' },
         AddPatientMedicineRequest: {
-          description: 'One medication. Required: medicineName. Optional: tradeNameId (GET /trade-names/search), dosageAmount (number), frequencyCount/frequencyPeriod/frequencyUnit (e.g. 2 per day = count 2, period 1, unit Days), durationValue/durationUnit (e.g. 7 days), startDate, endDate, isOngoing, notes.',
+          description: 'One medication. Required: medicineName. Optional: tradeNameId (GET /trade-names/search), dosageAmount, frequencyCount/Period/Unit, durationValue/Unit, startDate, endDate, isOngoing, notes, reminderEnabled, reminderTimes (array of "HH:mm" e.g. ["08:00","14:00","20:00"]).',
           type: 'object',
           required: ['medicineName'],
           properties: {
@@ -781,7 +783,9 @@ const options: Record<string, unknown> = {
             startDate:      { type: 'string', format: 'date-time', description: 'Optional.' },
             endDate:        { type: 'string', format: 'date-time', description: 'Optional.' },
             isOngoing:      { type: 'boolean', description: 'Optional.' },
-            notes:          { type: 'string', description: 'Optional.' }
+            notes:          { type: 'string', description: 'Optional.' },
+            reminderEnabled: { type: 'boolean', description: 'Optional. Enable in-app medicine reminders.' },
+            reminderTimes:   { type: 'array', items: { type: 'string', example: '08:00' }, description: 'Optional. Daily reminder times in HH:mm (e.g. ["08:00","14:00","20:00"]).' }
           }
         },
         UpdatePatientMedicineRequest: {
@@ -798,7 +802,9 @@ const options: Record<string, unknown> = {
             startDate:        { type: 'string', format: 'date-time' },
             endDate:          { type: 'string', format: 'date-time' },
             isOngoing:        { type: 'boolean' },
-            notes:            { type: 'string' }
+            notes:            { type: 'string' },
+            reminderEnabled:  { type: 'boolean' },
+            reminderTimes:     { type: 'array', items: { type: 'string' } }
           }
         },
         // ── Prescriptions

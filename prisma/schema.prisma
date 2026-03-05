@@ -118,6 +118,7 @@ enum NotificationType {
   DrugInteraction
   AppointmentReminder
   SystemAlert
+  MedicineReminder
 }
 
 enum PaymentStatus {
@@ -1098,23 +1099,26 @@ model DrugInteractionAlert {
 // ============================================
 
 model Notification {
-  id             Int              @id @default(autoincrement())
-  userId         Int
-  type           NotificationType
-  title          String
-  message        String
-  isRead         Boolean          @default(false)
-  readAt         DateTime?
-  deliveryStatus String? // Pending, Sent, Delivered, Failed
-  createdAt      DateTime         @default(now())
+  id                Int              @id @default(autoincrement())
+  userId            Int
+  type              NotificationType
+  title             String
+  message           String
+  isRead            Boolean          @default(false)
+  readAt            DateTime?
+  deliveryStatus    String? // Pending, Sent, Delivered, Failed
+  patientMedicineId Int?             // for MedicineReminder: link to medicine for dedup/deep-link
+  createdAt         DateTime         @default(now())
 
   // Relations
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  patientMedicine PatientMedicine? @relation(fields: [patientMedicineId], references: [id], onDelete: SetNull)
 
   @@index([userId])
   @@index([isRead])
   @@index([type])
   @@index([createdAt])
+  @@index([patientMedicineId])
   @@map("notifications")
 }
 
@@ -1432,6 +1436,8 @@ model PatientMedicine {
   isVerified        Boolean   @default(false) // admin/doctor can verify/link the image to a real TradeName
   verifiedBy        Int?
   verifiedAt        DateTime?
+  reminderEnabled   Boolean   @default(false)
+  reminderTimes     String[]  @default([]) // e.g. ["08:00","14:00","20:00"] for daily reminder slots
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
 
@@ -1441,10 +1447,12 @@ model PatientMedicine {
   activeSubstance ActiveSubstance? @relation(fields: [activeSubstanceId], references: [id], onDelete: SetNull)
   verifier          User?                 @relation("MedicineVerifier", fields: [verifiedBy], references: [id], onDelete: SetNull)
   addMedicineRequest AddMedicineRequest?
+  medicineReminderNotifications Notification[]
 
   @@index([patientId])
   @@index([tradeNameId])
   @@index([isOngoing])
+  @@index([reminderEnabled])
   @@map("patient_medicines")
 }
 

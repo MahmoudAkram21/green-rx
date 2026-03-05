@@ -7,6 +7,7 @@ export const notificationSchema = z.object({
     "DrugInteraction",
     "AppointmentReminder",
     "SystemAlert",
+    "MedicineReminder",
   ]),
   title: z.string(),
   message: z.string(),

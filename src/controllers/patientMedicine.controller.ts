@@ -78,6 +78,8 @@ export const addPatientMedicine = async (req: Request, res: Response, next: Next
             endDate,
             isOngoing,
             notes,
+            reminderEnabled,
+            reminderTimes,
         } = req.body;
 
         if (!medicineName) {
@@ -115,6 +117,8 @@ export const addPatientMedicine = async (req: Request, res: Response, next: Next
                 endDate: endDate ? new Date(endDate) : null,
                 isOngoing: isOngoing !== undefined ? Boolean(isOngoing) : true,
                 notes,
+                reminderEnabled: reminderEnabled !== undefined ? Boolean(reminderEnabled) : false,
+                reminderTimes: Array.isArray(reminderTimes) ? reminderTimes.filter((t: unknown) => typeof t === 'string' && /^\d{1,2}:\d{2}$/.test(t)) : [],
             },
             include: {
                 tradeName: { include: { activeSubstance: true, company: true } },
@@ -133,7 +137,10 @@ export const addPatientMedicine = async (req: Request, res: Response, next: Next
 export const addPatientMedicineByImage = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         const { patientId } = req.params;
-        const { medicineName, dosageAmount, frequencyCount, frequencyPeriod, frequencyUnit, durationValue, durationUnit, startDate, endDate, isOngoing, notes } = req.body;
+        let { medicineName, dosageAmount, frequencyCount, frequencyPeriod, frequencyUnit, durationValue, durationUnit, startDate, endDate, isOngoing, notes, reminderEnabled, reminderTimes } = req.body;
+        if (typeof reminderTimes === 'string') {
+            try { reminderTimes = JSON.parse(reminderTimes); } catch { reminderTimes = []; }
+        }
         const pid = Number(patientId);
 
         const patient = await prisma.patient.findUnique({ where: { id: pid }, select: { id: true } });
@@ -221,6 +228,8 @@ export const addPatientMedicineByImage = async (req: Request, res: Response, nex
                 imageUrl,
                 imageFileName: req.file.originalname,
                 isVerified: bothFound,
+                reminderEnabled: reminderEnabled !== undefined ? Boolean(reminderEnabled) : false,
+                reminderTimes: Array.isArray(reminderTimes) ? reminderTimes.filter((t: unknown) => typeof t === 'string' && /^\d{1,2}:\d{2}$/.test(t)) : [],
             },
             include: {
                 tradeName: { include: { activeSubstance: true, company: true } },
@@ -262,7 +271,7 @@ export const addPatientMedicineByImage = async (req: Request, res: Response, nex
 export const updatePatientMedicine = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         const { id } = req.params;
-        const { dosageAmount, frequencyCount, frequencyPeriod, frequencyUnit, durationValue, durationUnit, startDate, endDate, isOngoing, notes, medicineName } = req.body;
+        const { dosageAmount, frequencyCount, frequencyPeriod, frequencyUnit, durationValue, durationUnit, startDate, endDate, isOngoing, notes, medicineName, reminderEnabled, reminderTimes } = req.body;
 
         const existing = await prisma.patientMedicine.findUnique({ where: { id: Number(id) } });
         if (!existing) {
@@ -284,6 +293,8 @@ export const updatePatientMedicine = async (req: Request, res: Response, next: N
                 endDate: endDate !== undefined ? (endDate ? new Date(endDate) : null) : existing.endDate,
                 isOngoing: isOngoing !== undefined ? Boolean(isOngoing) : existing.isOngoing,
                 notes: notes !== undefined ? notes : existing.notes,
+                ...(reminderEnabled !== undefined && { reminderEnabled: Boolean(reminderEnabled) }),
+                ...(reminderTimes !== undefined && { reminderTimes: Array.isArray(reminderTimes) ? reminderTimes.filter((t: unknown) => typeof t === 'string' && /^\d{1,2}:\d{2}$/.test(t)) : existing.reminderTimes }),
             },
             include: {
                 tradeName: { include: { activeSubstance: true } },

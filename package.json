@@ -23,6 +23,7 @@
     "license":  "ISC",
     "dependencies":  {
                          "@google/genai":  "^1.0.0",
+                         "node-cron":  "^3.0.3",
                          "@prisma/adapter-pg":  "7.4.0",
                          "@prisma/client":  "7.4.0",
                          "bcryptjs":  "^3.0.3",
@@ -49,6 +50,7 @@
                             "@types/jsonwebtoken":  "^9.0.10",
                             "@types/morgan":  "^1.9.10",
                             "@types/multer":  "^2.0.0",
+                            "@types/node-cron":  "^3.0.11",
                             "@types/node":  "^25.0.2",
                             "@types/nodemailer":  "^7.0.4",
                             "@types/pdfkit":  "^0.17.4",
