@@ -30,7 +30,8 @@ export async function generateWarnings(
   const patient = await prisma.patient.findUnique({
     where: { id: patientId },
     include: {
-      allergies: true,
+      patientAllergies: { include: { allergen: true } },
+      patientLifestyles: { include: { lifestyle: true } },
       patientDiseases: {
         where: { status: 'Active' },
         include: {
@@ -118,6 +119,12 @@ export async function generateWarnings(
   }
 
   // ============================================
+  // CHECK 2.5: LIFESTYLE-BASED WARNINGS (e.g. alcohol, caffeine)
+  // ============================================
+  const lifestyleWarnings = checkLifestyleWarnings(patient, activeSubstance);
+  warnings.push(...lifestyleWarnings);
+
+  // ============================================
   // CHECK 3: PREGNANCY WARNINGS
   // ============================================
   if (patient.gender === 'Female' && patient.pregnancyWarning) {
@@ -175,20 +182,22 @@ function checkAllergyWarnings(patient: any, tradeName: any, activeSubstance: any
   const warnings: Warning[] = [];
   let blocked = false;
 
-  for (const allergy of patient.allergies) {
-    const allergenLower = allergy.allergen.toLowerCase();
+  const patientAllergies = patient.patientAllergies ?? [];
+  for (const pa of patientAllergies) {
+    const allergenName = pa.allergen?.name ?? '';
+    const allergenLower = allergenName.toLowerCase();
     const substanceLower = activeSubstance.activeSubstance.toLowerCase();
     const tradeNameLower = tradeName.title.toLowerCase();
 
     if (substanceLower.includes(allergenLower) || tradeNameLower.includes(allergenLower)) {
-      const severity = allergy.severity === 'LifeThreatening' || allergy.severity === 'Severe' 
-        ? WarningSeverity.Critical 
+      const severity = pa.severity === 'LifeThreatening' || pa.severity === 'Severe'
+        ? WarningSeverity.Critical
         : WarningSeverity.High;
 
       warnings.push({
         severity,
         type: 'AllergyWarning',
-        message: `⚠️ ALLERGY ALERT: Patient is allergic to ${allergy.allergen}. ${allergy.reaction || 'Severe allergic reaction possible.'}`,
+        message: `⚠️ ALLERGY ALERT: Patient is allergic to ${allergenName}. ${pa.reaction || 'Severe allergic reaction possible.'}`,
         blocked: severity === WarningSeverity.Critical
       });
 
@@ -199,6 +208,30 @@ function checkAllergyWarnings(patient: any, tradeName: any, activeSubstance: any
   }
 
   return { warnings, blocked };
+}
+
+function checkLifestyleWarnings(patient: any, activeSubstance: any): Warning[] {
+  const warnings: Warning[] = [];
+  const patientLifestyles = patient.patientLifestyles ?? [];
+  for (const pl of patientLifestyles) {
+    if (!pl.value) continue;
+    const fieldName = pl.lifestyle?.activeSubstanceField;
+    if (!fieldName) continue;
+    const fieldValue = activeSubstance[fieldName];
+    if (fieldValue == null || fieldValue === '') continue;
+    let message = fieldValue;
+    if (typeof fieldValue === 'object' && fieldValue !== null && 'en' in fieldValue) {
+      message = (fieldValue as { en?: string }).en ?? JSON.stringify(fieldValue);
+    } else if (typeof fieldValue !== 'string') {
+      message = String(fieldValue);
+    }
+    warnings.push({
+      severity: WarningSeverity.Medium,
+      type: 'LifestyleWarning',
+      message: `⚠️ LIFESTYLE: Patient indicated "${pl.lifestyle.question}". This medicine has a relevant warning: ${message}`
+    });
+  }
+  return warnings;
 }
 
 async function checkDiseaseWarningRules(patient: any, activeSubstanceId: number) {

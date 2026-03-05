@@ -13,6 +13,7 @@ import companyRoutes from './company.routes';
 import diseaseRoutes from './disease.routes';
 import prescriptionRoutes from './prescription.routes';
 import allergyRoutes from './allergy.routes';
+import allergenRoutes from './allergen.routes';
 import pricingPlanRoutes from './pricingPlan.routes';
 import subscriptionRoutes from './subscription.routes';
 import paymentRoutes from './payment.routes';
@@ -35,8 +36,9 @@ import diseaseWarningRuleRoutes from './diseaseWarningRule.routes';
 import medicineSuggestionRoutes from './medicineSuggestion.routes';
 import patientMedicineRoutes from './patientMedicine.routes';
 import settingsRoutes from './settings.routes';
-import lifestyleOptionRoutes from './lifestyleOption.routes';
+import lifestyleRoutes from './lifestyle.routes';
 import familyRelationRoutes from './familyRelation.routes';
+import operationRoutes from './operation.routes';
 
 // Mount routes
 router.use('/auth', authRoutes);
@@ -50,6 +52,7 @@ router.use('/companies', companyRoutes);
 router.use('/diseases', diseaseRoutes);
 router.use('/prescriptions', prescriptionRoutes);
 router.use('/allergies', allergyRoutes);
+router.use('/allergens', allergenRoutes);
 router.use('/pricing-plans', pricingPlanRoutes);
 router.use('/subscriptions', subscriptionRoutes);
 router.use('/payments', paymentRoutes);
@@ -72,8 +75,9 @@ router.use('/disease-warning-rules', diseaseWarningRuleRoutes);
 router.use('/medicine-suggestions', medicineSuggestionRoutes);
 router.use('/patient-medicines', patientMedicineRoutes);
 router.use('/settings', settingsRoutes);
-router.use('/lifestyle-options', lifestyleOptionRoutes);
+router.use('/lifestyles', lifestyleRoutes);
 router.use('/family-relations', familyRelationRoutes);
+router.use('/operations', operationRoutes);
 
 // Example route
 router.get('/', (_req: Request, res: Response) => {

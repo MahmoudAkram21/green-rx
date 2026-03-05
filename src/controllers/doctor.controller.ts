@@ -351,7 +351,7 @@ export const getDoctorPatients = async (req: Request, res: Response, next: NextF
             include: {
                 patient: {
                     include: {
-                        allergies: true,
+                        patientAllergies: { include: { allergen: true } },
                         patientDiseases: {
                             include: {
                                 disease: true
@@ -364,7 +364,7 @@ export const getDoctorPatients = async (req: Request, res: Response, next: NextF
         });
 
         res.json({
-            patients: relationships.map(r => ({
+            patients: relationships.map((r) => ({
                 ...r.patient,
                 relationshipType: r.relationshipType,
                 startDate: r.startDate,

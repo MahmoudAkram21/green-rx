@@ -49,19 +49,13 @@ export const addPatientDiseaseSchema = z.object({
   notes: z.string().optional(),
 });
 
-export const lifestyleSchema = z.object({
-  noGlasses: z.boolean().optional(),
-  alcoholAbuse: z.boolean().optional(),
-  excessCaffeine: z.boolean().optional(),
-  waterDaily: z.number().positive().optional(),
-  travellerAbroad: z.boolean().optional(),
-  annualVaccination: z.boolean().optional(),
-  noiseExposure: z.boolean().optional(),
-  chemicalExposure: z.boolean().optional(),
-  radiationExposure: z.boolean().optional(),
-  physicalActivity: z.string().trim().optional(),
-  dietaryHabits: z.string().trim().optional(),
+/** One patient lifestyle answer (lifestyleId from GET /lifestyles, value = boolean) */
+export const patientLifestyleItemSchema = z.object({
+  lifestyleId: z.number().int().positive(),
+  value: z.boolean().default(false),
 });
+
+export const batchPatientLifestyleSchema = z.array(patientLifestyleItemSchema).min(1);
 
 const allergenTypeEnum = z.enum(["Drug", "Food", "Pollen", "Dust", "Pet", "Fragrance", "Other"]);
 
@@ -73,7 +67,16 @@ export const allergySchema = z.object({
   notes: z.string().optional(),
 });
 
+/** For adding catalog allergens to a patient (allergenId from GET /allergens) */
+export const patientAllergySchema = z.object({
+  allergenId: z.number().int().positive(),
+  severity: z.nativeEnum(AllergySeverity).default(AllergySeverity.Mild),
+  reaction: z.string().optional().nullable(),
+  notes: z.string().optional().nullable(),
+});
+
 export const batchAllergySchema = z.array(allergySchema);
+export const batchPatientAllergySchema = z.array(patientAllergySchema);
 
 export const childProfileSchema = z.object({
   name: z.string().min(1),

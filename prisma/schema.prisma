@@ -44,7 +44,6 @@ enum DiseaseSeverity {
   Mild
   Moderate
   Severe
-  Critical
 }
 
 enum DiseaseStatus {
@@ -314,8 +313,8 @@ model Patient {
   medicalHistories MedicalHistory[]
   familyHistories  FamilyHistory[]
   surgicalHistories SurgicalHistory[]
-  lifestyle        Lifestyle?
-  allergies        Allergy[]
+  patientLifestyles PatientLifestyle[]
+  patientAllergies  PatientAllergy[]
   patientDoctors   PatientDoctor[]
   consultations    Consultation[]
   appointments     Appointment[]
@@ -376,73 +375,92 @@ model FamilyHistory {
 model SurgicalHistory {
   id             Int      @id @default(autoincrement())
   patientId      Int
-  operationName  String
   surgeryDate    DateTime
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
-
+  operationId    Int
   // Relations
+  operation Operation @relation(fields: [operationId], references: [id], onDelete: Restrict)
   patient Patient @relation(fields: [patientId], references: [id], onDelete: Cascade)
 
   @@index([patientId])
+  @@unique([patientId, operationId])
   @@map("surgical_histories")
 }
 
-model Lifestyle {
-  id                Int      @id @default(autoincrement())
-  patientId         Int      @unique
-  noGlasses         Boolean  @default(false)
-  alcoholAbuse      Boolean  @default(false)
-  excessCaffeine    Boolean  @default(false)
-  waterDaily        Decimal? @db.Decimal(4, 2) // liters per day
-  travellerAbroad   Boolean  @default(false)
-  annualVaccination Boolean  @default(false)
-  surgeriesLast3Months Boolean @default(false)
-  surgeriesDetails  String?
-  physicalActivity  String?  // e.g. dropdown value from "Enter Lifestyle Details"
-  dietaryHabits     String?  // e.g. dropdown value from "Enter Lifestyle Details"
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
 
-  // Relations
-  patient Patient @relation(fields: [patientId], references: [id], onDelete: Cascade)
+model Operation {
+  id        Int      @id @default(autoincrement())
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  SurgicalHistory SurgicalHistory[]
+  @@map("operations")
+}
+
+// Lifestyle catalog (admin CRUD). Each row = one lifestyle question + ActiveSubstance field to check for drug warnings.
+model Lifestyle {
+  id                    Int      @id @default(autoincrement())
+  question              String   // e.g. "Alcohol use"
+  activeSubstanceField  String   // field name on ActiveSubstance to check (validated via backend/src/enums/activeSubstanceLifestyleField.ts)
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  patientLifestyles PatientLifestyle[]
 
   @@map("lifestyles")
 }
 
-// Admin-managed options for "Enter Lifestyle Details" dropdowns (physical activity, dietary habits)
-model LifestyleOption {
-  id        Int      @id @default(autoincrement())
-  type      String   // "physical_activity" | "dietary_habits"
-  label     String   // display text, e.g. "Sedentary", "Vegetarian"
-  value     String?  // optional value to store (defaults to label if null)
-  sortOrder Int      @default(0)
-  isActive  Boolean  @default(true)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+// Patient's lifestyle answers (many-to-many: patient links to catalog Lifestyle with boolean value).
+model PatientLifestyle {
+  id         Int      @id @default(autoincrement())
+  patientId  Int
+  lifestyleId Int
+  value      Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
-  @@index([type])
-  @@index([type, isActive])
-  @@map("lifestyle_options")
+  patient   Patient   @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  lifestyle Lifestyle @relation(fields: [lifestyleId], references: [id], onDelete: Restrict)
+
+  @@unique([patientId, lifestyleId])
+  @@index([patientId])
+  @@index([lifestyleId])
+  @@map("patient_lifestyles")
 }
 
-model Allergy {
-  id           Int             @id @default(autoincrement())
-  patientId    Int
-  allergen     String
-  allergenType String?         // "Drug" | "Food" (null = legacy, treat as Drug)
-  severity     AllergySeverity // retained for backward compatibility; UI may hide per spec
-  reactionType String?
-  notes        String?
-  createdAt    DateTime        @default(now())
-  updatedAt    DateTime        @updatedAt
+// Allergen catalog (admin CRUD). Patients link to these via PatientAllergy.
+model Allergen {
+  id             Int      @id @default(autoincrement())
+  name           String
+  allergenType   String?  // "Drug" | "Food" | "Pollen" | etc.
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
-  // Relations
-  patient Patient @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  patientAllergies PatientAllergy[]
 
+  @@index([name])
+  @@map("allergens")
+}
+
+// Patient's allergies (many-to-many: patient links to catalog allergens).
+model PatientAllergy {
+  id         Int             @id @default(autoincrement())
+  patientId  Int
+  allergenId Int
+  severity   AllergySeverity
+  reaction   String?
+  notes      String?
+  createdAt  DateTime        @default(now())
+  updatedAt  DateTime        @updatedAt
+
+  patient  Patient  @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  allergen Allergen @relation(fields: [allergenId], references: [id], onDelete: Restrict)
+
+  @@unique([patientId, allergenId])
   @@index([patientId])
-  @@index([allergen])
-  @@map("allergies")
+  @@index([allergenId])
+  @@map("patient_allergies")
 }
 
 // ============================================

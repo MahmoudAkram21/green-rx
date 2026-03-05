@@ -3,8 +3,12 @@ import { z } from 'zod';
 import { prisma } from '../lib/prisma';
 
 const createSurgicalHistorySchema = z.object({
-  operationName: z.string().min(1),
-  surgeryDate: z.union([z.string().datetime(), z.coerce.date()]),
+  operationId: z.coerce.number().int().positive(),
+  surgeryDate: z.union([
+    z.string().datetime({ offset: true }),
+    z.string().min(1).transform((s) => new Date(s)),
+    z.coerce.date(),
+  ]),
 });
 
 export const getSurgicalHistories = async (req: Request, res: Response, next: NextFunction) => {
@@ -13,6 +17,7 @@ export const getSurgicalHistories = async (req: Request, res: Response, next: Ne
     const list = await prisma.surgicalHistory.findMany({
       where: { patientId },
       orderBy: { surgeryDate: 'desc' },
+      include: { operation: true },
     });
     res.json(list);
   } catch (error) {
@@ -23,7 +28,9 @@ export const getSurgicalHistories = async (req: Request, res: Response, next: Ne
 export const addSurgicalHistory = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const patientId = parseInt(req.params.patientId);
-    const validated = createSurgicalHistorySchema.parse(req.body);
+    const raw = req.body;
+    const items = Array.isArray(raw) ? raw : [raw];
+    const validatedItems = z.array(createSurgicalHistorySchema).parse(items);
 
     const patient = await prisma.patient.findUnique({ where: { id: patientId } });
     if (!patient) {
@@ -31,18 +38,40 @@ export const addSurgicalHistory = async (req: Request, res: Response, next: Next
       return;
     }
 
-    const surgeryDate = typeof validated.surgeryDate === 'string' ? new Date(validated.surgeryDate) : validated.surgeryDate;
-    const record = await prisma.surgicalHistory.create({
-      data: {
-        patientId,
-        operationName: validated.operationName,
-        surgeryDate,
-      },
+    if (validatedItems.length === 0) {
+      res.status(400).json({ error: 'At least one surgical history entry is required' });
+      return;
+    }
+
+    for (const v of validatedItems) {
+      const op = await prisma.operation.findUnique({ where: { id: v.operationId } });
+      if (!op) {
+        res.status(400).json({ error: `Operation with id ${v.operationId} not found` });
+        return;
+      }
+    }
+
+    const data = validatedItems.map((v) => {
+      const surgeryDate = typeof v.surgeryDate === 'string' ? new Date(v.surgeryDate) : v.surgeryDate;
+      return { patientId, operationId: v.operationId, surgeryDate };
     });
-    res.status(201).json({ message: 'Surgical history added successfully', surgicalHistory: record });
+
+    const surgicalHistories = await prisma.surgicalHistory.createManyAndReturn({ data });
+
+    res.status(201).json({
+      message: surgicalHistories.length === 1 ? 'Surgical history added successfully' : `${surgicalHistories.length} surgical history entries added successfully`,
+      count: surgicalHistories.length,
+      surgicalHistories,
+    });
   } catch (error: any) {
     if (error instanceof z.ZodError) {
       res.status(400).json({ error: error.issues });
+      return;
+    }
+    if (error?.code === 'P2002') {
+      res.status(400).json({
+        error: 'This operation is already in your surgical history. Each operation can only be added once per patient.',
+      });
       return;
     }
     next(error);

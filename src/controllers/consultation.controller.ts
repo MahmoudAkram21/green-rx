@@ -80,7 +80,7 @@ export const getConsultationById = async (req: Request, res: Response) => {
             include: {
                 patient: {
                     include: {
-                        allergies: true,
+                        patientAllergies: { include: { allergen: true } },
                         patientDiseases: {
                             include: {
                                 disease: true

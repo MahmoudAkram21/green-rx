@@ -8,7 +8,9 @@ import {
     getMedicalHistories,
     addFamilyHistory,
     getFamilyHistories,
-    updateLifestyle,
+    getPatientLifestyles,
+    addOrUpdatePatientLifestyles,
+    deletePatientLifestyle,
     addAllergy,
     addAllergiesBatch,
     deleteAllergy,
@@ -23,11 +25,34 @@ import {
 } from '../controllers/surgicalHistory.controller';
 import { authenticate, authorize } from '../middleware/auth.middleware';
 import { UserRole } from '../../generated/client/client';
+import { prisma } from '../lib/prisma';
 
 const router = express.Router();
 
 // All patient routes require authentication
 router.use(authenticate);
+
+// Resolve "me" or the current user's userId (when role is Patient) to the actual patient id
+router.use(async (req, res, next) => {
+  const patientId = req.params.patientId;
+  const isMe = patientId === 'me';
+  const isOwnUserId = req.user?.role === 'Patient' && String(req.user.userId) === patientId;
+  if ((isMe || isOwnUserId) && req.user?.role === 'Patient') {
+    try {
+      const patient = await prisma.patient.findUnique({ where: { userId: req.user!.userId } });
+      console.log("patient", patient);
+      if (!patient) {
+        res.status(404).json({ error: 'Patient not found' });
+        return;
+      }
+      req.params.patientId = String(patient.id);
+    } catch (e) {
+      next(e);
+      return;
+    }
+  }
+  next();
+});
 
 // Patient Profile
 router.get('/', authorize([UserRole.Admin, UserRole.SuperAdmin]), getAllPatients);
@@ -48,8 +73,10 @@ router.get('/:patientId/surgeries', getSurgicalHistories);
 router.post('/:patientId/surgeries', authorize([UserRole.Patient, UserRole.Doctor, UserRole.Admin, UserRole.SuperAdmin]), addSurgicalHistory);
 router.delete('/surgeries/:id', authorize([UserRole.Patient, UserRole.Doctor, UserRole.Admin, UserRole.SuperAdmin]), deleteSurgicalHistory);
 
-// Lifestyle
-router.put('/:patientId/lifestyle', authorize([UserRole.Patient, UserRole.Doctor, UserRole.Admin, UserRole.SuperAdmin]), updateLifestyle);
+// Lifestyle (catalog: GET /lifestyles; patient answers below)
+router.get('/:patientId/lifestyle', getPatientLifestyles);
+router.post('/:patientId/lifestyle', authorize([UserRole.Patient, UserRole.Doctor, UserRole.Admin, UserRole.SuperAdmin]), addOrUpdatePatientLifestyles);
+router.delete('/lifestyle/:patientLifestyleId', authorize([UserRole.Patient, UserRole.Doctor, UserRole.Admin, UserRole.SuperAdmin]), deletePatientLifestyle);
 
 // Allergies
 router.post('/:patientId/allergies', authorize([UserRole.Patient, UserRole.Doctor, UserRole.Admin, UserRole.SuperAdmin]), addAllergy);

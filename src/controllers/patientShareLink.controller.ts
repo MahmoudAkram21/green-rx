@@ -53,7 +53,7 @@ class PatientShareLinkController {
                 include: {
                     patient: {
                         include: {
-                            allergies: true,
+                            patientAllergies: { include: { allergen: true } },
                             prescriptions: {
                                 include: {
                                     tradeName: {

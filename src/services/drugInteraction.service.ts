@@ -2,7 +2,6 @@ import { prisma } from '../lib/prisma';
 import {
     ActiveSubstance,
     Patient,
-    Allergy
 } from '../../generated/client/client';
 
 interface DrugInteractionCheck {
@@ -11,12 +10,13 @@ interface DrugInteractionCheck {
     hasDiseaseWarnings: boolean;
     hasPregnancyWarnings: boolean;
     hasAgeWarnings: boolean;
+    hasLifestyleWarnings: boolean;
     warnings: DrugWarning[];
     alerts: DrugAlert[];
 }
 
 interface DrugWarning {
-    type: 'interaction' | 'allergy' | 'disease' | 'pregnancy' | 'lactation' | 'age' | 'renal' | 'hepatic';
+    type: 'interaction' | 'allergy' | 'disease' | 'pregnancy' | 'lactation' | 'age' | 'renal' | 'hepatic' | 'lifestyle';
     severity: 'low' | 'medium' | 'high' | 'critical';
     message: string;
     affectedDrug?: string;
@@ -43,7 +43,8 @@ class DrugInteractionService {
         const patient = await prisma.patient.findUnique({
             where: { id: patientId },
             include: {
-                allergies: true,
+                patientAllergies: { include: { allergen: true } },
+                patientLifestyles: { include: { lifestyle: true } },
                 patientDiseases: {
                     include: {
                         disease: {
@@ -84,7 +85,7 @@ class DrugInteractionService {
         const alerts: DrugAlert[] = [];
 
         // 1. Check allergy conflicts
-        const allergyCheck = this.checkAllergies(patient.allergies, newDrug);
+        const allergyCheck = this.checkAllergies(patient.patientAllergies, newDrug);
         if (allergyCheck.length > 0) {
             warnings.push(...allergyCheck);
         }
@@ -135,6 +136,12 @@ class DrugInteractionService {
             warnings.push(...organCheck);
         }
 
+        // 7. Check lifestyle-based warnings (e.g. alcohol, caffeine)
+        const lifestyleCheck = this.checkLifestyleWarnings(patient.patientLifestyles ?? [], newDrug);
+        if (lifestyleCheck.length > 0) {
+            warnings.push(...lifestyleCheck);
+        }
+
         return {
             hasDrugInteractions: interactionCheck.warnings.length > 0 || interactionCheck.alerts.length > 0,
             hasAllergyConflicts: allergyCheck.length > 0,
@@ -142,41 +149,77 @@ class DrugInteractionService {
             hasPregnancyWarnings: (patient.pregnancyWarning || patient.lactation) &&
                 (!!newDrug.pregnancyWarning || !!newDrug.lactationWarning),
             hasAgeWarnings: ageCheck.length > 0,
+            hasLifestyleWarnings: lifestyleCheck.length > 0,
             warnings,
             alerts
         };
     }
 
     /**
-     * Check for allergy conflicts
+     * Check lifestyle-based drug warnings (patient indicated e.g. alcohol use; drug has interaction field set).
      */
-    private checkAllergies(allergies: Allergy[], drug: ActiveSubstance): DrugWarning[] {
+    private checkLifestyleWarnings(
+        patientLifestyles: Array<{ value: boolean; lifestyle: { question: string; activeSubstanceField: string } }>,
+        drug: ActiveSubstance
+    ): DrugWarning[] {
+        const warnings: DrugWarning[] = [];
+        for (const pl of patientLifestyles) {
+            if (!pl.value) continue;
+            const fieldName = pl.lifestyle?.activeSubstanceField;
+            if (!fieldName) continue;
+            const fieldValue = (drug as any)[fieldName];
+            if (fieldValue == null || fieldValue === '') continue;
+            let message = fieldValue;
+            if (typeof fieldValue === 'object' && fieldValue !== null && 'en' in fieldValue) {
+                message = (fieldValue as { en?: string }).en ?? JSON.stringify(fieldValue);
+            } else if (typeof fieldValue !== 'string') {
+                message = String(fieldValue);
+            }
+            warnings.push({
+                type: 'lifestyle',
+                severity: 'medium',
+                message: `Lifestyle: Patient indicated "${pl.lifestyle.question}". This medicine has a relevant warning: ${message}`,
+                affectedDrug: drug.activeSubstance
+            });
+        }
+        return warnings;
+    }
+
+    /**
+     * Check for allergy conflicts (PatientAllergy with allergen catalog)
+     */
+    private checkAllergies(
+        patientAllergies: Array<{ severity: string; reaction: string | null; allergen: { name: string } }>,
+        drug: ActiveSubstance
+    ): DrugWarning[] {
         const warnings: DrugWarning[] = [];
 
-        for (const allergy of allergies) {
+        for (const pa of patientAllergies) {
+            const allergenName = pa.allergen?.name ?? '';
+
             // Check contraindications
             if (Array.isArray(drug.contraindications) &&
                 drug.contraindications.some((c: any) =>
-                    typeof c === 'string' && c.toLowerCase().includes(allergy.allergen.toLowerCase())
+                    typeof c === 'string' && c.toLowerCase().includes(allergenName.toLowerCase())
                 )) {
                 warnings.push({
                     type: 'allergy',
-                    severity: allergy.severity === 'LifeThreatening' ? 'critical' :
-                        allergy.severity === 'Severe' ? 'high' : 'medium',
-                    message: `ALLERGY ALERT: Patient is allergic to ${allergy.allergen}. ` +
+                    severity: pa.severity === 'LifeThreatening' ? 'critical' :
+                        pa.severity === 'Severe' ? 'high' : 'medium',
+                    message: `ALLERGY ALERT: Patient is allergic to ${allergenName}. ` +
                         `This medication contains or is related to this allergen. ` +
-                        `Severity: ${allergy.severity}. Reaction: ${allergy.reactionType || 'Not specified'}`,
+                        `Severity: ${pa.severity}. Reaction: ${pa.reaction || 'Not specified'}`,
                     affectedDrug: drug.activeSubstance
                 });
             }
 
             // Check if allergen name matches drug classification or active substance
-            if (drug.activeSubstance?.toLowerCase().includes(allergy.allergen.toLowerCase()) ||
-                drug.classification?.toLowerCase().includes(allergy.allergen.toLowerCase())) {
+            if (drug.activeSubstance?.toLowerCase().includes(allergenName.toLowerCase()) ||
+                drug.classification?.toLowerCase().includes(allergenName.toLowerCase())) {
                 warnings.push({
                     type: 'allergy',
                     severity: 'critical',
-                    message: `CRITICAL ALLERGY: Patient has documented allergy to ${allergy.allergen}. ` +
+                    message: `CRITICAL ALLERGY: Patient has documented allergy to ${allergenName}. ` +
                         `This medication may cause severe allergic reaction.`,
                     affectedDrug: drug.activeSubstance
                 });

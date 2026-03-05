@@ -30,12 +30,15 @@ async function main() {
   await prisma.medicalReport.deleteMany();
   await prisma.adverseDrugReaction.deleteMany();
   await prisma.childProfile.deleteMany();
+  await prisma.patientLifestyle.deleteMany();
   await prisma.lifestyle.deleteMany();
-  await prisma.lifestyleOption.deleteMany();
-  await prisma.allergy.deleteMany();
+  await prisma.patientAllergy.deleteMany();
+  await prisma.allergen.deleteMany();
   await prisma.patientDisease.deleteMany();
   await prisma.familyHistory.deleteMany();
   await prisma.medicalHistory.deleteMany();
+  await prisma.surgicalHistory.deleteMany();
+  await prisma.operation.deleteMany();
   await prisma.patient.deleteMany();
   await prisma.doctor.deleteMany();
   await prisma.pharmacist.deleteMany();
@@ -43,6 +46,9 @@ async function main() {
   await prisma.auditLog.deleteMany();
   await prisma.payment.deleteMany();
   await prisma.subscription.deleteMany();
+
+  await prisma.rolePermission.deleteMany();
+  await prisma.permission.deleteMany();
 
   // P0: Delete tables that reference users BEFORE deleting users
   await prisma.diseaseWarningRule.deleteMany();
@@ -433,29 +439,6 @@ async function main() {
   console.log(`✅ Created ${diseases.length} diseases`);
 
   // ============================================
-  // SECTION 4B: LIFESTYLE OPTIONS (Enter Lifestyle Details dropdowns)
-  // ============================================
-  console.log("\n🏃 Creating lifestyle options...");
-  const lifestyleOptions = await Promise.all([
-    // physical_activity options
-    prisma.lifestyleOption.create({ data: { type: "physical_activity", label: "Sedentary", sortOrder: 1 } }),
-    prisma.lifestyleOption.create({ data: { type: "physical_activity", label: "Light (e.g. walking)", sortOrder: 2 } }),
-    prisma.lifestyleOption.create({ data: { type: "physical_activity", label: "Moderate (e.g. cycling, swimming)", sortOrder: 3 } }),
-    prisma.lifestyleOption.create({ data: { type: "physical_activity", label: "Vigorous (e.g. running, gym)", sortOrder: 4 } }),
-    prisma.lifestyleOption.create({ data: { type: "physical_activity", label: "None / Prefer not to say", sortOrder: 5 } }),
-    // dietary_habits options
-    prisma.lifestyleOption.create({ data: { type: "dietary_habits", label: "No special diet", sortOrder: 1 } }),
-    prisma.lifestyleOption.create({ data: { type: "dietary_habits", label: "Vegetarian", sortOrder: 2 } }),
-    prisma.lifestyleOption.create({ data: { type: "dietary_habits", label: "Vegan", sortOrder: 3 } }),
-    prisma.lifestyleOption.create({ data: { type: "dietary_habits", label: "Halal", sortOrder: 4 } }),
-    prisma.lifestyleOption.create({ data: { type: "dietary_habits", label: "Kosher", sortOrder: 5 } }),
-    prisma.lifestyleOption.create({ data: { type: "dietary_habits", label: "Low sodium", sortOrder: 6 } }),
-    prisma.lifestyleOption.create({ data: { type: "dietary_habits", label: "Low sugar", sortOrder: 7 } }),
-    prisma.lifestyleOption.create({ data: { type: "dietary_habits", label: "Other", sortOrder: 8 } }),
-  ]);
-  console.log(`✅ Created ${lifestyleOptions.length} lifestyle options`);
-
-  // ============================================
   // SECTION 5: PRICING PLANS
   // ============================================
   console.log("\n💰 Creating pricing plans...");
@@ -839,6 +822,21 @@ async function main() {
   const patients = await prisma.patient.findMany();
 
   // ============================================
+  // SECTION 6b: OPERATIONS (for surgical history dropdown)
+  // ============================================
+  console.log("\n🏥 Creating operations...");
+  const opAppendectomy = await prisma.operation.create({ data: { name: "Appendectomy" } });
+  const opCholecystectomy = await prisma.operation.create({ data: { name: "Cholecystectomy" } });
+  const opCataractSurgery = await prisma.operation.create({ data: { name: "Cataract Surgery" } });
+  const opKneeReplacement = await prisma.operation.create({ data: { name: "Knee Replacement" } });
+  const opCesareanSection = await prisma.operation.create({ data: { name: "Cesarean Section" } });
+  const opTonsillectomy = await prisma.operation.create({ data: { name: "Tonsillectomy" } });
+  const opHerniaRepair = await prisma.operation.create({ data: { name: "Hernia Repair" } });
+  const opHysterectomy = await prisma.operation.create({ data: { name: "Hysterectomy" } });
+  const opGallbladderRemoval = await prisma.operation.create({ data: { name: "Gallbladder Removal" } });
+  console.log("✅ Created 9 operations");
+
+  // ============================================
   // SECTION 7: SUBSCRIPTIONS
   // ============================================
   console.log("\n📅 Creating subscriptions...");
@@ -995,6 +993,25 @@ async function main() {
       },
     ],
   });
+
+  // Surgical Histories (one entry per patient per operation — @@unique([patientId, operationId]))
+  await prisma.surgicalHistory.createMany({
+    data: [
+      // Patient 1 (Alice Cooper)
+      { patientId: patients[0].id, operationId: opAppendectomy.id, surgeryDate: new Date("2015-06-20") },
+      { patientId: patients[0].id, operationId: opCataractSurgery.id, surgeryDate: new Date("2020-03-10") },
+      // Patient 2 (Bob Martinez)
+      { patientId: patients[1].id, operationId: opKneeReplacement.id, surgeryDate: new Date("2018-11-15") },
+      { patientId: patients[1].id, operationId: opCholecystectomy.id, surgeryDate: new Date("2019-04-22") },
+      // Patient 3 (Carol White)
+      { patientId: patients[2].id, operationId: opTonsillectomy.id, surgeryDate: new Date("2010-08-05") },
+      // Patient 4 (David Lee)
+      { patientId: patients[3].id, operationId: opHerniaRepair.id, surgeryDate: new Date("2021-02-14") },
+      // Patient 5 (Emma Thompson)
+      { patientId: patients[4].id, operationId: opHerniaRepair.id, surgeryDate: new Date("2022-07-01") },
+    ],
+  });
+  console.log("✅ Created surgical histories for patients");
 
   // Family Histories - Comprehensive
   await prisma.familyHistory.createMany({
@@ -1202,62 +1219,29 @@ async function main() {
     ],
   });
 
-  // Allergies for all patients (allergenType: Drug | Food per RMMSY spec)
-  await prisma.allergy.createMany({
+  // Allergen catalog (admin-managed). Patients link to these via PatientAllergy.
+  const allergenPenicillin = await prisma.allergen.create({ data: { name: "Penicillin", allergenType: "Drug" } });
+  const allergenSulfa = await prisma.allergen.create({ data: { name: "Sulfa drugs", allergenType: "Drug" } });
+  const allergenPollen = await prisma.allergen.create({ data: { name: "Pollen", allergenType: "Pollen" } });
+  const allergenShellfish = await prisma.allergen.create({ data: { name: "Shellfish", allergenType: "Food" } });
+  const allergenDustMites = await prisma.allergen.create({ data: { name: "Dust mites", allergenType: "Dust" } });
+  const allergenLatex = await prisma.allergen.create({ data: { name: "Latex", allergenType: "Other" } });
+  const allergenPeanuts = await prisma.allergen.create({ data: { name: "Peanuts", allergenType: "Food" } });
+  console.log("✅ Created allergen catalog");
+
+  // Patient allergies (many-to-many: patient links to catalog)
+  await prisma.patientAllergy.createMany({
     data: [
-      {
-        patientId: patients[0].id,
-        allergen: "Penicillin",
-        allergenType: "Drug",
-        severity: "Severe",
-        reactionType: "Anaphylaxis",
-        notes: "Avoid all penicillin derivatives. Use alternative antibiotics.",
-      },
-      {
-        patientId: patients[0].id,
-        allergen: "Sulfa drugs",
-        allergenType: "Drug",
-        severity: "Moderate",
-        reactionType: "Rash",
-        notes: "Mild rash, avoid sulfonamides",
-      },
-      {
-        patientId: patients[1].id,
-        allergen: "Pollen",
-        severity: "Mild",
-        reactionType: "Rhinitis",
-        notes: "Seasonal, spring and fall",
-      },
-      {
-        patientId: patients[2].id,
-        allergen: "Shellfish",
-        allergenType: "Food",
-        severity: "Moderate",
-        reactionType: "Urticaria",
-        notes: "Hives and swelling",
-      },
-      {
-        patientId: patients[2].id,
-        allergen: "Dust mites",
-        severity: "Mild",
-        reactionType: "Rhinitis",
-      },
-      {
-        patientId: patients[3].id,
-        allergen: "Latex",
-        severity: "Moderate",
-        reactionType: "Contact dermatitis",
-      },
-      {
-        patientId: patients[4].id,
-        allergen: "Peanuts",
-        allergenType: "Food",
-        severity: "Severe",
-        reactionType: "Anaphylaxis",
-        notes: "Life-threatening, carry epinephrine",
-      },
+      { patientId: patients[0].id, allergenId: allergenPenicillin.id, severity: "Severe", reaction: "Anaphylaxis", notes: "Avoid all penicillin derivatives. Use alternative antibiotics." },
+      { patientId: patients[0].id, allergenId: allergenSulfa.id, severity: "Moderate", reaction: "Rash", notes: "Mild rash, avoid sulfonamides" },
+      { patientId: patients[1].id, allergenId: allergenPollen.id, severity: "Mild", reaction: "Rhinitis", notes: "Seasonal, spring and fall" },
+      { patientId: patients[2].id, allergenId: allergenShellfish.id, severity: "Moderate", reaction: "Urticaria", notes: "Hives and swelling" },
+      { patientId: patients[2].id, allergenId: allergenDustMites.id, severity: "Mild", reaction: "Rhinitis" },
+      { patientId: patients[3].id, allergenId: allergenLatex.id, severity: "Moderate", reaction: "Contact dermatitis" },
+      { patientId: patients[4].id, allergenId: allergenPeanuts.id, severity: "Severe", reaction: "Anaphylaxis", notes: "Life-threatening, carry epinephrine" },
     ],
   });
+  console.log("✅ Created patient allergies");
 
   // Patient Diseases - Comprehensive
   await prisma.patientDisease.createMany({
@@ -1369,63 +1353,69 @@ async function main() {
     ],
   });
 
-  // Lifestyle data for all patients
-  await prisma.lifestyle.createMany({
+  // Lifestyle catalog (admin-managed questions + ActiveSubstance field for drug warnings)
+  const lifestyleAlcohol = await prisma.lifestyle.create({
+    data: { question: "Alcohol use", activeSubstanceField: "interactionAlcohol" },
+  });
+  const lifestyleCaffeine = await prisma.lifestyle.create({
+    data: { question: "Excess caffeine / xanthines", activeSubstanceField: "interactionXanthines" },
+  });
+  const lifestyleVitaminsFood = await prisma.lifestyle.create({
+    data: { question: "Vitamins / food interactions", activeSubstanceField: "interactionVitaminsFood" },
+  });
+  const lifestyleMuscleRelaxant = await prisma.lifestyle.create({
+    data: { question: "Muscle relaxant use", activeSubstanceField: "interactionMuscleRelaxant" },
+  });
+  const lifestyleAnticoagulant = await prisma.lifestyle.create({
+    data: { question: "Anticoagulant use", activeSubstanceField: "interactionAnticoagulant" },
+  });
+  const lifestyleCorticosteroids = await prisma.lifestyle.create({
+    data: { question: "Corticosteroid use", activeSubstanceField: "interactionCorticosteroids" },
+  });
+
+  // Patient lifestyle answers (many-to-many: patientId, lifestyleId, value) — all patients have answers for all questions
+  await prisma.patientLifestyle.createMany({
     data: [
-      {
-        patientId: patients[0].id,
-        noGlasses: false,
-        alcoholAbuse: false,
-        excessCaffeine: true,
-        waterDaily: 2.5,
-        travellerAbroad: true,
-        annualVaccination: true,
-        surgeriesLast3Months: false,
-        surgeriesDetails: null,
-      },
-      {
-        patientId: patients[1].id,
-        noGlasses: false,
-        alcoholAbuse: false,
-        excessCaffeine: false,
-        waterDaily: 2.0,
-        travellerAbroad: false,
-        annualVaccination: true,
-        surgeriesLast3Months: false,
-      },
-      {
-        patientId: patients[2].id,
-        noGlasses: true,
-        alcoholAbuse: false,
-        excessCaffeine: false,
-        waterDaily: 2.8,
-        travellerAbroad: false,
-        annualVaccination: true,
-        surgeriesLast3Months: false,
-      },
-      {
-        patientId: patients[3].id,
-        noGlasses: false,
-        alcoholAbuse: false,
-        excessCaffeine: true,
-        waterDaily: 3.0,
-        travellerAbroad: true,
-        annualVaccination: true,
-        surgeriesLast3Months: true,
-        surgeriesDetails: "Appendectomy in June 2024",
-      },
-      {
-        patientId: patients[4].id,
-        noGlasses: true,
-        alcoholAbuse: false,
-        excessCaffeine: false,
-        waterDaily: 1.5,
-        travellerAbroad: false,
-        annualVaccination: true,
-        surgeriesLast3Months: false,
-      },
+      // Patient 0
+      { patientId: patients[0].id, lifestyleId: lifestyleAlcohol.id, value: false },
+      { patientId: patients[0].id, lifestyleId: lifestyleCaffeine.id, value: true },
+      { patientId: patients[0].id, lifestyleId: lifestyleVitaminsFood.id, value: true },
+      { patientId: patients[0].id, lifestyleId: lifestyleMuscleRelaxant.id, value: false },
+      { patientId: patients[0].id, lifestyleId: lifestyleAnticoagulant.id, value: false },
+      { patientId: patients[0].id, lifestyleId: lifestyleCorticosteroids.id, value: false },
+      // Patient 1
+      { patientId: patients[1].id, lifestyleId: lifestyleAlcohol.id, value: false },
+      { patientId: patients[1].id, lifestyleId: lifestyleCaffeine.id, value: false },
+      { patientId: patients[1].id, lifestyleId: lifestyleVitaminsFood.id, value: false },
+      { patientId: patients[1].id, lifestyleId: lifestyleMuscleRelaxant.id, value: false },
+      { patientId: patients[1].id, lifestyleId: lifestyleAnticoagulant.id, value: true },
+      { patientId: patients[1].id, lifestyleId: lifestyleCorticosteroids.id, value: false },
+      // Patient 2
+      { patientId: patients[2].id, lifestyleId: lifestyleAlcohol.id, value: false },
+      { patientId: patients[2].id, lifestyleId: lifestyleCaffeine.id, value: false },
+      { patientId: patients[2].id, lifestyleId: lifestyleVitaminsFood.id, value: true },
+      { patientId: patients[2].id, lifestyleId: lifestyleMuscleRelaxant.id, value: false },
+      { patientId: patients[2].id, lifestyleId: lifestyleAnticoagulant.id, value: false },
+      { patientId: patients[2].id, lifestyleId: lifestyleCorticosteroids.id, value: true },
+      // Patient 3
+      { patientId: patients[3].id, lifestyleId: lifestyleAlcohol.id, value: false },
+      { patientId: patients[3].id, lifestyleId: lifestyleCaffeine.id, value: true },
+      { patientId: patients[3].id, lifestyleId: lifestyleVitaminsFood.id, value: false },
+      { patientId: patients[3].id, lifestyleId: lifestyleMuscleRelaxant.id, value: true },
+      { patientId: patients[3].id, lifestyleId: lifestyleAnticoagulant.id, value: false },
+      { patientId: patients[3].id, lifestyleId: lifestyleCorticosteroids.id, value: false },
+      // Patient 4
+      { patientId: patients[4].id, lifestyleId: lifestyleAlcohol.id, value: false },
+      { patientId: patients[4].id, lifestyleId: lifestyleCaffeine.id, value: false },
+      { patientId: patients[4].id, lifestyleId: lifestyleVitaminsFood.id, value: false },
+      { patientId: patients[4].id, lifestyleId: lifestyleMuscleRelaxant.id, value: false },
+      { patientId: patients[4].id, lifestyleId: lifestyleAnticoagulant.id, value: false },
+      { patientId: patients[4].id, lifestyleId: lifestyleCorticosteroids.id, value: false },
     ],
   });
+
+  const lifestyleCatalogCount = await prisma.lifestyle.count();
+  const patientLifestyleCount = await prisma.patientLifestyle.count();
 
   // Child Profiles (for patients who are parents)
   await prisma.childProfile.createMany({
@@ -1461,9 +1451,8 @@ async function main() {
 
   const medicalHistoryCount = await prisma.medicalHistory.count();
   const familyHistoryCount = await prisma.familyHistory.count();
-  const allergyCount = await prisma.allergy.count();
+  const allergyCount = await prisma.patientAllergy.count();
   const patientDiseaseCount = await prisma.patientDisease.count();
-  const lifestyleCount = await prisma.lifestyle.count();
   const childProfileCount = await prisma.childProfile.count();
 
   console.log("✅ Created comprehensive patient medical data");
@@ -1471,7 +1460,7 @@ async function main() {
   console.log(`   - ${familyHistoryCount} Family History records`);
   console.log(`   - ${allergyCount} Allergy records`);
   console.log(`   - ${patientDiseaseCount} Patient Disease records`);
-  console.log(`   - ${lifestyleCount} Lifestyle records`);
+  console.log(`   - ${lifestyleCatalogCount} Lifestyle catalog, ${patientLifestyleCount} PatientLifestyle records`);
   console.log(`   - ${childProfileCount} Child Profile records`);
 
   // ============================================

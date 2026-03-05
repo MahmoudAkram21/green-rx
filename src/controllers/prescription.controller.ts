@@ -283,7 +283,7 @@ export const getPrescriptionById = async (req: Request, res: Response) => {
                         user: {
                             select: { email: true }
                         },
-                        allergies: true,
+                        patientAllergies: { include: { allergen: true } },
                         patientDiseases: {
                             include: {
                                 disease: true

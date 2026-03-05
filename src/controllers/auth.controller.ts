@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { prisma } from '../lib/prisma';
 import { hashPassword, comparePassword } from '../utils/password.util';
 import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from '../utils/jwt.util';
-import { UserRole } from '../../generated/client/client';
+import { UserRole, AgeClassification, Gender } from '../../generated/client/client';
 import { registerSchema, loginSchema, refreshTokenSchema } from '../zod/auth.zod';
 import { cleanupFile } from '../config/multer.config';
 
@@ -66,6 +66,19 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
                 });
             }
 
+            if (role === UserRole.Patient) {
+                const patientName = name && name.trim().length >= 2 ? name.trim() : email.split('@')[0] || 'Patient';
+                await tx.patient.create({
+                    data: {
+                        userId: user.id,
+                        name: patientName,
+                        age: 0,
+                        ageClassification: AgeClassification.Adults,
+                        gender: Gender.Other
+                    }
+                });
+            }
+
             return user;
         });
 
@@ -89,9 +102,19 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
             }
         });
 
+        const userPayload: { id: number; email: string; role: string; patientId?: number } = {
+            id: result.id,
+            email: result.email,
+            role: result.role
+        };
+        if (result.role === UserRole.Patient) {
+            const patient = await prisma.patient.findUnique({ where: { userId: result.id }, select: { id: true } });
+            if (patient) userPayload.patientId = patient.id;
+        }
+
         res.status(201).json({
             message: 'User registered successfully',
-            user: { id: result.id, email: result.email, role: result.role },
+            user: userPayload,
             accessToken,
             refreshToken
         });
@@ -173,9 +196,19 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
             data: { lastLoginAt: new Date() }
         });
 
+        const userPayload: { id: number; email: string; role: string; patientId?: number } = {
+            id: user.id,
+            email: user.email,
+            role: user.role
+        };
+        if (user.role === UserRole.Patient) {
+            const patient = await prisma.patient.findUnique({ where: { userId: user.id }, select: { id: true } });
+            if (patient) userPayload.patientId = patient.id;
+        }
+
         res.json({
             message: 'Login successful',
-            user: { id: user.id, email: user.email, role: user.role },
+            user: userPayload,
             accessToken,
             refreshToken
         });

@@ -32,7 +32,7 @@ export const getUserById = async (req: Request, res: Response, next: NextFunctio
       include: {
         patient: {
           include: {
-            _count: { select: { prescriptions: true, allergies: true, patientDiseases: true, medicalHistories: true } }
+            _count: { select: { prescriptions: true, patientAllergies: true, patientDiseases: true, medicalHistories: true } }
           }
         },
         doctor: {

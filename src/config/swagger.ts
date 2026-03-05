@@ -132,7 +132,7 @@ s('/patients/user/{userId}', 'get', PATIENT_TAGS.PROFILE, 'Get patient by user I
 
 // PATIENTS — Medical History
 s('/patients/{patientId}/medical-history', 'get', PATIENT_TAGS.PROFILE, 'Get medical history entries', true, [p('patientId')]);
-s('/patients/{patientId}/medical-history', 'post', PATIENT_TAGS.PROFILE, 'Add a medical history entry', true, [p('patientId')], { schemaRef: 'MedicalHistoryRequest' });
+s('/patients/{patientId}/medical-history', 'post', PATIENT_TAGS.PROFILE, 'Add medical history (one or multiple diseases)', true, [p('patientId')], { schemaRef: 'BatchMedicalHistoryRequest' });
 
 // PATIENTS — Family History
 s('/patients/{patientId}/family-history', 'get', PATIENT_TAGS.FAMILY_HISTORY, 'Get family history entries', true, [p('patientId')]);
@@ -142,20 +142,28 @@ s('/patients/{patientId}/family-history', 'post', PATIENT_TAGS.FAMILY_HISTORY, '
 s('/family-relations', 'get', [PATIENT_TAGS.FAMILY_HISTORY, ADMIN_TAG], 'List family relation enum values for dropdowns (Father, Mother, Sibling, etc.)', true);
 
 // PATIENTS — Surgical History
-s('/patients/{patientId}/surgeries', 'get', PATIENT_TAGS.SURGERIES, 'Get previous surgeries', true, [p('patientId')]);
-s('/patients/{patientId}/surgeries', 'post', PATIENT_TAGS.SURGERIES, 'Add a surgical history entry', true, [p('patientId')], { schemaRef: 'SurgicalHistoryRequest' });
+s('/patients/{patientId}/surgeries', 'get', PATIENT_TAGS.SURGERIES, 'Get previous surgeries (patientId can be "me" for logged-in patient)', true, [p('patientId')]);
+s('/patients/{patientId}/surgeries', 'post', PATIENT_TAGS.SURGERIES, 'Add surgical history (patientId can be "me"; body: operationId from GET /operations, surgeryDate)', true, [p('patientId')], { schemaRef: 'BatchSurgicalHistoryRequest' });
 s('/patients/surgeries/{id}', 'delete', PATIENT_TAGS.SURGERIES, 'Delete a surgical history entry', true, [p('id')]);
 
-// PATIENTS — Lifestyle
-s('/patients/{patientId}/lifestyle', 'put', PATIENT_TAGS.LIFESTYLE, 'Update patient lifestyle data', true, [p('patientId')], { schemaRef: 'LifestyleRequest' });
+// PATIENTS — Lifestyle (catalog: GET /lifestyles; patient answers below)
+s('/patients/{patientId}/lifestyle', 'get', PATIENT_TAGS.LIFESTYLE, 'Get patient lifestyle answers (patientId can be "me")', true, [p('patientId')]);
+s('/patients/{patientId}/lifestyle', 'post', PATIENT_TAGS.LIFESTYLE, 'Add or update lifestyle answers — body: array of { lifestyleId, value } (lifestyleId from GET /lifestyles)', true, [p('patientId')], { schemaRef: 'BatchPatientLifestyleRequest' });
+s('/patients/lifestyle/{patientLifestyleId}', 'delete', PATIENT_TAGS.LIFESTYLE, 'Remove one lifestyle entry (PatientLifestyle id)', true, [p('patientLifestyleId')]);
 
-// LIFESTYLE OPTIONS (Admin adds options; app fetches for "Enter Lifestyle Details" dropdowns)
-s('/lifestyle-options', 'get', [PATIENT_TAGS.LIFESTYLE, ADMIN_TAG], 'List active lifestyle options for dropdowns', true, [q('type', 'Filter: physical_activity | dietary_habits')]);
-s('/lifestyle-options/all', 'get', ADMIN_TAG, 'List all lifestyle options including inactive (Admin)', true, [q('type', 'Optional: physical_activity | dietary_habits')]);
-s('/lifestyle-options/{id}', 'get', [PATIENT_TAGS.LIFESTYLE, ADMIN_TAG], 'Get lifestyle option by ID', true, [p('id')]);
-s('/lifestyle-options', 'post', ADMIN_TAG, 'Create a lifestyle option (Admin)', true, [], { schemaRef: 'CreateLifestyleOptionRequest' }, { '200': 'Success', '201': 'Created' });
-s('/lifestyle-options/{id}', 'put', ADMIN_TAG, 'Update a lifestyle option (Admin)', true, [p('id')], { schemaRef: 'UpdateLifestyleOptionRequest' });
-s('/lifestyle-options/{id}', 'delete', ADMIN_TAG, 'Delete a lifestyle option (Admin)', true, [p('id')], undefined, { '200': 'Success', '204': 'No Content' });
+// LIFESTYLES (catalog — Admin CRUD; patients use GET for lifestyle questions and POST .../lifestyle to submit answers)
+s('/lifestyles', 'get', [PATIENT_TAGS.LIFESTYLE, ADMIN_TAG], 'List all lifestyle questions (for patient form and admin)', true);
+s('/lifestyles/{id}', 'get', [PATIENT_TAGS.LIFESTYLE, ADMIN_TAG], 'Get lifestyle by ID', true, [p('id')]);
+s('/lifestyles', 'post', ADMIN_TAG, 'Create a lifestyle question (Admin)', true, [], { schemaRef: 'CreateLifestyleRequest' }, { '200': 'Success', '201': 'Created' });
+s('/lifestyles/{id}', 'put', ADMIN_TAG, 'Update a lifestyle question (Admin)', true, [p('id')], { schemaRef: 'UpdateLifestyleRequest' });
+s('/lifestyles/{id}', 'delete', ADMIN_TAG, 'Delete a lifestyle question (Admin)', true, [p('id')], undefined, { '200': 'Success', '204': 'No Content' });
+
+// OPERATIONS (Admin CRUD; GET for patient/mobile dropdown)
+s('/operations', 'get', [PATIENT_TAGS.SURGERIES, ADMIN_TAG], 'List all operations for dropdown (e.g. Add Surgeries screen)', true);
+s('/operations/{id}', 'get', [PATIENT_TAGS.SURGERIES, ADMIN_TAG], 'Get operation by ID', true, [p('id')]);
+s('/operations', 'post', ADMIN_TAG, 'Create an operation (Admin)', true, [], { schemaRef: 'CreateOperationRequest' }, { '200': 'Success', '201': 'Created' });
+s('/operations/{id}', 'put', ADMIN_TAG, 'Update an operation (Admin)', true, [p('id')], { schemaRef: 'UpdateOperationRequest' });
+s('/operations/{id}', 'delete', ADMIN_TAG, 'Delete an operation (Admin)', true, [p('id')], undefined, { '200': 'Success', '204': 'No Content' });
 
 // PATIENTS — Children
 s('/patients/{patientId}/children', 'get', PATIENT_TAGS.PROFILE, 'Get child profiles for patient', true, [p('patientId')]);
@@ -186,17 +194,20 @@ s('/patient-doctors/{id}', 'get', [PATIENT_TAGS.SHARE_WITH_DOCTOR, DOCTOR_TAGS.M
 s('/patient-doctors/{id}', 'put', [PATIENT_TAGS.SHARE_WITH_DOCTOR, DOCTOR_TAGS.MY_PATIENTS], 'Update relationship', true, [p('id')], { schemaRef: 'UpdatePatientDoctorRequest' });
 s('/patient-doctors/{id}/end', 'post', [PATIENT_TAGS.SHARE_WITH_DOCTOR, DOCTOR_TAGS.MY_PATIENTS], 'End a patient-doctor relationship', true, [p('id')]);
 
-// ALLERGIES
-s('/allergies', 'post', PATIENT_TAGS.ALLERGIES, 'Create an allergy record', true, [], { schemaRef: 'AllergyRequest' });
-s('/allergies/patient/{patientId}', 'get', PATIENT_TAGS.ALLERGIES, 'Get all allergies for a patient', true, [p('patientId')]);
+// ALLERGIES (patient allergy records — read-only here; add/delete under /patients)
+s('/allergies/patient/{patientId}', 'get', PATIENT_TAGS.ALLERGIES, 'Get all allergies for a patient (PatientAllergy with allergen name)', true, [p('patientId')]);
 s('/allergies/patient/{patientId}/critical', 'get', PATIENT_TAGS.ALLERGIES, 'Get critical allergies for a patient', true, [p('patientId')]);
-s('/allergies/{id}', 'get', PATIENT_TAGS.ALLERGIES, 'Get allergy by ID', true, [p('id')]);
-s('/allergies/{id}', 'put', PATIENT_TAGS.ALLERGIES, 'Update allergy', true, [p('id')], { schemaRef: 'UpdateAllergyRequest' });
-s('/allergies/{id}', 'delete', PATIENT_TAGS.ALLERGIES, 'Delete allergy', true, [p('id')]);
 s('/allergies/check/{patientId}/{medicineId}', 'get', PATIENT_TAGS.ALLERGIES, 'Check if medicine conflicts with patient allergies', true, [p('patientId'), p('medicineId')]);
-s('/patients/{patientId}/allergies', 'post', PATIENT_TAGS.ALLERGIES, 'Add allergy to patient profile', true, [p('patientId')], { schemaRef: 'AllergyRequest' });
-s('/patients/{patientId}/allergies/batch', 'post', PATIENT_TAGS.ALLERGIES, 'Add multiple allergies to patient (batch)', true, [p('patientId')], { schemaRef: 'BatchAllergyRequest' });
-s('/patients/allergies/{allergyId}', 'delete', PATIENT_TAGS.ALLERGIES, 'Remove allergy from patient profile', true, [p('allergyId')]);
+s('/patients/{patientId}/allergies', 'post', PATIENT_TAGS.ALLERGIES, 'Add allergies to patient — body: array of { allergenId, severity?, reaction?, notes? } (allergenId from GET /allergens)', true, [p('patientId')], { schemaRef: 'BatchPatientAllergyRequest' });
+s('/patients/{patientId}/allergies/batch', 'post', PATIENT_TAGS.ALLERGIES, 'Add multiple allergies (same as POST .../allergies with array body)', true, [p('patientId')], { schemaRef: 'BatchPatientAllergyRequest' });
+s('/patients/allergies/{allergyId}', 'delete', PATIENT_TAGS.ALLERGIES, 'Remove allergy from patient (PatientAllergy id)', true, [p('allergyId')]);
+
+// ALLERGENS (catalog — Admin CRUD; patients use GET for dropdown when adding allergies)
+s('/allergens', 'get', [PATIENT_TAGS.ALLERGIES, ADMIN_TAG], 'List all allergens for dropdown (e.g. Add Allergies screen)', true);
+s('/allergens/{id}', 'get', [PATIENT_TAGS.ALLERGIES, ADMIN_TAG], 'Get allergen by ID', true, [p('id')]);
+s('/allergens', 'post', ADMIN_TAG, 'Create an allergen (Admin)', true, [], { schemaRef: 'CreateAllergenRequest' }, { '200': 'Success', '201': 'Created' });
+s('/allergens/{id}', 'put', ADMIN_TAG, 'Update an allergen (Admin)', true, [p('id')], { schemaRef: 'UpdateAllergenRequest' });
+s('/allergens/{id}', 'delete', ADMIN_TAG, 'Delete an allergen (Admin)', true, [p('id')], undefined, { '200': 'Success', '204': 'No Content' });
 
 // PATIENT DISEASES (Current diseases)
 s('/patient-diseases/patient/{patientId}', 'get', PATIENT_TAGS.CURRENT_DISEASES, 'Get diseases for a patient', true, [p('patientId')]);
@@ -476,7 +487,7 @@ const options: Record<string, unknown> = {
       schemas: {
         // ── Auth request bodies
         RegisterRequest: {
-          description: 'Create a new user account. Send as multipart/form-data (especially when role=Doctor). Required: email, password. Optional: role (default Patient), name, phone. When role=Doctor: name, licenseNumber (professional license number), specialization, and licenseImage (file) are required; the license image is stored under uploads/ and only its URL is saved in the database. For non-Doctor registration, licenseNumber, specialization, and licenseImage are omitted.',
+          description: 'Create a new user account. Send as multipart/form-data (especially when role=Doctor). Required: email, password. Optional: role (default Patient), name, phone. When role=Patient, a patient profile is auto-created and the response includes user.patientId. When role=Doctor: name, licenseNumber (professional license number), specialization, and licenseImage (file) are required; the license image is stored under uploads/ and only its URL is saved in the database. For non-Doctor registration, licenseNumber, specialization, and licenseImage are omitted.',
           type: 'object',
           required: ['email', 'password'],
           properties: {
@@ -491,12 +502,21 @@ const options: Record<string, unknown> = {
           }
         },
         LoginRequest: {
-          description: 'Authenticate and get tokens. Required: email, password.',
+          description: 'Authenticate and get tokens. Required: email, password. Response includes accessToken, refreshToken, user (id, email, role, etc.). When role is Patient, user also includes patientId (use for /patients/me or /patients/:patientId).',
           type: 'object',
           required: ['email', 'password'],
           properties: {
             email:    { type: 'string', format: 'email', example: 'user@example.com', description: 'Required.' },
             password: { type: 'string', example: 'secret123', description: 'Required.' }
+          }
+        },
+        LoginResponse: {
+          description: 'Login and register response. When user.role is Patient, user.patientId is present (patient profile id for /patients/:patientId or "me").',
+          type: 'object',
+          properties: {
+            accessToken:  { type: 'string' },
+            refreshToken: { type: 'string' },
+            user:         { type: 'object', properties: { id: { type: 'integer' }, email: { type: 'string' }, role: { type: 'string' }, patientId: { type: 'integer', description: 'Present when role is Patient.' } } }
           }
         },
         RefreshTokenRequest: {
@@ -532,18 +552,34 @@ const options: Record<string, unknown> = {
         CreateUserRequest: { type: 'object', required: ['email', 'role'], properties: { email: { type: 'string', format: 'email' }, passwordHash: { type: 'string' }, role: { type: 'string', enum: ['Patient', 'Doctor', 'Pharmacist', 'Admin', 'SuperAdmin'] } } },
         UpdateUserRequest: { description: 'All fields optional. Send only fields to update.', type: 'object', properties: { email: { type: 'string', format: 'email' }, isActive: { type: 'boolean' } } },
         // ── Patient profile & history
+        DiseaseSeverity: {
+          type: 'string',
+          enum: ['None', 'Mild', 'Moderate', 'Severe'],
+          description: 'Disease severity. Used in medical history, family history, and patient diseases.'
+        },
+        DiseaseStatus: {
+          type: 'string',
+          enum: ['Active', 'Resolved', 'Chronic'],
+          description: 'Disease status. Used in medical history and patient diseases.'
+        },
         MedicalHistoryRequest: {
           description: 'One medical history entry. Required: diseaseId, severity, status. Optional: diagnosisDate, treatment, notes. Get diseaseId from GET /diseases.',
           type: 'object',
           required: ['diseaseId', 'severity', 'status'],
           properties: {
             diseaseId:    { type: 'integer', description: 'Required. Get IDs from GET /diseases.' },
-            severity:     { type: 'string', enum: ['None', 'Mild', 'Moderate', 'Severe'], description: 'Required.' },
-            status:       { type: 'string', enum: ['Active', 'Resolved', 'Chronic', 'Unknown'], description: 'Required.' },
+            severity:     { $ref: '#/components/schemas/DiseaseSeverity', description: 'Required.' },
+            status:       { $ref: '#/components/schemas/DiseaseStatus', description: 'Required.' },
             diagnosisDate: { type: 'string', format: 'date-time', description: 'Optional.' },
             treatment:    { type: 'string', description: 'Optional.' },
             notes:        { type: 'string', description: 'Optional.' }
           }
+        },
+        BatchMedicalHistoryRequest: {
+          description: 'One or more medical history entries. Send a single object to add one disease, or an array of objects to add multiple diseases in one request. Each entry: diseaseId, severity, status required; diagnosisDate, treatment, notes optional. Get diseaseId from GET /diseases.',
+          type: 'array',
+          minItems: 1,
+          items: { $ref: '#/components/schemas/MedicalHistoryRequest' }
         },
         FamilyRelationEnum: {
           type: 'string',
@@ -557,41 +593,65 @@ const options: Record<string, unknown> = {
           properties: {
             relation: { $ref: '#/components/schemas/FamilyRelationEnum', description: 'Required. One of: Father, Mother, Sibling, Grandfather, Grandmother, Uncle, Aunt, Child, Other. Get list from GET /family-relations.' },
             diseaseId: { type: 'integer', description: 'Required. Get IDs from GET /diseases.' },
-            severity: { type: 'string', enum: ['None', 'Mild', 'Moderate', 'Severe'], description: 'Required.' },
+            severity: { $ref: '#/components/schemas/DiseaseSeverity', description: 'Required.' },
             notes: { type: 'string', description: 'Optional.' }
           }
         },
         BatchFamilyHistoryRequest: { type: 'array', minItems: 1, items: { $ref: '#/components/schemas/FamilyHistoryRequest' }, description: 'Send multiple family history entries in one request. Body: array of FamilyHistoryRequest.' },
         FamilyRelationsResponse: { type: 'array', items: { $ref: '#/components/schemas/FamilyRelationEnum' }, description: 'List of family relation values for dropdowns' },
         SurgicalHistoryRequest: {
-          description: 'One previous surgery. Required: operationName, surgeryDate. Optional: none. Send array for multiple surgeries (same endpoint accepts single or array).',
+          description: 'One surgical history entry. Required: operationId (from GET /operations), surgeryDate. Use "me" as patientId for the logged-in patient.',
           type: 'object',
-          required: ['operationName', 'surgeryDate'],
+          required: ['operationId', 'surgeryDate'],
           properties: {
-            operationName: { type: 'string', description: 'Required. Name of the operation.' },
-            surgeryDate:   { type: 'string', format: 'date-time', description: 'Required. ISO 8601.' }
+            operationId:  { type: 'integer', description: 'Required. ID from GET /operations.' },
+            surgeryDate:  { type: 'string', format: 'date-time', description: 'Required. ISO 8601 (e.g. 2026-03-04T19:15:42.771Z) or date-only YYYY-MM-DD.' }
           }
         },
-        LifestyleRequest: {
-          description: 'Enter Lifestyle Details screen. Use values from GET /lifestyle-options (physicalActivity from type=physical_activity, dietaryHabits from type=dietary_habits).',
-          type: 'object',
-          properties: { noGlasses: { type: 'boolean' }, alcoholAbuse: { type: 'boolean', description: 'Do you drink alcohol? (Yes = true)' }, excessCaffeine: { type: 'boolean' }, waterDaily: { type: 'number' }, travellerAbroad: { type: 'boolean' }, annualVaccination: { type: 'boolean' }, noiseExposure: { type: 'boolean' }, chemicalExposure: { type: 'boolean' }, radiationExposure: { type: 'boolean' }, physicalActivity: { type: 'string', description: 'Option label from GET /lifestyle-options?type=physical_activity' }, dietaryHabits: { type: 'string', description: 'Option label from GET /lifestyle-options?type=dietary_habits' } }
+        BatchSurgicalHistoryRequest: {
+          description: 'One or more surgical history entries. Send a single object or array. Each entry: operationId, surgeryDate required. GET /patients/:id/surgeries returns each entry with operation: { id, name }.',
+          type: 'array',
+          minItems: 1,
+          items: { $ref: '#/components/schemas/SurgicalHistoryRequest' }
         },
-        CreateLifestyleOptionRequest: {
-          description: 'Admin adds an option for "Enter Lifestyle Details" dropdowns. type determines which dropdown (physical_activity or dietary_habits).',
+        CreateLifestyleRequest: {
+          description: 'Create lifestyle question (catalog). activeSubstanceField must be one of the ActiveSubstance field names used for warnings (e.g. interactionAlcohol, interactionXanthines). See backend enum ACTIVE_SUBSTANCE_LIFESTYLE_FIELDS.',
           type: 'object',
-          required: ['type', 'label'],
-          properties: { type: { type: 'string', enum: ['physical_activity', 'dietary_habits'], description: 'Which dropdown this option belongs to' }, label: { type: 'string', description: 'Display text e.g. Sedentary, Vegetarian' }, value: { type: 'string', description: 'Stored value (defaults to label if omitted)' }, sortOrder: { type: 'integer', description: 'Display order' }, isActive: { type: 'boolean', default: true } }
+          required: ['question', 'activeSubstanceField'],
+          properties: { question: { type: 'string', description: 'e.g. Alcohol use' }, activeSubstanceField: { type: 'string', description: 'Field on ActiveSubstance to check when adding a medicine (enum)' } }
         },
-        UpdateLifestyleOptionRequest: {
-          description: 'Admin updates an existing lifestyle option. All fields optional; send only fields to update.',
+        UpdateLifestyleRequest: {
+          description: 'Update lifestyle question. All fields optional.',
           type: 'object',
-          properties: { type: { type: 'string', enum: ['physical_activity', 'dietary_habits'] }, label: { type: 'string' }, value: { type: 'string' }, sortOrder: { type: 'integer' }, isActive: { type: 'boolean' } }
+          properties: { question: { type: 'string' }, activeSubstanceField: { type: 'string' } }
         },
-        LifestyleOption: {
-          description: 'Single option for lifestyle dropdowns (admin-managed).',
+        PatientLifestyleItemRequest: {
+          description: 'One lifestyle answer. lifestyleId from GET /lifestyles, value = boolean.',
           type: 'object',
-          properties: { id: { type: 'integer' }, type: { type: 'string', enum: ['physical_activity', 'dietary_habits'] }, label: { type: 'string' }, value: { type: 'string', nullable: true }, sortOrder: { type: 'integer' }, isActive: { type: 'boolean' }, createdAt: { type: 'string', format: 'date-time' }, updatedAt: { type: 'string', format: 'date-time' } }
+          required: ['lifestyleId'],
+          properties: { lifestyleId: { type: 'integer' }, value: { type: 'boolean', default: false } }
+        },
+        BatchPatientLifestyleRequest: {
+          description: 'Array of { lifestyleId, value }. Upserts patient lifestyle answers.',
+          type: 'array',
+          minItems: 1,
+          items: { $ref: '#/components/schemas/PatientLifestyleItemRequest' }
+        },
+        Operation: {
+          description: 'Surgical operation (admin-managed). Used in Add Surgeries dropdown.',
+          type: 'object',
+          properties: { id: { type: 'integer' }, name: { type: 'string' }, createdAt: { type: 'string', format: 'date-time' }, updatedAt: { type: 'string', format: 'date-time' } }
+        },
+        CreateOperationRequest: {
+          description: 'Create operation. Required: name.',
+          type: 'object',
+          required: ['name'],
+          properties: { name: { type: 'string', description: 'Operation name (e.g. Appendectomy)' } }
+        },
+        UpdateOperationRequest: {
+          description: 'Update operation. All fields optional.',
+          type: 'object',
+          properties: { name: { type: 'string' } }
         },
         ChildProfileRequest: { type: 'object', required: ['name', 'dateOfBirth', 'gender', 'ageClassification'], properties: { name: { type: 'string' }, dateOfBirth: { type: 'string', format: 'date-time' }, gender: { type: 'string', enum: ['Male', 'Female', 'Other'] }, ageClassification: { type: 'string', enum: ['Neonates', 'Infants', 'Toddlers', 'Children', 'Adolescents', 'Adults', 'Elderly'] }, weight: { type: 'number' }, height: { type: 'number' }, allergies: {}, diseases: {}, medicalHistory: {} } },
         // ── Doctor & Pharmacist
@@ -621,21 +681,41 @@ const options: Record<string, unknown> = {
           properties: { patientId: { type: 'integer', description: 'Required.' }, doctorId: { type: 'integer', description: 'Required. Get from GET /doctors/search.' }, relationshipType: { type: 'string', enum: ['PrimaryCare', 'Specialist', 'Consultation', 'Other'], description: 'Required.' } }
         },
         UpdatePatientDoctorRequest: { description: 'All fields optional. Send only fields to update.', type: 'object', properties: { relationshipType: { type: 'string', enum: ['PrimaryCare', 'Specialist', 'Consultation', 'Other'] }, isActive: { type: 'boolean' }, endDate: { type: 'string', format: 'date-time' } } },
-        // ── Allergies
-        AllergyRequest: {
-          description: 'One allergy. Required: allergen. Optional: allergenType, reaction, severity, notes.',
+        // ── Allergens (catalog — GET /allergens for dropdown)
+        Allergen: {
+          description: 'Allergen catalog entry (admin-managed). Patients link via POST /patients/:patientId/allergies with allergenId.',
           type: 'object',
-          required: ['allergen'],
+          properties: { id: { type: 'integer' }, name: { type: 'string' }, allergenType: { type: 'string', nullable: true, enum: ['Drug', 'Food', 'Pollen', 'Dust', 'Pet', 'Fragrance', 'Other'] }, createdAt: { type: 'string', format: 'date-time' }, updatedAt: { type: 'string', format: 'date-time' } }
+        },
+        CreateAllergenRequest: {
+          description: 'Create allergen. Required: name. Optional: allergenType.',
+          type: 'object',
+          required: ['name'],
+          properties: { name: { type: 'string', description: 'Required. e.g. Penicillin, Peanuts.' }, allergenType: { type: 'string', enum: ['Drug', 'Food', 'Pollen', 'Dust', 'Pet', 'Fragrance', 'Other'], description: 'Optional.' } }
+        },
+        UpdateAllergenRequest: {
+          description: 'Update allergen. All fields optional.',
+          type: 'object',
+          properties: { name: { type: 'string' }, allergenType: { type: 'string', enum: ['Drug', 'Food', 'Pollen', 'Dust', 'Pet', 'Fragrance', 'Other'], nullable: true } }
+        },
+        // ── Patient allergies (link patient to catalog allergen)
+        PatientAllergyRequest: {
+          description: 'Add one allergy to patient. Required: allergenId (from GET /allergens). Optional: severity, reaction, notes.',
+          type: 'object',
+          required: ['allergenId'],
           properties: {
-            allergen:    { type: 'string', description: 'Required. e.g. Penicillin, Peanuts.' },
-            allergenType: { type: 'string', enum: ['Drug', 'Food', 'Pollen', 'Dust', 'Pet', 'Fragrance', 'Other'], description: 'Optional.' },
+            allergenId: { type: 'integer', description: 'Required. ID from GET /allergens.' },
+            severity:   { type: 'string', enum: ['Mild', 'Moderate', 'Severe', 'LifeThreatening'], default: 'Mild', description: 'Optional.' },
             reaction:   { type: 'string', description: 'Optional.' },
-            severity:   { type: 'string', enum: ['Mild', 'Moderate', 'Severe', 'LifeThreatening'], description: 'Optional.' },
             notes:      { type: 'string', description: 'Optional.' }
           }
         },
-        BatchAllergyRequest: { type: 'array', items: { $ref: '#/components/schemas/AllergyRequest' } },
-        UpdateAllergyRequest: { description: 'All fields optional. Send only fields to update.', type: 'object', properties: { allergen: { type: 'string' }, severity: { type: 'string' }, reactionType: { type: 'string' }, notes: { type: 'string' } } },
+        BatchPatientAllergyRequest: {
+          description: 'One or more allergies. Send single object or array. Each: allergenId required; severity, reaction, notes optional.',
+          type: 'array',
+          minItems: 1,
+          items: { $ref: '#/components/schemas/PatientAllergyRequest' }
+        },
         // ── Patient diseases
         AddPatientDiseaseRequest: {
           description: 'One current disease. Required: diseaseId, severity, status. Optional: diagnosisDate, notes. Get diseaseId from GET /diseases.',
