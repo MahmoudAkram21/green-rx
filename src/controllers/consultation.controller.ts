@@ -45,9 +45,9 @@ export const createConsultation = async (req: Request, res: Response) => {
                 patient: {
                     select: {
                         id: true,
-                        name: true,
                         age: true,
-                        gender: true
+                        gender: true,
+                        user: { select: { name: true } }
                     }
                 },
                 doctor: {
@@ -172,9 +172,9 @@ export const getConsultationsByDoctor = async (req: Request, res: Response) => {
                     patient: {
                         select: {
                             id: true,
-                            name: true,
                             age: true,
-                            gender: true
+                            gender: true,
+                            user: { select: { name: true } }
                         }
                     }
                 },
@@ -226,7 +226,7 @@ export const updateConsultation = async (req: Request, res: Response) => {
                 patient: {
                     select: {
                         id: true,
-                        name: true
+                        user: { select: { name: true } }
                     }
                 },
                 doctor: {
@@ -289,9 +289,9 @@ export const getUpcomingFollowUps = async (req: Request, res: Response) => {
                 patient: {
                     select: {
                         id: true,
-                        name: true,
                         age: true,
-                        gender: true
+                        gender: true,
+                        user: { select: { name: true } }
                     }
                 }
             },

@@ -48,8 +48,7 @@ class RatingController {
                 include: {
                     patient: {
                         select: {
-                            name: true,
-                            user: { select: { email: true } }
+                            user: { select: { name: true, email: true } }
                         }
                     }
                 }
@@ -78,7 +77,7 @@ class RatingController {
                     include: {
                         patient: {
                             select: {
-                                name: true
+                                user: { select: { name: true } }
                             }
                         }
                     }
@@ -128,7 +127,7 @@ class RatingController {
                     include: {
                         patient: {
                             select: {
-                                name: true
+                                user: { select: { name: true } }
                             }
                         }
                     }

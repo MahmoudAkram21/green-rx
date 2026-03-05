@@ -12,7 +12,7 @@ export const getAllUsers = async (_req: Request, res: Response, next: NextFuncti
   try {
     const users = await prisma.user.findMany({
       include: {
-        patient: { select: { name: true } },
+        patient: { select: { id: true } },
         doctor: { select: { name: true } },
         pharmacist: { select: { name: true } }
       }

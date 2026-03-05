@@ -184,6 +184,7 @@ enum VisitType {
 model User {
   id                     Int       @id @default(autoincrement())
   email                  String    @unique
+  name                   String?   // display name (e.g. from registration); patient name comes from here
   phone                  String?   // e.g. E.164: +201145441141
   passwordHash           String
   role                   UserRole
@@ -288,14 +289,12 @@ model Payment {
 model Patient {
   id                  Int               @id @default(autoincrement())
   userId              Int               @unique
-  name                String
   age                 Int
   ageClassification   AgeClassification
   dateOfBirth         DateTime?         // optional: for calendar-based age; age can be derived
   weight              Decimal?           @db.Decimal(5, 2) // in kg
   height              Decimal?           @db.Decimal(5, 2) // in cm
   gender              Gender
-  smoking             Boolean           @default(false)
   pregnancyWarning    Boolean           @default(false)
   pregnancyStatus     Boolean?          // true if currently pregnant (female)
   trimester           Int?              // 1, 2, or 3 when pregnancyStatus is true
@@ -911,7 +910,7 @@ model TradeName {
   id                  Int                        @id @default(autoincrement())
   title               String
   activeSubstanceId   Int
-  companyId           Int
+  companyId           Int?
   warningNotification String? // for doctors only
   batchNumber         String?
   barCode             String?
@@ -925,7 +924,7 @@ model TradeName {
 
   // Relations
   activeSubstance              ActiveSubstance               @relation(fields: [activeSubstanceId], references: [id], onDelete: Cascade)
-  company                      Company                       @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  company                      Company?                       @relation(fields: [companyId], references: [id], onDelete: Cascade)
   prescriptions                Prescription[]
   contractingCompanyTradeNames ContractingCompanyTradeName[]
   drugInteractionAlerts        DrugInteractionAlert[]

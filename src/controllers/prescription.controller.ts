@@ -229,8 +229,8 @@ export const getPrescriptions = async (req: Request, res: Response) => {
                     patient: {
                         select: {
                             id: true,
-                            name: true,
-                            age: true
+                            age: true,
+                            user: { select: { name: true } }
                         }
                     },
                     tradeName: {

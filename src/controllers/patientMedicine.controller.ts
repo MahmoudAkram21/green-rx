@@ -264,7 +264,7 @@ export const getUnverifiedMedicines = async (req: Request, res: Response, next: 
             prisma.patientMedicine.findMany({
                 where: { imageUrl: { not: null }, isVerified: false },
                 include: {
-                    patient: { select: { id: true, name: true } },
+                    patient: { select: { id: true, user: { select: { name: true } } } },
                 },
                 skip: (Number(page) - 1) * Number(limit),
                 take: Number(limit),

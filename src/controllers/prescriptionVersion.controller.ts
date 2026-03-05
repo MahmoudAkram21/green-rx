@@ -32,7 +32,7 @@ class PrescriptionVersionController {
                                 include: { activeSubstance: true }
                             },
                             patient: {
-                                select: { name: true, age: true }
+                                select: { age: true, user: { select: { name: true } } }
                             }
                         }
                     }

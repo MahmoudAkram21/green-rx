@@ -100,59 +100,73 @@ export const getTradeNameById = async (req: Request, res: Response, next: NextFu
     }
 };
 
-// Search Trade Names
+// Search Trade Names — GET /trade-names/search?q=... (or search=...). Optional: activeSubstanceId, companyId, isActive, availabilityStatus, page, limit.
 export const searchTradeNames = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const {
+            q,
             search,
             activeSubstanceId,
             companyId,
-            isAvailable,
+            isActive,
+            availabilityStatus,
             page = '1',
             limit = '20'
         } = req.query;
 
-        const whereClause: any = {};
+        const query = (typeof q === 'string' ? q : typeof search === 'string' ? search : '').trim();
+        const pageNum = Math.max(1, parseInt(String(page), 10) || 1);
+        const limitNum = Math.min(100, Math.max(1, parseInt(String(limit), 10) || 20));
 
-        if (search) {
+        const whereClause: any = { isActive: true };
+
+        if (query) {
             whereClause.OR = [
-                { title: { contains: search as string, mode: 'insensitive' } },
+                { title: { contains: query, mode: 'insensitive' } },
                 {
                     activeSubstance: {
-                        activeSubstance: { contains: search as string, mode: 'insensitive' }
+                        activeSubstance: { contains: query, mode: 'insensitive' }
                     }
                 }
             ];
         }
 
-        if (activeSubstanceId) {
-            whereClause.activeSubstanceId = parseInt(activeSubstanceId as string);
+        if (activeSubstanceId !== undefined && activeSubstanceId !== '') {
+            const id = parseInt(String(activeSubstanceId), 10);
+            if (!Number.isNaN(id)) whereClause.activeSubstanceId = id;
         }
 
-        if (companyId) {
-            whereClause.companyId = parseInt(companyId as string);
+        if (companyId !== undefined && companyId !== '') {
+            const id = parseInt(String(companyId), 10);
+            if (!Number.isNaN(id)) whereClause.companyId = id;
         }
 
-        if (isAvailable !== undefined) {
-            whereClause.isAvailable = isAvailable === 'true';
+        if (isActive !== undefined && isActive !== '') {
+            whereClause.isActive = isActive === 'true' || isActive === '1';
         }
 
-        const skip = (parseInt(page as string) - 1) * parseInt(limit as string);
-        const take = parseInt(limit as string);
+        if (availabilityStatus !== undefined && availabilityStatus !== '') {
+            const status = String(availabilityStatus);
+            if (['InStock', 'OutOfStock', 'Discontinued', 'Pending'].includes(status)) {
+                whereClause.availabilityStatus = status;
+            }
+        }
+
+        const skip = (pageNum - 1) * limitNum;
 
         const [tradeNames, total] = await Promise.all([
             prisma.tradeName.findMany({
                 where: whereClause,
                 include: {
                     activeSubstance: {
-                        select: { activeSubstance: true, classification: true }
+                        select: { id: true, activeSubstance: true, classification: true }
                     },
                     company: {
-                        select: { name: true }
+                        select: { id: true, name: true }
                     }
                 },
                 skip,
-                take,
+                take: limitNum,
                 orderBy: { title: 'asc' }
             }),
             prisma.tradeName.count({ where: whereClause })
@@ -162,9 +176,9 @@ export const searchTradeNames = async (req: Request, res: Response, next: NextFu
             tradeNames,
             pagination: {
                 total,
-                page: parseInt(page as string),
-                limit: parseInt(limit as string),
-                totalPages: Math.ceil(total / parseInt(limit as string))
+                page: pageNum,
+                limit: limitNum,
+                totalPages: Math.ceil(total / limitNum) || 1
             }
         });
     } catch (error) {

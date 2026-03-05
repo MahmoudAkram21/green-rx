@@ -12,7 +12,7 @@ class VisitController {
                 data,
                 include: {
                     patient: {
-                        select: { name: true, age: true }
+                        select: { age: true, user: { select: { name: true } } }
                     },
                     doctor: {
                         select: { name: true, specialization: true }
@@ -89,7 +89,7 @@ class VisitController {
                     orderBy: { visitDate: 'desc' },
                     include: {
                         patient: {
-                            select: { name: true, age: true }
+                            select: { age: true, user: { select: { name: true } } }
                         }
                     }
                 }),
@@ -120,9 +120,8 @@ class VisitController {
                 include: {
                     patient: {
                         select: {
-                            name: true,
                             age: true,
-                            user: { select: { email: true } }
+                            user: { select: { name: true, email: true } }
                         }
                     },
                     doctor: {

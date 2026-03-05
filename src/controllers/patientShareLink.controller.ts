@@ -24,8 +24,7 @@ class PatientShareLinkController {
                 include: {
                     patient: {
                         select: {
-                            name: true,
-                            user: { select: { email: true } }
+                            user: { select: { name: true, email: true } }
                         }
                     }
                 }

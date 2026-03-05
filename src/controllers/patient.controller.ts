@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { z } from 'zod';
 import { prisma } from '../lib/prisma';
+import { AgeClassification } from '../../generated/client/client';
 import {
     createPatientSchema,
     medicalHistorySchema,
@@ -18,11 +19,50 @@ function computeBmi(weight: unknown, height: unknown): number | null {
     return Math.round((w / (heightM * heightM)) * 100) / 100;
 }
 
-// Create or Update Patient Profile
+/** Compute age in years and age classification from date of birth. */
+function computeAgeAndClassification(dateOfBirth: Date): { age: number; ageClassification: AgeClassification } {
+    const today = new Date();
+    let age = today.getFullYear() - dateOfBirth.getFullYear();
+    const m = today.getMonth() - dateOfBirth.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < dateOfBirth.getDate())) age--;
+    age = Math.max(0, Math.min(150, age));
+
+    if (age < 1) {
+        const months = (today.getFullYear() - dateOfBirth.getFullYear()) * 12 + today.getMonth() - dateOfBirth.getMonth();
+        if (months < 1) return { age: 0, ageClassification: AgeClassification.Neonates };
+        return { age: 0, ageClassification: AgeClassification.Infants };
+    }
+    if (age <= 3) return { age, ageClassification: AgeClassification.Toddlers };
+    if (age <= 12) return { age, ageClassification: AgeClassification.Children };
+    if (age < 18) return { age, ageClassification: AgeClassification.Adolescents };
+    if (age < 65) return { age, ageClassification: AgeClassification.Adults };
+    return { age, ageClassification: AgeClassification.Elderly };
+}
+
+// Create or Update Patient Profile (name from User; age/ageClassification from dateOfBirth when provided; smoking in lifestyle)
 export const createOrUpdatePatient = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const validatedData = createPatientSchema.parse(req.body);
-        const { userId, ...patientData } = validatedData;
+        const { userId, dateOfBirth, age: ageInput, ageClassification: classificationInput, ...rest } = validatedData;
+
+        let age: number;
+        let ageClassification: AgeClassification;
+
+        if (dateOfBirth) {
+            const computed = computeAgeAndClassification(new Date(dateOfBirth));
+            age = computed.age;
+            ageClassification = computed.ageClassification;
+        } else {
+            age = ageInput ?? 0;
+            ageClassification = classificationInput ?? AgeClassification.Adults;
+        }
+
+        const patientData = {
+            ...rest,
+            dateOfBirth: dateOfBirth ? new Date(dateOfBirth) : undefined,
+            age,
+            ageClassification
+        };
 
         // Check if patient already exists for this user
         const existingPatient = await prisma.patient.findUnique({
@@ -30,13 +70,12 @@ export const createOrUpdatePatient = async (req: Request, res: Response, next: N
         });
 
         if (existingPatient) {
-            // Update existing patient
             const updated = await prisma.patient.update({
                 where: { userId },
                 data: patientData,
                 include: {
                     user: {
-                        select: { email: true, role: true }
+                        select: { email: true, role: true, name: true }
                     }
                 }
             });
@@ -48,7 +87,6 @@ export const createOrUpdatePatient = async (req: Request, res: Response, next: N
             return;
         }
 
-        // Create new patient
         const patient = await prisma.patient.create({
             data: {
                 ...patientData,
@@ -56,7 +94,7 @@ export const createOrUpdatePatient = async (req: Request, res: Response, next: N
             },
             include: {
                 user: {
-                    select: { email: true, role: true }
+                    select: { email: true, role: true, name: true }
                 }
             }
         });
@@ -74,7 +112,7 @@ export const createOrUpdatePatient = async (req: Request, res: Response, next: N
     }
 };
 
-// Get all patients (Admin/SuperAdmin only)
+// Get all patients (Admin/SuperAdmin only). Search by user email or user name.
 export const getAllPatients = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const page = Math.max(1, parseInt(String(req.query.page)) || 1);
@@ -83,7 +121,14 @@ export const getAllPatients = async (req: Request, res: Response, next: NextFunc
         const skip = (page - 1) * limit;
 
         const where = search
-            ? { name: { contains: search, mode: 'insensitive' as const } }
+            ? {
+                  user: {
+                      OR: [
+                          { email: { contains: search, mode: 'insensitive' as const } },
+                          ...(search.length >= 1 ? [{ name: { contains: search, mode: 'insensitive' as const } }] : [])
+                      ]
+                  }
+              }
             : {};
 
         const [patients, total] = await Promise.all([
@@ -92,7 +137,7 @@ export const getAllPatients = async (req: Request, res: Response, next: NextFunc
                 skip,
                 take: limit,
                 include: {
-                    user: { select: { email: true, role: true } }
+                    user: { select: { email: true, role: true, name: true } }
                 },
                 orderBy: { id: 'asc' }
             }),
@@ -122,7 +167,7 @@ export const getPatientById = async (req: Request, res: Response, next: NextFunc
             where: { id: parseInt(id) },
             include: {
                 user: {
-                    select: { email: true, role: true, isActive: true }
+                    select: { email: true, role: true, isActive: true, name: true }
                 },
                 medicalHistories: { include: { disease: true } },
                 familyHistories: { include: { disease: true } },

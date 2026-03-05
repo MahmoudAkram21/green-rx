@@ -46,6 +46,7 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
             const user = await tx.user.create({
                 data: {
                     email,
+                    ...(name != null && name.trim().length >= 1 ? { name: name.trim() } : {}),
                     ...(phone != null && phone !== '' ? { phone } : {}),
                     passwordHash,
                     role,
@@ -67,11 +68,9 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
             }
 
             if (role === UserRole.Patient) {
-                const patientName = name && name.trim().length >= 2 ? name.trim() : email.split('@')[0] || 'Patient';
                 await tx.patient.create({
                     data: {
                         userId: user.id,
-                        name: patientName,
                         age: 0,
                         ageClassification: AgeClassification.Adults,
                         gender: Gender.Other

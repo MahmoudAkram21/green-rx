@@ -80,9 +80,9 @@ export const getDoctorById = async (req: Request, res: Response, next: NextFunct
                         patient: {
                             select: {
                                 id: true,
-                                name: true,
                                 age: true,
-                                gender: true
+                                gender: true,
+                                user: { select: { name: true } }
                             }
                         }
                     }
@@ -123,9 +123,9 @@ export const getDoctorByUserId = async (req: Request, res: Response, next: NextF
                         patient: {
                             select: {
                                 id: true,
-                                name: true,
                                 age: true,
-                                gender: true
+                                gender: true,
+                                user: { select: { name: true } }
                             }
                         }
                     }
@@ -320,7 +320,11 @@ export const assignPatient = async (req: Request, res: Response, next: NextFunct
             },
             include: {
                 patient: {
-                    select: { name: true, age: true, gender: true }
+                    select: {
+                        age: true,
+                        gender: true,
+                        user: { select: { name: true } }
+                    }
                 },
                 doctor: {
                     select: { name: true, specialization: true }

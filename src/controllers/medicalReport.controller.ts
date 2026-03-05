@@ -16,8 +16,7 @@ class MedicalReportController {
                 include: {
                     patient: {
                         select: {
-                            name: true,
-                            user: { select: { email: true } }
+                            user: { select: { name: true, email: true } }
                         }
                     }
                 }
@@ -74,9 +73,8 @@ class MedicalReportController {
                 include: {
                     patient: {
                         select: {
-                            name: true,
                             age: true,
-                            user: { select: { email: true } }
+                            user: { select: { name: true, email: true } }
                         }
                     }
                 }

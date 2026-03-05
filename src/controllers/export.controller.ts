@@ -492,7 +492,7 @@ class ExportController {
                     id: tn.id,
                     title: tn.title,
                     activeSubstance: tn.activeSubstance.activeSubstance,
-                    company: tn.company.name,
+                    company: tn.company?.name ?? '',
                     availabilityStatus: tn.availabilityStatus,
                     stockQuantity: tn.stockQuantity,
                     expiryDate: tn.expiryDate,

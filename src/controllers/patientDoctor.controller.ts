@@ -60,7 +60,7 @@ export const createPatientDoctor = async (req: Request, res: Response) => {
                 patient: {
                     select: {
                         id: true,
-                        name: true,
+                        user: { select: { name: true } },
                         age: true,
                         gender: true
                     }
@@ -139,7 +139,7 @@ export const getRelationshipsByDoctor = async (req: Request, res: Response) => {
                 patient: {
                     select: {
                         id: true,
-                        name: true,
+                        user: { select: { name: true } },
                         age: true,
                         gender: true,
                         ageClassification: true
@@ -189,7 +189,7 @@ export const updatePatientDoctor = async (req: Request, res: Response) => {
                 patient: {
                     select: {
                         id: true,
-                        name: true
+                        user: { select: { name: true } }
                     }
                 },
                 doctor: {
@@ -239,7 +239,7 @@ export const endRelationship = async (req: Request, res: Response) => {
                 patient: {
                     select: {
                         id: true,
-                        name: true
+                        user: { select: { name: true } }
                     }
                 },
                 doctor: {

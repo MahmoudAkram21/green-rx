@@ -335,7 +335,7 @@ s('/active-substances/{id}/interactions', 'get', [PATIENT_TAGS.DRUG_SAFETY, DOCT
 // TRADE NAMES
 s('/trade-names', 'get', [PATIENT_TAGS.MEDICATIONS, PHARMACIST_TAGS.MEDICATIONS_SEARCH], 'List all trade names');
 s('/trade-names', 'post', ADMIN_TAG, 'Create a trade name (Admin/Company)', true, [], { schemaRef: 'CreateTradeNameRequest' });
-s('/trade-names/search', 'get', [PATIENT_TAGS.MEDICATIONS, PHARMACIST_TAGS.MEDICATIONS_SEARCH], 'Search trade names', true, [q('q')]);
+s('/trade-names/search', 'get', [PATIENT_TAGS.MEDICATIONS, PHARMACIST_TAGS.MEDICATIONS_SEARCH], 'Search trade names by title or active substance name', true, [q('q', 'Search text (title or active substance)'), q('search', 'Alias for q'), q('activeSubstanceId'), q('companyId'), q('isActive'), q('availabilityStatus', 'InStock | OutOfStock | Discontinued | Pending'), q('page'), q('limit')]);
 s('/trade-names/{id}', 'get', [PATIENT_TAGS.MEDICATIONS, PHARMACIST_TAGS.MEDICATIONS_SEARCH], 'Get trade name by ID', true, [p('id')]);
 s('/trade-names/{id}', 'put', ADMIN_TAG, 'Update trade name (Admin/Company)', true, [p('id')], { schemaRef: 'UpdateTradeNameRequest' });
 s('/trade-names/{id}', 'delete', ADMIN_TAG, 'Delete trade name (Admin)', true, [p('id')]);
@@ -528,20 +528,18 @@ const options: Record<string, unknown> = {
           }
         },
         CreatePatientRequest: {
-          description: 'Step 1 "Enter Your Personal Information". Required: userId, name, age, ageClassification, gender. Optional: dateOfBirth, height, weight (BMI from GET /patients), bloodType, smoking, pregnancy/lactation. Get userId from GET /auth/me or register response.',
+          description: 'Step 1 "Enter Your Personal Information". Required: userId, gender. Optional: dateOfBirth (when provided, age and ageClassification are computed by backend), age, ageClassification, height, weight (BMI from GET /patients), bloodType, pregnancy/lactation. Patient name comes from User (e.g. set at registration). Smoking is covered by lifestyle questions. Get userId from GET /auth/me or register response.',
           type: 'object',
-          required: ['userId', 'name', 'age', 'ageClassification', 'gender'],
+          required: ['userId', 'gender'],
           properties: {
             userId:           { type: 'integer', description: 'Required. From GET /auth/me or register response.' },
-            name:             { type: 'string', example: 'Heba Yasser', description: 'Required.' },
-            age:              { type: 'integer', minimum: 0, maximum: 150, description: 'Required. Age in years.' },
-            ageClassification: { type: 'string', enum: ['Neonates', 'Infants', 'Toddlers', 'Children', 'Adolescents', 'Adults', 'Elderly'], description: 'Required.' },
             gender:           { type: 'string', enum: ['Male', 'Female', 'Other'], description: 'Required.' },
-            dateOfBirth:      { type: 'string', format: 'date-time', description: 'Optional. ISO 8601.' },
+            dateOfBirth:      { type: 'string', format: 'date-time', description: 'Optional. ISO 8601. When provided, age and ageClassification are computed by the backend.' },
+            age:              { type: 'integer', minimum: 0, maximum: 150, description: 'Optional. Ignored if dateOfBirth is provided. Fallback when dateOfBirth not sent.' },
+            ageClassification: { type: 'string', enum: ['Neonates', 'Infants', 'Toddlers', 'Children', 'Adolescents', 'Adults', 'Elderly'], description: 'Optional. Computed from dateOfBirth when provided.' },
             height:           { type: 'number', description: 'Optional. Height in cm (used for BMI).' },
             weight:           { type: 'number', description: 'Optional. Weight in kg (used for BMI).' },
-            bloodType:        { type: 'string', example: 'AB', description: 'Optional. e.g. A+, A-, B+, B-, AB+, AB-, O+, O-' },
-            smoking:          { type: 'boolean', default: false, description: 'Optional.' },
+            bloodType:        { type: 'string', example: 'A+', description: 'Optional. e.g. A+, A-, B+, B-, AB+, AB-, O+, O-' },
             pregnancyWarning: { type: 'boolean', default: false, description: 'Optional.' },
             pregnancyStatus:  { type: 'boolean', description: 'Optional.' },
             trimester:        { type: 'integer', minimum: 1, maximum: 3, description: 'Optional. 1–3.' },

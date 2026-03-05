@@ -71,9 +71,9 @@ export const createAppointment = async (req: Request, res: Response) => {
                 patient: {
                     select: {
                         id: true,
-                        name: true,
                         age: true,
-                        gender: true
+                        gender: true,
+                        user: { select: { name: true } }
                     }
                 },
                 doctor: {
@@ -223,7 +223,7 @@ export const getAppointmentsByDoctor = async (req: Request, res: Response) => {
                     patient: {
                         select: {
                             id: true,
-                            name: true,
+                            user: { select: { name: true } },
                             age: true,
                             gender: true
                         }
@@ -277,7 +277,7 @@ export const updateAppointment = async (req: Request, res: Response) => {
                 patient: {
                     select: {
                         id: true,
-                        name: true
+                        user: { select: { name: true } }
                     }
                 },
                 doctor: {
@@ -325,7 +325,7 @@ export const cancelAppointment = async (req: Request, res: Response) => {
                 patient: {
                     select: {
                         id: true,
-                        name: true
+                        user: { select: { name: true } }
                     }
                 },
                 doctor: {
@@ -376,7 +376,7 @@ export const confirmAppointment = async (req: Request, res: Response) => {
                 patient: {
                     select: {
                         id: true,
-                        name: true
+                        user: { select: { name: true } }
                     }
                 },
                 doctor: {
@@ -420,7 +420,7 @@ export const completeAppointment = async (req: Request, res: Response) => {
                 patient: {
                     select: {
                         id: true,
-                        name: true
+                        user: { select: { name: true } }
                     }
                 },
                 doctor: {
@@ -467,9 +467,9 @@ export const getTodayAppointments = async (req: Request, res: Response) => {
                 patient: {
                     select: {
                         id: true,
-                        name: true,
                         age: true,
-                        gender: true
+                        gender: true,
+                        user: { select: { name: true } }
                     }
                 }
             },

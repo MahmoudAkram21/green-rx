@@ -688,24 +688,23 @@ async function main() {
   });
   console.log("✅ Created 2 Pharmacist users");
 
-  // Patients
+  // Patients (name on User; age/ageClassification from dateOfBirth; smoking in lifestyle questions)
   const patientUser1 = await prisma.user.create({
     data: {
       email: "patient1@greenrx.com",
+      name: "Alice Cooper",
       passwordHash: hashedPassword,
       role: "Patient",
       emailVerified: true,
       isActive: true,
       patient: {
         create: {
-          name: "Alice Cooper",
           age: 45,
           ageClassification: "Adults",
           dateOfBirth: new Date("1979-05-15"),
           weight: 70.5,
           height: 165,
           gender: "Female",
-          smoking: false,
           pregnancyWarning: false,
           lactation: false,
           profileCompleteness: 85,
@@ -717,20 +716,19 @@ async function main() {
   const patientUser2 = await prisma.user.create({
     data: {
       email: "patient2@greenrx.com",
+      name: "Bob Martinez",
       passwordHash: hashedPassword,
       role: "Patient",
       emailVerified: true,
       isActive: true,
       patient: {
         create: {
-          name: "Bob Martinez",
           age: 62,
           ageClassification: "Elderly",
           dateOfBirth: new Date("1962-08-22"),
           weight: 85.0,
           height: 178,
           gender: "Male",
-          smoking: true,
           pregnancyWarning: false,
           lactation: false,
           profileCompleteness: 75,
@@ -742,20 +740,19 @@ async function main() {
   await prisma.user.create({
     data: {
       email: "patient3@greenrx.com",
+      name: "Carol White",
       passwordHash: hashedPassword,
       role: "Patient",
       emailVerified: true,
       isActive: true,
       patient: {
         create: {
-          name: "Carol White",
           age: 28,
           ageClassification: "Adults",
           dateOfBirth: new Date("1996-03-10"),
           weight: 62.0,
           height: 160,
           gender: "Female",
-          smoking: false,
           pregnancyWarning: true,
           pregnancyStatus: true,
           trimester: 2,
@@ -769,20 +766,19 @@ async function main() {
   await prisma.user.create({
     data: {
       email: "patient4@greenrx.com",
+      name: "David Lee",
       passwordHash: hashedPassword,
       role: "Patient",
       emailVerified: true,
       isActive: true,
       patient: {
         create: {
-          name: "David Lee",
           age: 35,
           ageClassification: "Adults",
           dateOfBirth: new Date("1989-11-01"),
           weight: 78.5,
           height: 175,
           gender: "Male",
-          smoking: false,
           pregnancyWarning: false,
           lactation: false,
           profileCompleteness: 80,
@@ -794,20 +790,19 @@ async function main() {
   const patientUser5 = await prisma.user.create({
     data: {
       email: "patient5@greenrx.com",
+      name: "Emma Thompson",
       passwordHash: hashedPassword,
       role: "Patient",
       emailVerified: true,
       isActive: true,
       patient: {
         create: {
-          name: "Emma Thompson",
           age: 8,
           ageClassification: "Children",
           dateOfBirth: new Date("2016-07-20"),
           weight: 25.0,
           height: 125,
           gender: "Female",
-          smoking: false,
           pregnancyWarning: false,
           lactation: false,
           profileCompleteness: 70,

@@ -10,16 +10,14 @@ import {
 
 export const createPatientSchema = z.object({
   userId: z.number().int().positive(),
-  name: z.string().min(1),
-  age: z.number().int().positive(),
-  ageClassification: z.nativeEnum(AgeClassification),
   gender: z.nativeEnum(Gender),
+  dateOfBirth: z.string().datetime().optional(), // when provided, age and ageClassification are computed by backend
+  age: z.number().int().min(0).max(150).optional(), // optional; ignored if dateOfBirth provided
+  ageClassification: z.nativeEnum(AgeClassification).optional(), // optional; computed from dateOfBirth when provided
   weight: z.number().positive({ message: "Weight must be greater than zero" }).optional(),
   height: z.number().positive({ message: "Height must be greater than zero" }).optional(),
-  dateOfBirth: z.string().datetime().optional(),
   pregnancyStatus: z.boolean().optional(),
   trimester: z.number().int().min(1).max(3).optional(),
-  smoking: z.boolean().optional(),
   pregnancyWarning: z.boolean().optional(),
   lactation: z.boolean().optional(),
   bloodType: z.string().trim().optional(), // e.g. A+, A-, B+, B-, AB+, AB-, O+, O-
