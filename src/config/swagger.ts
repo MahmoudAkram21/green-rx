@@ -54,6 +54,9 @@ const DOCTOR_TAGS = {
   NOTIFICATIONS: 'Doctor - 8. Notifications',
 };
 
+/** Single Swagger section grouping all doctor capabilities related to patients */
+const DOCTOR_PATIENTS_SECTION = 'Doctor - Capabilities with patients';
+
 const PHARMACIST_TAGS = {
   AUTH: 'Pharmacist - 1. Auth',
   PROFILE: 'Pharmacist - 2. Profile',
@@ -171,14 +174,16 @@ s('/patients/{patientId}/children', 'post', PATIENT_TAGS.PROFILE, 'Add a child p
 s('/patients/children/{childId}', 'delete', PATIENT_TAGS.PROFILE, 'Delete a child profile', true, [p('childId')]);
 
 // DOCTORS
-s('/doctors', 'post', DOCTOR_TAGS.MY_PATIENTS, 'Create or update doctor profile', true, [], { schemaRef: 'CreateDoctorRequest' });
+s('/doctors', 'post', [DOCTOR_TAGS.MY_PATIENTS, DOCTOR_PATIENTS_SECTION], 'Create or update doctor profile', true, [], { schemaRef: 'CreateDoctorRequest' });
 s('/doctors/search', 'get', [PATIENT_TAGS.SHARE_WITH_DOCTOR, DOCTOR_TAGS.MY_PATIENTS], 'Search / list all doctors', true, [q('q', 'Search query')]);
-s('/doctors/{id}', 'get', [PATIENT_TAGS.SHARE_WITH_DOCTOR, DOCTOR_TAGS.MY_PATIENTS], 'Get doctor by ID', true, [p('id')]);
-s('/doctors/user/{userId}', 'get', DOCTOR_TAGS.MY_PATIENTS, 'Get doctor by user ID', true, [p('userId')]);
+s('/doctors/{id}', 'get', [PATIENT_TAGS.SHARE_WITH_DOCTOR, DOCTOR_TAGS.MY_PATIENTS, DOCTOR_PATIENTS_SECTION], 'Get doctor by ID', true, [p('id')]);
+s('/doctors/user/{userId}', 'get', [DOCTOR_TAGS.MY_PATIENTS, DOCTOR_PATIENTS_SECTION], 'Get doctor by user ID', true, [p('userId')]);
 s('/doctors/{id}/verify', 'put', ADMIN_TAG, 'Verify a doctor (Admin)', true, [p('id')], { schemaRef: 'VerifyDoctorRequest' });
-s('/doctors/{doctorId}/patients', 'get', DOCTOR_TAGS.MY_PATIENTS, 'Get patients assigned to doctor (My patients)', true, [p('doctorId')]);
-s('/doctors/{doctorId}/patients', 'post', [PATIENT_TAGS.SHARE_WITH_DOCTOR, DOCTOR_TAGS.MY_PATIENTS], 'Assign a patient to doctor', true, [p('doctorId')], { schemaRef: 'AssignPatientRequest' });
-s('/doctors/{doctorId}/patients/{patientId}', 'delete', DOCTOR_TAGS.MY_PATIENTS, 'Remove patient from doctor', true, [p('doctorId'), p('patientId')]);
+s('/doctors/{doctorId}/patients/search', 'get', [DOCTOR_TAGS.MY_PATIENTS, DOCTOR_PATIENTS_SECTION], 'Search for patient by name (among doctor\'s assigned patients only)', true, [p('doctorId'), q('name', 'Patient name or partial name to search (also accepts "q")')]);
+s('/doctors/{doctorId}/patients/{patientId}', 'get', [DOCTOR_TAGS.MY_PATIENTS, DOCTOR_PATIENTS_SECTION], 'Get full details of a patient (profile, vitals, health status, visit files). Only for patients linked to this doctor.', true, [p('doctorId'), p('patientId')]);
+s('/doctors/{doctorId}/patients', 'get', [DOCTOR_TAGS.MY_PATIENTS, DOCTOR_PATIENTS_SECTION], 'Get patients assigned to doctor (My patients)', true, [p('doctorId')]);
+s('/doctors/{doctorId}/patients', 'post', [PATIENT_TAGS.SHARE_WITH_DOCTOR, DOCTOR_TAGS.MY_PATIENTS, DOCTOR_PATIENTS_SECTION], 'Assign a patient to doctor', true, [p('doctorId')], { schemaRef: 'AssignPatientRequest' });
+s('/doctors/{doctorId}/patients/{patientId}', 'delete', [DOCTOR_TAGS.MY_PATIENTS, DOCTOR_PATIENTS_SECTION], 'Remove patient from doctor', true, [p('doctorId'), p('patientId')]);
 
 // PHARMACISTS
 s('/pharmacists', 'post', PHARMACIST_TAGS.PROFILE, 'Create or update pharmacist profile', true, [], { schemaRef: 'CreatePharmacistRequest' });
@@ -187,17 +192,17 @@ s('/pharmacists/{id}', 'get', PHARMACIST_TAGS.PROFILE, 'Get pharmacist by ID', t
 s('/pharmacists/user/{userId}', 'get', PHARMACIST_TAGS.PROFILE, 'Get pharmacist by user ID', true, [p('userId')]);
 
 // PATIENT-DOCTOR (Share profile with doctor)
-s('/patient-doctors', 'post', [PATIENT_TAGS.SHARE_WITH_DOCTOR, DOCTOR_TAGS.MY_PATIENTS], 'Create a patient-doctor relationship', true, [], { schemaRef: 'CreatePatientDoctorRequest' });
+s('/patient-doctors', 'post', [PATIENT_TAGS.SHARE_WITH_DOCTOR, DOCTOR_TAGS.MY_PATIENTS, DOCTOR_PATIENTS_SECTION], 'Create a patient-doctor relationship', true, [], { schemaRef: 'CreatePatientDoctorRequest' });
 s('/patient-doctors/patient/{patientId}', 'get', PATIENT_TAGS.SHARE_WITH_DOCTOR, 'Get relationships for a patient', true, [p('patientId')]);
-s('/patient-doctors/doctor/{doctorId}', 'get', DOCTOR_TAGS.MY_PATIENTS, 'Get relationships for a doctor', true, [p('doctorId')]);
-s('/patient-doctors/{id}', 'get', [PATIENT_TAGS.SHARE_WITH_DOCTOR, DOCTOR_TAGS.MY_PATIENTS], 'Get relationship by ID', true, [p('id')]);
-s('/patient-doctors/{id}', 'put', [PATIENT_TAGS.SHARE_WITH_DOCTOR, DOCTOR_TAGS.MY_PATIENTS], 'Update relationship', true, [p('id')], { schemaRef: 'UpdatePatientDoctorRequest' });
-s('/patient-doctors/{id}/end', 'post', [PATIENT_TAGS.SHARE_WITH_DOCTOR, DOCTOR_TAGS.MY_PATIENTS], 'End a patient-doctor relationship', true, [p('id')]);
+s('/patient-doctors/doctor/{doctorId}', 'get', [DOCTOR_TAGS.MY_PATIENTS, DOCTOR_PATIENTS_SECTION], 'Get relationships for a doctor', true, [p('doctorId')]);
+s('/patient-doctors/{id}', 'get', [PATIENT_TAGS.SHARE_WITH_DOCTOR, DOCTOR_TAGS.MY_PATIENTS, DOCTOR_PATIENTS_SECTION], 'Get relationship by ID', true, [p('id')]);
+s('/patient-doctors/{id}', 'put', [PATIENT_TAGS.SHARE_WITH_DOCTOR, DOCTOR_TAGS.MY_PATIENTS, DOCTOR_PATIENTS_SECTION], 'Update relationship', true, [p('id')], { schemaRef: 'UpdatePatientDoctorRequest' });
+s('/patient-doctors/{id}/end', 'post', [PATIENT_TAGS.SHARE_WITH_DOCTOR, DOCTOR_TAGS.MY_PATIENTS, DOCTOR_PATIENTS_SECTION], 'End a patient-doctor relationship', true, [p('id')]);
 
 // ALLERGIES (patient allergy records — read-only here; add/delete under /patients)
-s('/allergies/patient/{patientId}', 'get', PATIENT_TAGS.ALLERGIES, 'Get all allergies for a patient (PatientAllergy with allergen name)', true, [p('patientId')]);
-s('/allergies/patient/{patientId}/critical', 'get', PATIENT_TAGS.ALLERGIES, 'Get critical allergies for a patient', true, [p('patientId')]);
-s('/allergies/check/{patientId}/{medicineId}', 'get', PATIENT_TAGS.ALLERGIES, 'Check if medicine conflicts with patient allergies', true, [p('patientId'), p('medicineId')]);
+s('/allergies/patient/{patientId}', 'get', [PATIENT_TAGS.ALLERGIES, DOCTOR_PATIENTS_SECTION], 'Get all allergies for a patient (PatientAllergy with allergen name)', true, [p('patientId')]);
+s('/allergies/patient/{patientId}/critical', 'get', [PATIENT_TAGS.ALLERGIES, DOCTOR_PATIENTS_SECTION], 'Get critical allergies for a patient', true, [p('patientId')]);
+s('/allergies/check/{patientId}/{medicineId}', 'get', [PATIENT_TAGS.ALLERGIES, DOCTOR_PATIENTS_SECTION], 'Check if medicine conflicts with patient allergies', true, [p('patientId'), p('medicineId')]);
 s('/patients/{patientId}/allergies', 'post', PATIENT_TAGS.ALLERGIES, 'Add allergies to patient — body: array of { allergenId, severity?, reaction?, notes? } (allergenId from GET /allergens)', true, [p('patientId')], { schemaRef: 'BatchPatientAllergyRequest' });
 s('/patients/{patientId}/allergies/batch', 'post', PATIENT_TAGS.ALLERGIES, 'Add multiple allergies (same as POST .../allergies with array body)', true, [p('patientId')], { schemaRef: 'BatchPatientAllergyRequest' });
 s('/patients/allergies/{allergyId}', 'delete', PATIENT_TAGS.ALLERGIES, 'Remove allergy from patient (PatientAllergy id)', true, [p('allergyId')]);
@@ -210,14 +215,14 @@ s('/allergens/{id}', 'put', ADMIN_TAG, 'Update an allergen (Admin)', true, [p('i
 s('/allergens/{id}', 'delete', ADMIN_TAG, 'Delete an allergen (Admin)', true, [p('id')], undefined, { '200': 'Success', '204': 'No Content' });
 
 // PATIENT DISEASES (Current diseases)
-s('/patient-diseases/patient/{patientId}', 'get', PATIENT_TAGS.CURRENT_DISEASES, 'Get diseases for a patient', true, [p('patientId')]);
+s('/patient-diseases/patient/{patientId}', 'get', [PATIENT_TAGS.CURRENT_DISEASES, DOCTOR_PATIENTS_SECTION], 'Get diseases for a patient', true, [p('patientId')]);
 s('/patient-diseases/patient/{patientId}', 'post', PATIENT_TAGS.CURRENT_DISEASES, 'Add current diseases (single object or array)', true, [p('patientId')], { schemaRef: 'BatchPatientDiseasesRequest' });
 s('/patient-diseases/{id}', 'patch', PATIENT_TAGS.CURRENT_DISEASES, 'Update patient disease (severity, notes)', true, [p('id')], { schemaRef: 'UpdatePatientDiseaseRequest' });
 s('/patient-diseases/{id}', 'delete', PATIENT_TAGS.CURRENT_DISEASES, 'Remove patient disease', true, [p('id')]);
 
 // PATIENT MEDICINES (My medications)
-s('/patient-medicines/patient/{patientId}', 'get', PATIENT_TAGS.MEDICATIONS, 'List all medicines for a patient', true, [p('patientId')]);
-s('/patient-medicines/{id}', 'get', PATIENT_TAGS.MEDICATIONS, 'Get a patient medicine by ID', true, [p('id')]);
+s('/patient-medicines/patient/{patientId}', 'get', [PATIENT_TAGS.MEDICATIONS, DOCTOR_PATIENTS_SECTION], 'List all medicines for a patient', true, [p('patientId')]);
+s('/patient-medicines/{id}', 'get', [PATIENT_TAGS.MEDICATIONS, DOCTOR_PATIENTS_SECTION], 'Get a patient medicine by ID', true, [p('id')]);
 s('/patient-medicines/patient/{patientId}', 'post', PATIENT_TAGS.MEDICATIONS, 'Add a medicine to patient', true, [p('patientId')], { schemaRef: 'AddPatientMedicineRequest' });
 s('/patient-medicines/patient/{patientId}/upload-image', 'post', PATIENT_TAGS.MEDICATIONS, 'Upload medicine image (when not in system)', true, [p('patientId')]);
 s('/patient-medicines/{id}', 'patch', PATIENT_TAGS.MEDICATIONS, 'Update a patient medicine', true, [p('id')], { schemaRef: 'UpdatePatientMedicineRequest' });
@@ -231,20 +236,20 @@ s('/add-medicine-requests/{id}', 'get', ADMIN_TAG, 'Get add medicine request by 
 s('/add-medicine-requests/{id}/resolve', 'patch', ADMIN_TAG, 'Resolve request: link trade name/active substance and mark PatientMedicine verified', true, [p('id')], { schemaRef: 'ResolveAddMedicineRequestRequest' });
 
 // PRESCRIPTIONS
-s('/prescriptions', 'get', [PATIENT_TAGS.PRESCRIPTIONS, DOCTOR_TAGS.PRESCRIPTIONS], 'List prescriptions (filtered by role)', true, [q('patientId'), q('doctorId')]);
-s('/prescriptions', 'post', DOCTOR_TAGS.PRESCRIPTIONS, 'Create a prescription (runs drug-safety check)', true, [], { schemaRef: 'CreatePrescriptionRequest' });
-s('/prescriptions/batch', 'post', DOCTOR_TAGS.PRESCRIPTIONS, 'Batch-create prescriptions', true, [], { schemaRef: 'BatchPrescriptionsRequest' });
-s('/prescriptions/{id}', 'get', [PATIENT_TAGS.PRESCRIPTIONS, DOCTOR_TAGS.PRESCRIPTIONS], 'Get prescription by ID', true, [p('id')]);
-s('/prescriptions/{id}', 'put', DOCTOR_TAGS.PRESCRIPTIONS, 'Update a prescription', true, [p('id')], { schemaRef: 'UpdatePrescriptionRequest' });
-s('/prescriptions/{id}', 'delete', [PATIENT_TAGS.PRESCRIPTIONS, DOCTOR_TAGS.PRESCRIPTIONS], 'Delete a prescription', true, [p('id')]);
-s('/prescriptions/{prescriptionId}/interactions', 'get', [PATIENT_TAGS.PRESCRIPTIONS, PATIENT_TAGS.DRUG_SAFETY, DOCTOR_TAGS.DRUG_SAFETY], 'Get drug interaction alerts for prescription', true, [p('prescriptionId')]);
-s('/prescriptions/interactions/{alertId}/acknowledge', 'put', [PATIENT_TAGS.PRESCRIPTIONS, PATIENT_TAGS.DRUG_SAFETY, DOCTOR_TAGS.DRUG_SAFETY], 'Acknowledge a drug interaction alert', true, [p('alertId')]);
+s('/prescriptions', 'get', [PATIENT_TAGS.PRESCRIPTIONS, DOCTOR_TAGS.PRESCRIPTIONS, DOCTOR_PATIENTS_SECTION], 'List prescriptions (filtered by role)', true, [q('patientId'), q('doctorId')]);
+s('/prescriptions', 'post', [DOCTOR_TAGS.PRESCRIPTIONS, DOCTOR_PATIENTS_SECTION], 'Create a prescription (runs drug-safety check)', true, [], { schemaRef: 'CreatePrescriptionRequest' });
+s('/prescriptions/batch', 'post', [DOCTOR_TAGS.PRESCRIPTIONS, DOCTOR_PATIENTS_SECTION], 'Batch-create prescriptions', true, [], { schemaRef: 'BatchPrescriptionsRequest' });
+s('/prescriptions/{id}', 'get', [PATIENT_TAGS.PRESCRIPTIONS, DOCTOR_TAGS.PRESCRIPTIONS, DOCTOR_PATIENTS_SECTION], 'Get prescription by ID', true, [p('id')]);
+s('/prescriptions/{id}', 'put', [DOCTOR_TAGS.PRESCRIPTIONS, DOCTOR_PATIENTS_SECTION], 'Update a prescription', true, [p('id')], { schemaRef: 'UpdatePrescriptionRequest' });
+s('/prescriptions/{id}', 'delete', [PATIENT_TAGS.PRESCRIPTIONS, DOCTOR_TAGS.PRESCRIPTIONS, DOCTOR_PATIENTS_SECTION], 'Delete a prescription', true, [p('id')]);
+s('/prescriptions/{prescriptionId}/interactions', 'get', [PATIENT_TAGS.PRESCRIPTIONS, PATIENT_TAGS.DRUG_SAFETY, DOCTOR_TAGS.DRUG_SAFETY, DOCTOR_PATIENTS_SECTION], 'Get drug interaction alerts for prescription', true, [p('prescriptionId')]);
+s('/prescriptions/interactions/{alertId}/acknowledge', 'put', [PATIENT_TAGS.PRESCRIPTIONS, PATIENT_TAGS.DRUG_SAFETY, DOCTOR_TAGS.DRUG_SAFETY, DOCTOR_PATIENTS_SECTION], 'Acknowledge a drug interaction alert', true, [p('alertId')]);
 
 // PRESCRIPTION VERSIONS
-s('/prescription-versions/prescription/{prescriptionId}', 'get', [PATIENT_TAGS.PRESCRIPTIONS, DOCTOR_TAGS.PRESCRIPTIONS], 'Get all versions of a prescription', true, [p('prescriptionId')]);
-s('/prescription-versions/prescription/{prescriptionId}', 'post', DOCTOR_TAGS.PRESCRIPTIONS, 'Create a new prescription version', true, [p('prescriptionId')], { schemaRef: 'CreatePrescriptionVersionRequest' });
-s('/prescription-versions/prescription/{prescriptionId}/compare', 'get', [PATIENT_TAGS.PRESCRIPTIONS, DOCTOR_TAGS.PRESCRIPTIONS], 'Compare two prescription versions', true, [p('prescriptionId'), q('version1'), q('version2')]);
-s('/prescription-versions/{id}', 'get', [PATIENT_TAGS.PRESCRIPTIONS, DOCTOR_TAGS.PRESCRIPTIONS], 'Get a specific prescription version', true, [p('id')]);
+s('/prescription-versions/prescription/{prescriptionId}', 'get', [PATIENT_TAGS.PRESCRIPTIONS, DOCTOR_TAGS.PRESCRIPTIONS, DOCTOR_PATIENTS_SECTION], 'Get all versions of a prescription', true, [p('prescriptionId')]);
+s('/prescription-versions/prescription/{prescriptionId}', 'post', [DOCTOR_TAGS.PRESCRIPTIONS, DOCTOR_PATIENTS_SECTION], 'Create a new prescription version', true, [p('prescriptionId')], { schemaRef: 'CreatePrescriptionVersionRequest' });
+s('/prescription-versions/prescription/{prescriptionId}/compare', 'get', [PATIENT_TAGS.PRESCRIPTIONS, DOCTOR_TAGS.PRESCRIPTIONS, DOCTOR_PATIENTS_SECTION], 'Compare two prescription versions', true, [p('prescriptionId'), q('version1'), q('version2')]);
+s('/prescription-versions/{id}', 'get', [PATIENT_TAGS.PRESCRIPTIONS, DOCTOR_TAGS.PRESCRIPTIONS, DOCTOR_PATIENTS_SECTION], 'Get a specific prescription version', true, [p('id')]);
 
 // APPOINTMENTS (not in core patient-doctor flow; tag for Admin / future use)
 s('/appointments', 'post', ADMIN_TAG, 'Create an appointment', true, [], { schemaRef: 'CreateAppointmentRequest' });
@@ -254,33 +259,33 @@ s('/appointments/{id}/cancel', 'post', ADMIN_TAG, 'Cancel an appointment', true,
 s('/appointments/{id}/confirm', 'post', ADMIN_TAG, 'Confirm an appointment (doctor)', true, [p('id')]);
 s('/appointments/{id}/complete', 'post', ADMIN_TAG, 'Mark appointment as completed (doctor)', true, [p('id')]);
 s('/appointments/patient/{patientId}', 'get', ADMIN_TAG, 'Get all appointments for a patient', true, [p('patientId')]);
-s('/appointments/doctor/{doctorId}', 'get', ADMIN_TAG, 'Get all appointments for a doctor', true, [p('doctorId')]);
-s('/appointments/doctor/{doctorId}/today', 'get', ADMIN_TAG, "Get today's appointments for a doctor", true, [p('doctorId')]);
+s('/appointments/doctor/{doctorId}', 'get', [ADMIN_TAG, DOCTOR_PATIENTS_SECTION], 'Get all appointments for a doctor', true, [p('doctorId')]);
+s('/appointments/doctor/{doctorId}/today', 'get', [ADMIN_TAG, DOCTOR_PATIENTS_SECTION], "Get today's appointments for a doctor", true, [p('doctorId')]);
 
 // CONSULTATIONS
-s('/consultations', 'post', [PATIENT_TAGS.CONSULTATIONS_VISITS, DOCTOR_TAGS.CONSULTATIONS_VISITS], 'Create a consultation', true, [], { schemaRef: 'CreateConsultationRequest' });
-s('/consultations/{id}', 'get', [PATIENT_TAGS.CONSULTATIONS_VISITS, DOCTOR_TAGS.CONSULTATIONS_VISITS], 'Get consultation by ID', true, [p('id')]);
-s('/consultations/{id}', 'put', [PATIENT_TAGS.CONSULTATIONS_VISITS, DOCTOR_TAGS.CONSULTATIONS_VISITS], 'Update a consultation', true, [p('id')], { schemaRef: 'UpdateConsultationRequest' });
-s('/consultations/{id}', 'delete', [PATIENT_TAGS.CONSULTATIONS_VISITS, DOCTOR_TAGS.CONSULTATIONS_VISITS], 'Delete a consultation', true, [p('id')]);
+s('/consultations', 'post', [PATIENT_TAGS.CONSULTATIONS_VISITS, DOCTOR_TAGS.CONSULTATIONS_VISITS, DOCTOR_PATIENTS_SECTION], 'Create a consultation', true, [], { schemaRef: 'CreateConsultationRequest' });
+s('/consultations/{id}', 'get', [PATIENT_TAGS.CONSULTATIONS_VISITS, DOCTOR_TAGS.CONSULTATIONS_VISITS, DOCTOR_PATIENTS_SECTION], 'Get consultation by ID', true, [p('id')]);
+s('/consultations/{id}', 'put', [PATIENT_TAGS.CONSULTATIONS_VISITS, DOCTOR_TAGS.CONSULTATIONS_VISITS, DOCTOR_PATIENTS_SECTION], 'Update a consultation', true, [p('id')], { schemaRef: 'UpdateConsultationRequest' });
+s('/consultations/{id}', 'delete', [PATIENT_TAGS.CONSULTATIONS_VISITS, DOCTOR_TAGS.CONSULTATIONS_VISITS, DOCTOR_PATIENTS_SECTION], 'Delete a consultation', true, [p('id')]);
 s('/consultations/patient/{patientId}', 'get', PATIENT_TAGS.CONSULTATIONS_VISITS, 'Get consultations for a patient', true, [p('patientId')]);
-s('/consultations/doctor/{doctorId}', 'get', DOCTOR_TAGS.CONSULTATIONS_VISITS, 'Get consultations for a doctor', true, [p('doctorId')]);
-s('/consultations/doctor/{doctorId}/followups', 'get', DOCTOR_TAGS.CONSULTATIONS_VISITS, 'Get upcoming follow-ups for a doctor', true, [p('doctorId')]);
+s('/consultations/doctor/{doctorId}', 'get', [DOCTOR_TAGS.CONSULTATIONS_VISITS, DOCTOR_PATIENTS_SECTION], 'Get consultations for a doctor', true, [p('doctorId')]);
+s('/consultations/doctor/{doctorId}/followups', 'get', [DOCTOR_TAGS.CONSULTATIONS_VISITS, DOCTOR_PATIENTS_SECTION], 'Get upcoming follow-ups for a doctor', true, [p('doctorId')]);
 
 // VISITS
-s('/visits', 'post', [PATIENT_TAGS.CONSULTATIONS_VISITS, DOCTOR_TAGS.CONSULTATIONS_VISITS], 'Create a visit record', true, [], { schemaRef: 'CreateVisitRequest' });
-s('/visits/{id}', 'get', [PATIENT_TAGS.CONSULTATIONS_VISITS, DOCTOR_TAGS.CONSULTATIONS_VISITS], 'Get visit by ID', true, [p('id')]);
-s('/visits/{id}', 'patch', [PATIENT_TAGS.CONSULTATIONS_VISITS, DOCTOR_TAGS.CONSULTATIONS_VISITS], 'Update a visit', true, [p('id')], { schemaRef: 'UpdateVisitRequest' });
-s('/visits/{id}', 'delete', [PATIENT_TAGS.CONSULTATIONS_VISITS, DOCTOR_TAGS.CONSULTATIONS_VISITS], 'Delete a visit', true, [p('id')]);
-s('/visits/patient/{patientId}', 'get', PATIENT_TAGS.CONSULTATIONS_VISITS, 'Get all visits for a patient', true, [p('patientId')]);
-s('/visits/doctor/{doctorId}', 'get', DOCTOR_TAGS.CONSULTATIONS_VISITS, 'Get all visits for a doctor', true, [p('doctorId')]);
+s('/visits', 'post', [PATIENT_TAGS.CONSULTATIONS_VISITS, DOCTOR_TAGS.CONSULTATIONS_VISITS, DOCTOR_PATIENTS_SECTION], 'Create a visit record', true, [], { schemaRef: 'CreateVisitRequest' });
+s('/visits/{id}', 'get', [PATIENT_TAGS.CONSULTATIONS_VISITS, DOCTOR_TAGS.CONSULTATIONS_VISITS, DOCTOR_PATIENTS_SECTION], 'Get visit by ID', true, [p('id')]);
+s('/visits/{id}', 'patch', [PATIENT_TAGS.CONSULTATIONS_VISITS, DOCTOR_TAGS.CONSULTATIONS_VISITS, DOCTOR_PATIENTS_SECTION], 'Update a visit', true, [p('id')], { schemaRef: 'UpdateVisitRequest' });
+s('/visits/{id}', 'delete', [PATIENT_TAGS.CONSULTATIONS_VISITS, DOCTOR_TAGS.CONSULTATIONS_VISITS, DOCTOR_PATIENTS_SECTION], 'Delete a visit', true, [p('id')]);
+s('/visits/patient/{patientId}', 'get', [PATIENT_TAGS.CONSULTATIONS_VISITS, DOCTOR_PATIENTS_SECTION], 'Get all visits for a patient', true, [p('patientId')]);
+s('/visits/doctor/{doctorId}', 'get', [DOCTOR_TAGS.CONSULTATIONS_VISITS, DOCTOR_PATIENTS_SECTION], 'Get all visits for a doctor', true, [p('doctorId')]);
 
 // MEDICAL REPORTS
-s('/medical-reports', 'post', [PATIENT_TAGS.CONSULTATIONS_VISITS, DOCTOR_TAGS.MEDICAL_REPORTS], 'Create a medical report', true, [], { schemaRef: 'CreateMedicalReportRequest' });
-s('/medical-reports/patient/{patientId}', 'get', [PATIENT_TAGS.CONSULTATIONS_VISITS, DOCTOR_TAGS.MEDICAL_REPORTS], 'Get all medical reports for a patient', true, [p('patientId')]);
-s('/medical-reports/{id}', 'get', [PATIENT_TAGS.CONSULTATIONS_VISITS, DOCTOR_TAGS.MEDICAL_REPORTS], 'Get medical report by ID', true, [p('id')]);
-s('/medical-reports/{id}', 'patch', DOCTOR_TAGS.MEDICAL_REPORTS, 'Update a medical report', true, [p('id')], { schemaRef: 'UpdateMedicalReportRequest' });
-s('/medical-reports/{id}', 'delete', [PATIENT_TAGS.CONSULTATIONS_VISITS, DOCTOR_TAGS.MEDICAL_REPORTS], 'Delete a medical report', true, [p('id')]);
-s('/medical-reports/{id}/upload', 'post', DOCTOR_TAGS.MEDICAL_REPORTS, 'Upload a file for a medical report', true, [p('id')]);
+s('/medical-reports', 'post', [PATIENT_TAGS.CONSULTATIONS_VISITS, DOCTOR_TAGS.MEDICAL_REPORTS, DOCTOR_PATIENTS_SECTION], 'Create a medical report', true, [], { schemaRef: 'CreateMedicalReportRequest' });
+s('/medical-reports/patient/{patientId}', 'get', [PATIENT_TAGS.CONSULTATIONS_VISITS, DOCTOR_TAGS.MEDICAL_REPORTS, DOCTOR_PATIENTS_SECTION], 'Get all medical reports for a patient', true, [p('patientId')]);
+s('/medical-reports/{id}', 'get', [PATIENT_TAGS.CONSULTATIONS_VISITS, DOCTOR_TAGS.MEDICAL_REPORTS, DOCTOR_PATIENTS_SECTION], 'Get medical report by ID', true, [p('id')]);
+s('/medical-reports/{id}', 'patch', [DOCTOR_TAGS.MEDICAL_REPORTS, DOCTOR_PATIENTS_SECTION], 'Update a medical report', true, [p('id')], { schemaRef: 'UpdateMedicalReportRequest' });
+s('/medical-reports/{id}', 'delete', [PATIENT_TAGS.CONSULTATIONS_VISITS, DOCTOR_TAGS.MEDICAL_REPORTS, DOCTOR_PATIENTS_SECTION], 'Delete a medical report', true, [p('id')]);
+s('/medical-reports/{id}/upload', 'post', [DOCTOR_TAGS.MEDICAL_REPORTS, DOCTOR_PATIENTS_SECTION], 'Upload a file for a medical report', true, [p('id')]);
 
 // SHARE LINKS
 s('/share-links/patient/{patientId}', 'get', PATIENT_TAGS.SHARE_LINKS, 'Get all share links for a patient', true, [p('patientId')]);
@@ -306,10 +311,10 @@ s('/notifications/{id}', 'delete', [PATIENT_TAGS.NOTIFICATIONS, DOCTOR_TAGS.NOTI
 s('/notifications/appointment-reminders', 'post', ADMIN_TAG, 'Trigger appointment reminder notifications');
 
 // DRUG INTERACTIONS
-s('/drug-interactions/check', 'post', DOCTOR_TAGS.DRUG_SAFETY, 'Check drug safety before prescribing', true, [], { schemaRef: 'DrugSafetyCheckRequest' });
-s('/drug-interactions/prescription/{prescriptionId}', 'get', [PATIENT_TAGS.DRUG_SAFETY, DOCTOR_TAGS.DRUG_SAFETY], 'Get interaction alerts for a prescription', false, [p('prescriptionId')]);
-s('/drug-interactions/patient/{patientId}', 'get', PATIENT_TAGS.DRUG_SAFETY, 'Get interaction alerts for a patient', false, [p('patientId')]);
-s('/drug-interactions/{id}/acknowledge-doctor', 'patch', DOCTOR_TAGS.DRUG_SAFETY, 'Doctor acknowledges an interaction alert', false, [p('id')]);
+s('/drug-interactions/check', 'post', [DOCTOR_TAGS.DRUG_SAFETY, DOCTOR_PATIENTS_SECTION], 'Check drug safety before prescribing', true, [], { schemaRef: 'DrugSafetyCheckRequest' });
+s('/drug-interactions/prescription/{prescriptionId}', 'get', [PATIENT_TAGS.DRUG_SAFETY, DOCTOR_TAGS.DRUG_SAFETY, DOCTOR_PATIENTS_SECTION], 'Get interaction alerts for a prescription', false, [p('prescriptionId')]);
+s('/drug-interactions/patient/{patientId}', 'get', [PATIENT_TAGS.DRUG_SAFETY, DOCTOR_PATIENTS_SECTION], 'Get interaction alerts for a patient', false, [p('patientId')]);
+s('/drug-interactions/{id}/acknowledge-doctor', 'patch', [DOCTOR_TAGS.DRUG_SAFETY, DOCTOR_PATIENTS_SECTION], 'Doctor acknowledges an interaction alert', false, [p('id')]);
 s('/drug-interactions/{id}/acknowledge-patient', 'patch', PATIENT_TAGS.DRUG_SAFETY, 'Patient acknowledges an interaction alert', false, [p('id')]);
 
 // ADVERSE DRUG REACTIONS
@@ -502,6 +507,7 @@ const options: Record<string, unknown> = {
       { name: PATIENT_TAGS.NOTIFICATIONS, description: 'Notifications' },
       { name: PATIENT_TAGS.SUBSCRIPTION_PAYMENTS, description: 'Subscription and payments' },
       { name: DOCTOR_TAGS.AUTH, description: 'Authentication (Doctor)' },
+      { name: DOCTOR_PATIENTS_SECTION, description: 'All doctor capabilities with patients: list/search/get details, assign/remove, prescriptions, visits, consultations, medical reports, drug safety, view patient allergies/diseases/medicines.' },
       { name: DOCTOR_TAGS.MY_PATIENTS, description: 'My patients' },
       { name: DOCTOR_TAGS.PRESCRIPTIONS, description: 'Prescriptions' },
       { name: DOCTOR_TAGS.CONSULTATIONS_VISITS, description: 'Consultations and visits' },

@@ -1451,6 +1451,7 @@ async function main() {
   // SECTION 9: PATIENT-DOCTOR RELATIONSHIPS
   // ============================================
   console.log("\n👨‍⚕️ Creating patient-doctor relationships...");
+  // Assign all 5 patients to the first doctor (Dr. John Smith) so the doctor can get full patient data for each
   await prisma.patientDoctor.createMany({
     data: [
       {
@@ -1469,21 +1470,28 @@ async function main() {
       },
       {
         patientId: patients[2].id,
-        doctorId: doctors[2].id,
+        doctorId: doctors[0].id,
         relationshipType: "PrimaryCare",
         startDate: new Date("2021-03-20"),
         isActive: true,
       },
       {
+        patientId: patients[3].id,
+        doctorId: doctors[0].id,
+        relationshipType: "PrimaryCare",
+        startDate: new Date("2021-08-01"),
+        isActive: true,
+      },
+      {
         patientId: patients[4].id,
-        doctorId: doctors[1].id, // Pediatrician
+        doctorId: doctors[0].id,
         relationshipType: "PrimaryCare",
         startDate: new Date("2022-01-10"),
         isActive: true,
       },
     ],
   });
-  console.log("✅ Created patient-doctor relationships");
+  console.log("✅ Created patient-doctor relationships (all 5 patients linked to Dr. John Smith)");
 
   // ============================================
   // SECTION 10: PRESCRIPTIONS
@@ -1740,7 +1748,7 @@ async function main() {
       },
       {
         patientId: patients[2].id,
-        doctorId: doctors[2].id,
+        doctorId: doctors[0].id,
         visitDate: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000),
         visitType: "FollowUp",
         isNewVisit: false,
@@ -1749,8 +1757,18 @@ async function main() {
         notes: "Symptoms improved",
       },
       {
+        patientId: patients[3].id,
+        doctorId: doctors[0].id,
+        visitDate: new Date(Date.now() - 25 * 24 * 60 * 60 * 1000),
+        visitType: "FollowUp",
+        isNewVisit: false,
+        diagnosis: "Tension Headache",
+        treatmentPlan: "Rest, hydration, OTC analgesics as needed",
+        notes: "No red flags. Follow up if recurrent.",
+      },
+      {
         patientId: patients[4].id,
-        doctorId: doctors[1].id,
+        doctorId: doctors[0].id,
         visitDate: new Date(Date.now() - 20 * 24 * 60 * 60 * 1000),
         visitType: "FollowUp",
         isNewVisit: false,
@@ -1811,6 +1829,17 @@ async function main() {
         reportType: "Imaging",
         reportDate: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000),
         notes: "Clear lungs, no abnormalities",
+      },
+      {
+        patientId: patients[3].id,
+        uploadedBy: doctorUser1.id,
+        fileName: "GERD_FollowUp_2024.pdf",
+        fileUrl: "/reports/patient4/gerd_followup_2024.pdf",
+        fileType: "pdf",
+        fileSize: 102400,
+        reportType: "LabTest",
+        reportDate: new Date(Date.now() - 25 * 24 * 60 * 60 * 1000),
+        notes: "GERD and hypertension follow-up. PPI continued.",
       },
     ],
   });

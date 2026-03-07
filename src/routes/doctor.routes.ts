@@ -7,7 +7,9 @@ import {
     getAllDoctors,
     assignPatient,
     getDoctorPatients,
-    removePatient
+    getPatientDetailsForDoctor,
+    removePatient,
+    searchDoctorPatientsByName
 } from '../controllers/doctor.controller';
 import { authenticate, authorize } from '../middleware/auth.middleware';
 import { UserRole } from '../../generated/client/client';
@@ -26,7 +28,9 @@ router.get('/user/:userId', getDoctorByUserId);
 // Doctor Verification (Admin only)
 router.put('/:id/verify', authorize([UserRole.Admin, UserRole.SuperAdmin]), verifyDoctor);
 
-// Patient-Doctor Relationships
+// Patient-Doctor Relationships (search route must come before /:doctorId/patients to avoid "search" as patientId)
+router.get('/:doctorId/patients/search', authorize([UserRole.Doctor, UserRole.Admin]), searchDoctorPatientsByName);
+router.get('/:doctorId/patients/:patientId', authorize([UserRole.Doctor, UserRole.Admin]), getPatientDetailsForDoctor);
 router.post('/:doctorId/patients', authorize([UserRole.Doctor, UserRole.Admin]), assignPatient);
 router.get('/:doctorId/patients', authorize([UserRole.Doctor, UserRole.Admin]), getDoctorPatients);
 router.delete('/:doctorId/patients/:patientId', authorize([UserRole.Doctor, UserRole.Admin]), removePatient);

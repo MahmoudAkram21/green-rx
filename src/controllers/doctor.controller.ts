@@ -345,6 +345,102 @@ export const assignPatient = async (req: Request, res: Response, next: NextFunct
     }
 };
 
+// Search for patient by name (among doctor's assigned patients only)
+export const searchDoctorPatientsByName = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { doctorId } = req.params;
+        const name = (req.query.name ?? req.query.q ?? '') as string;
+
+        if (!name.trim()) {
+            res.status(400).json({ error: 'Query parameter "name" or "q" is required for search' });
+            return;
+        }
+
+        const relationships = await prisma.patientDoctor.findMany({
+            where: {
+                doctorId: parseInt(doctorId),
+                patient: {
+                    user: {
+                        name: { contains: name.trim(), mode: 'insensitive' }
+                    }
+                }
+            },
+            include: {
+                patient: {
+                    include: {
+                        user: { select: { name: true, email: true } },
+                        patientAllergies: { include: { allergen: true } },
+                        patientDiseases: { include: { disease: true } }
+                    }
+                }
+            },
+            orderBy: { startDate: 'desc' }
+        });
+
+        res.json({
+            patients: relationships.map((r) => ({
+                ...r.patient,
+                relationshipType: r.relationshipType,
+                startDate: r.startDate,
+                endDate: r.endDate
+            }))
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+// Get full details of a specific patient (doctor can only access their linked patients)
+export const getPatientDetailsForDoctor = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { doctorId, patientId } = req.params;
+        const docId = parseInt(doctorId);
+        const patId = parseInt(patientId);
+        if (Number.isNaN(docId) || Number.isNaN(patId)) {
+            res.status(400).json({ error: 'Invalid doctorId or patientId' });
+            return;
+        }
+
+        const link = await prisma.patientDoctor.findUnique({
+            where: {
+                patientId_doctorId: { patientId: patId, doctorId: docId }
+            },
+            include: {
+                patient: {
+                    include: {
+                        user: { select: { name: true, email: true } },
+                        medicalHistories: { include: { disease: true } },
+                        familyHistories: { include: { disease: true } },
+                        patientDiseases: { include: { disease: true } },
+                        patientLifestyles: { include: { lifestyle: true } },
+                        patientAllergies: { include: { allergen: true } },
+                        surgicalHistories: { include: { operation: true } },
+                        visits: { orderBy: { visitDate: 'desc' } },
+                        medicalReports: { orderBy: { reportDate: 'desc' } }
+                    }
+                }
+            }
+        });
+
+        if (!link) {
+            res.status(404).json({ error: 'Patient not found or not linked to this doctor' });
+            return;
+        }
+
+        res.json({
+            patient: link.patient,
+            relationship: {
+                relationshipType: link.relationshipType,
+                startDate: link.startDate,
+                endDate: link.endDate,
+                isActive: link.isActive
+            }
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
 // Get Doctor's Patients
 export const getDoctorPatients = async (req: Request, res: Response, next: NextFunction) => {
     try {
