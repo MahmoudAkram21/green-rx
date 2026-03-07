@@ -418,12 +418,12 @@ s('/admin/pharmacists/pending', 'get', ADMIN_TAG, 'List pharmacists pending veri
 s('/admin/pharmacists/{id}/verify', 'patch', ADMIN_TAG, 'Verify a pharmacist', true, [p('id')]);
 s('/admin/pharmacists/{id}/reject', 'patch', ADMIN_TAG, 'Reject a pharmacist', true, [p('id')], { schemaRef: 'RejectPharmacistRequest' });
 // Admin - Side Effects Management
-s('/admin/side-effects', 'post', ADMIN_TAG, 'Create a new side effect and optionally link to medications (active substance IDs)', true, [], { schemaRef: 'AdminCreateSideEffectRequest' }, { '201': 'Side effect created' });
-s('/admin/side-effects', 'get', ADMIN_TAG, 'List all side effects with their linked medications');
-s('/admin/side-effects/pending', 'get', ADMIN_TAG, 'List patient-submitted side effects pending approval');
-s('/admin/side-effects/{id}', 'put', ADMIN_TAG, 'Update a side effect (e.g. rename)', true, [p('id')], { schemaRef: 'AdminUpdateSideEffectRequest' });
-s('/admin/side-effects/{id}/medications', 'post', ADMIN_TAG, 'Attach medications (active substance IDs) to side effect', true, [p('id')], { schemaRef: 'AdminAttachMedicationsRequest' });
-s('/admin/side-effects/{id}/medications/{medicationId}', 'delete', ADMIN_TAG, 'Remove a medication from a side effect', true, [p('id'), p('medicationId')]);
+s('/admin/side-effects', 'post', ADMIN_TAG, 'Create a new side effect and optionally link to trade names (drugs)', true, [], { schemaRef: 'AdminCreateSideEffectRequest' }, { '201': 'Side effect created' });
+  s('/admin/side-effects', 'get', ADMIN_TAG, 'List all side effects with their linked trade names (drugs)');
+  s('/admin/side-effects/pending', 'get', ADMIN_TAG, 'List patient-submitted side effects pending approval');
+  s('/admin/side-effects/{id}', 'put', ADMIN_TAG, 'Update a side effect (e.g. rename)', true, [p('id')], { schemaRef: 'AdminUpdateSideEffectRequest' });
+  s('/admin/side-effects/{id}/trade-names', 'post', ADMIN_TAG, 'Attach trade names (drugs) to side effect', true, [p('id')], { schemaRef: 'AdminAttachTradeNamesRequest' });
+  s('/admin/side-effects/{id}/trade-names/{tradeNameId}', 'delete', ADMIN_TAG, 'Remove a trade name from a side effect', true, [p('id'), p('tradeNameId')]);
 s('/admin/side-effects/{id}/approve', 'patch', ADMIN_TAG, 'Approve a patient-submitted side effect (makes it visible in mobile app)', true, [p('id')]);
 
 s('/admin/statistics', 'get', ADMIN_TAG, 'Get platform statistics');
@@ -981,25 +981,26 @@ const options: Record<string, unknown> = {
         RejectPharmacistRequest: { type: 'object', properties: { reason: { type: 'string' } } },
         // ── Admin Side Effects Management
         AdminCreateSideEffectRequest: {
-          description: 'Create side effect and optionally link to medications. medications = array of ActiveSubstance IDs (from GET /active-substances or /trade-names).',
+          description: 'Create side effect and optionally link to trade names (drugs). tradeNames = array of TradeName IDs (from GET /trade-names/search).',
           type: 'object',
           required: ['name'],
           properties: {
             name: { type: 'string', description: 'Required. Side effect name (e.g. Headache).' },
-            medications: { type: 'array', items: { type: 'integer' }, description: 'Optional. Active substance IDs to link.' }
+            nameAr: { type: 'string', description: 'Optional. Arabic name.' },
+            tradeNames: { type: 'array', items: { type: 'integer' }, description: 'Optional. Trade name IDs to link.' }
           }
         },
         AdminUpdateSideEffectRequest: {
           description: 'Update side effect. All fields optional.',
           type: 'object',
-          properties: { name: { type: 'string' } }
+          properties: { name: { type: 'string' }, nameAr: { type: 'string' } }
         },
-        AdminAttachMedicationsRequest: {
-          description: 'Attach medications to side effect. medications = array of ActiveSubstance IDs.',
+        AdminAttachTradeNamesRequest: {
+          description: 'Attach trade names (drugs) to side effect. tradeNames = array of TradeName IDs.',
           type: 'object',
-          required: ['medications'],
+          required: ['tradeNames'],
           properties: {
-            medications: { type: 'array', items: { type: 'integer' }, minItems: 1 }
+            tradeNames: { type: 'array', items: { type: 'integer' }, minItems: 1 }
           }
         },
         // ── Side effects

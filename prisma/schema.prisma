@@ -968,6 +968,7 @@ model TradeName {
   adverseReactions             AdverseDrugReaction[]
   patientMedicines             PatientMedicine[]
   addMedicineRequests          AddMedicineRequest[]
+  tradeNameSideEffects         TradeNameSideEffect[]
 
   @@index([title])
   @@index([activeSubstanceId])
@@ -1656,6 +1657,7 @@ model SideEffect {
 
   medicationSideEffects MedicationSideEffect[]
   patientSideEffects    PatientSideEffect[]
+  tradeNameSideEffects  TradeNameSideEffect[]
 
   @@index([name])
   @@index([status])
@@ -1678,6 +1680,23 @@ model MedicationSideEffect {
   @@index([activeSubstanceId])
   @@index([sideEffectId])
   @@map("medication_side_effects")
+}
+
+model TradeNameSideEffect {
+  id           Int      @id @default(autoincrement())
+  tradeNameId  Int
+  sideEffectId Int
+  frequency    String?  // VeryCommon, Common, Uncommon, Rare, VeryRare, Unknown
+  bodySystem   String?  // GIT, Blood, Cardiac, etc.
+  createdAt    DateTime @default(now())
+
+  tradeName  TradeName  @relation(fields: [tradeNameId], references: [id], onDelete: Cascade)
+  sideEffect SideEffect @relation(fields: [sideEffectId], references: [id], onDelete: Cascade)
+
+  @@unique([tradeNameId, sideEffectId])
+  @@index([tradeNameId])
+  @@index([sideEffectId])
+  @@map("trade_name_side_effects")
 }
 
 model PatientSideEffect {

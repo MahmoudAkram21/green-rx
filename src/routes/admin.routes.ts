@@ -14,8 +14,8 @@ router.post('/side-effects', adminSideEffectController.createSideEffect);
 router.get('/side-effects', adminSideEffectController.listSideEffects);
 router.get('/side-effects/pending', adminSideEffectController.listPendingSideEffects);
 router.put('/side-effects/:id', adminSideEffectController.updateSideEffect);
-router.post('/side-effects/:id/medications', adminSideEffectController.attachMedications);
-router.delete('/side-effects/:id/medications/:medicationId', adminSideEffectController.removeMedication);
+router.post('/side-effects/:id/trade-names', adminSideEffectController.attachTradeNames);
+router.delete('/side-effects/:id/trade-names/:tradeNameId', adminSideEffectController.removeTradeName);
 router.patch('/side-effects/:id/approve', adminSideEffectController.approveSideEffect);
 
 // Permissions & role-permissions
