@@ -1,135 +1,174 @@
-import multer from 'multer';
-import path from 'path';
-import fs from 'fs';
+import multer from "multer";
+import path from "path";
+import fs from "fs";
 
 // Create uploads directory if it doesn't exist
-const uploadsDir = path.join(__dirname, '../../uploads');
+const uploadsDir = path.join(__dirname, "../../uploads");
 // const uploadsDir = path.join(process.cwd(), 'uploads');
 if (!fs.existsSync(uploadsDir)) {
-    fs.mkdirSync(uploadsDir, { recursive: true });
+  fs.mkdirSync(uploadsDir, { recursive: true });
 }
 
 // Configure storage
 const storage = multer.diskStorage({
-    destination: (_req, _file, cb) => {
-        cb(null, uploadsDir);
-    },
-    filename: (_req, file, cb) => {
-        const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1E9)}`;
-        const ext = path.extname(file.originalname);
-        cb(null, `${file.fieldname}-${uniqueSuffix}${ext}`);
-    }
+  destination: (_req, _file, cb) => {
+    cb(null, uploadsDir);
+  },
+  filename: (_req, file, cb) => {
+    const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
+    const ext = path.extname(file.originalname);
+    cb(null, `${file.fieldname}-${uniqueSuffix}${ext}`);
+  },
 });
 
 // File filter
-const fileFilter = (_req: any, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
-    // Accept Excel and CSV files
-    const allowedMimes = [
-        'application/vnd.ms-excel',
-        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-        'text/csv',
-        'application/csv'
-    ];
+const fileFilter = (
+  _req: any,
+  file: Express.Multer.File,
+  cb: multer.FileFilterCallback,
+) => {
+  // Accept Excel and CSV files
+  const allowedMimes = [
+    "application/vnd.ms-excel",
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    "text/csv",
+    "application/csv",
+  ];
 
-    if (allowedMimes.includes(file.mimetype) || file.originalname.match(/\.(xlsx|xls|csv)$/)) {
-        cb(null, true);
-    } else {
-        cb(new Error('Only Excel (.xlsx, .xls) and CSV (.csv) files are allowed'));
-    }
+  if (
+    allowedMimes.includes(file.mimetype) ||
+    file.originalname.match(/\.(xlsx|xls|csv)$/)
+  ) {
+    cb(null, true);
+  } else {
+    cb(new Error("Only Excel (.xlsx, .xls) and CSV (.csv) files are allowed"));
+  }
 };
 
 // Create multer upload instance
 export const upload = multer({
-    storage,
-    fileFilter,
-    limits: {
-        fileSize: 50 * 1024 * 1024 // 50MB max file size
-    }
+  storage,
+  fileFilter,
+  limits: {
+    fileSize: 50 * 1024 * 1024, // 50MB max file size
+  },
 });
 
 // Memory storage for logo (saved to DB)
 const memoryStorage = multer.memoryStorage();
-const logoFileFilter: multer.Options['fileFilter'] = (_req, file, cb) => {
-    const allowed = ['image/png', 'image/jpeg', 'image/gif', 'image/webp', 'image/svg+xml'];
-    if (file.mimetype && allowed.includes(file.mimetype)) {
-        cb(null, true);
-    } else {
-        cb(new Error('Only image files (PNG, JPEG, GIF, WebP, SVG) are allowed'));
-    }
+const logoFileFilter: multer.Options["fileFilter"] = (_req, file, cb) => {
+  const allowed = [
+    "image/png",
+    "image/jpeg",
+    "image/jpg",
+    "image/gif",
+    "image/webp",
+    "image/svg+xml",
+  ];
+  if (file.mimetype && allowed.includes(file.mimetype)) {
+    cb(null, true);
+  } else {
+    cb(new Error("Only image files (PNG, JPEG, GIF, WebP, SVG) are allowed"));
+  }
 };
 export const uploadLogo = multer({
-    storage: memoryStorage,
-    fileFilter: logoFileFilter,
-    limits: { fileSize: 2 * 1024 * 1024 } // 2MB
+  storage: memoryStorage,
+  fileFilter: logoFileFilter,
+  limits: { fileSize: 2 * 1024 * 1024 }, // 2MB
 });
 
 // ── Medicine image upload (patient self-report) ────────────────────────────────
-const medicineImagesDir = path.join(__dirname, '../../uploads/patient-medicines');
+const medicineImagesDir = path.join(
+  __dirname,
+  "../../uploads/patient-medicines",
+);
 if (!fs.existsSync(medicineImagesDir)) {
-    fs.mkdirSync(medicineImagesDir, { recursive: true });
+  fs.mkdirSync(medicineImagesDir, { recursive: true });
 }
 
 const medicineImageStorage = multer.diskStorage({
-    destination: (_req, _file, cb) => {
-        cb(null, medicineImagesDir);
-    },
-    filename: (_req, file, cb) => {
-        const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1E9)}`;
-        const ext = path.extname(file.originalname);
-        cb(null, `medicine-${uniqueSuffix}${ext}`);
-    },
+  destination: (_req, _file, cb) => {
+    cb(null, medicineImagesDir);
+  },
+  filename: (_req, file, cb) => {
+    const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
+    const ext = path.extname(file.originalname);
+    cb(null, `medicine-${uniqueSuffix}${ext}`);
+  },
 });
 
-const medicineImageFilter: multer.Options['fileFilter'] = (_req, file, cb) => {
-    const allowed = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp', 'image/gif'];
-    if (allowed.includes(file.mimetype) || file.originalname.match(/\.(png|jpg|jpeg|webp|gif)$/i)) {
-        cb(null, true);
-    } else {
-        cb(new Error('Only image files (PNG, JPG, JPEG, WebP, GIF) are allowed'));
-    }
+const medicineImageFilter: multer.Options["fileFilter"] = (_req, file, cb) => {
+  const allowed = [
+    "image/png",
+    "image/jpeg",
+    "image/jpg",
+    "image/webp",
+    "image/gif",
+  ];
+  if (
+    allowed.includes(file.mimetype) ||
+    file.originalname.match(/\.(png|jpg|jpeg|webp|gif)$/i)
+  ) {
+    cb(null, true);
+  } else {
+    cb(new Error("Only image files (PNG, JPG, JPEG, WebP, GIF) are allowed"));
+  }
 };
 
 export const uploadMedicineImage = multer({
-    storage: medicineImageStorage,
-    fileFilter: medicineImageFilter,
-    limits: { fileSize: 10 * 1024 * 1024 }, // 10MB
+  storage: medicineImageStorage,
+  fileFilter: medicineImageFilter,
+  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB
 });
 
 // ── Doctor license image upload (registration) ─────────────────────────────
-const doctorLicensesDir = path.join(__dirname, '../../uploads/doctor-licenses');
+const doctorLicensesDir = path.join(__dirname, "../../uploads/doctor-licenses");
 if (!fs.existsSync(doctorLicensesDir)) {
-    fs.mkdirSync(doctorLicensesDir, { recursive: true });
+  fs.mkdirSync(doctorLicensesDir, { recursive: true });
 }
 
 const doctorLicenseStorage = multer.diskStorage({
-    destination: (_req, _file, cb) => {
-        cb(null, doctorLicensesDir);
-    },
-    filename: (_req, file, cb) => {
-        const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1E9)}`;
-        const ext = path.extname(file.originalname);
-        cb(null, `license-${uniqueSuffix}${ext}`);
-    },
+  destination: (_req, _file, cb) => {
+    cb(null, doctorLicensesDir);
+  },
+  filename: (_req, file, cb) => {
+    const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
+    const ext = path.extname(file.originalname);
+    cb(null, `license-${uniqueSuffix}${ext}`);
+  },
 });
 
-const doctorLicenseFilter: multer.Options['fileFilter'] = (_req, file, cb) => {
-    const allowed = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp', 'image/gif'];
-    if (allowed.includes(file.mimetype) || file.originalname.match(/\.(png|jpg|jpeg|webp|gif)$/i)) {
-        cb(null, true);
-    } else {
-        cb(new Error('Only image files (PNG, JPG, JPEG, WebP, GIF) are allowed for license upload'));
-    }
+const doctorLicenseFilter: multer.Options["fileFilter"] = (_req, file, cb) => {
+  const allowed = [
+    "image/png",
+    "image/jpeg",
+    "image/jpg",
+    "image/webp",
+    "image/gif",
+  ];
+  if (
+    allowed.includes(file.mimetype) ||
+    file.originalname.match(/\.(png|jpg|jpeg|webp|gif)$/i)
+  ) {
+    cb(null, true);
+  } else {
+    cb(
+      new Error(
+        "Only image files (PNG, JPG, JPEG, WebP, GIF) are allowed for license upload",
+      ),
+    );
+  }
 };
 
 export const uploadDoctorLicense = multer({
-    storage: doctorLicenseStorage,
-    fileFilter: doctorLicenseFilter,
-    limits: { fileSize: 10 * 1024 * 1024 }, // 10MB
+  storage: doctorLicenseStorage,
+  fileFilter: doctorLicenseFilter,
+  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB
 });
 
 // Cleanup utility - delete file after processing
 export const cleanupFile = (filePath: string) => {
-    if (fs.existsSync(filePath)) {
-        fs.unlinkSync(filePath);
-    }
+  if (fs.existsSync(filePath)) {
+    fs.unlinkSync(filePath);
+  }
 };
