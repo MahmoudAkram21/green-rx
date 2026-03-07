@@ -8,6 +8,7 @@ import logger from './config/logger';
 import { prisma } from './lib/prisma';
 import { startMedicineReminderJob } from './services/medicineReminderJob';
 import { hashPassword } from './utils/password.util';
+import multer from "multer";
 
 const DEFAULT_ADMIN_EMAIL = 'superadmin@greenrx.com';
 const DEFAULT_ADMIN_PASSWORD = 'Password@123';
@@ -98,6 +99,23 @@ app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
 
 const PORT = process.env.PORT || 5000;
 
+app.use((err: Error, _req: Request, res: Response, next: NextFunction) => {
+    console.error("Upload Error:", err);
+
+    if (err instanceof multer.MulterError) {
+        return res.status(400).json({
+            error: err.message
+        });
+    }
+
+    if (err) {
+        return res.status(400).json({
+            error: err.message
+        });
+    }
+
+    return next();
+});
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
   console.log(`Health check: http://localhost:${PORT}/api/health`);
