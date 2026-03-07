@@ -413,7 +413,7 @@ export const getMe = async (req: Request, res: Response, next: NextFunction) => 
                 isActive: true,
                 createdAt: true,
                 patient: { select: { id: true, userId: true, age: true, gender: true, dateOfBirth: true, weight: true, height: true, bloodType: true } },
-                doctor: { select: { id: true, userId: true, name: true, licenseNumber: true, specialization: true, isVerified: true } },
+                doctor: { select: { id: true, userId: true, name: true, licenseNumber: true, specialization: true, isVerified: true, doctorClinics: true } },
                 pharmacist: { select: { id: true, userId: true, name: true, licenseNumber: true, isVerified: true } }
             }
         });
