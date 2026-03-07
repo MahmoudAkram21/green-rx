@@ -6,6 +6,7 @@ import {
     verifyDoctorSchema,
     assignPatientSchema
 } from '../zod/doctor.zod';
+import { computeBmi } from '../utils/bmi.util';
 
 // Create or Update Doctor Profile
 export const createOrUpdateDoctor = async (req: Request, res: Response, next: NextFunction) => {
@@ -336,7 +337,8 @@ export const assignPatient = async (req: Request, res: Response, next: NextFunct
                 ...patientDoctor.patient,
                 name: patientDoctor.patient.user?.name ?? null,
                 email: patientDoctor.patient.user?.email ?? null,
-                phone: patientDoctor.patient.user?.phone ?? null
+                phone: patientDoctor.patient.user?.phone ?? null,
+                bodyMassIndex: computeBmi(patientDoctor.patient.weight, patientDoctor.patient.height) ?? undefined
             } : null
         };
         res.status(201).json({
@@ -390,6 +392,7 @@ export const searchDoctorPatientsByName = async (req: Request, res: Response, ne
                 name: r.patient.user?.name ?? null,
                 email: r.patient.user?.email ?? null,
                 phone: r.patient.user?.phone ?? null,
+                bodyMassIndex: computeBmi(r.patient.weight, r.patient.height) ?? undefined,
                 relationshipType: r.relationshipType,
                 startDate: r.startDate,
                 endDate: r.endDate
@@ -439,12 +442,14 @@ export const getPatientDetailsForDoctor = async (req: Request, res: Response, ne
 
         const patient = link.patient;
         const user = patient?.user as { name: string | null; email: string; phone: string | null } | undefined;
+        const bodyMassIndex = patient ? computeBmi(patient.weight, patient.height) : null;
         res.json({
             patient: patient ? {
                 ...patient,
                 name: user?.name ?? null,
                 email: user?.email ?? null,
-                phone: user?.phone ?? null
+                phone: user?.phone ?? null,
+                bodyMassIndex: bodyMassIndex ?? undefined
             } : null,
             relationship: {
                 relationshipType: link.relationshipType,
@@ -487,6 +492,7 @@ export const getDoctorPatients = async (req: Request, res: Response, next: NextF
                 name: r.patient.user?.name ?? null,
                 email: r.patient.user?.email ?? null,
                 phone: r.patient.user?.phone ?? null,
+                bodyMassIndex: computeBmi(r.patient.weight, r.patient.height) ?? undefined,
                 relationshipType: r.relationshipType,
                 startDate: r.startDate,
                 endDate: r.endDate

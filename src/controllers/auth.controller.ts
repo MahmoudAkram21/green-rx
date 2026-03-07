@@ -402,6 +402,7 @@ export const getMe = async (req: Request, res: Response, next: NextFunction) => 
             return;
         }
 
+        // Use explicit selects so we don't fail when the DB is missing columns (e.g. User.name or Doctor columns added in later migrations)
         const user = await prisma.user.findUnique({
             where: { id: req.user.userId },
             select: {
@@ -411,9 +412,9 @@ export const getMe = async (req: Request, res: Response, next: NextFunction) => 
                 role: true,
                 isActive: true,
                 createdAt: true,
-                patient: true, // Include profiles if they exist
-                doctor: true,
-                pharmacist: true
+                patient: { select: { id: true, userId: true, age: true, gender: true, dateOfBirth: true, weight: true, height: true, bloodType: true } },
+                doctor: { select: { id: true, userId: true, name: true, licenseNumber: true, specialization: true, isVerified: true } },
+                pharmacist: { select: { id: true, userId: true, name: true, licenseNumber: true, isVerified: true } }
             }
         });
 
@@ -423,7 +424,23 @@ export const getMe = async (req: Request, res: Response, next: NextFunction) => 
         }
 
         res.json(user);
-    } catch (error) {
+    } catch (error: any) {
+        // If Prisma fails due to a missing column (e.g. production DB not migrated), retry with minimal user fields only
+        const isColumnError = error?.code === 'P2010' || error?.code === 'P2022' || (error?.message && String(error.message).includes('does not exist'));
+        if (isColumnError && req.user) {
+            try {
+                const fallback = await prisma.user.findUnique({
+                    where: { id: req.user.userId },
+                    select: { id: true, email: true, role: true, isActive: true, createdAt: true }
+                });
+                if (fallback) {
+                    res.json({ ...fallback, name: null, patient: null, doctor: null, pharmacist: null });
+                    return;
+                }
+            } catch (_) {
+                // fall through to next(error)
+            }
+        }
         next(error);
     }
 };

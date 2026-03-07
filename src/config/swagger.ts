@@ -618,7 +618,7 @@ const options: Record<string, unknown> = {
           }
         },
         CreatePatientRequest: {
-          description: 'Step 1 "Enter Your Personal Information". Required: userId, gender. Optional: dateOfBirth (when provided, age and ageClassification are computed by backend), age, ageClassification, height, weight (BMI from GET /patients), bloodType, pregnancy/lactation. Patient name comes from User (e.g. set at registration). Smoking is covered by lifestyle questions. Get userId from GET /auth/me or register response.',
+          description: 'Step 1 "Enter Your Personal Information". Required: userId, gender. Optional: dateOfBirth (when provided, age and ageClassification are computed by backend), age, ageClassification, height (cm), weight (kg). BMI is computed from height and weight and returned as bodyMassIndex in patient responses when both are set. Patient name comes from User (e.g. set at registration). Smoking is covered by lifestyle questions. Get userId from GET /auth/me or register response.',
           type: 'object',
           required: ['userId', 'gender'],
           properties: {
@@ -627,8 +627,8 @@ const options: Record<string, unknown> = {
             dateOfBirth:      { type: 'string', format: 'date-time', description: 'Optional. ISO 8601. When provided, age and ageClassification are computed by the backend.' },
             age:              { type: 'integer', minimum: 0, maximum: 150, description: 'Optional. Ignored if dateOfBirth is provided. Fallback when dateOfBirth not sent.' },
             ageClassification: { type: 'string', enum: ['Neonates', 'Infants', 'Toddlers', 'Children', 'Adolescents', 'Adults', 'Elderly'], description: 'Optional. Computed from dateOfBirth when provided.' },
-            height:           { type: 'number', description: 'Optional. Height in cm (used for BMI).' },
-            weight:           { type: 'number', description: 'Optional. Weight in kg (used for BMI).' },
+            height:           { type: 'number', description: 'Optional. Height in cm. With weight, used to compute bodyMassIndex in responses.' },
+            weight:           { type: 'number', description: 'Optional. Weight in kg. With height, used to compute bodyMassIndex in responses.' },
             bloodType:        { type: 'string', example: 'A+', description: 'Optional. e.g. A+, A-, B+, B-, AB+, AB-, O+, O-' },
             pregnancyWarning: { type: 'boolean', default: false, description: 'Optional.' },
             pregnancyStatus:  { type: 'boolean', description: 'Optional.' },

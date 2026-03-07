@@ -12,14 +12,7 @@ import {
 } from '../zod/patient.zod';
 import { generateWarnings } from '../services/warningService';
 import drugInteractionService from '../services/drugInteraction.service';
-
-function computeBmi(weight: unknown, height: unknown): number | null {
-    const w = weight != null ? Number(weight) : NaN;
-    const h = height != null ? Number(height) : NaN; // expect cm
-    if (!Number.isFinite(w) || !Number.isFinite(h) || h <= 0) return null;
-    const heightM = h / 100;
-    return Math.round((w / (heightM * heightM)) * 100) / 100;
-}
+import { computeBmi } from '../utils/bmi.util';
 
 /** Compute age in years and age classification from date of birth. */
 function computeAgeAndClassification(dateOfBirth: Date): { age: number; ageClassification: AgeClassification } {
@@ -82,9 +75,10 @@ export const createOrUpdatePatient = async (req: Request, res: Response, next: N
                 }
             });
 
+            const bodyMassIndex = computeBmi(updated.weight, updated.height);
             res.json({
                 message: 'Patient profile updated successfully',
-                patient: updated
+                patient: { ...updated, bodyMassIndex: bodyMassIndex ?? undefined }
             });
             return;
         }
@@ -101,9 +95,10 @@ export const createOrUpdatePatient = async (req: Request, res: Response, next: N
             }
         });
 
+        const bodyMassIndex = computeBmi(patient.weight, patient.height);
         res.status(201).json({
             message: 'Patient profile created successfully',
-            patient
+            patient: { ...patient, bodyMassIndex: bodyMassIndex ?? undefined }
         });
     } catch (error: any) {
         if (error instanceof z.ZodError) {
