@@ -70,7 +70,6 @@ async function main() {
   await prisma.batchHistory.deleteMany();
   await prisma.contractingCompanyTradeName.deleteMany();
   await prisma.contractingCompany.deleteMany();
-  await prisma.tradeNameSideEffect.deleteMany();
   await prisma.tradeName.deleteMany();
   await prisma.medicineAlternative.deleteMany();
   await prisma.medicationSideEffect.deleteMany();
@@ -2477,31 +2476,7 @@ async function main() {
     skipDuplicates: true,
   });
 
-  // Link side effects to trade names (الأدوية) - each medicine gets side effects from its active substance
-  const tradeNameSideEffectData: Array<{
-    tradeNameId: number;
-    sideEffectId: number;
-    frequency: string;
-    bodySystem?: string;
-  }> = [];
-  for (let i = 0; i < tradeNames.length; i++) {
-    const tn = tradeNames[i];
-    const activeSubId = tn.activeSubstanceId;
-    const medSideEffects = medicationSideEffectData.filter((m) => m.activeSubstanceId === activeSubId);
-    for (const ms of medSideEffects) {
-      tradeNameSideEffectData.push({
-        tradeNameId: tn.id,
-        sideEffectId: ms.sideEffectId,
-        frequency: ms.frequency,
-        bodySystem: ms.bodySystem,
-      });
-    }
-  }
-  await prisma.tradeNameSideEffect.createMany({
-    data: tradeNameSideEffectData,
-    skipDuplicates: true,
-  });
-  console.log(`✅ Created ${sideEffects.length} side effects, ${medicationSideEffectData.length} active-substance links, ${tradeNameSideEffectData.length} trade-name (medicine) side effect links`);
+  console.log(`✅ Created ${sideEffects.length} side effects, ${medicationSideEffectData.length} active-substance (medication) side effect links`);
 
   // ============================================
   // SECTION 17: DISEASE ACTIVE SUBSTANCE WARNINGS

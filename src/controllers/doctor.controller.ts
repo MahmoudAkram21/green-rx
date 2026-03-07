@@ -121,6 +121,57 @@ export const getDoctorById = async (req: Request, res: Response, next: NextFunct
     }
 };
 
+// GET /doctors/me/stats — statistics for the current doctor (total patients, prescriptions, etc.)
+export const getDoctorMeStats = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const userId = req.user?.userId;
+        if (!userId) {
+            res.status(401).json({ error: 'Not authenticated' });
+            return;
+        }
+
+        const doctor = await prisma.doctor.findUnique({
+            where: { userId },
+            select: {
+                id: true,
+                averageRating: true,
+                totalRatings: true,
+                _count: {
+                    select: {
+                        patientDoctors: true,
+                        prescriptions: true,
+                        consultations: true,
+                        appointments: true,
+                        visits: true,
+                        ratings: true,
+                        doctorClinics: true,
+                    },
+                },
+            },
+        });
+
+        if (!doctor) {
+            res.status(404).json({ error: 'Doctor profile not found' });
+            return;
+        }
+
+        const stats = {
+            totalPatients: doctor._count.patientDoctors,
+            totalPrescriptions: doctor._count.prescriptions,
+            totalConsultations: doctor._count.consultations,
+            totalAppointments: doctor._count.appointments,
+            totalVisits: doctor._count.visits,
+            totalRatings: doctor._count.ratings,
+            totalClinics: doctor._count.doctorClinics,
+            averageRating: doctor.averageRating != null ? Number(doctor.averageRating) : null,
+        };
+
+        res.json(stats);
+    } catch (error) {
+        next(error);
+    }
+};
+
 // GET /doctors/me — current doctor profile (mobile-friendly; auth from token)
 export const getDoctorMe = async (req: Request, res: Response, next: NextFunction) => {
     try {

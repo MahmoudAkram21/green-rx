@@ -6,7 +6,7 @@ import { SideEffectCreatedBy, SideEffectStatus } from '../../generated/client/cl
 const createSideEffectSchema = z.object({
     name: z.string().min(1).max(200).trim(),
     nameAr: z.string().max(200).trim().optional().nullable(),
-    tradeNames: z.array(z.number().int().positive()).optional().default([]),
+    medications: z.array(z.number().int().positive()).optional().default([]), // active substance IDs
 });
 
 const updateSideEffectSchema = z.object({
@@ -41,15 +41,14 @@ export const createSideEffect = async (req: Request, res: Response, next: NextFu
             },
         });
 
-        if (parsed.tradeNames.length > 0) {
-            const validTradeNames = await prisma.tradeName.findMany({
-                where: { id: { in: parsed.tradeNames } },
+        if (parsed.medications.length > 0) {
+            const validSubstances = await prisma.activeSubstance.findMany({
+                where: { id: { in: parsed.medications } },
             });
-            const validIds = validTradeNames.map((t) => t.id);
-
-            await prisma.tradeNameSideEffect.createMany({
-                data: validIds.map((tradeNameId) => ({
-                    tradeNameId,
+            const validIds = validSubstances.map((s) => s.id);
+            await prisma.medicationSideEffect.createMany({
+                data: validIds.map((activeSubstanceId) => ({
+                    activeSubstanceId,
                     sideEffectId: sideEffect.id,
                     frequency: 'Unknown',
                 })),
@@ -57,18 +56,18 @@ export const createSideEffect = async (req: Request, res: Response, next: NextFu
             });
         }
 
-        const withTradeNames = await prisma.sideEffect.findUnique({
+        const withMedications = await prisma.sideEffect.findUnique({
             where: { id: sideEffect.id },
             include: {
-                tradeNameSideEffects: {
-                    include: { tradeName: { select: { id: true, title: true } } },
+                medicationSideEffects: {
+                    include: { activeSubstance: { select: { id: true, activeSubstance: true } } },
                 },
             },
         });
 
         res.status(201).json({
             message: 'Side effect created successfully',
-            sideEffect: withTradeNames,
+            sideEffect: withMedications,
         });
     } catch (error) {
         if (error instanceof z.ZodError) {
@@ -111,8 +110,8 @@ export const updateSideEffect = async (req: Request, res: Response, next: NextFu
             where: { id },
             data: updateData,
             include: {
-                tradeNameSideEffects: {
-                    include: { tradeName: { select: { id: true, title: true } } },
+                medicationSideEffects: {
+                    include: { activeSubstance: { select: { id: true, activeSubstance: true } } },
                 },
             },
         });
@@ -145,13 +144,13 @@ export const attachTradeNames = async (req: Request, res: Response, next: NextFu
         }
 
         const validTradeNames = await prisma.tradeName.findMany({
-            where: { id: { in: ids } },
+            where: { id: { in: parsed.tradeNames } },
         });
-        const validIds = validTradeNames.map((t) => t.id);
+        const activeSubstanceIds = [...new Set(validTradeNames.map((t) => t.activeSubstanceId))];
 
-        const result = await prisma.tradeNameSideEffect.createMany({
-            data: validIds.map((tradeNameId) => ({
-                tradeNameId,
+        const result = await prisma.medicationSideEffect.createMany({
+            data: activeSubstanceIds.map((activeSubstanceId) => ({
+                activeSubstanceId,
                 sideEffectId: id,
                 frequency: 'Unknown',
             })),
@@ -161,14 +160,14 @@ export const attachTradeNames = async (req: Request, res: Response, next: NextFu
         const updated = await prisma.sideEffect.findUnique({
             where: { id },
             include: {
-                tradeNameSideEffects: {
-                    include: { tradeName: { select: { id: true, title: true } } },
+                medicationSideEffects: {
+                    include: { activeSubstance: { select: { id: true, activeSubstance: true } } },
                 },
             },
         });
 
         res.json({
-            message: `Attached ${result.count} trade name(s) to side effect`,
+            message: `Attached ${result.count} medication(s) to side effect`,
             sideEffect: updated,
         });
     } catch (error) {
@@ -189,10 +188,19 @@ export const removeTradeName = async (req: Request, res: Response, next: NextFun
             return;
         }
 
-        await prisma.tradeNameSideEffect.deleteMany({
+        const tradeName = await prisma.tradeName.findUnique({
+            where: { id: tradeNameId },
+            select: { activeSubstanceId: true },
+        });
+        if (!tradeName) {
+            res.status(404).json({ error: 'Trade name not found' });
+            return;
+        }
+
+        await prisma.medicationSideEffect.deleteMany({
             where: {
                 sideEffectId: id,
-                tradeNameId,
+                activeSubstanceId: tradeName.activeSubstanceId,
             },
         });
 
@@ -206,8 +214,8 @@ export const listSideEffects = async (_req: Request, res: Response, next: NextFu
     try {
         const sideEffects = await prisma.sideEffect.findMany({
             include: {
-                tradeNameSideEffects: {
-                    include: { tradeName: { select: { id: true, title: true } } },
+                medicationSideEffects: {
+                    include: { activeSubstance: { select: { id: true, activeSubstance: true } } },
                 },
             },
             orderBy: { name: 'asc' },
@@ -221,9 +229,9 @@ export const listSideEffects = async (_req: Request, res: Response, next: NextFu
                 createdBy: s.createdBy,
                 status: s.status,
                 createdAt: s.createdAt,
-                medications: s.tradeNameSideEffects.map((t) => ({
-                    id: t.tradeName.id,
-                    name: t.tradeName.title,
+                medications: s.medicationSideEffects.map((m) => ({
+                    id: m.activeSubstance.id,
+                    name: m.activeSubstance.activeSubstance,
                 })),
             })),
         });
@@ -237,8 +245,8 @@ export const listPendingSideEffects = async (_req: Request, res: Response, next:
         const sideEffects = await prisma.sideEffect.findMany({
             where: { status: SideEffectStatus.Pending, createdBy: SideEffectCreatedBy.Patient },
             include: {
-                tradeNameSideEffects: {
-                    include: { tradeName: { select: { id: true, title: true } } },
+                medicationSideEffects: {
+                    include: { activeSubstance: { select: { id: true, activeSubstance: true } } },
                 },
             },
             orderBy: { createdAt: 'desc' },
@@ -253,9 +261,9 @@ export const listPendingSideEffects = async (_req: Request, res: Response, next:
                 status: s.status,
                 createdByUserId: s.createdByUserId,
                 createdAt: s.createdAt,
-                medications: s.tradeNameSideEffects.map((t) => ({
-                    id: t.tradeName.id,
-                    name: t.tradeName.title,
+                medications: s.medicationSideEffects.map((m) => ({
+                    id: m.activeSubstance.id,
+                    name: m.activeSubstance.activeSubstance,
                 })),
             })),
         });
@@ -287,8 +295,8 @@ export const approveSideEffect = async (req: Request, res: Response, next: NextF
             where: { id },
             data: { status: SideEffectStatus.Approved },
             include: {
-                tradeNameSideEffects: {
-                    include: { tradeName: { select: { id: true, title: true } } },
+                medicationSideEffects: {
+                    include: { activeSubstance: { select: { id: true, activeSubstance: true } } },
                 },
             },
         });

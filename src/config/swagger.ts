@@ -180,6 +180,7 @@ s('/patients/{patientId}/warnings', 'get', [PATIENT_TAGS.DRUG_SAFETY, PATIENT_TA
 // DOCTORS
 s('/doctors', 'post', [DOCTOR_TAGS.MY_PATIENTS, DOCTOR_PATIENTS_SECTION], 'Create or update doctor profile', true, [], { schemaRef: 'CreateDoctorRequest' });
 s('/doctors/search', 'get', [PATIENT_TAGS.SHARE_WITH_DOCTOR, DOCTOR_TAGS.MY_PATIENTS], 'Search / list all doctors', true, [q('q', 'Search query')]);
+s('/doctors/me/stats', 'get', [DOCTOR_TAGS.MY_PATIENTS, DOCTOR_PATIENTS_SECTION], 'Get statistics for the current doctor (total patients, prescriptions, consultations, appointments, visits, ratings, clinics; averageRating). Requires Bearer token (Doctor).', true);
 s('/doctors/me', 'get', [DOCTOR_TAGS.MY_PATIENTS, DOCTOR_PATIENTS_SECTION], 'Get current doctor profile (mobile: use Bearer token; no path params)', true);
 s('/doctors/me', 'patch', [DOCTOR_TAGS.MY_PATIENTS, DOCTOR_PATIENTS_SECTION], 'Update current doctor profile (mobile: use Bearer token). Body: optional name, specialization, licenseNumber, clinicAddress, phoneNumber, yearsOfExperience, qualifications, consultationFee; optional clinics array to replace all doctor clinics (each item: name?, address?, city?, latitude?, longitude?, workingHours?).', true, [], { schemaRef: 'UpdateDoctorMeRequest' });
 s('/doctors/nearby', 'get', [PATIENT_TAGS.SHARE_WITH_DOCTOR, DOCTOR_TAGS.MY_PATIENTS], 'Get doctors within admin-configured radius (km) of patient location. Uses Doctor-level lat/lng and DoctorClinic locations (nearest clinic used). Query: lat, lng. Returns verified doctors sorted by distance with distanceKm.', true, [
@@ -525,6 +526,14 @@ if (paths['/patients/{patientId}/warnings']?.get) {
   };
 }
 
+// GET /doctors/me/stats: document 200 response
+if (paths['/doctors/me/stats']?.get) {
+  paths['/doctors/me/stats'].get.responses['200'] = {
+    description: 'Doctor statistics (patients, prescriptions, consultations, appointments, visits, ratings, clinics, averageRating).',
+    content: { 'application/json': { schema: { $ref: '#/components/schemas/DoctorMeStatsResponse' } } }
+  };
+}
+
 // ═══════════════════════════════════════════════════════
 // OpenAPI definition
 // ═══════════════════════════════════════════════════════
@@ -783,6 +792,20 @@ const options: Record<string, unknown> = {
           description: 'PATCH /doctors/me. All fields optional. clinics: optional array of clinic objects (name?, address?, city?, latitude?, longitude?, workingHours? array of { day, startTime, endTime }); when provided, replaces all doctor clinics.',
           type: 'object',
           properties: { name: { type: 'string' }, specialization: { type: 'string' }, licenseNumber: { type: 'string' }, licenseImageUrl: { type: 'string' }, phoneNumber: { type: 'string' }, clinicAddress: { type: 'string' }, yearsOfExperience: { type: 'integer' }, qualifications: { type: 'string' }, consultationFee: { type: 'number' }, clinics: { type: 'array', items: { $ref: '#/components/schemas/CreateDoctorClinicRequest' }, description: 'Replace all clinics for this doctor; each item same shape as POST /doctors/:doctorId/clinics body.' } }
+        },
+        DoctorMeStatsResponse: {
+          description: 'GET /doctors/me/stats. Statistics for the current doctor.',
+          type: 'object',
+          properties: {
+            totalPatients: { type: 'integer', description: 'Number of patients linked to this doctor' },
+            totalPrescriptions: { type: 'integer', description: 'Number of prescriptions written' },
+            totalConsultations: { type: 'integer', description: 'Number of consultations' },
+            totalAppointments: { type: 'integer', description: 'Number of appointments' },
+            totalVisits: { type: 'integer', description: 'Number of visit records' },
+            totalRatings: { type: 'integer', description: 'Number of ratings received' },
+            totalClinics: { type: 'integer', description: 'Number of clinics (locations)' },
+            averageRating: { type: 'number', nullable: true, description: 'Average rating (1–5) or null if none' }
+          }
         },
         PutNearbyDoctorsRadiusRequest: {
           description: 'PUT /settings/nearby-doctors-radius. Admin sets the radius in km used by GET /doctors/nearby.',
