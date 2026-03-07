@@ -84,17 +84,11 @@ export const getTradeNameById = async (req: Request, res: Response, next: NextFu
                     include: {
                         medicationSideEffects: {
                             include: {
-                                sideEffect: { select: { id: true, name: true } }
+                                sideEffect: { select: { id: true, name: true, nameAr: true } }
                             },
                             orderBy: { sideEffect: { name: 'asc' } }
                         }
                     }
-                },
-                tradeNameSideEffects: {
-                    include: {
-                        sideEffect: { select: { id: true, name: true, nameAr: true } }
-                    },
-                    orderBy: { sideEffect: { name: 'asc' } }
                 },
                 company: true,
                 adverseReactions: {
