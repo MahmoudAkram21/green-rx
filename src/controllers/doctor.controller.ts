@@ -155,9 +155,10 @@ export const updateDoctorMe = async (req: Request, res: Response, next: NextFunc
         }
 
         const validated = updateDoctorMeSchema.parse(req.body);
-        const { clinicAddress, ...rest } = validated;
+        const { clinicAddress, yearsOfExperience, qualifications, ...rest } = validated;
         const data: Record<string, unknown> = { ...rest };
         if (clinicAddress !== undefined) (data as any).address = clinicAddress;
+        // Doctor model has no yearsOfExperience/qualifications; omit so Prisma accepts
 
         const doctor = await prisma.doctor.findUnique({ where: { userId } });
         if (!doctor) {
