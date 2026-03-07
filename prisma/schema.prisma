@@ -348,6 +348,7 @@ model Patient {
   visits           Visit[]
   medicines            PatientMedicine[]
   addMedicineRequests  AddMedicineRequest[]
+  patientSideEffects   PatientSideEffect[]
 
   @@index([age])
   @@index([ageClassification])
@@ -885,6 +886,7 @@ model ActiveSubstance {
   adverseReactions               AdverseDrugReaction[]
   patientMedicines               PatientMedicine[]
   addMedicineRequests            AddMedicineRequest[]
+  medicationSideEffects          MedicationSideEffect[]
 
   @@index([activeSubstance])
   @@index([isActive])
@@ -1472,6 +1474,7 @@ model PatientMedicine {
   verifier          User?                 @relation("MedicineVerifier", fields: [verifiedBy], references: [id], onDelete: SetNull)
   addMedicineRequest AddMedicineRequest?
   medicineReminderNotifications Notification[]
+  patientSideEffects PatientSideEffect[]
 
   @@index([patientId])
   @@index([tradeNameId])
@@ -1625,4 +1628,60 @@ model ExportHistory {
   @@index([exportedBy])
   @@index([exportDate])
   @@map("export_histories")
+}
+
+// ============================================
+// SIDE EFFECTS
+// ============================================
+
+model SideEffect {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  medicationSideEffects MedicationSideEffect[]
+  patientSideEffects    PatientSideEffect[]
+
+  @@index([name])
+  @@map("side_effects")
+}
+
+model MedicationSideEffect {
+  id                Int      @id @default(autoincrement())
+  activeSubstanceId Int
+  sideEffectId      Int
+  frequency         String?  // VeryCommon, Common, Uncommon, Rare, VeryRare, Unknown
+  bodySystem        String?  // GIT, Blood, Cardiac, Vascular, NervousSystem, etc.
+  createdAt         DateTime @default(now())
+
+  activeSubstance ActiveSubstance @relation(fields: [activeSubstanceId], references: [id], onDelete: Cascade)
+  sideEffect      SideEffect      @relation(fields: [sideEffectId], references: [id], onDelete: Cascade)
+
+  @@unique([activeSubstanceId, sideEffectId])
+  @@index([activeSubstanceId])
+  @@index([sideEffectId])
+  @@map("medication_side_effects")
+}
+
+model PatientSideEffect {
+  id                Int      @id @default(autoincrement())
+  patientId         Int
+  patientMedicineId Int
+  sideEffectId      Int
+  severity          String?  // Mild, Moderate, Severe
+  notes             String?
+  reportedAt        DateTime @default(now())
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  patient         Patient         @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  patientMedicine PatientMedicine @relation(fields: [patientMedicineId], references: [id], onDelete: Cascade)
+  sideEffect      SideEffect      @relation(fields: [sideEffectId], references: [id], onDelete: Cascade)
+
+  @@unique([patientId, patientMedicineId, sideEffectId])
+  @@index([patientId])
+  @@index([patientMedicineId])
+  @@index([sideEffectId])
+  @@map("patient_side_effects")
 }

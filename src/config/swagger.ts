@@ -41,6 +41,7 @@ const PATIENT_TAGS = {
   RATINGS: 'Patient - 14. Ratings',
   NOTIFICATIONS: 'Patient - 15. Notifications',
   SUBSCRIPTION_PAYMENTS: 'Patient - 16. Subscription & payments',
+  SIDE_EFFECTS: 'Patient - 17. My Side Effects',
 };
 
 const DOCTOR_TAGS = {
@@ -427,6 +428,13 @@ s('/settings/logo', 'post', ADMIN_TAG, 'Upload / update application logo (Admin)
 s('/patient-share-token/generate', 'post', [PATIENT_TAGS.SHARE_WITH_DOCTOR, DOCTOR_TAGS.MY_PATIENTS, DOCTOR_PATIENTS_SECTION], 'Generate a secure QR code token for sharing profile with a doctor (Patient only). Returns token + QR code base64 data URL. Token expires in 10 minutes.', true, [], undefined, { '201': 'Token generated successfully (token, expiresAt, qrCode base64)' });
 s('/patient-share-token/redeem', 'post', [PATIENT_TAGS.SHARE_WITH_DOCTOR, DOCTOR_TAGS.MY_PATIENTS, DOCTOR_PATIENTS_SECTION], 'Redeem a patient share QR token (Doctor only). Validates token, creates patient-doctor relationship, sends notifications, returns patient details.', true, [], { schemaRef: 'RedeemShareTokenRequest' }, { '201': 'Patient linked successfully', '404': 'Invalid token or profile not found', '409': 'Patient already linked to this doctor', '410': 'Token expired or already used' });
 
+// SIDE EFFECTS (My Side Effects)
+s('/side-effects/by-medication/{medicationId}', 'get', [PATIENT_TAGS.SIDE_EFFECTS, DOCTOR_PATIENTS_SECTION], 'Get known side effects for a patient medication. Returns { supported: false, redirect } if the company is not contracted, or { supported: true, sideEffects } otherwise.', true, [p('medicationId')]);
+s('/side-effects/add', 'post', PATIENT_TAGS.SIDE_EFFECTS, 'Add a new side effect name and link it to a medication\'s active substance (Patient only)', true, [], { schemaRef: 'AddSideEffectRequest' }, { '201': 'Side effect created and linked' });
+s('/my-side-effects', 'post', PATIENT_TAGS.SIDE_EFFECTS, 'Report one or more side effects for a medication (Patient only)', true, [], { schemaRef: 'ReportSideEffectsRequest' }, { '201': 'Side effects reported successfully' });
+s('/my-side-effects', 'get', [PATIENT_TAGS.SIDE_EFFECTS, DOCTOR_PATIENTS_SECTION], 'Get all side effects reported by the patient');
+s('/my-side-effects/by-medication/{medicationId}', 'get', [PATIENT_TAGS.SIDE_EFFECTS, DOCTOR_PATIENTS_SECTION], 'Get side effects reported by the patient for a specific medication', true, [p('medicationId')]);
+
 // IMPORT
 s('/import/active-substances', 'post', ADMIN_TAG, 'Import active substances from Excel/CSV file');
 s('/import/{entityType}', 'post', ADMIN_TAG, 'Generic entity import', true, [ps('entityType')]);
@@ -531,6 +539,7 @@ const options: Record<string, unknown> = {
       { name: PATIENT_TAGS.RATINGS, description: 'Ratings' },
       { name: PATIENT_TAGS.NOTIFICATIONS, description: 'Notifications' },
       { name: PATIENT_TAGS.SUBSCRIPTION_PAYMENTS, description: 'Subscription and payments' },
+      { name: PATIENT_TAGS.SIDE_EFFECTS, description: 'Report and view medication side effects' },
       { name: DOCTOR_TAGS.AUTH, description: 'Authentication (Doctor)' },
       { name: DOCTOR_PATIENTS_SECTION, description: 'All doctor capabilities with patients: list/search/get details, assign/remove, prescriptions, visits, consultations, medical reports, drug safety, view patient allergies/diseases/medicines.' },
       { name: DOCTOR_TAGS.MY_PATIENTS, description: 'My patients' },
@@ -961,6 +970,34 @@ const options: Record<string, unknown> = {
         AddPermissionToRoleRequest: { type: 'object', required: ['permissionId'], properties: { permissionId: { type: 'integer' } } },
         RejectDoctorRequest: { type: 'object', properties: { reason: { type: 'string' } } },
         RejectPharmacistRequest: { type: 'object', properties: { reason: { type: 'string' } } },
+        // ── Side effects
+        AddSideEffectRequest: {
+          description: 'Add a new side effect and link it to a medication. Required: medicationId (PatientMedicine id), name.',
+          type: 'object',
+          required: ['medicationId', 'name'],
+          properties: {
+            medicationId: { type: 'integer', description: 'Required. PatientMedicine ID (from GET /patient-medicines/patient/:patientId).' },
+            name: { type: 'string', description: 'Required. Name of the side effect (e.g. "Headache").' }
+          }
+        },
+        ReportSideEffectsRequest: {
+          description: 'Report side effects the patient experienced for a medication. Required: medicationId, sideEffects (array of SideEffect IDs).',
+          type: 'object',
+          required: ['medicationId', 'sideEffects'],
+          properties: {
+            medicationId: { type: 'integer', description: 'Required. PatientMedicine ID.' },
+            sideEffects: { type: 'array', items: { type: 'integer' }, description: 'Required. Array of SideEffect IDs (from GET /side-effects/by-medication/:id).' }
+          }
+        },
+        SideEffectsByMedicationResponse: {
+          description: 'Response for GET /side-effects/by-medication/:id. If the medication\'s company is contracted: { supported: true, sideEffects: [...] }. If NOT contracted: { supported: false, redirect: "https://edaegypt.gov.eg" }.',
+          type: 'object',
+          properties: {
+            supported: { type: 'boolean' },
+            redirect: { type: 'string', description: 'Only present when supported=false. URL to EDA website.' },
+            sideEffects: { type: 'array', items: { type: 'object', properties: { id: { type: 'integer' }, name: { type: 'string' }, frequency: { type: 'string', nullable: true }, bodySystem: { type: 'string', nullable: true } } }, description: 'Only present when supported=true.' }
+          }
+        },
         // ── Patient share token (QR code)
         RedeemShareTokenRequest: {
           description: 'Redeem a patient share QR token. Required: token (UUID string from the scanned QR code).',

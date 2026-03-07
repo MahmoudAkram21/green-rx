@@ -16,6 +16,8 @@ async function main() {
   console.log("\n🧹 Cleaning up existing data...");
 
   // Delete all dependent data first
+  await prisma.patientSideEffect.deleteMany();
+  await prisma.patientShareToken.deleteMany();
   await prisma.patientMedicine.deleteMany();
   await prisma.drugInteractionAlert.deleteMany();
   await prisma.prescriptionVersion.deleteMany();
@@ -70,6 +72,8 @@ async function main() {
   await prisma.contractingCompany.deleteMany();
   await prisma.tradeName.deleteMany();
   await prisma.medicineAlternative.deleteMany();
+  await prisma.medicationSideEffect.deleteMany();
+  await prisma.sideEffect.deleteMany();
   await prisma.activeSubstance.deleteMany();
   await prisma.company.deleteMany();
   await prisma.contraindicationTermMapping.deleteMany();
@@ -2228,6 +2232,105 @@ async function main() {
   console.log("✅ Created medicine alternatives");
 
   // ============================================
+  // SECTION 16b: SIDE EFFECTS
+  // ============================================
+  console.log("\n💊 Creating side effects catalog and medication links...");
+  const sideEffectNames = [
+    "Headache",
+    "Nausea",
+    "Dizziness",
+    "Drowsiness",
+    "Rash",
+    "Stomach upset",
+    "Diarrhea",
+    "Fatigue",
+    "Dry mouth",
+    "Muscle pain",
+    "Edema",
+    "Flushing",
+    "Palpitations",
+    "Tremor",
+    "Abdominal pain",
+    "Allergic reaction",
+    "Liver damage",
+    "GI bleeding",
+  ];
+  const sideEffects = await Promise.all(
+    sideEffectNames.map((name) =>
+      prisma.sideEffect.upsert({
+        where: { name },
+        create: { name },
+        update: {},
+      })
+    )
+  );
+  const sideEffectMap = Object.fromEntries(sideEffects.map((s) => [s.name, s.id]));
+
+  const medicationSideEffectData: Array<{
+    activeSubstanceId: number;
+    sideEffectId: number;
+    frequency: string;
+    bodySystem?: string;
+  }> = [
+    // Paracetamol (0)
+    { activeSubstanceId: activeSubstances[0].id, sideEffectId: sideEffectMap["Headache"], frequency: "Rare", bodySystem: "NervousSystem" },
+    { activeSubstanceId: activeSubstances[0].id, sideEffectId: sideEffectMap["Nausea"], frequency: "Common", bodySystem: "GIT" },
+    { activeSubstanceId: activeSubstances[0].id, sideEffectId: sideEffectMap["Rash"], frequency: "Uncommon", bodySystem: "Skin" },
+    { activeSubstanceId: activeSubstances[0].id, sideEffectId: sideEffectMap["Liver damage"], frequency: "Rare", bodySystem: "Hepatic" },
+    // Ibuprofen (1)
+    { activeSubstanceId: activeSubstances[1].id, sideEffectId: sideEffectMap["Headache"], frequency: "Common", bodySystem: "NervousSystem" },
+    { activeSubstanceId: activeSubstances[1].id, sideEffectId: sideEffectMap["Nausea"], frequency: "Common", bodySystem: "GIT" },
+    { activeSubstanceId: activeSubstances[1].id, sideEffectId: sideEffectMap["Dizziness"], frequency: "Common", bodySystem: "NervousSystem" },
+    { activeSubstanceId: activeSubstances[1].id, sideEffectId: sideEffectMap["Stomach upset"], frequency: "VeryCommon", bodySystem: "GIT" },
+    { activeSubstanceId: activeSubstances[1].id, sideEffectId: sideEffectMap["GI bleeding"], frequency: "Rare", bodySystem: "GIT" },
+    // Amoxicillin (2)
+    { activeSubstanceId: activeSubstances[2].id, sideEffectId: sideEffectMap["Nausea"], frequency: "Common", bodySystem: "GIT" },
+    { activeSubstanceId: activeSubstances[2].id, sideEffectId: sideEffectMap["Diarrhea"], frequency: "Common", bodySystem: "GIT" },
+    { activeSubstanceId: activeSubstances[2].id, sideEffectId: sideEffectMap["Rash"], frequency: "Common", bodySystem: "Skin" },
+    { activeSubstanceId: activeSubstances[2].id, sideEffectId: sideEffectMap["Allergic reaction"], frequency: "Rare", bodySystem: "Immune" },
+    // Metformin (3)
+    { activeSubstanceId: activeSubstances[3].id, sideEffectId: sideEffectMap["Nausea"], frequency: "VeryCommon", bodySystem: "GIT" },
+    { activeSubstanceId: activeSubstances[3].id, sideEffectId: sideEffectMap["Diarrhea"], frequency: "Common", bodySystem: "GIT" },
+    { activeSubstanceId: activeSubstances[3].id, sideEffectId: sideEffectMap["Stomach upset"], frequency: "Common", bodySystem: "GIT" },
+    // Amlodipine (4)
+    { activeSubstanceId: activeSubstances[4].id, sideEffectId: sideEffectMap["Headache"], frequency: "VeryCommon", bodySystem: "NervousSystem" },
+    { activeSubstanceId: activeSubstances[4].id, sideEffectId: sideEffectMap["Dizziness"], frequency: "Common", bodySystem: "NervousSystem" },
+    { activeSubstanceId: activeSubstances[4].id, sideEffectId: sideEffectMap["Edema"], frequency: "Common", bodySystem: "Vascular" },
+    { activeSubstanceId: activeSubstances[4].id, sideEffectId: sideEffectMap["Flushing"], frequency: "Common", bodySystem: "Vascular" },
+    // Omeprazole (5)
+    { activeSubstanceId: activeSubstances[5].id, sideEffectId: sideEffectMap["Headache"], frequency: "Common", bodySystem: "NervousSystem" },
+    { activeSubstanceId: activeSubstances[5].id, sideEffectId: sideEffectMap["Nausea"], frequency: "Common", bodySystem: "GIT" },
+    { activeSubstanceId: activeSubstances[5].id, sideEffectId: sideEffectMap["Abdominal pain"], frequency: "Common", bodySystem: "GIT" },
+    // Atorvastatin (6)
+    { activeSubstanceId: activeSubstances[6].id, sideEffectId: sideEffectMap["Headache"], frequency: "Common", bodySystem: "NervousSystem" },
+    { activeSubstanceId: activeSubstances[6].id, sideEffectId: sideEffectMap["Muscle pain"], frequency: "Common", bodySystem: "Musculoskeletal" },
+    { activeSubstanceId: activeSubstances[6].id, sideEffectId: sideEffectMap["Nausea"], frequency: "Common", bodySystem: "GIT" },
+    // Salbutamol (7)
+    { activeSubstanceId: activeSubstances[7].id, sideEffectId: sideEffectMap["Tremor"], frequency: "VeryCommon", bodySystem: "NervousSystem" },
+    { activeSubstanceId: activeSubstances[7].id, sideEffectId: sideEffectMap["Palpitations"], frequency: "Common", bodySystem: "Cardiac" },
+    { activeSubstanceId: activeSubstances[7].id, sideEffectId: sideEffectMap["Headache"], frequency: "Common", bodySystem: "NervousSystem" },
+    // Cetirizine (8)
+    { activeSubstanceId: activeSubstances[8].id, sideEffectId: sideEffectMap["Drowsiness"], frequency: "Common", bodySystem: "NervousSystem" },
+    { activeSubstanceId: activeSubstances[8].id, sideEffectId: sideEffectMap["Dry mouth"], frequency: "Common", bodySystem: "GIT" },
+    { activeSubstanceId: activeSubstances[8].id, sideEffectId: sideEffectMap["Headache"], frequency: "Common", bodySystem: "NervousSystem" },
+    // Losartan (9)
+    { activeSubstanceId: activeSubstances[9].id, sideEffectId: sideEffectMap["Dizziness"], frequency: "Common", bodySystem: "NervousSystem" },
+    { activeSubstanceId: activeSubstances[9].id, sideEffectId: sideEffectMap["Headache"], frequency: "Common", bodySystem: "NervousSystem" },
+    { activeSubstanceId: activeSubstances[9].id, sideEffectId: sideEffectMap["Fatigue"], frequency: "Common", bodySystem: "General" },
+  ];
+
+  await prisma.medicationSideEffect.createMany({
+    data: medicationSideEffectData.map((d) => ({
+      activeSubstanceId: d.activeSubstanceId,
+      sideEffectId: d.sideEffectId,
+      frequency: d.frequency,
+      bodySystem: d.bodySystem,
+    })),
+    skipDuplicates: true,
+  });
+  console.log(`✅ Created ${sideEffects.length} side effects and ${medicationSideEffectData.length} medication-side effect links`);
+
+  // ============================================
   // SECTION 17: DISEASE ACTIVE SUBSTANCE WARNINGS
   // ============================================
   console.log("\n⚠️  Creating disease-active substance warnings...");
@@ -2952,6 +3055,7 @@ async function main() {
   console.log(`     • Medical reports, adverse drug reactions`);
   console.log(`     • Share links, ratings, notifications`);
   console.log(`   - Supporting data:`);
+  console.log(`     • Side effects catalog + medication links`);
   console.log(`     • Medicine alternatives, batch histories`);
   console.log(`     • Disease-substance warnings`);
   console.log(`     • Contracting companies + trade name links`);
