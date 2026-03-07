@@ -1,4 +1,8 @@
 import express, { Request, Response } from 'express';
+import { authenticate, authorize } from '../middleware/auth.middleware';
+import { UserRole } from '../../generated/client/client';
+import * as adminSideEffectController from '../controllers/adminSideEffect.controller';
+
 const router = express.Router();
 
 // Import route modules
@@ -44,7 +48,12 @@ import patientShareTokenRoutes from './patientShareToken.routes';
 import sideEffectRoutes from './sideEffect.routes';
 import mySideEffectRoutes from './mySideEffect.routes';
 
-// Mount routes
+// Mount routes (admin first - has nested paths like /admin/side-effects/:id/trade-names)
+// Explicit route for trade-names (avoids nested router matching issues)
+router.post('/admin/side-effects/:id/trade-names', authenticate, authorize([UserRole.Admin, UserRole.SuperAdmin]), adminSideEffectController.attachTradeNames);
+router.post('/admin/side-effects/:id/medications', authenticate, authorize([UserRole.Admin, UserRole.SuperAdmin]), adminSideEffectController.attachTradeNames);
+router.delete('/admin/side-effects/:id/trade-names/:tradeNameId', authenticate, authorize([UserRole.Admin, UserRole.SuperAdmin]), adminSideEffectController.removeTradeName);
+router.use('/admin', adminRoutes);
 router.use('/auth', authRoutes);
 router.use('/users', userRoutes);
 router.use('/patients', patientRoutes);
@@ -67,7 +76,6 @@ router.use('/import', importRoutes);
 router.use('/export', exportRoutes);
 router.use('/drug-interactions', drugInteractionAlertRoutes);
 router.use('/notifications', notificationRoutes);
-router.use('/admin', adminRoutes);
 router.use('/medical-reports', medicalReportRoutes);
 router.use('/ratings', ratingRoutes);
 router.use('/visits', visitRoutes);

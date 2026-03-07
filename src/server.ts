@@ -3,6 +3,9 @@ import path from 'path';
 import cors from 'cors';
 import 'dotenv/config';
 import routes from './routes/index';
+import { authenticate, authorize } from './middleware/auth.middleware';
+import { UserRole } from '../generated/client/client';
+import * as adminSideEffectController from './controllers/adminSideEffect.controller';
 import { morganMiddleware } from './config/morgan';
 import logger from './config/logger';
 import { prisma } from './lib/prisma';
@@ -71,6 +74,11 @@ app.get('/api-docs/', (_req: Request, res: Response) => {
 });
 app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, { explorer: true }));
 
+// POST/DELETE admin side-effects trade-names — handle first so it always matches
+app.post('/api/admin/side-effects/:id/trade-names', authenticate, authorize([UserRole.Admin, UserRole.SuperAdmin]), adminSideEffectController.attachTradeNames);
+app.post('/api/admin/side-effects/:id/medications', authenticate, authorize([UserRole.Admin, UserRole.SuperAdmin]), adminSideEffectController.attachTradeNames);
+app.delete('/api/admin/side-effects/:id/trade-names/:tradeNameId', authenticate, authorize([UserRole.Admin, UserRole.SuperAdmin]), adminSideEffectController.removeTradeName);
+
 // Routes
 app.use('/api', routes);
 
@@ -82,9 +90,32 @@ app.get('/api/health', (_req: Request, res: Response) => {
   res.json({ status: 'OK', message: 'Server is running' });
 });
 
-// 404 handler
-app.use((_req: Request, res: Response) => {
-  res.status(404).json({ error: 'Route not found' });
+// 404 handler — catch POST/DELETE trade-names (path from path or originalUrl)
+app.use((req: Request, res: Response, next: NextFunction) => {
+  const pathname = (req.originalUrl || req.url || req.path || '').split('?')[0];
+  const postMatch = pathname.match(/\/api\/admin\/side-effects\/(\d+)\/trade-names\/?$/);
+  const deleteMatch = pathname.match(/\/api\/admin\/side-effects\/(\d+)\/trade-names\/(\d+)\/?$/);
+  if (req.method === 'POST' && postMatch) {
+    req.params = { ...(req.params || {}), id: postMatch[1] };
+    return authenticate(req, res, (err: unknown) => {
+      if (err) return next(err);
+      authorize([UserRole.Admin, UserRole.SuperAdmin])(req, res, (err: unknown) => {
+        if (err) return next(err);
+        adminSideEffectController.attachTradeNames(req, res, next);
+      });
+    });
+  }
+  if (req.method === 'DELETE' && deleteMatch) {
+    req.params = { ...(req.params || {}), id: deleteMatch[1], tradeNameId: deleteMatch[2] };
+    return authenticate(req, res, (err: unknown) => {
+      if (err) return next(err);
+      authorize([UserRole.Admin, UserRole.SuperAdmin])(req, res, (err: unknown) => {
+        if (err) return next(err);
+        adminSideEffectController.removeTradeName(req, res, next);
+      });
+    });
+  }
+  return res.status(404).json({ error: 'Route not found' });
 });
 
 // Error handler
@@ -119,6 +150,7 @@ app.use((err: Error, _req: Request, res: Response, next: NextFunction) => {
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
   console.log(`Health check: http://localhost:${PORT}/api/health`);
+  console.log('[RMMSY] POST /api/admin/side-effects/:id/trade-names is registered');
   logger.info(`Server is running on port ${PORT}`);
   startMedicineReminderJob();
   ensureDefaultAdmin().catch((err) => {

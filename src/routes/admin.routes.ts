@@ -9,13 +9,14 @@ const router = express.Router();
 router.use(authenticate);
 router.use(authorize([UserRole.Admin, UserRole.SuperAdmin]));
 
-// Side Effects Management
+// Side Effects Management (more specific routes first)
 router.post('/side-effects', adminSideEffectController.createSideEffect);
 router.get('/side-effects', adminSideEffectController.listSideEffects);
 router.get('/side-effects/pending', adminSideEffectController.listPendingSideEffects);
-router.put('/side-effects/:id', adminSideEffectController.updateSideEffect);
 router.post('/side-effects/:id/trade-names', adminSideEffectController.attachTradeNames);
+router.post('/side-effects/:id/medications', adminSideEffectController.attachTradeNames); // legacy alias
 router.delete('/side-effects/:id/trade-names/:tradeNameId', adminSideEffectController.removeTradeName);
+router.put('/side-effects/:id', adminSideEffectController.updateSideEffect);
 router.patch('/side-effects/:id/approve', adminSideEffectController.approveSideEffect);
 
 // Permissions & role-permissions

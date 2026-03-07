@@ -15,7 +15,10 @@ const updateSideEffectSchema = z.object({
 });
 
 const attachTradeNamesSchema = z.object({
-    tradeNames: z.array(z.number().int().positive()).min(1),
+    tradeNames: z.array(z.number().int().positive()).optional(),
+    medications: z.array(z.number().int().positive()).optional(), // legacy alias
+}).refine((d) => (d.tradeNames?.length ?? 0) > 0 || (d.medications?.length ?? 0) > 0, {
+    message: 'Provide tradeNames or medications (array of IDs)',
 });
 
 export const createSideEffect = async (req: Request, res: Response, next: NextFunction) => {
@@ -133,6 +136,7 @@ export const attachTradeNames = async (req: Request, res: Response, next: NextFu
         }
 
         const parsed = attachTradeNamesSchema.parse(req.body);
+        const ids = parsed.tradeNames ?? parsed.medications ?? [];
 
         const sideEffect = await prisma.sideEffect.findUnique({ where: { id } });
         if (!sideEffect) {
@@ -141,7 +145,7 @@ export const attachTradeNames = async (req: Request, res: Response, next: NextFu
         }
 
         const validTradeNames = await prisma.tradeName.findMany({
-            where: { id: { in: parsed.tradeNames } },
+            where: { id: { in: ids } },
         });
         const validIds = validTradeNames.map((t) => t.id);
 

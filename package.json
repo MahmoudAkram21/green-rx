@@ -11,6 +11,7 @@
         "dev:server": "ts-node src/server.ts",
         "seed": "ts-node --transpile-only prisma/seed.ts",
         "clear-stock": "ts-node --transpile-only scripts/clear-stock.ts",
+        "sync-side-effects": "ts-node --transpile-only scripts/sync-trade-name-side-effects.ts",
         "postinstall": "prisma generate"
     },
     "prisma": {
