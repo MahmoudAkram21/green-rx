@@ -3061,6 +3061,14 @@ async function main() {
   console.log(`     • Contracting companies + trade name links`);
   console.log(`     • Audit logs, import/export history`);
   console.log(`     • Contraindication term mappings`);
+
+  // App settings: default nearby doctors search radius (km)
+  await prisma.appSetting.upsert({
+    where: { key: 'nearbyDoctorsRadiusKm' },
+    create: { key: 'nearbyDoctorsRadiusKm', valueText: '50' },
+    update: { valueText: '50' },
+  });
+
   console.log("\n🔑 Test Credentials (all passwords: Password@123):");
   console.log("   SuperAdmin: superadmin@greenrx.com");
   console.log("   Admin:      admin1@greenrx.com");

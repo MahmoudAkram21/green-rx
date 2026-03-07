@@ -1,7 +1,24 @@
 import { Request, Response, NextFunction } from 'express';
+import { z } from 'zod';
 import { prisma } from '../lib/prisma';
 
 const LOGO_KEY = 'logo';
+const NEARBY_DOCTORS_RADIUS_KM_KEY = 'nearbyDoctorsRadiusKm';
+const DEFAULT_RADIUS_KM = 50;
+const MIN_RADIUS_KM = 1;
+const MAX_RADIUS_KM = 500;
+
+/** Read nearby doctors radius (km) from AppSetting; used by GET /doctors/nearby and GET /settings/nearby-doctors-radius */
+export async function getNearbyDoctorsRadiusKm(): Promise<number> {
+    const row = await prisma.appSetting.findUnique({
+        where: { key: NEARBY_DOCTORS_RADIUS_KM_KEY },
+        select: { valueText: true }
+    });
+    if (!row?.valueText) return DEFAULT_RADIUS_KM;
+    const n = parseFloat(row.valueText);
+    if (!Number.isFinite(n) || n < MIN_RADIUS_KM || n > MAX_RADIUS_KM) return DEFAULT_RADIUS_KM;
+    return Math.round(n);
+}
 
 /** GET /settings/logo - Public. Returns logo image or 404. */
 export async function getLogo(_req: Request, res: Response, next: NextFunction): Promise<void> {
@@ -62,6 +79,42 @@ export async function uploadLogo(req: Request, res: Response, next: NextFunction
 
         res.json({ success: true, message: 'Logo updated.' });
     } catch (error) {
+        next(error);
+    }
+}
+
+const putNearbyDoctorsRadiusSchema = z.object({
+    radiusKm: z.number().int().min(MIN_RADIUS_KM).max(MAX_RADIUS_KM)
+});
+
+/** GET /settings/nearby-doctors-radius - Admin. Returns current radius in km. */
+export async function getNearbyDoctorsRadius(_req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+        const radiusKm = await getNearbyDoctorsRadiusKm();
+        res.json({ radiusKm });
+    } catch (error) {
+        next(error);
+    }
+}
+
+/** PUT /settings/nearby-doctors-radius - Admin. Set radius in km (1–500). */
+export async function putNearbyDoctorsRadius(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+        const body = putNearbyDoctorsRadiusSchema.parse(req.body);
+        await prisma.appSetting.upsert({
+            where: { key: NEARBY_DOCTORS_RADIUS_KM_KEY },
+            create: {
+                key: NEARBY_DOCTORS_RADIUS_KM_KEY,
+                valueText: String(body.radiusKm)
+            },
+            update: { valueText: String(body.radiusKm) }
+        });
+        res.json({ radiusKm: body.radiusKm, message: 'Nearby doctors radius updated.' });
+    } catch (error) {
+        if (error instanceof z.ZodError) {
+            res.status(400).json({ error: error.issues });
+            return;
+        }
         next(error);
     }
 }

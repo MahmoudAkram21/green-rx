@@ -1,6 +1,26 @@
 import { z } from "zod";
 import { RelationshipType } from "../../generated/client/client";
 
+/** One slot: day (weekday e.g. "monday" or ISO date), startTime (e.g. "09:00"), endTime (e.g. "17:00"). */
+export const workingHoursSlotSchema = z.object({
+  day: z.string().min(1),
+  startTime: z.string().min(1),
+  endTime: z.string().min(1),
+}).strict();
+
+export const workingHoursSchema = z.array(workingHoursSlotSchema).optional();
+
+export const createDoctorClinicSchema = z.object({
+  name: z.string().optional(),
+  address: z.string().optional(),
+  city: z.string().optional(),
+  latitude: z.number().min(-90).max(90).optional(),
+  longitude: z.number().min(-180).max(180).optional(),
+  workingHours: workingHoursSchema,
+});
+
+export const updateDoctorClinicSchema = createDoctorClinicSchema.partial();
+
 export const createDoctorSchema = z.object({
   userId: z.number().int().positive(),
   name: z.string().min(1),
@@ -16,8 +36,14 @@ export const createDoctorSchema = z.object({
 
 export const updateDoctorSchema = createDoctorSchema.partial();
 
-/** For PATCH /doctors/me: all optional, no userId (from token). */
-export const updateDoctorMeSchema = createDoctorSchema.omit({ userId: true }).partial();
+/** One clinic item for embedding in update profile (same shape as create; no id = create new). */
+export const doctorClinicItemSchema = createDoctorClinicSchema;
+
+/** For PATCH /doctors/me: all optional, no userId (from token). Optional clinics array to replace all doctor clinics. */
+export const updateDoctorMeSchema = createDoctorSchema
+  .omit({ userId: true })
+  .partial()
+  .extend({ clinics: z.array(doctorClinicItemSchema).optional() });
 
 export const verifyDoctorSchema = z.object({
   isVerified: z.boolean(),

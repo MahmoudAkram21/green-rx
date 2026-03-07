@@ -5,9 +5,13 @@ import {
     createDoctorSchema,
     updateDoctorMeSchema,
     verifyDoctorSchema,
-    assignPatientSchema
+    assignPatientSchema,
+    createDoctorClinicSchema,
+    updateDoctorClinicSchema
 } from '../zod/doctor.zod';
 import { computeBmi } from '../utils/bmi.util';
+import { haversineDistanceKm } from '../utils/geo.util';
+import { getNearbyDoctorsRadiusKm } from './settings.controller';
 
 // Create or Update Doctor Profile
 export const createOrUpdateDoctor = async (req: Request, res: Response, next: NextFunction) => {
@@ -130,7 +134,8 @@ export const getDoctorMe = async (req: Request, res: Response, next: NextFunctio
             where: { userId },
             include: {
                 user: { select: { email: true, name: true, role: true, isActive: true } },
-                patientDoctors: { include: { patient: { select: { id: true, user: { select: { name: true } } } } } }
+                patientDoctors: { include: { patient: { select: { id: true, user: { select: { name: true } } } } } },
+                doctorClinics: true
             }
         });
 
@@ -145,7 +150,7 @@ export const getDoctorMe = async (req: Request, res: Response, next: NextFunctio
     }
 };
 
-// PATCH /doctors/me — update current doctor profile (mobile-friendly; auth from token)
+// PATCH /doctors/me — update current doctor profile (mobile-friendly; auth from token). Optional clinics array replaces all doctor clinics.
 export const updateDoctorMe = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const userId = req.user?.userId;
@@ -155,7 +160,7 @@ export const updateDoctorMe = async (req: Request, res: Response, next: NextFunc
         }
 
         const validated = updateDoctorMeSchema.parse(req.body);
-        const { clinicAddress, yearsOfExperience, qualifications, ...rest } = validated;
+        const { clinicAddress, yearsOfExperience, qualifications, clinics: clinicsPayload, ...rest } = validated;
         const data: Record<string, unknown> = { ...rest };
         if (clinicAddress !== undefined) (data as any).address = clinicAddress;
         // Doctor model has no yearsOfExperience/qualifications; omit so Prisma accepts
@@ -169,16 +174,38 @@ export const updateDoctorMe = async (req: Request, res: Response, next: NextFunc
         const updated = await prisma.doctor.update({
             where: { userId },
             data: data as object,
-            include: { user: { select: { email: true, name: true, role: true } } }
+            include: { user: { select: { email: true, name: true, role: true } }, doctorClinics: true }
         });
 
-        res.json({ message: 'Profile updated successfully', doctor: updated });
+        if (clinicsPayload !== undefined) {
+            await prisma.doctorClinic.deleteMany({ where: { doctorId: doctor.id } });
+            if (clinicsPayload.length > 0) {
+                await prisma.doctorClinic.createMany({
+                    data: clinicsPayload.map((c) => ({
+                        doctorId: doctor.id,
+                        name: c.name ?? undefined,
+                        address: c.address ?? undefined,
+                        city: c.city ?? undefined,
+                        latitude: c.latitude,
+                        longitude: c.longitude,
+                        workingHours: c.workingHours ? JSON.parse(JSON.stringify(c.workingHours)) : undefined
+                    }))
+                });
+            }
+            const withClinics = await prisma.doctor.findUnique({
+                where: { userId },
+                include: { user: { select: { email: true, name: true, role: true } }, doctorClinics: true }
+            });
+            return res.json({ message: 'Profile updated successfully', doctor: withClinics ?? updated });
+        }
+
+        return res.json({ message: 'Profile updated successfully', doctor: updated });
     } catch (error: any) {
         if (error instanceof z.ZodError) {
             res.status(400).json({ error: error.issues });
             return;
         }
-        next(error);
+        return next(error);
     }
 };
 
@@ -333,6 +360,224 @@ export const getAllDoctors = async (req: Request, res: Response, next: NextFunct
                 totalPages: Math.ceil(total / parseInt(limit as string))
             }
         });
+    } catch (error) {
+        next(error);
+    }
+};
+
+const nearbyQuerySchema = z.object({
+    lat: z.coerce.number().min(-90).max(90),
+    lng: z.coerce.number().min(-180).max(180)
+});
+
+/** GET /doctors/nearby - Returns doctors within admin-configured radius (km). Uses DoctorClinic locations and Doctor-level lat/lng. */
+export const getNearbyDoctors = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const parsed = nearbyQuerySchema.safeParse(req.query);
+        if (!parsed.success) {
+            res.status(400).json({ error: 'Invalid or missing lat/lng. Provide lat and lng as numbers (lat: -90..90, lng: -180..180).', issues: parsed.error.issues });
+            return;
+        }
+        const { lat, lng } = parsed.data;
+        const radiusKm = await getNearbyDoctorsRadiusKm();
+
+        const toNum = (v: unknown): number | null => {
+            if (v == null) return null;
+            if (typeof v === 'number' && Number.isFinite(v)) return v;
+            const n = Number(v);
+            return Number.isFinite(n) ? n : null;
+        };
+
+        const doctors = await prisma.doctor.findMany({
+            where: {
+                isVerified: true,
+                OR: [
+                    { latitude: { not: null }, longitude: { not: null } },
+                    { doctorClinics: { some: { latitude: { not: null }, longitude: { not: null } } } }
+                ]
+            },
+            include: {
+                user: { select: { email: true, isActive: true } },
+                ratings: { select: { rating: true } },
+                doctorClinics: { where: { latitude: { not: null }, longitude: { not: null } }, select: { id: true, name: true, address: true, city: true, latitude: true, longitude: true } }
+            }
+        });
+
+        const withDistance = doctors
+            .map((d) => {
+                const locations: { lat: number; lng: number }[] = [];
+                const docLat = toNum(d.latitude);
+                const docLng = toNum(d.longitude);
+                if (docLat != null && docLng != null) locations.push({ lat: docLat, lng: docLng });
+                (d.doctorClinics || []).forEach((c) => {
+                    const clat = toNum(c.latitude);
+                    const clng = toNum(c.longitude);
+                    if (clat != null && clng != null) locations.push({ lat: clat, lng: clng });
+                });
+                if (locations.length === 0) return null;
+                let minDistanceKm = Infinity;
+                locations.forEach((loc) => {
+                    const km = haversineDistanceKm(lat, lng, loc.lat, loc.lng);
+                    if (km < minDistanceKm) minDistanceKm = km;
+                });
+                minDistanceKm = Math.round(minDistanceKm * 100) / 100;
+                if (minDistanceKm > radiusKm) return null;
+                const avgRating = d.ratings.length > 0 ? d.ratings.reduce((s, r) => s + r.rating, 0) / d.ratings.length : 0;
+                const { ratings, doctorClinics: _dc, ...rest } = d;
+                return {
+                    ...rest,
+                    distanceKm: minDistanceKm,
+                    averageRating: Math.round(avgRating * 100) / 100,
+                    totalRatings: ratings.length
+                };
+            })
+            .filter((d): d is NonNullable<typeof d> => d != null)
+            .sort((a, b) => a.distanceKm - b.distanceKm);
+
+        res.json({ doctors: withDistance, radiusKm });
+    } catch (error) {
+        next(error);
+    }
+};
+
+// --- Doctor Clinics (multiple clinics per doctor) ---
+
+async function ensureDoctorAccess(req: Request, doctorId: number): Promise<{ doctor: { id: number; userId: number } } | null> {
+    const doctor = await prisma.doctor.findUnique({
+        where: { id: doctorId },
+        select: { id: true, userId: true }
+    });
+    if (!doctor) return null;
+    const role = req.user?.role;
+    if (role === 'Doctor' && req.user?.userId !== doctor.userId) return null;
+    return { doctor };
+}
+
+/** GET /doctors/:doctorId/clinics - List clinics for a doctor. */
+export const getDoctorClinics = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const doctorId = parseInt(req.params.doctorId, 10);
+        if (Number.isNaN(doctorId)) {
+            res.status(400).json({ error: 'Invalid doctorId' });
+            return;
+        }
+        const access = await ensureDoctorAccess(req, doctorId);
+        if (!access) {
+            res.status(404).json({ error: 'Doctor not found or access denied' });
+            return;
+        }
+        const clinics = await prisma.doctorClinic.findMany({
+            where: { doctorId: access.doctor.id },
+            orderBy: { createdAt: 'asc' }
+        });
+        res.json(clinics);
+    } catch (error) {
+        next(error);
+    }
+};
+
+/** POST /doctors/:doctorId/clinics - Create a clinic for a doctor. */
+export const createDoctorClinic = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const doctorId = parseInt(req.params.doctorId, 10);
+        if (Number.isNaN(doctorId)) {
+            res.status(400).json({ error: 'Invalid doctorId' });
+            return;
+        }
+        const access = await ensureDoctorAccess(req, doctorId);
+        if (!access) {
+            res.status(404).json({ error: 'Doctor not found or access denied' });
+            return;
+        }
+        const body = createDoctorClinicSchema.parse(req.body);
+        const data: Record<string, unknown> = {
+            doctorId: access.doctor.id,
+            name: body.name,
+            address: body.address,
+            city: body.city,
+            latitude: body.latitude,
+            longitude: body.longitude,
+            workingHours: body.workingHours ?? undefined
+        };
+        const clinic = await prisma.doctorClinic.create({
+            data: data as any
+        });
+        res.status(201).json(clinic);
+    } catch (error: any) {
+        if (error instanceof z.ZodError) {
+            res.status(400).json({ error: error.issues });
+            return;
+        }
+        next(error);
+    }
+};
+
+/** PATCH /doctors/:doctorId/clinics/:clinicId - Update a clinic. */
+export const updateDoctorClinic = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const doctorId = parseInt(req.params.doctorId, 10);
+        const clinicId = parseInt(req.params.clinicId, 10);
+        if (Number.isNaN(doctorId) || Number.isNaN(clinicId)) {
+            res.status(400).json({ error: 'Invalid doctorId or clinicId' });
+            return;
+        }
+        const access = await ensureDoctorAccess(req, doctorId);
+        if (!access) {
+            res.status(404).json({ error: 'Doctor not found or access denied' });
+            return;
+        }
+        const body = updateDoctorClinicSchema.parse(req.body);
+        const existing = await prisma.doctorClinic.findFirst({
+            where: { id: clinicId, doctorId: access.doctor.id }
+        });
+        if (!existing) {
+            res.status(404).json({ error: 'Clinic not found' });
+            return;
+        }
+        const data: Record<string, unknown> = {};
+        if (body.name !== undefined) data.name = body.name;
+        if (body.address !== undefined) data.address = body.address;
+        if (body.city !== undefined) data.city = body.city;
+        if (body.latitude !== undefined) data.latitude = body.latitude;
+        if (body.longitude !== undefined) data.longitude = body.longitude;
+        if (body.workingHours !== undefined) data.workingHours = body.workingHours;
+        const clinic = await prisma.doctorClinic.update({
+            where: { id: clinicId },
+            data: data as object
+        });
+        res.json(clinic);
+    } catch (error: any) {
+        if (error instanceof z.ZodError) {
+            res.status(400).json({ error: error.issues });
+            return;
+        }
+        next(error);
+    }
+};
+
+/** DELETE /doctors/:doctorId/clinics/:clinicId - Delete a clinic. */
+export const deleteDoctorClinic = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const doctorId = parseInt(req.params.doctorId, 10);
+        const clinicId = parseInt(req.params.clinicId, 10);
+        if (Number.isNaN(doctorId) || Number.isNaN(clinicId)) {
+            res.status(400).json({ error: 'Invalid doctorId or clinicId' });
+            return;
+        }
+        const access = await ensureDoctorAccess(req, doctorId);
+        if (!access) {
+            res.status(404).json({ error: 'Doctor not found or access denied' });
+            return;
+        }
+        const existing = await prisma.doctorClinic.findFirst({
+            where: { id: clinicId, doctorId: access.doctor.id }
+        });
+        if (!existing) {
+            res.status(404).json({ error: 'Clinic not found' });
+            return;
+        }
+        await prisma.doctorClinic.delete({ where: { id: clinicId } });
+        res.status(204).send();
     } catch (error) {
         next(error);
     }

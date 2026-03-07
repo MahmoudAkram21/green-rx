@@ -18,4 +18,18 @@ router.post(
     settingsController.uploadLogo
 );
 
+// Admin only: nearby doctors search radius (km)
+router.get(
+    '/nearby-doctors-radius',
+    authenticate,
+    authorize([UserRole.Admin, UserRole.SuperAdmin]),
+    settingsController.getNearbyDoctorsRadius
+);
+router.put(
+    '/nearby-doctors-radius',
+    authenticate,
+    authorize([UserRole.Admin, UserRole.SuperAdmin]),
+    settingsController.putNearbyDoctorsRadius
+);
+
 export default router;
