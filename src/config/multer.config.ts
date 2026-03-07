@@ -166,6 +166,50 @@ export const uploadDoctorLicense = multer({
   limits: { fileSize: 10 * 1024 * 1024 }, // 10MB
 });
 
+// ── Pharmacist license folder (used by moveLicenseToRoleFolder) ─────────────
+const pharmacistLicensesDir = path.join(__dirname, "../../uploads/pharmacist-licenses");
+if (!fs.existsSync(pharmacistLicensesDir)) {
+  fs.mkdirSync(pharmacistLicensesDir, { recursive: true });
+}
+
+// Shared license upload for register: saves to a generic folder; controller moves to doctor-licenses or pharmacist-licenses by role
+const licenseUploadsDir = path.join(__dirname, "../../uploads/license-uploads");
+if (!fs.existsSync(licenseUploadsDir)) {
+  fs.mkdirSync(licenseUploadsDir, { recursive: true });
+}
+
+const licenseRegistrationStorage = multer.diskStorage({
+  destination: (_req, _file, cb) => {
+    cb(null, licenseUploadsDir);
+  },
+  filename: (_req, file, cb) => {
+    const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
+    const ext = path.extname(file.originalname);
+    cb(null, `license-${uniqueSuffix}${ext}`);
+  },
+});
+
+export const uploadLicenseRegistration = multer({
+  storage: licenseRegistrationStorage,
+  fileFilter: doctorLicenseFilter,
+  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB
+});
+
+/** Move a license file from license-uploads to role-specific folder; returns URL path like /uploads/doctor-licenses/... or /uploads/pharmacist-licenses/... */
+export function moveLicenseToRoleFolder(
+  sourcePath: string,
+  role: "Doctor" | "Pharmacist"
+): string {
+  const targetDir = role === "Doctor" ? doctorLicensesDir : pharmacistLicensesDir;
+  const filename = path.basename(sourcePath);
+  const targetPath = path.join(targetDir, filename);
+  if (fs.existsSync(sourcePath)) {
+    fs.renameSync(sourcePath, targetPath);
+  }
+  const subdir = role === "Doctor" ? "doctor-licenses" : "pharmacist-licenses";
+  return `/uploads/${subdir}/${filename}`;
+}
+
 // Cleanup utility - delete file after processing
 export const cleanupFile = (filePath: string) => {
   if (fs.existsSync(filePath)) {

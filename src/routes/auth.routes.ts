@@ -1,12 +1,12 @@
 import express from 'express';
 import { register, login, refresh, logout, getMe, devResetSuperAdminPassword } from '../controllers/auth.controller';
 import { authenticate } from '../middleware/auth.middleware';
-import { uploadDoctorLicense } from '../config/multer.config';
+import { uploadLicenseRegistration } from '../config/multer.config';
 
 const router = express.Router();
 
-// Public routes
-router.post('/register', uploadDoctorLicense.single('licenseImage'), register);
+// Public routes (license image required for Doctor and Pharmacist; stored in license-uploads then moved by controller)
+router.post('/register', uploadLicenseRegistration.single('licenseImage'), register);
 router.post('/login', login);
 router.post('/refresh', refresh);
 // Dev only: reset superadmin password (server-side hash so login works)

@@ -5,13 +5,18 @@ import { hashPassword, comparePassword } from '../utils/password.util';
 import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from '../utils/jwt.util';
 import { UserRole, AgeClassification, Gender } from '../../generated/client/client';
 import { registerSchema, loginSchema, refreshTokenSchema } from '../zod/auth.zod';
-import { cleanupFile } from '../config/multer.config';
+import { cleanupFile, moveLicenseToRoleFolder } from '../config/multer.config';
 
 // Register
 export const register = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        if (req.body?.role === 'Doctor' && !req.file) {
-            res.status(400).json({ error: 'License image is required for doctor registration' });
+        const roleFromBody = req.body?.role;
+        if ((roleFromBody === 'Doctor' || roleFromBody === 'Pharmacist') && !req.file) {
+            res.status(400).json({
+                error: roleFromBody === 'Doctor'
+                    ? 'License image is required for doctor registration'
+                    : 'License image is required for pharmacist registration'
+            });
             return;
         }
 
@@ -49,15 +54,36 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
             }
         }
 
+        // Pharmacist: ensure license number is unique before creating user
+        if (role === UserRole.Pharmacist && licenseNumber) {
+            const existingPharmacist = await prisma.pharmacist.findUnique({
+                where: { licenseNumber: licenseNumber.trim() }
+            });
+            if (existingPharmacist) {
+                if (req.file?.path) {
+                    try {
+                        cleanupFile(req.file.path);
+                    } catch (_) {}
+                }
+                res.status(409).json({ error: 'A pharmacist with this license number is already registered' });
+                return;
+            }
+        }
+
         // Hash password
         const passwordHash = await hashPassword(password);
 
-        const licenseImageUrl =
-            role === UserRole.Doctor && req.file
-                ? `/uploads/doctor-licenses/${req.file.filename}`
-                : undefined;
+        // Move uploaded license to role-specific folder (Doctor or Pharmacist) and get URL
+        let licenseImageUrl: string | undefined;
+        if (req.file && (role === UserRole.Doctor || role === UserRole.Pharmacist)) {
+            licenseImageUrl = moveLicenseToRoleFolder(req.file.path, role);
+        } else if (req.file?.path) {
+            try {
+                cleanupFile(req.file.path);
+            } catch (_) {}
+        }
 
-        // Create user in transaction; create Doctor profile when role is Doctor
+        // Create user in transaction; create Doctor or Pharmacist profile when role matches
         const result = await prisma.$transaction(async (tx: any) => {
             const user = await tx.user.create({
                 data: {
@@ -78,6 +104,18 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
                         licenseNumber,
                         licenseImageUrl,
                         specialization,
+                        isVerified: false
+                    }
+                });
+            }
+
+            if (role === UserRole.Pharmacist && name && licenseNumber && licenseImageUrl) {
+                await tx.pharmacist.create({
+                    data: {
+                        userId: user.id,
+                        name,
+                        licenseNumber,
+                        licenseImageUrl,
                         isVerified: false
                     }
                 });
@@ -117,7 +155,7 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
             }
         });
 
-        const userPayload: { id: number; email: string; role: string; patientId?: number; doctorId?: number; pharmacistId?: number } = {
+        const userPayload: { id: number; email: string; role: string; patientId?: number; doctorId?: number; pharmacistId?: number; isVerified?: boolean } = {
             id: result.id,
             email: result.email,
             role: result.role
@@ -127,12 +165,18 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
             if (patient) userPayload.patientId = patient.id;
         }
         if (result.role === UserRole.Doctor) {
-            const doctor = await prisma.doctor.findUnique({ where: { userId: result.id }, select: { id: true } });
-            if (doctor) userPayload.doctorId = doctor.id;
+            const doctor = await prisma.doctor.findUnique({ where: { userId: result.id }, select: { id: true, isVerified: true } });
+            if (doctor) {
+                userPayload.doctorId = doctor.id;
+                userPayload.isVerified = doctor.isVerified;
+            }
         }
         if (result.role === UserRole.Pharmacist) {
-            const pharmacist = await prisma.pharmacist.findUnique({ where: { userId: result.id }, select: { id: true } });
-            if (pharmacist) userPayload.pharmacistId = pharmacist.id;
+            const pharmacist = await prisma.pharmacist.findUnique({ where: { userId: result.id }, select: { id: true, isVerified: true } });
+            if (pharmacist) {
+                userPayload.pharmacistId = pharmacist.id;
+                userPayload.isVerified = pharmacist.isVerified;
+            }
         }
 
         res.status(201).json({
@@ -156,7 +200,7 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
         if (error?.code === 'P2002') {
             const target = Array.isArray(error?.meta?.target) ? error.meta.target : [];
             if (target.includes('licenseNumber')) {
-                res.status(409).json({ error: 'A doctor with this license number is already registered' });
+                res.status(409).json({ error: 'A user with this license number is already registered' });
                 return;
             }
             if (target.includes('email')) {
@@ -231,7 +275,7 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
             data: { lastLoginAt: new Date() }
         });
 
-        const userPayload: { id: number; email: string; role: string; patientId?: number; doctorId?: number; pharmacistId?: number } = {
+        const userPayload: { id: number; email: string; role: string; patientId?: number; doctorId?: number; pharmacistId?: number; isVerified?: boolean } = {
             id: user.id,
             email: user.email,
             role: user.role
@@ -241,12 +285,18 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
             if (patient) userPayload.patientId = patient.id;
         }
         if (user.role === UserRole.Doctor) {
-            const doctor = await prisma.doctor.findUnique({ where: { userId: user.id }, select: { id: true } });
-            if (doctor) userPayload.doctorId = doctor.id;
+            const doctor = await prisma.doctor.findUnique({ where: { userId: user.id }, select: { id: true, isVerified: true } });
+            if (doctor) {
+                userPayload.doctorId = doctor.id;
+                userPayload.isVerified = doctor.isVerified;
+            }
         }
         if (user.role === UserRole.Pharmacist) {
-            const pharmacist = await prisma.pharmacist.findUnique({ where: { userId: user.id }, select: { id: true } });
-            if (pharmacist) userPayload.pharmacistId = pharmacist.id;
+            const pharmacist = await prisma.pharmacist.findUnique({ where: { userId: user.id }, select: { id: true, isVerified: true } });
+            if (pharmacist) {
+                userPayload.pharmacistId = pharmacist.id;
+                userPayload.isVerified = pharmacist.isVerified;
+            }
         }
 
         res.json({

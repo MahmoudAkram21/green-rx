@@ -13,19 +13,29 @@ export const registerSchema = z
   })
   .refine(
     (data) => {
-      if (data.role !== UserRole.Doctor) return true;
-      return (
-        data.name != null &&
-        data.name.length >= 2 &&
-        data.licenseNumber != null &&
-        data.licenseNumber.length > 0 &&
-        data.specialization != null &&
-        data.specialization.length > 0
-      );
+      if (data.role === UserRole.Doctor) {
+        return (
+          data.name != null &&
+          data.name.length >= 2 &&
+          data.licenseNumber != null &&
+          data.licenseNumber.length > 0 &&
+          data.specialization != null &&
+          data.specialization.length > 0
+        );
+      }
+      if (data.role === UserRole.Pharmacist) {
+        return (
+          data.name != null &&
+          data.name.length >= 2 &&
+          data.licenseNumber != null &&
+          data.licenseNumber.length > 0
+        );
+      }
+      return true;
     },
     {
       message:
-        'When role is Doctor, name, licenseNumber (professional license number), and specialization are required.',
+        'When role is Doctor, name, licenseNumber, and specialization are required. When role is Pharmacist, name and licenseNumber are required.',
       path: ['role'],
     }
   );

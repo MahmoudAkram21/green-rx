@@ -173,6 +173,9 @@ s('/patients/{patientId}/children', 'get', PATIENT_TAGS.PROFILE, 'Get child prof
 s('/patients/{patientId}/children', 'post', PATIENT_TAGS.PROFILE, 'Add a child profile', true, [p('patientId')], { schemaRef: 'ChildProfileRequest' });
 s('/patients/children/{childId}', 'delete', PATIENT_TAGS.PROFILE, 'Delete a child profile', true, [p('childId')]);
 
+// PATIENTS — All warnings (aggregated for current prescriptions + self-reported medicines)
+s('/patients/{patientId}/warnings', 'get', [PATIENT_TAGS.DRUG_SAFETY, PATIENT_TAGS.MEDICATIONS, DOCTOR_PATIENTS_SECTION], 'Get all warnings for a patient (all types: allergies, disease, interactions, etc.) for current prescriptions and self-reported medicines', true, [p('patientId')]);
+
 // DOCTORS
 s('/doctors', 'post', [DOCTOR_TAGS.MY_PATIENTS, DOCTOR_PATIENTS_SECTION], 'Create or update doctor profile', true, [], { schemaRef: 'CreateDoctorRequest' });
 s('/doctors/search', 'get', [PATIENT_TAGS.SHARE_WITH_DOCTOR, DOCTOR_TAGS.MY_PATIENTS], 'Search / list all doctors', true, [q('q', 'Search query')]);
@@ -223,8 +226,8 @@ s('/patient-diseases/{id}', 'delete', PATIENT_TAGS.CURRENT_DISEASES, 'Remove pat
 // PATIENT MEDICINES (My medications)
 s('/patient-medicines/patient/{patientId}', 'get', [PATIENT_TAGS.MEDICATIONS, DOCTOR_PATIENTS_SECTION], 'List all medicines for a patient', true, [p('patientId')]);
 s('/patient-medicines/{id}', 'get', [PATIENT_TAGS.MEDICATIONS, DOCTOR_PATIENTS_SECTION], 'Get a patient medicine by ID', true, [p('id')]);
-s('/patient-medicines/patient/{patientId}', 'post', PATIENT_TAGS.MEDICATIONS, 'Add a medicine to patient', true, [p('patientId')], { schemaRef: 'AddPatientMedicineRequest' });
-s('/patient-medicines/patient/{patientId}/upload-image', 'post', PATIENT_TAGS.MEDICATIONS, 'Upload medicine image (when not in system)', true, [p('patientId')]);
+s('/patient-medicines/patient/{patientId}', 'post', PATIENT_TAGS.MEDICATIONS, 'Add a medicine to patient (runs risk check; response includes warnings and blocked)', true, [p('patientId')], { schemaRef: 'AddPatientMedicineRequest' });
+s('/patient-medicines/patient/{patientId}/upload-image', 'post', PATIENT_TAGS.MEDICATIONS, 'Upload medicine image (runs risk check; response includes warnings and blocked)', true, [p('patientId')]);
 s('/patient-medicines/{id}', 'patch', PATIENT_TAGS.MEDICATIONS, 'Update a patient medicine', true, [p('id')], { schemaRef: 'UpdatePatientMedicineRequest' });
 s('/patient-medicines/{id}', 'delete', PATIENT_TAGS.MEDICATIONS, 'Delete a patient medicine', true, [p('id')]);
 s('/patient-medicines/{id}/verify', 'patch', ADMIN_TAG, 'Verify an uploaded medicine (Admin/Doctor)', true, [p('id')]);
@@ -313,7 +316,7 @@ s('/notifications/appointment-reminders', 'post', ADMIN_TAG, 'Trigger appointmen
 // DRUG INTERACTIONS
 s('/drug-interactions/check', 'post', [DOCTOR_TAGS.DRUG_SAFETY, DOCTOR_PATIENTS_SECTION], 'Check drug safety before prescribing', true, [], { schemaRef: 'DrugSafetyCheckRequest' });
 s('/drug-interactions/prescription/{prescriptionId}', 'get', [PATIENT_TAGS.DRUG_SAFETY, DOCTOR_TAGS.DRUG_SAFETY, DOCTOR_PATIENTS_SECTION], 'Get interaction alerts for a prescription', false, [p('prescriptionId')]);
-s('/drug-interactions/patient/{patientId}', 'get', [PATIENT_TAGS.DRUG_SAFETY, DOCTOR_PATIENTS_SECTION], 'Get interaction alerts for a patient', false, [p('patientId')]);
+s('/drug-interactions/patient/{patientId}', 'get', [PATIENT_TAGS.DRUG_SAFETY, DOCTOR_PATIENTS_SECTION], 'Get prescription-linked drug interaction alerts only (stored DrugInteractionAlert for this patient). For aggregated warnings including self-reported medicines use GET /patients/:patientId/warnings.', false, [p('patientId')]);
 s('/drug-interactions/{id}/acknowledge-doctor', 'patch', [DOCTOR_TAGS.DRUG_SAFETY, DOCTOR_PATIENTS_SECTION], 'Doctor acknowledges an interaction alert', false, [p('id')]);
 s('/drug-interactions/{id}/acknowledge-patient', 'patch', PATIENT_TAGS.DRUG_SAFETY, 'Patient acknowledges an interaction alert', false, [p('id')]);
 
@@ -430,7 +433,7 @@ s('/export/diseases', 'get', ADMIN_TAG, 'Export diseases to Excel');
 s('/export/companies', 'get', ADMIN_TAG, 'Export companies to Excel');
 s('/export/history', 'get', ADMIN_TAG, 'Get export history');
 
-// Register accepts multipart when role=Doctor (license image)
+// Register accepts multipart when role=Doctor or Pharmacist (license image)
 if (paths['/auth/register']?.post) {
   paths['/auth/register'].post.requestBody = {
     required: true,
@@ -478,6 +481,14 @@ if (paths['/auth/me']?.get) {
   paths['/auth/me'].get.responses['200'] = {
     description: 'Success',
     content: { 'application/json': { schema: { $ref: '#/components/schemas/AuthMeResponse' } } }
+  };
+}
+
+// GET /patients/:patientId/warnings: document 200 response
+if (paths['/patients/{patientId}/warnings']?.get) {
+  paths['/patients/{patientId}/warnings'].get.responses['200'] = {
+    description: 'Aggregated warnings for current prescriptions and self-reported medicines.',
+    content: { 'application/json': { schema: { $ref: '#/components/schemas/PatientWarningsResponse' } } }
   };
 }
 
@@ -536,18 +547,18 @@ const options: Record<string, unknown> = {
       schemas: {
         // ── Auth request bodies
         RegisterRequest: {
-          description: 'Create a new user account. Send as multipart/form-data (especially when role=Doctor). Required: email, password. Optional: role (default Patient), name, phone. When role=Patient, a patient profile is auto-created and the response includes user.patientId. When role=Doctor: name, licenseNumber (professional license number), specialization, and licenseImage (file) are required; the license image is stored under uploads/ and only its URL is saved in the database. For non-Doctor registration, licenseNumber, specialization, and licenseImage are omitted.',
+          description: 'Create a new user account. Send as multipart/form-data when role=Doctor or Pharmacist. Required: email, password. Optional: role (default Patient), name, phone. When role=Patient, a patient profile is auto-created and the response includes user.patientId. When role=Doctor: name, licenseNumber, specialization, and licenseImage (file) are required; license image is stored under uploads/doctor-licenses/. When role=Pharmacist: name, licenseNumber, and licenseImage (file) are required; license image is stored under uploads/pharmacist-licenses/. Response includes user.doctorId or user.pharmacistId when applicable.',
           type: 'object',
           required: ['email', 'password'],
           properties: {
             email:          { type: 'string', format: 'email', example: 'user@example.com', description: 'Required.' },
             password:       { type: 'string', minLength: 6, example: 'secret123', description: 'Required. Min 6 characters.' },
             role:           { type: 'string', enum: ['Patient', 'Doctor', 'Pharmacist', 'Admin', 'SuperAdmin'], default: 'Patient', description: 'Optional. Default: Patient.' },
-            name:           { type: 'string', minLength: 2, example: 'John Doe', description: 'Optional. Required when role=Doctor.' },
+            name:           { type: 'string', minLength: 2, example: 'John Doe', description: 'Required when role=Doctor or Pharmacist.' },
             phone:          { type: 'string', example: '+201145441141', description: 'Optional. E.164 format.' },
-            licenseNumber:  { type: 'string', description: 'Required when role=Doctor. Professional license number.' },
-            specialization: { type: 'string', description: 'Required when role=Doctor.' },
-            licenseImage:   { type: 'string', format: 'binary', description: 'Required when role=Doctor. Image file (PNG, JPG, etc., max 10MB). Stored under uploads/doctor-licenses/.' }
+            licenseNumber:  { type: 'string', description: 'Required when role=Doctor or Pharmacist. Professional license number.' },
+            specialization: { type: 'string', description: 'Required when role=Doctor. Omit for Pharmacist.' },
+            licenseImage:   { type: 'string', format: 'binary', description: 'Required when role=Doctor or Pharmacist. Image file (PNG, JPG, etc., max 10MB). Stored under uploads/doctor-licenses/ or uploads/pharmacist-licenses/.' }
           }
         },
         LoginRequest: {
@@ -560,7 +571,7 @@ const options: Record<string, unknown> = {
           }
         },
         LoginResponse: {
-          description: 'Login and register response. user.patientId when role is Patient; user.doctorId when role is Doctor; user.pharmacistId when role is Pharmacist.',
+          description: 'Login and register response. user.patientId when role is Patient; user.doctorId and user.isVerified when role is Doctor; user.pharmacistId and user.isVerified when role is Pharmacist. isVerified indicates whether the admin has verified the doctor/pharmacist.',
           type: 'object',
           properties: {
             accessToken:  { type: 'string' },
@@ -573,7 +584,8 @@ const options: Record<string, unknown> = {
                 role:        { type: 'string' },
                 patientId:   { type: 'integer', description: 'Present when role is Patient.' },
                 doctorId:    { type: 'integer', description: 'Present when role is Doctor.' },
-                pharmacistId: { type: 'integer', description: 'Present when role is Pharmacist.' }
+                pharmacistId: { type: 'integer', description: 'Present when role is Pharmacist.' },
+                isVerified:  { type: 'boolean', description: 'Present when role is Doctor or Pharmacist. True if admin has verified the profile.' }
               }
             }
           }
@@ -964,6 +976,26 @@ const options: Record<string, unknown> = {
           properties: {
             blocked:  { type: 'boolean' },
             warnings: { type: 'array', items: { $ref: '#/components/schemas/Warning' } }
+          }
+        },
+        PatientWarningsResponse: {
+          description: 'GET /patients/:patientId/warnings. Aggregated warnings for all current medicines (prescriptions + self-reported).',
+          type: 'object',
+          properties: {
+            warnings: { type: 'array', items: { $ref: '#/components/schemas/Warning' }, description: 'All warnings flattened.' },
+            byMedicine: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  medicineName: { type: 'string' },
+                  tradeNameId: { type: 'integer' },
+                  activeSubstanceId: { type: 'integer' },
+                  warnings: { type: 'array', items: { $ref: '#/components/schemas/Warning' } }
+                }
+              },
+              description: 'Warnings grouped by medicine.'
+            }
           }
         }
       }

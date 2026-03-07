@@ -4,6 +4,8 @@ import path from 'path';
 import fs from 'fs';
 import { AddMedicineRequestStatus } from '../../generated/client/client';
 import { extractMedicineFromImage } from '../services/medicineImageExtraction.service';
+import { generateWarnings } from '../services/warningService';
+import drugInteractionService from '../services/drugInteraction.service';
 
 const uploadsDir = path.join(__dirname, '../../uploads/patient-medicines');
 if (!fs.existsSync(uploadsDir)) {
@@ -126,7 +128,31 @@ export const addPatientMedicine = async (req: Request, res: Response, next: Next
             },
         });
 
-        res.status(201).json(medicine);
+        const payload: Record<string, unknown> = { ...medicine };
+        if (medicine.tradeNameId != null) {
+            try {
+                const warningResult = await generateWarnings(Number(patientId), medicine.tradeNameId);
+                payload.warnings = warningResult.warnings;
+                payload.blocked = warningResult.blocked;
+            } catch (_) {
+                payload.warnings = [];
+                payload.blocked = false;
+            }
+        } else if (medicine.activeSubstanceId != null) {
+            try {
+                const safetyCheck = await drugInteractionService.checkDrugSafety(Number(patientId), medicine.activeSubstanceId, undefined);
+                payload.warnings = safetyCheck.warnings;
+                payload.blocked = safetyCheck.hasAllergyConflicts || (safetyCheck.warnings.some((w: any) => w.severity === 'critical'));
+            } catch (_) {
+                payload.warnings = [];
+                payload.blocked = false;
+            }
+        } else {
+            payload.warnings = [];
+            payload.blocked = false;
+        }
+
+        res.status(201).json(payload);
     } catch (error) {
         next(error);
     }
@@ -261,6 +287,30 @@ export const addPatientMedicineByImage = async (req: Request, res: Response, nex
             payload.addMedicineRequestId = addMedicineRequestId;
             payload.requestCreatedForMissingData = true;
         }
+
+        if (medicine.tradeNameId != null) {
+            try {
+                const warningResult = await generateWarnings(pid, medicine.tradeNameId);
+                payload.warnings = warningResult.warnings;
+                payload.blocked = warningResult.blocked;
+            } catch (_) {
+                payload.warnings = [];
+                payload.blocked = false;
+            }
+        } else if (medicine.activeSubstanceId != null) {
+            try {
+                const safetyCheck = await drugInteractionService.checkDrugSafety(pid, medicine.activeSubstanceId, undefined);
+                payload.warnings = safetyCheck.warnings;
+                payload.blocked = safetyCheck.hasAllergyConflicts || (safetyCheck.warnings.some((w: any) => w.severity === 'critical'));
+            } catch (_) {
+                payload.warnings = [];
+                payload.blocked = false;
+            }
+        } else {
+            payload.warnings = [];
+            payload.blocked = false;
+        }
+
         res.status(201).json(payload);
     } catch (error) {
         next(error);

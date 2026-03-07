@@ -16,7 +16,8 @@ import {
     deleteAllergy,
     addChildProfile,
     getChildProfiles,
-    deleteChildProfile
+    deleteChildProfile,
+    getPatientWarnings
 } from '../controllers/patient.controller';
 import {
     getSurgicalHistories,
@@ -87,5 +88,8 @@ router.delete('/allergies/:allergyId', authorize([UserRole.Patient, UserRole.Doc
 router.get('/:patientId/children', getChildProfiles);
 router.post('/:patientId/children', authorize([UserRole.Patient, UserRole.Admin, UserRole.SuperAdmin]), addChildProfile);
 router.delete('/children/:childId', authorize([UserRole.Patient, UserRole.Admin, UserRole.SuperAdmin]), deleteChildProfile);
+
+// All warnings for patient (prescriptions + self-reported medicines)
+router.get('/:patientId/warnings', authorize([UserRole.Patient, UserRole.Doctor, UserRole.Admin, UserRole.SuperAdmin]), getPatientWarnings);
 
 export default router;

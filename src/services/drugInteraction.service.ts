@@ -39,7 +39,7 @@ class DrugInteractionService {
         activeSubstanceId: number,
         _tradeNameId?: number
     ): Promise<DrugInteractionCheck> {
-        // Fetch patient data with all relevant medical information
+        // Fetch patient data with all relevant medical information (prescriptions + self-reported medicines)
         const patient = await prisma.patient.findUnique({
             where: { id: patientId },
             include: {
@@ -63,6 +63,13 @@ class DrugInteractionService {
                         tradeName: {
                             include: { activeSubstance: true }
                         }
+                    }
+                },
+                medicines: {
+                    where: { isOngoing: true },
+                    include: {
+                        tradeName: { include: { activeSubstance: true } },
+                        activeSubstance: true
                     }
                 }
             }
@@ -270,8 +277,10 @@ class DrugInteractionService {
         const warnings: DrugWarning[] = [];
         const alerts: DrugAlert[] = [];
 
-        // Get current medications
-        const currentMeds = patient.prescriptions.map((p: any) => p.tradeName.activeSubstance);
+        // Get current medications from prescriptions and self-reported PatientMedicine (ongoing)
+        const fromPrescriptions = (patient.prescriptions || []).map((p: any) => p.tradeName?.activeSubstance).filter(Boolean);
+        const fromMedicines = (patient.medicines || []).map((m: any) => m.tradeName?.activeSubstance ?? m.activeSubstance).filter(Boolean);
+        const currentMeds = [...fromPrescriptions, ...fromMedicines];
 
         // All interaction fields from the database schema
         const jsonInteractionFields = [
