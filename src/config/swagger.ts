@@ -179,6 +179,8 @@ s('/patients/{patientId}/warnings', 'get', [PATIENT_TAGS.DRUG_SAFETY, PATIENT_TA
 // DOCTORS
 s('/doctors', 'post', [DOCTOR_TAGS.MY_PATIENTS, DOCTOR_PATIENTS_SECTION], 'Create or update doctor profile', true, [], { schemaRef: 'CreateDoctorRequest' });
 s('/doctors/search', 'get', [PATIENT_TAGS.SHARE_WITH_DOCTOR, DOCTOR_TAGS.MY_PATIENTS], 'Search / list all doctors', true, [q('q', 'Search query')]);
+s('/doctors/me', 'get', [DOCTOR_TAGS.MY_PATIENTS, DOCTOR_PATIENTS_SECTION], 'Get current doctor profile (mobile: use Bearer token; no path params)', true);
+s('/doctors/me', 'patch', [DOCTOR_TAGS.MY_PATIENTS, DOCTOR_PATIENTS_SECTION], 'Update current doctor profile (mobile: use Bearer token; body: optional name, specialization, licenseNumber, clinicAddress, phoneNumber, yearsOfExperience, qualifications, consultationFee)', true, [], { schemaRef: 'UpdateDoctorMeRequest' });
 s('/doctors/{id}', 'get', [PATIENT_TAGS.SHARE_WITH_DOCTOR, DOCTOR_TAGS.MY_PATIENTS, DOCTOR_PATIENTS_SECTION], 'Get doctor by ID', true, [p('id')]);
 s('/doctors/user/{userId}', 'get', [DOCTOR_TAGS.MY_PATIENTS, DOCTOR_PATIENTS_SECTION], 'Get doctor by user ID', true, [p('userId')]);
 s('/doctors/{id}/verify', 'put', ADMIN_TAG, 'Verify a doctor (Admin)', true, [p('id')], { schemaRef: 'VerifyDoctorRequest' });
@@ -748,6 +750,11 @@ const options: Record<string, unknown> = {
           type: 'object',
           required: ['userId', 'name', 'specialization', 'licenseNumber'],
           properties: { userId: { type: 'integer', description: 'Required. From GET /auth/me.' }, name: { type: 'string', description: 'Required.' }, specialization: { type: 'string', description: 'Required.' }, licenseNumber: { type: 'string', description: 'Required.' }, licenseImageUrl: { type: 'string', description: 'Optional. URL of uploaded license image (e.g. /uploads/doctor-licenses/...).' }, phoneNumber: { type: 'string', description: 'Optional.' }, clinicAddress: { type: 'string', description: 'Optional.' }, yearsOfExperience: { type: 'integer', description: 'Optional.' }, qualifications: { type: 'string', description: 'Optional.' }, consultationFee: { type: 'number', description: 'Optional.' } }
+        },
+        UpdateDoctorMeRequest: {
+          description: 'PATCH /doctors/me. All fields optional. Send only fields to update. Used by mobile with Bearer token.',
+          type: 'object',
+          properties: { name: { type: 'string' }, specialization: { type: 'string' }, licenseNumber: { type: 'string' }, licenseImageUrl: { type: 'string' }, phoneNumber: { type: 'string' }, clinicAddress: { type: 'string' }, yearsOfExperience: { type: 'integer' }, qualifications: { type: 'string' }, consultationFee: { type: 'number' } }
         },
         AssignPatientRequest: {
           description: 'Assign patient to doctor. Required: patientId, relationshipType. Optional: startDate, endDate. Used in POST /doctors/:doctorId/patients.',

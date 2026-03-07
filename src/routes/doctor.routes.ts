@@ -3,6 +3,8 @@ import {
     createOrUpdateDoctor,
     getDoctorById,
     getDoctorByUserId,
+    getDoctorMe,
+    updateDoctorMe,
     verifyDoctor,
     getAllDoctors,
     assignPatient,
@@ -22,6 +24,9 @@ router.use(authenticate);
 // Doctor Profile
 router.post('/', authorize([UserRole.Doctor, UserRole.Admin]), createOrUpdateDoctor);
 router.get('/search', getAllDoctors); // Public search for patients to find doctors
+// Mobile: current doctor by token (must be before /:id)
+router.get('/me', authorize([UserRole.Doctor]), getDoctorMe);
+router.patch('/me', authorize([UserRole.Doctor]), updateDoctorMe);
 router.get('/:id', getDoctorById);
 router.get('/user/:userId', getDoctorByUserId);
 

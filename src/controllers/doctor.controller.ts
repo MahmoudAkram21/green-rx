@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { prisma } from '../lib/prisma';
 import {
     createDoctorSchema,
+    updateDoctorMeSchema,
     verifyDoctorSchema,
     assignPatientSchema
 } from '../zod/doctor.zod';
@@ -12,7 +13,9 @@ import { computeBmi } from '../utils/bmi.util';
 export const createOrUpdateDoctor = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const validatedData = createDoctorSchema.parse(req.body);
-        const { userId, ...doctorData } = validatedData;
+        const { userId, clinicAddress, ...rest } = validatedData;
+        const doctorData: Record<string, unknown> = { ...rest };
+        if (clinicAddress !== undefined) (doctorData as any).address = clinicAddress;
 
         // Check if doctor already exists for this user
         const existingDoctor = await prisma.doctor.findUnique({
@@ -41,8 +44,14 @@ export const createOrUpdateDoctor = async (req: Request, res: Response, next: Ne
         // Create new doctor (starts unverified)
         const doctor = await prisma.doctor.create({
             data: {
-                ...doctorData,
                 userId,
+                name: validatedData.name,
+                specialization: validatedData.specialization,
+                licenseNumber: validatedData.licenseNumber,
+                licenseImageUrl: validatedData.licenseImageUrl,
+                phoneNumber: validatedData.phoneNumber,
+                address: validatedData.clinicAddress,
+                consultationFee: validatedData.consultationFee,
                 isVerified: false
             },
             include: {
@@ -104,6 +113,70 @@ export const getDoctorById = async (req: Request, res: Response, next: NextFunct
 
         res.json(doctor);
     } catch (error) {
+        next(error);
+    }
+};
+
+// GET /doctors/me — current doctor profile (mobile-friendly; auth from token)
+export const getDoctorMe = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const userId = req.user?.userId;
+        if (!userId) {
+            res.status(401).json({ error: 'Not authenticated' });
+            return;
+        }
+
+        const doctor = await prisma.doctor.findUnique({
+            where: { userId },
+            include: {
+                user: { select: { email: true, name: true, role: true, isActive: true } },
+                patientDoctors: { include: { patient: { select: { id: true, user: { select: { name: true } } } } } }
+            }
+        });
+
+        if (!doctor) {
+            res.status(404).json({ error: 'Doctor profile not found' });
+            return;
+        }
+
+        res.json(doctor);
+    } catch (error) {
+        next(error);
+    }
+};
+
+// PATCH /doctors/me — update current doctor profile (mobile-friendly; auth from token)
+export const updateDoctorMe = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const userId = req.user?.userId;
+        if (!userId) {
+            res.status(401).json({ error: 'Not authenticated' });
+            return;
+        }
+
+        const validated = updateDoctorMeSchema.parse(req.body);
+        const { clinicAddress, ...rest } = validated;
+        const data: Record<string, unknown> = { ...rest };
+        if (clinicAddress !== undefined) (data as any).address = clinicAddress;
+
+        const doctor = await prisma.doctor.findUnique({ where: { userId } });
+        if (!doctor) {
+            res.status(404).json({ error: 'Doctor profile not found' });
+            return;
+        }
+
+        const updated = await prisma.doctor.update({
+            where: { userId },
+            data: data as object,
+            include: { user: { select: { email: true, name: true, role: true } } }
+        });
+
+        res.json({ message: 'Profile updated successfully', doctor: updated });
+    } catch (error: any) {
+        if (error instanceof z.ZodError) {
+            res.status(400).json({ error: error.issues });
+            return;
+        }
         next(error);
     }
 };

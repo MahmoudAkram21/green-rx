@@ -16,6 +16,9 @@ export const createDoctorSchema = z.object({
 
 export const updateDoctorSchema = createDoctorSchema.partial();
 
+/** For PATCH /doctors/me: all optional, no userId (from token). */
+export const updateDoctorMeSchema = createDoctorSchema.omit({ userId: true }).partial();
+
 export const verifyDoctorSchema = z.object({
   isVerified: z.boolean(),
   verificationNotes: z.string().optional(),
