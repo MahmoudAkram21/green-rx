@@ -320,10 +320,8 @@ export const assignPatient = async (req: Request, res: Response, next: NextFunct
             },
             include: {
                 patient: {
-                    select: {
-                        age: true,
-                        gender: true,
-                        user: { select: { name: true } }
+                    include: {
+                        user: { select: { name: true, email: true, phone: true } }
                     }
                 },
                 doctor: {
@@ -332,9 +330,18 @@ export const assignPatient = async (req: Request, res: Response, next: NextFunct
             }
         });
 
+        const relationshipWithPatientUser = {
+            ...patientDoctor,
+            patient: patientDoctor.patient ? {
+                ...patientDoctor.patient,
+                name: patientDoctor.patient.user?.name ?? null,
+                email: patientDoctor.patient.user?.email ?? null,
+                phone: patientDoctor.patient.user?.phone ?? null
+            } : null
+        };
         res.status(201).json({
             message: 'Patient assigned to doctor successfully',
-            relationship: patientDoctor
+            relationship: relationshipWithPatientUser
         });
     } catch (error: any) {
         if (error instanceof z.ZodError) {
@@ -368,7 +375,7 @@ export const searchDoctorPatientsByName = async (req: Request, res: Response, ne
             include: {
                 patient: {
                     include: {
-                        user: { select: { name: true, email: true } },
+                        user: { select: { name: true, email: true, phone: true } },
                         patientAllergies: { include: { allergen: true } },
                         patientDiseases: { include: { disease: true } }
                     }
@@ -380,6 +387,9 @@ export const searchDoctorPatientsByName = async (req: Request, res: Response, ne
         res.json({
             patients: relationships.map((r) => ({
                 ...r.patient,
+                name: r.patient.user?.name ?? null,
+                email: r.patient.user?.email ?? null,
+                phone: r.patient.user?.phone ?? null,
                 relationshipType: r.relationshipType,
                 startDate: r.startDate,
                 endDate: r.endDate
@@ -408,7 +418,7 @@ export const getPatientDetailsForDoctor = async (req: Request, res: Response, ne
             include: {
                 patient: {
                     include: {
-                        user: { select: { name: true, email: true } },
+                        user: { select: { name: true, email: true, phone: true } },
                         medicalHistories: { include: { disease: true } },
                         familyHistories: { include: { disease: true } },
                         patientDiseases: { include: { disease: true } },
@@ -427,8 +437,15 @@ export const getPatientDetailsForDoctor = async (req: Request, res: Response, ne
             return;
         }
 
+        const patient = link.patient;
+        const user = patient?.user as { name: string | null; email: string; phone: string | null } | undefined;
         res.json({
-            patient: link.patient,
+            patient: patient ? {
+                ...patient,
+                name: user?.name ?? null,
+                email: user?.email ?? null,
+                phone: user?.phone ?? null
+            } : null,
             relationship: {
                 relationshipType: link.relationshipType,
                 startDate: link.startDate,
@@ -451,6 +468,7 @@ export const getDoctorPatients = async (req: Request, res: Response, next: NextF
             include: {
                 patient: {
                     include: {
+                        user: { select: { name: true, email: true, phone: true } },
                         patientAllergies: { include: { allergen: true } },
                         patientDiseases: {
                             include: {
@@ -466,6 +484,9 @@ export const getDoctorPatients = async (req: Request, res: Response, next: NextF
         res.json({
             patients: relationships.map((r) => ({
                 ...r.patient,
+                name: r.patient.user?.name ?? null,
+                email: r.patient.user?.email ?? null,
+                phone: r.patient.user?.phone ?? null,
                 relationshipType: r.relationshipType,
                 startDate: r.startDate,
                 endDate: r.endDate
