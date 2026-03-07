@@ -33,6 +33,22 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
             return;
         }
 
+        // Doctor: ensure license number is unique before creating user
+        if (role === UserRole.Doctor && licenseNumber) {
+            const existingDoctor = await prisma.doctor.findUnique({
+                where: { licenseNumber: licenseNumber.trim() }
+            });
+            if (existingDoctor) {
+                if (req.file?.path) {
+                    try {
+                        cleanupFile(req.file.path);
+                    } catch (_) {}
+                }
+                res.status(409).json({ error: 'A doctor with this license number is already registered' });
+                return;
+            }
+        }
+
         // Hash password
         const passwordHash = await hashPassword(password);
 
@@ -127,6 +143,18 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
         if (error instanceof z.ZodError) {
             res.status(400).json({ error: error.issues });
             return;
+        }
+        // Prisma unique constraint (e.g. duplicate licenseNumber or email)
+        if (error?.code === 'P2002') {
+            const target = Array.isArray(error?.meta?.target) ? error.meta.target : [];
+            if (target.includes('licenseNumber')) {
+                res.status(409).json({ error: 'A doctor with this license number is already registered' });
+                return;
+            }
+            if (target.includes('email')) {
+                res.status(409).json({ error: 'Email already exists' });
+                return;
+            }
         }
         next(error);
     }
@@ -313,6 +341,7 @@ export const getMe = async (req: Request, res: Response, next: NextFunction) => 
             select: {
                 id: true,
                 email: true,
+                name: true,
                 role: true,
                 isActive: true,
                 createdAt: true,

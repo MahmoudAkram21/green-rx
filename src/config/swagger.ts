@@ -473,6 +473,14 @@ if (paths['/patient-medicines/patient/{patientId}/upload-image']?.post) {
   };
 }
 
+// GET /auth/me: document 200 response with user fields including name
+if (paths['/auth/me']?.get) {
+  paths['/auth/me'].get.responses['200'] = {
+    description: 'Success',
+    content: { 'application/json': { schema: { $ref: '#/components/schemas/AuthMeResponse' } } }
+  };
+}
+
 // ═══════════════════════════════════════════════════════
 // OpenAPI definition
 // ═══════════════════════════════════════════════════════
@@ -566,6 +574,21 @@ const options: Record<string, unknown> = {
           required: ['refreshToken'],
           properties: {
             refreshToken: { type: 'string', example: 'eyJhbGci...', description: 'Required.' }
+          }
+        },
+        AuthMeResponse: {
+          description: 'Current authenticated user (GET /auth/me). Includes name when set on the user.',
+          type: 'object',
+          properties: {
+            id:        { type: 'integer', description: 'User ID.' },
+            email:     { type: 'string', description: 'User email.' },
+            name:      { type: 'string', nullable: true, description: 'Display name (e.g. set at registration).' },
+            role:      { type: 'string', enum: ['Patient', 'Doctor', 'Pharmacist', 'Admin', 'SuperAdmin'] },
+            isActive:  { type: 'boolean' },
+            createdAt: { type: 'string', format: 'date-time' },
+            patient:   { type: 'object', nullable: true, description: 'Patient profile if role is Patient.' },
+            doctor:    { type: 'object', nullable: true, description: 'Doctor profile if role is Doctor.' },
+            pharmacist: { type: 'object', nullable: true, description: 'Pharmacist profile if role is Pharmacist.' }
           }
         },
         CreatePatientRequest: {
