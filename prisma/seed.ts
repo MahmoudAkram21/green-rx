@@ -42,6 +42,7 @@ async function main() {
   await prisma.surgicalHistory.deleteMany();
   await prisma.operation.deleteMany();
   await prisma.patient.deleteMany();
+  await prisma.doctorClinic.deleteMany();
   await prisma.doctor.deleteMany();
   await prisma.pharmacist.deleteMany();
   await prisma.session.deleteMany();
@@ -819,6 +820,43 @@ async function main() {
   // Get the created doctors and patients
   const doctors = await prisma.doctor.findMany();
   const patients = await prisma.patient.findMany();
+
+  // ============================================
+  // SECTION 6a: DOCTOR CLINICS (multiple clinics per doctor)
+  // ============================================
+  console.log("\n🏥 Creating doctor clinics...");
+  const clinicData: Array<{ doctorId: number; name: string; address: string; city: string; latitude: number; longitude: number; workingHours: object }> = [];
+  const workingHoursWeek = [
+    { day: "monday", startTime: "09:00", endTime: "17:00" },
+    { day: "tuesday", startTime: "09:00", endTime: "17:00" },
+    { day: "wednesday", startTime: "09:00", endTime: "17:00" },
+    { day: "thursday", startTime: "09:00", endTime: "17:00" },
+    { day: "friday", startTime: "09:00", endTime: "15:00" },
+  ];
+  for (const d of doctors) {
+    clinicData.push({
+      doctorId: d.id,
+      name: "Main Clinic",
+      address: d.address ?? "Main Street",
+      city: d.city ?? "City",
+      latitude: 40.7128,
+      longitude: -74.006,
+      workingHours: workingHoursWeek,
+    });
+    if (doctors.indexOf(d) < 3) {
+      clinicData.push({
+        doctorId: d.id,
+        name: "Branch Office",
+        address: "100 Second Ave",
+        city: d.city ?? "City",
+        latitude: 40.72,
+        longitude: -74.01,
+        workingHours: [{ day: "monday", startTime: "14:00", endTime: "18:00" }, { day: "wednesday", startTime: "14:00", endTime: "18:00" }],
+      });
+    }
+  }
+  await prisma.doctorClinic.createMany({ data: clinicData });
+  console.log(`✅ Created ${clinicData.length} doctor clinics for ${doctors.length} doctors`);
 
   // ============================================
   // SECTION 6b: OPERATIONS (for surgical history dropdown)

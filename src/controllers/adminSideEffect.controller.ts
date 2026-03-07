@@ -135,7 +135,6 @@ export const attachTradeNames = async (req: Request, res: Response, next: NextFu
         }
 
         const parsed = attachTradeNamesSchema.parse(req.body);
-        const ids = parsed.tradeNames ?? parsed.medications ?? [];
 
         const sideEffect = await prisma.sideEffect.findUnique({ where: { id } });
         if (!sideEffect) {

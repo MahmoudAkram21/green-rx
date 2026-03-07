@@ -3,7 +3,33 @@ import { prisma } from '../lib/prisma';
 import { PrescriptionStatus } from '../../generated/client/client';
 import { generateWarnings } from '../services/warningService';
 
-// Create a new prescription
+const defaultValidFrom = () => new Date();
+const defaultValidUntil = () => new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+
+/** Include for prescription with items and visit; used by create/get/list */
+const prescriptionIncludeWithItemsAndVisit = {
+    doctor: { include: { user: { select: { email: true, role: true } } } },
+    patient: { include: { user: { select: { email: true } } } },
+    tradeName: { include: { activeSubstance: true, company: true } },
+    visit: { select: { id: true, visitDate: true, visitType: true, isNewVisit: true } },
+    prescriptionItems: {
+        orderBy: { sortOrder: 'asc' as const },
+        include: { tradeName: { include: { activeSubstance: true, company: true } } }
+    },
+    drugInteractionAlerts: true,
+    prescriptionVersions: { orderBy: { version: 'desc' as const } }
+};
+
+/** For backward compat: if prescription has items but no tradeName, set top-level from first item */
+function mapFirstItemToLegacy<T extends { tradeName?: unknown; dosage?: string | null; frequency?: string | null; duration?: string | null; instructions?: string | null; prescriptionItems?: Array<{ tradeName: unknown; dosage?: string | null; frequency?: string | null; duration?: string | null; instructions?: string | null }> }>(p: T): T {
+    if (p.prescriptionItems && p.prescriptionItems.length > 0 && !p.tradeName) {
+        const first = p.prescriptionItems[0];
+        return { ...p, tradeName: first.tradeName, dosage: first.dosage ?? p.dosage, frequency: first.frequency ?? p.frequency, duration: first.duration ?? p.duration, instructions: first.instructions ?? p.instructions };
+    }
+    return p;
+}
+
+// Create a new prescription (legacy single medicine OR items array; optional visitId)
 export const createPrescription = async (req: Request, res: Response) => {
     try {
         const {
@@ -17,20 +43,93 @@ export const createPrescription = async (req: Request, res: Response) => {
             validFrom,
             validUntil,
             maxRefills,
-            notes
+            notes,
+            visitId: bodyVisitId,
+            items: bodyItems
         } = req.body;
 
-        // Validate required fields
-        if (!doctorId || !patientId || !tradeNameId) {
+        const hasItems = Array.isArray(bodyItems) && bodyItems.length > 0;
+        const hasLegacy = doctorId && patientId && tradeNameId;
+
+        if (!doctorId || !patientId) {
+            return res.status(400).json({ message: 'Doctor ID and Patient ID are required' });
+        }
+        if (!hasItems && !hasLegacy) {
             return res.status(400).json({
-                message: 'Doctor ID, Patient ID, and Trade Name ID are required'
+                message: 'Either tradeNameId (legacy) or items array with at least one { tradeNameId } is required'
             });
         }
 
-        // COMPREHENSIVE WARNING CHECK - All 8 Types
-        const warningResult = await generateWarnings(patientId, tradeNameId);
+        // Validate visitId if provided
+        let visitId: number | undefined;
+        if (bodyVisitId != null) {
+            const visit = await prisma.visit.findFirst({
+                where: { id: Number(bodyVisitId), doctorId: Number(doctorId), patientId: Number(patientId) }
+            });
+            if (!visit) {
+                return res.status(400).json({ message: 'Visit not found or does not belong to this doctor and patient' });
+            }
+            visitId = visit.id;
+        }
 
-        // Block prescription if critical warnings
+        const validFromDate = validFrom ? new Date(validFrom) : defaultValidFrom();
+        const validUntilDate = validUntil ? new Date(validUntil) : defaultValidUntil();
+
+        if (hasItems) {
+            // Multi-item prescription: run warnings per item and cross-item
+            const allWarnings: any[] = [];
+            let blocked = false;
+            for (const item of bodyItems) {
+                const wr = await generateWarnings(patientId, item.tradeNameId);
+                allWarnings.push({ tradeNameId: item.tradeNameId, warnings: wr.warnings });
+                if (wr.blocked) blocked = true;
+            }
+            const { checkBatchInteractions } = await import('../services/warningService');
+            const batchWarnings = await checkBatchInteractions(bodyItems.map((i: any) => i.tradeNameId));
+            if (batchWarnings.length) {
+                allWarnings.push({ type: 'batch_interactions', warnings: batchWarnings });
+                if (batchWarnings.some((w: any) => w.severity === 'Critical' || w.severity === 'High')) blocked = true;
+            }
+            if (blocked) {
+                return res.status(400).json({
+                    message: 'Cannot prescribe: Critical warnings detected',
+                    blocked: true,
+                    warnings: allWarnings
+                });
+            }
+
+            const prescription = await prisma.prescription.create({
+                data: {
+                    doctorId,
+                    patientId,
+                    visitId: visitId ?? undefined,
+                    status: PrescriptionStatus.Draft,
+                    prescriptionDate: new Date(),
+                    validFrom: validFromDate,
+                    validUntil: validUntilDate,
+                    maxRefills: maxRefills ?? 0,
+                    notes: notes ?? undefined,
+                    version: 1,
+                    prescriptionItems: {
+                        create: bodyItems.map((item: any, idx: number) => ({
+                            tradeNameId: item.tradeNameId,
+                            dosage: item.dosage ?? undefined,
+                            frequency: item.frequency ?? undefined,
+                            duration: item.duration ?? undefined,
+                            instructions: item.instructions ?? undefined,
+                            sortOrder: idx
+                        }))
+                    }
+                },
+                include: prescriptionIncludeWithItemsAndVisit
+            });
+
+            const mapped = mapFirstItemToLegacy(prescription);
+            return res.status(201).json({ prescription: mapped, warnings: allWarnings });
+        }
+
+        // Legacy single medicine
+        const warningResult = await generateWarnings(patientId, tradeNameId);
         if (warningResult.blocked) {
             return res.status(400).json({
                 message: 'Cannot prescribe: Critical warnings detected',
@@ -39,51 +138,32 @@ export const createPrescription = async (req: Request, res: Response) => {
             });
         }
 
-        // Create prescription
         const prescription = await prisma.prescription.create({
             data: {
                 doctorId,
                 patientId,
                 tradeNameId,
+                visitId: visitId ?? undefined,
                 status: PrescriptionStatus.Draft,
                 prescriptionDate: new Date(),
-                validFrom: validFrom ? new Date(validFrom) : new Date(),
-                validUntil: validUntil ? new Date(validUntil) : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days default
+                validFrom: validFromDate,
+                validUntil: validUntilDate,
                 dosage,
                 frequency,
                 duration,
                 instructions,
                 maxRefills: maxRefills || 0,
                 notes,
-                version: 1
-            },
-            include: {
-                doctor: {
-                    include: {
-                        user: {
-                            select: { email: true }
-                        }
-                    }
-                },
-                patient: {
-                    include: {
-                        user: {
-                            select: { email: true }
-                        }
-                    }
-                },
-                tradeName: {
-                    include: {
-                        activeSubstance: true,
-                        company: true
-                    }
+                version: 1,
+                prescriptionItems: {
+                    create: [{ tradeNameId, dosage, frequency, duration, instructions, sortOrder: 0 }]
                 }
-            }
+            },
+            include: prescriptionIncludeWithItemsAndVisit
         });
 
-        // Return prescription WITH warnings
         return res.status(201).json({
-            prescription,
+            prescription: mapFirstItemToLegacy(prescription),
             warnings: warningResult.warnings
         });
     } catch (error) {
@@ -157,9 +237,9 @@ export const createBatchPrescriptions = async (req: Request, res: Response) => {
             });
         }
 
-        // STEP 4: Create all prescriptions in a transaction
+        // STEP 4: Create all prescriptions in a transaction (each with one PrescriptionItem)
         const prescriptions = await prisma.$transaction(
-            medicines.map((med: any) => 
+            medicines.map((med: any, idx: number) =>
                 prisma.prescription.create({
                     data: {
                         doctorId,
@@ -175,15 +255,14 @@ export const createBatchPrescriptions = async (req: Request, res: Response) => {
                         instructions: med.instructions,
                         maxRefills: maxRefills || 0,
                         notes: med.notes,
-                        version: 1
+                        version: 1,
+                        prescriptionItems: {
+                            create: [{ tradeNameId: med.tradeNameId, dosage: med.dosage, frequency: med.frequency, duration: med.duration, instructions: med.instructions, sortOrder: idx }]
+                        }
                     },
                     include: {
-                        tradeName: {
-                            include: {
-                                activeSubstance: true,
-                                company: true
-                            }
-                        }
+                        tradeName: { include: { activeSubstance: true, company: true } },
+                        prescriptionItems: { include: { tradeName: { include: { activeSubstance: true, company: true } } } }
                     }
                 })
             )
@@ -213,40 +292,28 @@ export const getPrescriptions = async (req: Request, res: Response) => {
 
         const skip = (parseInt(page as string) - 1) * parseInt(limit as string);
 
-        const [prescriptions, total] = await Promise.all([
+        const [prescriptionsRaw, total] = await Promise.all([
             prisma.prescription.findMany({
                 where,
                 skip,
                 take: parseInt(limit as string),
                 include: {
-                    doctor: {
-                        select: {
-                            id: true,
-                            name: true,
-                            specialization: true
-                        }
-                    },
-                    patient: {
-                        select: {
-                            id: true,
-                            age: true,
-                            user: { select: { name: true } }
-                        }
-                    },
-                    tradeName: {
-                        include: {
-                            activeSubstance: true,
-                            company: true
-                        }
+                    doctor: { select: { id: true, name: true, specialization: true } },
+                    patient: { select: { id: true, age: true, user: { select: { name: true } } } },
+                    tradeName: { include: { activeSubstance: true, company: true } },
+                    visit: { select: { id: true, visitDate: true, visitType: true, isNewVisit: true } },
+                    prescriptionItems: {
+                        orderBy: { sortOrder: 'asc' },
+                        include: { tradeName: { include: { activeSubstance: true, company: true } } }
                     },
                     drugInteractionAlerts: true
                 },
-                orderBy: {
-                    prescriptionDate: 'desc'
-                }
+                orderBy: { prescriptionDate: 'desc' }
             }),
             prisma.prescription.count({ where })
         ]);
+
+        const prescriptions = prescriptionsRaw.map((p) => mapFirstItemToLegacy(p));
 
         return res.json({
             prescriptions,
@@ -271,46 +338,24 @@ export const getPrescriptionById = async (req: Request, res: Response) => {
         const prescription = await prisma.prescription.findUnique({
             where: { id: parseInt(id) },
             include: {
-                doctor: {
-                    include: {
-                        user: {
-                            select: { email: true, role: true }
-                        }
-                    }
-                },
+                doctor: { include: { user: { select: { email: true, role: true } } } },
                 patient: {
                     include: {
-                        user: {
-                            select: { email: true }
-                        },
+                        user: { select: { email: true } },
                         patientAllergies: { include: { allergen: true } },
-                        patientDiseases: {
-                            include: {
-                                disease: true
-                            }
-                        }
+                        patientDiseases: { include: { disease: true } }
                     }
                 },
-                tradeName: {
-                    include: {
-                        activeSubstance: true,
-                        company: true
-                    }
+                tradeName: { include: { activeSubstance: true, company: true } },
+                visit: { select: { id: true, visitDate: true, visitType: true, isNewVisit: true } },
+                prescriptionItems: {
+                    orderBy: { sortOrder: 'asc' },
+                    include: { tradeName: { include: { activeSubstance: true, company: true } } }
                 },
                 drugInteractionAlerts: {
-                    include: {
-                        interactingMedicine: {
-                            include: {
-                                activeSubstance: true
-                            }
-                        }
-                    }
+                    include: { interactingMedicine: { include: { activeSubstance: true } } }
                 },
-                prescriptionVersions: {
-                    orderBy: {
-                        version: 'desc'
-                    }
-                }
+                prescriptionVersions: { orderBy: { version: 'desc' } }
             }
         });
 
@@ -318,7 +363,7 @@ export const getPrescriptionById = async (req: Request, res: Response) => {
             return res.status(404).json({ message: 'Prescription not found' });
         }
 
-        return res.json(prescription);
+        return res.json(mapFirstItemToLegacy(prescription));
     } catch (error) {
         console.error('Error fetching prescription:', error);
         return res.status(500).json({ message: 'Error fetching prescription', error });
