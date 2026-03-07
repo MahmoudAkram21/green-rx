@@ -68,6 +68,7 @@ export const getSideEffectsByMedication = async (req: Request, res: Response, ne
             sideEffects: records.map((r) => ({
                 id: r.sideEffect.id,
                 name: r.sideEffect.name,
+                nameAr: r.sideEffect.nameAr,
                 frequency: r.frequency,
                 bodySystem: r.bodySystem,
             })),
@@ -247,7 +248,7 @@ export const getMySideEffects = async (req: Request, res: Response, next: NextFu
         res.json({
             sideEffects: records.map((r) => ({
                 id: r.id,
-                sideEffect: { id: r.sideEffect.id, name: r.sideEffect.name },
+                sideEffect: { id: r.sideEffect.id, name: r.sideEffect.name, nameAr: r.sideEffect.nameAr },
                 medication: r.patientMedicine,
                 severity: r.severity,
                 notes: r.notes,
@@ -283,7 +284,7 @@ export const getMySideEffectsByMedication = async (req: Request, res: Response, 
         res.json({
             sideEffects: records.map((r) => ({
                 id: r.id,
-                sideEffect: { id: r.sideEffect.id, name: r.sideEffect.name },
+                sideEffect: { id: r.sideEffect.id, name: r.sideEffect.name, nameAr: r.sideEffect.nameAr },
                 severity: r.severity,
                 notes: r.notes,
                 reportedAt: r.reportedAt,

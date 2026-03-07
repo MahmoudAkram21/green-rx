@@ -5,11 +5,13 @@ import { SideEffectCreatedBy, SideEffectStatus } from '../../generated/client/cl
 
 const createSideEffectSchema = z.object({
     name: z.string().min(1).max(200).trim(),
+    nameAr: z.string().max(200).trim().optional().nullable(),
     medications: z.array(z.number().int().positive()).optional().default([]),
 });
 
 const updateSideEffectSchema = z.object({
     name: z.string().min(1).max(200).trim().optional(),
+    nameAr: z.string().max(200).trim().optional().nullable(),
 });
 
 const attachMedicationsSchema = z.object({
@@ -30,6 +32,7 @@ export const createSideEffect = async (req: Request, res: Response, next: NextFu
         const sideEffect = await prisma.sideEffect.create({
             data: {
                 name,
+                nameAr: parsed.nameAr?.trim() || null,
                 createdBy: SideEffectCreatedBy.Admin,
                 status: SideEffectStatus.Approved,
             },
@@ -97,9 +100,13 @@ export const updateSideEffect = async (req: Request, res: Response, next: NextFu
             }
         }
 
+        const updateData: { name?: string; nameAr?: string | null } = {};
+        if (parsed.name !== undefined) updateData.name = parsed.name;
+        if (parsed.nameAr !== undefined) updateData.nameAr = parsed.nameAr?.trim() || null;
+
         const updated = await prisma.sideEffect.update({
             where: { id },
-            data: parsed,
+            data: updateData,
             include: {
                 medicationSideEffects: {
                     include: { activeSubstance: { select: { id: true, activeSubstance: true } } },
@@ -206,6 +213,7 @@ export const listSideEffects = async (_req: Request, res: Response, next: NextFu
             sideEffects: sideEffects.map((s) => ({
                 id: s.id,
                 name: s.name,
+                nameAr: s.nameAr,
                 createdBy: s.createdBy,
                 status: s.status,
                 createdAt: s.createdAt,
@@ -236,6 +244,7 @@ export const listPendingSideEffects = async (_req: Request, res: Response, next:
             sideEffects: sideEffects.map((s) => ({
                 id: s.id,
                 name: s.name,
+                nameAr: s.nameAr,
                 createdBy: s.createdBy,
                 status: s.status,
                 createdByUserId: s.createdByUserId,

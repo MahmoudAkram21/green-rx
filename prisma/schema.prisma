@@ -1646,7 +1646,8 @@ model ExportHistory {
 
 model SideEffect {
   id        Int      @id @default(autoincrement())
-  name      String   @unique
+  name      String   @unique  // English name
+  nameAr    String?  // Arabic name
   createdBy SideEffectCreatedBy @default(Admin)
   status    SideEffectStatus @default(Approved)
   createdByUserId Int?  // for audit when createdBy=Patient
