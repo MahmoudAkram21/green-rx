@@ -341,6 +341,7 @@ model Patient {
   appointments     Appointment[]
   medicalReports   MedicalReport[]
   shareLinks       PatientShareLink[]
+  shareTokens      PatientShareToken[]
   adverseReactions AdverseDrugReaction[]
   childrenProfiles ChildProfile[]        @relation("ParentChildren")
   ratings          Rating[]
@@ -522,6 +523,7 @@ model Doctor {
   ratings             Rating[]
   visits              Visit[]
   patientShareLinks   PatientShareLink[]
+  patientShareTokens  PatientShareToken[]
   medicineSuggestions MedicineSuggestion[]
 
   @@index([specialization])
@@ -1291,6 +1293,27 @@ model PatientShareLink {
   @@index([expiresAt])
   @@index([doctorId])
   @@map("patient_share_links")
+}
+
+// QR-code based patient-to-doctor sharing
+model PatientShareToken {
+  id        Int      @id @default(autoincrement())
+  patientId Int
+  token     String   @unique
+  expiresAt DateTime
+  used      Boolean  @default(false)
+  usedAt    DateTime?
+  usedByDoctorId Int?
+  createdAt DateTime @default(now())
+
+  // Relations
+  patient Patient @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  doctor  Doctor? @relation(fields: [usedByDoctorId], references: [id], onDelete: SetNull)
+
+  @@index([token])
+  @@index([expiresAt])
+  @@index([patientId])
+  @@map("patient_share_tokens")
 }
 
 // ============================================

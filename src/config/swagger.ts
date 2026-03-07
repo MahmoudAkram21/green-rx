@@ -418,6 +418,10 @@ s('/admin/audit-logs', 'get', ADMIN_TAG, 'Get audit logs');
 s('/settings/logo', 'get', ADMIN_TAG, 'Get application logo (public)', false);
 s('/settings/logo', 'post', ADMIN_TAG, 'Upload / update application logo (Admin)');
 
+// PATIENT SHARE TOKEN (QR Code sharing)
+s('/patient-share-token/generate', 'post', [PATIENT_TAGS.SHARE_WITH_DOCTOR, DOCTOR_TAGS.MY_PATIENTS, DOCTOR_PATIENTS_SECTION], 'Generate a secure QR code token for sharing profile with a doctor (Patient only). Returns token + QR code base64 data URL. Token expires in 10 minutes.', true, [], undefined, { '201': 'Token generated successfully (token, expiresAt, qrCode base64)' });
+s('/patient-share-token/redeem', 'post', [PATIENT_TAGS.SHARE_WITH_DOCTOR, DOCTOR_TAGS.MY_PATIENTS, DOCTOR_PATIENTS_SECTION], 'Redeem a patient share QR token (Doctor only). Validates token, creates patient-doctor relationship, sends notifications, returns patient details.', true, [], { schemaRef: 'RedeemShareTokenRequest' }, { '201': 'Patient linked successfully', '404': 'Invalid token or profile not found', '409': 'Patient already linked to this doctor', '410': 'Token expired or already used' });
+
 // IMPORT
 s('/import/active-substances', 'post', ADMIN_TAG, 'Import active substances from Excel/CSV file');
 s('/import/{entityType}', 'post', ADMIN_TAG, 'Generic entity import', true, [ps('entityType')]);
@@ -938,6 +942,35 @@ const options: Record<string, unknown> = {
         AddPermissionToRoleRequest: { type: 'object', required: ['permissionId'], properties: { permissionId: { type: 'integer' } } },
         RejectDoctorRequest: { type: 'object', properties: { reason: { type: 'string' } } },
         RejectPharmacistRequest: { type: 'object', properties: { reason: { type: 'string' } } },
+        // ── Patient share token (QR code)
+        RedeemShareTokenRequest: {
+          description: 'Redeem a patient share QR token. Required: token (UUID string from the scanned QR code).',
+          type: 'object',
+          required: ['token'],
+          properties: {
+            token: { type: 'string', format: 'uuid', description: 'Required. The token from the scanned QR code.' }
+          }
+        },
+        GenerateShareTokenResponse: {
+          description: 'Response after generating a share token. Includes the raw token, expiration info, and QR code as a base64 data URL.',
+          type: 'object',
+          properties: {
+            message:          { type: 'string' },
+            token:            { type: 'string', format: 'uuid', description: 'The generated secure token.' },
+            expiresAt:        { type: 'string', format: 'date-time', description: 'Token expiration timestamp.' },
+            expiresInMinutes: { type: 'integer', description: 'Token TTL in minutes.' },
+            qrCode:           { type: 'string', description: 'QR code image as base64 data URL (image/png).' }
+          }
+        },
+        RedeemShareTokenResponse: {
+          description: 'Response after successfully redeeming a share token. Includes the new relationship and patient details.',
+          type: 'object',
+          properties: {
+            message:      { type: 'string' },
+            relationship: { type: 'object', description: 'The created PatientDoctor relationship.' },
+            patient:      { type: 'object', description: 'Patient details (id, name, email, age, gender, bloodType, diseases, allergies).' }
+          }
+        },
         VerifyDoctorRequest: { type: 'object', properties: { notes: { type: 'string' } } },
         // ── Drug-safety schemas
         WarningSeverity: {

@@ -40,6 +40,7 @@ import settingsRoutes from './settings.routes';
 import lifestyleRoutes from './lifestyle.routes';
 import familyRelationRoutes from './familyRelation.routes';
 import operationRoutes from './operation.routes';
+import patientShareTokenRoutes from './patientShareToken.routes';
 
 // Mount routes
 router.use('/auth', authRoutes);
@@ -80,6 +81,7 @@ router.use('/settings', settingsRoutes);
 router.use('/lifestyles', lifestyleRoutes);
 router.use('/family-relations', familyRelationRoutes);
 router.use('/operations', operationRoutes);
+router.use('/patient-share-token', patientShareTokenRoutes);
 
 // Example route
 router.get('/', (_req: Request, res: Response) => {
