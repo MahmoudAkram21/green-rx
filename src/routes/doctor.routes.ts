@@ -4,6 +4,7 @@ import {
     getDoctorById,
     getDoctorByUserId,
     getDoctorMe,
+    getDoctorMeStats,
     updateDoctorMe,
     getAllDoctors,
     getNearbyDoctors,
@@ -29,7 +30,8 @@ router.use(authenticate);
 // Doctor Profile
 router.post('/', authorize([UserRole.Doctor, UserRole.Admin]), createOrUpdateDoctor);
 router.get('/search', getAllDoctors); // Public search for patients to find doctors
-// Mobile: current doctor by token (must be before /:id)
+// Mobile: current doctor by token (must be before /:id); /me/stats before /me so it matches first
+router.get('/me/stats', authorize([UserRole.Doctor]), getDoctorMeStats);
 router.get('/me', authorize([UserRole.Doctor]), getDoctorMe);
 router.patch('/me', authorize([UserRole.Doctor]), updateDoctorMe);
 router.get('/nearby', authorize([UserRole.Patient, UserRole.Doctor, UserRole.Admin, UserRole.SuperAdmin]), getNearbyDoctors);
