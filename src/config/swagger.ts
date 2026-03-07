@@ -425,6 +425,15 @@ s('/admin/doctors/{id}/reject', 'patch', ADMIN_TAG, 'Reject a doctor', true, [p(
 s('/admin/pharmacists/pending', 'get', ADMIN_TAG, 'List pharmacists pending verification');
 s('/admin/pharmacists/{id}/verify', 'patch', ADMIN_TAG, 'Verify a pharmacist', true, [p('id')]);
 s('/admin/pharmacists/{id}/reject', 'patch', ADMIN_TAG, 'Reject a pharmacist', true, [p('id')], { schemaRef: 'RejectPharmacistRequest' });
+// Admin - Side Effects Management
+s('/admin/side-effects', 'post', ADMIN_TAG, 'Create a new side effect and optionally link to medications (active substance IDs)', true, [], { schemaRef: 'AdminCreateSideEffectRequest' }, { '201': 'Side effect created' });
+s('/admin/side-effects', 'get', ADMIN_TAG, 'List all side effects with their linked medications');
+s('/admin/side-effects/pending', 'get', ADMIN_TAG, 'List patient-submitted side effects pending approval');
+s('/admin/side-effects/{id}', 'put', ADMIN_TAG, 'Update a side effect (e.g. rename)', true, [p('id')], { schemaRef: 'AdminUpdateSideEffectRequest' });
+s('/admin/side-effects/{id}/medications', 'post', ADMIN_TAG, 'Attach medications (active substance IDs) to side effect', true, [p('id')], { schemaRef: 'AdminAttachMedicationsRequest' });
+s('/admin/side-effects/{id}/medications/{medicationId}', 'delete', ADMIN_TAG, 'Remove a medication from a side effect', true, [p('id'), p('medicationId')]);
+s('/admin/side-effects/{id}/approve', 'patch', ADMIN_TAG, 'Approve a patient-submitted side effect (makes it visible in mobile app)', true, [p('id')]);
+
 s('/admin/statistics', 'get', ADMIN_TAG, 'Get platform statistics');
 s('/admin/audit-logs', 'get', ADMIN_TAG, 'Get audit logs');
 
@@ -1002,6 +1011,29 @@ const options: Record<string, unknown> = {
         AddPermissionToRoleRequest: { type: 'object', required: ['permissionId'], properties: { permissionId: { type: 'integer' } } },
         RejectDoctorRequest: { type: 'object', properties: { reason: { type: 'string' } } },
         RejectPharmacistRequest: { type: 'object', properties: { reason: { type: 'string' } } },
+        // ── Admin Side Effects Management
+        AdminCreateSideEffectRequest: {
+          description: 'Create side effect and optionally link to medications. medications = array of ActiveSubstance IDs (from GET /active-substances or /trade-names).',
+          type: 'object',
+          required: ['name'],
+          properties: {
+            name: { type: 'string', description: 'Required. Side effect name (e.g. Headache).' },
+            medications: { type: 'array', items: { type: 'integer' }, description: 'Optional. Active substance IDs to link.' }
+          }
+        },
+        AdminUpdateSideEffectRequest: {
+          description: 'Update side effect. All fields optional.',
+          type: 'object',
+          properties: { name: { type: 'string' } }
+        },
+        AdminAttachMedicationsRequest: {
+          description: 'Attach medications to side effect. medications = array of ActiveSubstance IDs.',
+          type: 'object',
+          required: ['medications'],
+          properties: {
+            medications: { type: 'array', items: { type: 'integer' }, minItems: 1 }
+          }
+        },
         // ── Side effects
         AddSideEffectRequest: {
           description: 'Add a new side effect and link it to a medication. Required: medicationId (PatientMedicine id), name.',

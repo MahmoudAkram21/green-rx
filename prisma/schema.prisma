@@ -198,6 +198,16 @@ enum VisitType {
   Consultation
 }
 
+enum SideEffectCreatedBy {
+  Admin
+  Patient
+}
+
+enum SideEffectStatus {
+  Approved
+  Pending
+}
+
 // ============================================
 // USER & AUTHENTICATION
 // ============================================
@@ -1656,7 +1666,11 @@ model ExportHistory {
 
 model SideEffect {
   id        Int      @id @default(autoincrement())
-  name      String   @unique
+  name      String   @unique  // English name
+  nameAr    String?  // Arabic name
+  createdBy SideEffectCreatedBy @default(Admin)
+  status    SideEffectStatus @default(Approved)
+  createdByUserId Int?  // for audit when createdBy=Patient
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -1664,6 +1678,8 @@ model SideEffect {
   patientSideEffects    PatientSideEffect[]
 
   @@index([name])
+  @@index([status])
+  @@index([createdBy])
   @@map("side_effects")
 }
 

@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { prisma } from '../lib/prisma';
+import { SideEffectCreatedBy, SideEffectStatus } from '../../generated/client/client';
 
 const EDA_REDIRECT_URL = 'https://edaegypt.gov.eg';
 
@@ -54,7 +55,10 @@ export const getSideEffectsByMedication = async (req: Request, res: Response, ne
         }
 
         const records = await prisma.medicationSideEffect.findMany({
-            where: { activeSubstanceId },
+            where: {
+                activeSubstanceId,
+                sideEffect: { status: SideEffectStatus.Approved },
+            },
             include: { sideEffect: true },
             orderBy: { sideEffect: { name: 'asc' } },
         });
@@ -64,6 +68,7 @@ export const getSideEffectsByMedication = async (req: Request, res: Response, ne
             sideEffects: records.map((r) => ({
                 id: r.sideEffect.id,
                 name: r.sideEffect.name,
+                nameAr: r.sideEffect.nameAr,
                 frequency: r.frequency,
                 bodySystem: r.bodySystem,
             })),
@@ -86,24 +91,38 @@ export const addSideEffect = async (req: Request, res: Response, next: NextFunct
             return;
         }
 
-        const patientMedicine = await prisma.patientMedicine.findUnique({
-            where: { id: medicationId },
+        const patient = await prisma.patient.findUnique({ where: { userId: req.user!.userId } });
+        if (!patient) {
+            res.status(404).json({ error: 'Patient profile not found' });
+            return;
+        }
+
+        const patientMedicine = await prisma.patientMedicine.findFirst({
+            where: { id: medicationId, patientId: patient.id },
             include: { tradeName: true },
         });
 
         if (!patientMedicine) {
-            res.status(404).json({ error: 'Medication not found' });
+            res.status(404).json({ error: 'Medication not found or does not belong to you' });
             return;
         }
 
         const activeSubstanceId =
             patientMedicine.activeSubstanceId ?? patientMedicine.tradeName?.activeSubstanceId;
 
-        const sideEffect = await prisma.sideEffect.upsert({
-            where: { name: name.trim() },
-            create: { name: name.trim() },
-            update: {},
-        });
+        const trimmedName = name.trim();
+        let sideEffect = await prisma.sideEffect.findUnique({ where: { name: trimmedName } });
+
+        if (!sideEffect) {
+            sideEffect = await prisma.sideEffect.create({
+                data: {
+                    name: trimmedName,
+                    createdBy: SideEffectCreatedBy.Patient,
+                    status: SideEffectStatus.Pending,
+                    createdByUserId: req.user!.userId,
+                },
+            });
+        }
 
         if (activeSubstanceId) {
             await prisma.medicationSideEffect.upsert({
@@ -122,8 +141,26 @@ export const addSideEffect = async (req: Request, res: Response, next: NextFunct
             });
         }
 
+        if (patient) {
+            await prisma.patientSideEffect.upsert({
+                where: {
+                    patientId_patientMedicineId_sideEffectId: {
+                        patientId: patient.id,
+                        patientMedicineId: medicationId,
+                        sideEffectId: sideEffect.id,
+                    },
+                },
+                create: {
+                    patientId: patient.id,
+                    patientMedicineId: medicationId,
+                    sideEffectId: sideEffect.id,
+                },
+                update: {},
+            });
+        }
+
         res.status(201).json({
-            message: 'Side effect created and linked to medication',
+            message: 'Side effect created and linked to medication. Pending admin approval to appear in the app.',
             sideEffect,
         });
     } catch (error) {
@@ -160,12 +197,12 @@ export const reportSideEffects = async (req: Request, res: Response, next: NextF
         }
 
         const existingSideEffects = await prisma.sideEffect.findMany({
-            where: { id: { in: sideEffects } },
+            where: { id: { in: sideEffects }, status: SideEffectStatus.Approved },
         });
         if (existingSideEffects.length !== sideEffects.length) {
             const found = new Set(existingSideEffects.map((s) => s.id));
             const missing = sideEffects.filter((id: number) => !found.has(id));
-            res.status(400).json({ error: 'Some side effect IDs do not exist', missing });
+            res.status(400).json({ error: 'Some side effect IDs do not exist or are not approved yet', missing });
             return;
         }
 
@@ -211,7 +248,7 @@ export const getMySideEffects = async (req: Request, res: Response, next: NextFu
         res.json({
             sideEffects: records.map((r) => ({
                 id: r.id,
-                sideEffect: { id: r.sideEffect.id, name: r.sideEffect.name },
+                sideEffect: { id: r.sideEffect.id, name: r.sideEffect.name, nameAr: r.sideEffect.nameAr },
                 medication: r.patientMedicine,
                 severity: r.severity,
                 notes: r.notes,
@@ -247,7 +284,7 @@ export const getMySideEffectsByMedication = async (req: Request, res: Response, 
         res.json({
             sideEffects: records.map((r) => ({
                 id: r.id,
-                sideEffect: { id: r.sideEffect.id, name: r.sideEffect.name },
+                sideEffect: { id: r.sideEffect.id, name: r.sideEffect.name, nameAr: r.sideEffect.nameAr },
                 severity: r.severity,
                 notes: r.notes,
                 reportedAt: r.reportedAt,
