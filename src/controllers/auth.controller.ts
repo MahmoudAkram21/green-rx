@@ -117,7 +117,7 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
             }
         });
 
-        const userPayload: { id: number; email: string; role: string; patientId?: number } = {
+        const userPayload: { id: number; email: string; role: string; patientId?: number; doctorId?: number; pharmacistId?: number } = {
             id: result.id,
             email: result.email,
             role: result.role
@@ -125,6 +125,14 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
         if (result.role === UserRole.Patient) {
             const patient = await prisma.patient.findUnique({ where: { userId: result.id }, select: { id: true } });
             if (patient) userPayload.patientId = patient.id;
+        }
+        if (result.role === UserRole.Doctor) {
+            const doctor = await prisma.doctor.findUnique({ where: { userId: result.id }, select: { id: true } });
+            if (doctor) userPayload.doctorId = doctor.id;
+        }
+        if (result.role === UserRole.Pharmacist) {
+            const pharmacist = await prisma.pharmacist.findUnique({ where: { userId: result.id }, select: { id: true } });
+            if (pharmacist) userPayload.pharmacistId = pharmacist.id;
         }
 
         res.status(201).json({
@@ -223,7 +231,7 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
             data: { lastLoginAt: new Date() }
         });
 
-        const userPayload: { id: number; email: string; role: string; patientId?: number } = {
+        const userPayload: { id: number; email: string; role: string; patientId?: number; doctorId?: number; pharmacistId?: number } = {
             id: user.id,
             email: user.email,
             role: user.role
@@ -231,6 +239,14 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
         if (user.role === UserRole.Patient) {
             const patient = await prisma.patient.findUnique({ where: { userId: user.id }, select: { id: true } });
             if (patient) userPayload.patientId = patient.id;
+        }
+        if (user.role === UserRole.Doctor) {
+            const doctor = await prisma.doctor.findUnique({ where: { userId: user.id }, select: { id: true } });
+            if (doctor) userPayload.doctorId = doctor.id;
+        }
+        if (user.role === UserRole.Pharmacist) {
+            const pharmacist = await prisma.pharmacist.findUnique({ where: { userId: user.id }, select: { id: true } });
+            if (pharmacist) userPayload.pharmacistId = pharmacist.id;
         }
 
         res.json({

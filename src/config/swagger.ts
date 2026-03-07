@@ -560,12 +560,22 @@ const options: Record<string, unknown> = {
           }
         },
         LoginResponse: {
-          description: 'Login and register response. When user.role is Patient, user.patientId is present (patient profile id for /patients/:patientId or "me").',
+          description: 'Login and register response. user.patientId when role is Patient; user.doctorId when role is Doctor; user.pharmacistId when role is Pharmacist.',
           type: 'object',
           properties: {
             accessToken:  { type: 'string' },
             refreshToken: { type: 'string' },
-            user:         { type: 'object', properties: { id: { type: 'integer' }, email: { type: 'string' }, role: { type: 'string' }, patientId: { type: 'integer', description: 'Present when role is Patient.' } } }
+            user:         {
+              type: 'object',
+              properties: {
+                id:          { type: 'integer' },
+                email:       { type: 'string' },
+                role:        { type: 'string' },
+                patientId:   { type: 'integer', description: 'Present when role is Patient.' },
+                doctorId:    { type: 'integer', description: 'Present when role is Doctor.' },
+                pharmacistId: { type: 'integer', description: 'Present when role is Pharmacist.' }
+              }
+            }
           }
         },
         RefreshTokenRequest: {
