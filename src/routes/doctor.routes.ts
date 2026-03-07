@@ -5,8 +5,13 @@ import {
     getDoctorByUserId,
     getDoctorMe,
     updateDoctorMe,
-    verifyDoctor,
     getAllDoctors,
+    getNearbyDoctors,
+    verifyDoctor,
+    getDoctorClinics,
+    createDoctorClinic,
+    updateDoctorClinic,
+    deleteDoctorClinic,
     assignPatient,
     getDoctorPatients,
     getPatientDetailsForDoctor,
@@ -27,11 +32,18 @@ router.get('/search', getAllDoctors); // Public search for patients to find doct
 // Mobile: current doctor by token (must be before /:id)
 router.get('/me', authorize([UserRole.Doctor]), getDoctorMe);
 router.patch('/me', authorize([UserRole.Doctor]), updateDoctorMe);
+router.get('/nearby', authorize([UserRole.Patient, UserRole.Doctor, UserRole.Admin, UserRole.SuperAdmin]), getNearbyDoctors);
 router.get('/:id', getDoctorById);
 router.get('/user/:userId', getDoctorByUserId);
 
 // Doctor Verification (Admin only)
 router.put('/:id/verify', authorize([UserRole.Admin, UserRole.SuperAdmin]), verifyDoctor);
+
+// Doctor Clinics (multiple clinics per doctor; routes before /:doctorId/patients so "clinics" is not a patientId)
+router.get('/:doctorId/clinics', authorize([UserRole.Doctor, UserRole.Admin, UserRole.SuperAdmin]), getDoctorClinics);
+router.post('/:doctorId/clinics', authorize([UserRole.Doctor, UserRole.Admin, UserRole.SuperAdmin]), createDoctorClinic);
+router.patch('/:doctorId/clinics/:clinicId', authorize([UserRole.Doctor, UserRole.Admin, UserRole.SuperAdmin]), updateDoctorClinic);
+router.delete('/:doctorId/clinics/:clinicId', authorize([UserRole.Doctor, UserRole.Admin, UserRole.SuperAdmin]), deleteDoctorClinic);
 
 // Patient-Doctor Relationships (search route must come before /:doctorId/patients to avoid "search" as patientId)
 router.get('/:doctorId/patients/search', authorize([UserRole.Doctor, UserRole.Admin]), searchDoctorPatientsByName);

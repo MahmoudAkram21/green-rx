@@ -181,10 +181,18 @@ s('/patients/{patientId}/warnings', 'get', [PATIENT_TAGS.DRUG_SAFETY, PATIENT_TA
 s('/doctors', 'post', [DOCTOR_TAGS.MY_PATIENTS, DOCTOR_PATIENTS_SECTION], 'Create or update doctor profile', true, [], { schemaRef: 'CreateDoctorRequest' });
 s('/doctors/search', 'get', [PATIENT_TAGS.SHARE_WITH_DOCTOR, DOCTOR_TAGS.MY_PATIENTS], 'Search / list all doctors', true, [q('q', 'Search query')]);
 s('/doctors/me', 'get', [DOCTOR_TAGS.MY_PATIENTS, DOCTOR_PATIENTS_SECTION], 'Get current doctor profile (mobile: use Bearer token; no path params)', true);
-s('/doctors/me', 'patch', [DOCTOR_TAGS.MY_PATIENTS, DOCTOR_PATIENTS_SECTION], 'Update current doctor profile (mobile: use Bearer token; body: optional name, specialization, licenseNumber, clinicAddress, phoneNumber, yearsOfExperience, qualifications, consultationFee)', true, [], { schemaRef: 'UpdateDoctorMeRequest' });
+s('/doctors/me', 'patch', [DOCTOR_TAGS.MY_PATIENTS, DOCTOR_PATIENTS_SECTION], 'Update current doctor profile (mobile: use Bearer token). Body: optional name, specialization, licenseNumber, clinicAddress, phoneNumber, yearsOfExperience, qualifications, consultationFee; optional clinics array to replace all doctor clinics (each item: name?, address?, city?, latitude?, longitude?, workingHours?).', true, [], { schemaRef: 'UpdateDoctorMeRequest' });
+s('/doctors/nearby', 'get', [PATIENT_TAGS.SHARE_WITH_DOCTOR, DOCTOR_TAGS.MY_PATIENTS], 'Get doctors within admin-configured radius (km) of patient location. Uses Doctor-level lat/lng and DoctorClinic locations (nearest clinic used). Query: lat, lng. Returns verified doctors sorted by distance with distanceKm.', true, [
+  { name: 'lat', in: 'query', required: true, schema: { type: 'number' }, description: 'Latitude (-90 to 90)' },
+  { name: 'lng', in: 'query', required: true, schema: { type: 'number' }, description: 'Longitude (-180 to 180)' }
+]);
 s('/doctors/{id}', 'get', [PATIENT_TAGS.SHARE_WITH_DOCTOR, DOCTOR_TAGS.MY_PATIENTS, DOCTOR_PATIENTS_SECTION], 'Get doctor by ID', true, [p('id')]);
 s('/doctors/user/{userId}', 'get', [DOCTOR_TAGS.MY_PATIENTS, DOCTOR_PATIENTS_SECTION], 'Get doctor by user ID', true, [p('userId')]);
 s('/doctors/{id}/verify', 'put', ADMIN_TAG, 'Verify a doctor (Admin)', true, [p('id')], { schemaRef: 'VerifyDoctorRequest' });
+s('/doctors/{doctorId}/clinics', 'get', [DOCTOR_TAGS.MY_PATIENTS, DOCTOR_PATIENTS_SECTION], 'List clinics for a doctor (Doctor: own profile only; Admin: any doctor). Each clinic may have workingHours: array of { day, startTime, endTime }.', true, [p('doctorId')]);
+s('/doctors/{doctorId}/clinics', 'post', [DOCTOR_TAGS.MY_PATIENTS, DOCTOR_PATIENTS_SECTION], 'Create a clinic for a doctor. Body: name?, address?, city?, latitude?, longitude?, workingHours? (array of { day, startTime, endTime }).', true, [p('doctorId')], { schemaRef: 'CreateDoctorClinicRequest' });
+s('/doctors/{doctorId}/clinics/{clinicId}', 'patch', [DOCTOR_TAGS.MY_PATIENTS, DOCTOR_PATIENTS_SECTION], 'Update a doctor clinic. Body: same as create, all optional.', true, [p('doctorId'), p('clinicId')], { schemaRef: 'UpdateDoctorClinicRequest' });
+s('/doctors/{doctorId}/clinics/{clinicId}', 'delete', [DOCTOR_TAGS.MY_PATIENTS, DOCTOR_PATIENTS_SECTION], 'Delete a doctor clinic', true, [p('doctorId'), p('clinicId')]);
 s('/doctors/{doctorId}/patients/search', 'get', [DOCTOR_TAGS.MY_PATIENTS, DOCTOR_PATIENTS_SECTION], 'Search for patient by name (among doctor\'s assigned patients only)', true, [p('doctorId'), q('name', 'Patient name or partial name to search (also accepts "q")')]);
 s('/doctors/{doctorId}/patients/{patientId}', 'get', [DOCTOR_TAGS.MY_PATIENTS, DOCTOR_PATIENTS_SECTION], 'Get full details of a patient (profile, vitals, health status, visit files). Only for patients linked to this doctor.', true, [p('doctorId'), p('patientId')]);
 s('/doctors/{doctorId}/patients', 'get', [DOCTOR_TAGS.MY_PATIENTS, DOCTOR_PATIENTS_SECTION], 'Get patients assigned to doctor (My patients)', true, [p('doctorId')]);
@@ -432,6 +440,8 @@ s('/admin/audit-logs', 'get', ADMIN_TAG, 'Get audit logs');
 // SETTINGS
 s('/settings/logo', 'get', ADMIN_TAG, 'Get application logo (public)', false);
 s('/settings/logo', 'post', ADMIN_TAG, 'Upload / update application logo (Admin)');
+s('/settings/nearby-doctors-radius', 'get', ADMIN_TAG, 'Get nearby doctors search radius in km (Admin). Used by GET /doctors/nearby.', true);
+s('/settings/nearby-doctors-radius', 'put', ADMIN_TAG, 'Set nearby doctors search radius in km (Admin). Body: { radiusKm: number } (1–500).', true, [], { schemaRef: 'PutNearbyDoctorsRadiusRequest' });
 
 // PATIENT SHARE TOKEN (QR Code sharing)
 s('/patient-share-token/generate', 'post', [PATIENT_TAGS.SHARE_WITH_DOCTOR, DOCTOR_TAGS.MY_PATIENTS, DOCTOR_PATIENTS_SECTION], 'Generate a secure QR code token for sharing profile with a doctor (Patient only). Returns token + QR code base64 data URL. Token expires in 10 minutes.', true, [], undefined, { '201': 'Token generated successfully (token, expiresAt, qrCode base64)' });
@@ -770,15 +780,37 @@ const options: Record<string, unknown> = {
           properties: { userId: { type: 'integer', description: 'Required. From GET /auth/me.' }, name: { type: 'string', description: 'Required.' }, specialization: { type: 'string', description: 'Required.' }, licenseNumber: { type: 'string', description: 'Required.' }, licenseImageUrl: { type: 'string', description: 'Optional. URL of uploaded license image (e.g. /uploads/doctor-licenses/...).' }, phoneNumber: { type: 'string', description: 'Optional.' }, clinicAddress: { type: 'string', description: 'Optional.' }, yearsOfExperience: { type: 'integer', description: 'Optional.' }, qualifications: { type: 'string', description: 'Optional.' }, consultationFee: { type: 'number', description: 'Optional.' } }
         },
         UpdateDoctorMeRequest: {
-          description: 'PATCH /doctors/me. All fields optional. Send only fields to update. Used by mobile with Bearer token.',
+          description: 'PATCH /doctors/me. All fields optional. clinics: optional array of clinic objects (name?, address?, city?, latitude?, longitude?, workingHours? array of { day, startTime, endTime }); when provided, replaces all doctor clinics.',
           type: 'object',
-          properties: { name: { type: 'string' }, specialization: { type: 'string' }, licenseNumber: { type: 'string' }, licenseImageUrl: { type: 'string' }, phoneNumber: { type: 'string' }, clinicAddress: { type: 'string' }, yearsOfExperience: { type: 'integer' }, qualifications: { type: 'string' }, consultationFee: { type: 'number' } }
+          properties: { name: { type: 'string' }, specialization: { type: 'string' }, licenseNumber: { type: 'string' }, licenseImageUrl: { type: 'string' }, phoneNumber: { type: 'string' }, clinicAddress: { type: 'string' }, yearsOfExperience: { type: 'integer' }, qualifications: { type: 'string' }, consultationFee: { type: 'number' }, clinics: { type: 'array', items: { $ref: '#/components/schemas/CreateDoctorClinicRequest' }, description: 'Replace all clinics for this doctor; each item same shape as POST /doctors/:doctorId/clinics body.' } }
+        },
+        PutNearbyDoctorsRadiusRequest: {
+          description: 'PUT /settings/nearby-doctors-radius. Admin sets the radius in km used by GET /doctors/nearby.',
+          type: 'object',
+          required: ['radiusKm'],
+          properties: { radiusKm: { type: 'integer', minimum: 1, maximum: 500, description: 'Radius in kilometres (1–500)' } }
         },
         AssignPatientRequest: {
           description: 'Assign patient to doctor. Required: patientId, relationshipType. Optional: startDate, endDate. Used in POST /doctors/:doctorId/patients.',
           type: 'object',
           required: ['patientId', 'relationshipType'],
           properties: { patientId: { type: 'integer', description: 'Required.' }, relationshipType: { type: 'string', enum: ['PrimaryCare', 'Specialist', 'Consultation', 'Other'], description: 'Required.' }, startDate: { type: 'string', format: 'date-time', description: 'Optional.' }, endDate: { type: 'string', format: 'date-time', description: 'Optional.' } }
+        },
+        WorkingHoursSlot: {
+          description: 'One slot: day (weekday e.g. "monday" or ISO date), startTime (e.g. "09:00"), endTime (e.g. "17:00").',
+          type: 'object',
+          required: ['day', 'startTime', 'endTime'],
+          properties: { day: { type: 'string' }, startTime: { type: 'string' }, endTime: { type: 'string' } }
+        },
+        CreateDoctorClinicRequest: {
+          description: 'Create a doctor clinic. All optional. workingHours: array of { day, startTime, endTime }.',
+          type: 'object',
+          properties: { name: { type: 'string' }, address: { type: 'string' }, city: { type: 'string' }, latitude: { type: 'number' }, longitude: { type: 'number' }, workingHours: { type: 'array', items: { $ref: '#/components/schemas/WorkingHoursSlot' } } }
+        },
+        UpdateDoctorClinicRequest: {
+          description: 'Update a doctor clinic. All optional. workingHours: array of { day, startTime, endTime }.',
+          type: 'object',
+          properties: { name: { type: 'string' }, address: { type: 'string' }, city: { type: 'string' }, latitude: { type: 'number' }, longitude: { type: 'number' }, workingHours: { type: 'array', items: { $ref: '#/components/schemas/WorkingHoursSlot' } } }
         },
         CreatePharmacistRequest: {
           description: 'Create/update pharmacist profile. Required: userId, name, licenseNumber. Optional: phoneNumber, pharmacyName, pharmacyAddress. Get userId from GET /auth/me.',

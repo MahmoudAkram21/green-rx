@@ -536,9 +536,28 @@ model Doctor {
   patientShareLinks   PatientShareLink[]
   patientShareTokens  PatientShareToken[]
   medicineSuggestions MedicineSuggestion[]
+  doctorClinics       DoctorClinic[]
 
   @@index([specialization])
   @@map("doctors")
+}
+
+model DoctorClinic {
+  id           Int      @id @default(autoincrement())
+  doctorId     Int
+  name         String?  // e.g. "Main Clinic", "Branch A"
+  address      String?
+  city         String?
+  latitude     Decimal? @db.Decimal(10, 8)
+  longitude    Decimal? @db.Decimal(11, 8)
+  workingHours Json?    // array of { day, startTime, endTime }
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  doctor Doctor @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+
+  @@index([doctorId])
+  @@map("doctor_clinics")
 }
 
 model PatientDoctor {
@@ -1197,8 +1216,9 @@ model RolePermission {
 
 model AppSetting {
   id          Int       @id @default(autoincrement())
-  key         String    @unique // e.g. "logo"
+  key         String    @unique // e.g. "logo", "nearbyDoctorsRadiusKm"
   valueBytes  Bytes?    // binary value (e.g. logo image)
+  valueText   String?   // text value (e.g. "50" for radius km)
   contentType String?   // e.g. "image/png", "image/svg+xml"
   updatedAt   DateTime  @updatedAt
 
