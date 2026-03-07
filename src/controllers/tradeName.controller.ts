@@ -90,6 +90,12 @@ export const getTradeNameById = async (req: Request, res: Response, next: NextFu
                         }
                     }
                 },
+                tradeNameSideEffects: {
+                    include: {
+                        sideEffect: { select: { id: true, name: true, nameAr: true } }
+                    },
+                    orderBy: { sideEffect: { name: 'asc' } }
+                },
                 company: true,
                 adverseReactions: {
                     take: 10,
