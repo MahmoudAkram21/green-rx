@@ -58,6 +58,9 @@ const DOCTOR_TAGS = {
 /** Single Swagger section grouping all doctor capabilities related to patients */
 const DOCTOR_PATIENTS_SECTION = 'Doctor - Capabilities with patients';
 
+/** Doctor Add A New Drug flow: call these endpoints in order (Step 1–5). */
+const DOCTOR_ADD_DRUG_SECTION = 'Doctor - Add prescription (step-by-step)';
+
 const PHARMACIST_TAGS = {
   AUTH: 'Pharmacist - 1. Auth',
   PROFILE: 'Pharmacist - 2. Profile',
@@ -252,7 +255,7 @@ s('/add-medicine-requests/{id}/resolve', 'patch', ADMIN_TAG, 'Resolve request: l
 
 // PRESCRIPTIONS
 s('/prescriptions', 'get', [PATIENT_TAGS.PRESCRIPTIONS, DOCTOR_TAGS.PRESCRIPTIONS, DOCTOR_PATIENTS_SECTION], 'List prescriptions (filtered by role)', true, [q('patientId'), q('doctorId')]);
-s('/prescriptions', 'post', [DOCTOR_TAGS.PRESCRIPTIONS, DOCTOR_PATIENTS_SECTION], 'Create a prescription (runs drug-safety check)', true, [], { schemaRef: 'CreatePrescriptionRequest' });
+s('/prescriptions', 'post', [DOCTOR_TAGS.PRESCRIPTIONS, DOCTOR_PATIENTS_SECTION, DOCTOR_ADD_DRUG_SECTION], 'Step 5: Save the drug — create prescription (or prescription items) with tradeNameId from Step 4, dosage, duration, start date, repetitions, notes (runs drug-safety check)', true, [], { schemaRef: 'CreatePrescriptionRequest' });
 s('/prescriptions/batch', 'post', [DOCTOR_TAGS.PRESCRIPTIONS, DOCTOR_PATIENTS_SECTION], 'Batch-create prescriptions', true, [], { schemaRef: 'BatchPrescriptionsRequest' });
 s('/prescriptions/{id}', 'get', [PATIENT_TAGS.PRESCRIPTIONS, DOCTOR_TAGS.PRESCRIPTIONS, DOCTOR_PATIENTS_SECTION], 'Get prescription by ID', true, [p('id')]);
 s('/prescriptions/{id}', 'put', [DOCTOR_TAGS.PRESCRIPTIONS, DOCTOR_PATIENTS_SECTION], 'Update a prescription', true, [p('id')], { schemaRef: 'UpdatePrescriptionRequest' });
@@ -355,7 +358,9 @@ s('/medicine-suggestions/{id}/review', 'patch', ADMIN_TAG, 'Review / approve sug
 
 // ACTIVE SUBSTANCES
 s('/active-substances', 'post', ADMIN_TAG, 'Create an active substance (Admin/Company)', true, [], { schemaRef: 'CreateActiveSubstanceRequest' });
-s('/active-substances/search', 'get', [PATIENT_TAGS.MEDICATIONS, PHARMACIST_TAGS.MEDICATIONS_SEARCH], 'Search active substances', true, [q('q')]);
+s('/active-substances/classifications', 'get', [PATIENT_TAGS.MEDICATIONS, PHARMACIST_TAGS.MEDICATIONS_SEARCH, DOCTOR_ADD_DRUG_SECTION], 'Step 1: Search classifications for the active substance (dropdown / autocomplete)', true, [q('q', 'Filter classifications by substring (case-insensitive)')]);
+s('/active-substances/dosage-forms', 'get', [PATIENT_TAGS.MEDICATIONS, PHARMACIST_TAGS.MEDICATIONS_SEARCH, DOCTOR_ADD_DRUG_SECTION], 'Step 3: List dosage forms (optionally filtered by classification and/or selected active substance)', true, [q('q'), q('classification'), q('activeSubstanceId')]);
+s('/active-substances/search', 'get', [PATIENT_TAGS.MEDICATIONS, PHARMACIST_TAGS.MEDICATIONS_SEARCH, DOCTOR_ADD_DRUG_SECTION], 'Step 2: Search API (active substance) by classification; use selected classification from Step 1', true, [q('q'), q('classification', 'Filter by classification (alias: therapeuticClass)'), q('therapeuticClass'), q('page'), q('limit')]);
 s('/active-substances/{id}', 'get', [PATIENT_TAGS.MEDICATIONS, PHARMACIST_TAGS.MEDICATIONS_SEARCH], 'Get active substance by ID', true, [p('id')]);
 s('/active-substances/{id}', 'put', ADMIN_TAG, 'Update active substance (Admin/Company)', true, [p('id')], { schemaRef: 'UpdateActiveSubstanceRequest' });
 s('/active-substances/{id}', 'delete', ADMIN_TAG, 'Delete active substance (Admin)', true, [p('id')]);
@@ -364,7 +369,7 @@ s('/active-substances/{id}/interactions', 'get', [PATIENT_TAGS.DRUG_SAFETY, DOCT
 // TRADE NAMES
 s('/trade-names', 'get', [PATIENT_TAGS.MEDICATIONS, PHARMACIST_TAGS.MEDICATIONS_SEARCH], 'List all trade names');
 s('/trade-names', 'post', ADMIN_TAG, 'Create a trade name (Admin/Company)', true, [], { schemaRef: 'CreateTradeNameRequest' });
-s('/trade-names/search', 'get', [PATIENT_TAGS.MEDICATIONS, PHARMACIST_TAGS.MEDICATIONS_SEARCH], 'Search trade names by title or active substance name', true, [q('q', 'Search text (title or active substance)'), q('search', 'Alias for q'), q('activeSubstanceId'), q('companyId'), q('isActive'), q('availabilityStatus', 'InStock | OutOfStock | Discontinued | Pending'), q('page'), q('limit')]);
+s('/trade-names/search', 'get', [PATIENT_TAGS.MEDICATIONS, PHARMACIST_TAGS.MEDICATIONS_SEARCH, DOCTOR_ADD_DRUG_SECTION], 'Step 4: Get trade names matching selected classification, API, and dosage form', true, [q('q', 'Search text (title or active substance)'), q('search', 'Alias for q'), q('activeSubstanceId'), q('classification'), q('dosageForm'), q('companyId'), q('isActive'), q('availabilityStatus', 'InStock | OutOfStock | Discontinued | Pending'), q('page'), q('limit')]);
 s('/trade-names/{id}', 'get', [PATIENT_TAGS.MEDICATIONS, PHARMACIST_TAGS.MEDICATIONS_SEARCH], 'Get trade name by ID', true, [p('id')]);
 s('/trade-names/{id}', 'put', ADMIN_TAG, 'Update trade name (Admin/Company)', true, [p('id')], { schemaRef: 'UpdateTradeNameRequest' });
 s('/trade-names/{id}', 'delete', ADMIN_TAG, 'Delete trade name (Admin)', true, [p('id')]);
@@ -621,6 +626,7 @@ const options: Record<string, unknown> = {
       { name: PATIENT_TAGS.SIDE_EFFECTS, description: 'Report and view medication side effects' },
       { name: DOCTOR_TAGS.AUTH, description: 'Authentication (Doctor)' },
       { name: DOCTOR_PATIENTS_SECTION, description: 'All doctor capabilities with patients: list/search/get details, assign/remove, prescriptions, visits, consultations, medical reports, drug safety, view patient allergies/diseases/medicines.' },
+      { name: DOCTOR_ADD_DRUG_SECTION, description: 'Add A New Drug screen: call these endpoints in order. Step 1 — Search classifications. Step 2 — Search active substances (API) by classification. Step 3 — List dosage forms (optional filters). Step 4 — Search trade names by active substance and dosage form. Step 5 — Create prescription (or prescription items) with chosen tradeNameId, dosage, duration, notes.' },
       { name: DOCTOR_TAGS.MY_PATIENTS, description: 'My patients' },
       { name: DOCTOR_TAGS.PRESCRIPTIONS, description: 'Prescriptions' },
       { name: DOCTOR_TAGS.CONSULTATIONS_VISITS, description: 'Consultations and visits' },

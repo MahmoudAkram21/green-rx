@@ -2,6 +2,8 @@ import express from 'express';
 import {
     createActiveSubstance,
     getActiveSubstanceById,
+    listClassifications,
+    listDosageForms,
     searchActiveSubstances,
     updateActiveSubstance,
     deleteActiveSubstance,
@@ -15,9 +17,11 @@ const router = express.Router();
 // All routes require authentication
 router.use(authenticate);
 
-// Active Substance CRUD
+// Active Substance CRUD (static paths before /:id)
 router.post('/', authorize([UserRole.Admin, UserRole.SuperAdmin, UserRole.Company]), createActiveSubstance);
-router.get('/search', searchActiveSubstances); // All authenticated users can search
+router.get('/search', searchActiveSubstances);
+router.get('/classifications', listClassifications);
+router.get('/dosage-forms', listDosageForms);
 router.get('/:id', getActiveSubstanceById);
 router.put('/:id', authorize([UserRole.Admin, UserRole.SuperAdmin, UserRole.Company]), updateActiveSubstance);
 router.delete('/:id', authorize([UserRole.Admin, UserRole.SuperAdmin]), deleteActiveSubstance);

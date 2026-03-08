@@ -69,6 +69,78 @@ export const getActiveSubstanceById = async (
   }
 };
 
+// List distinct classifications (Step 1 of doctor Add A New Drug flow)
+export const listClassifications = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const q = typeof req.query.q === "string" ? req.query.q.trim() : "";
+    const where: any = { classification: { not: null } };
+    if (q) {
+      where.classification = { contains: q, mode: "insensitive" };
+    }
+    const rows = await prisma.activeSubstance.findMany({
+      where,
+      select: { classification: true },
+      distinct: ["classification"],
+      orderBy: { classification: "asc" },
+      take: 200,
+    });
+    const classifications = rows
+      .map((r) => r.classification)
+      .filter((c): c is string => c != null)
+      .sort((a, b) => a.localeCompare(b, undefined, { sensitivity: "base" }));
+    res.json({ classifications });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// List distinct dosage forms (Step 3 of doctor Add A New Drug flow)
+export const listDosageForms = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const q = typeof req.query.q === "string" ? req.query.q.trim() : "";
+    const classification = typeof req.query.classification === "string" ? req.query.classification.trim() : "";
+    const activeSubstanceIdParam = req.query.activeSubstanceId;
+    const activeSubstanceId =
+      activeSubstanceIdParam !== undefined && activeSubstanceIdParam !== ""
+        ? parseInt(String(activeSubstanceIdParam), 10)
+        : undefined;
+
+    const where: any = { dosageForm: { not: null } };
+    if (q) {
+      where.dosageForm = { contains: q, mode: "insensitive" };
+    }
+    if (classification) {
+      where.classification = { contains: classification, mode: "insensitive" };
+    }
+    if (activeSubstanceId !== undefined && !Number.isNaN(activeSubstanceId)) {
+      where.id = activeSubstanceId;
+    }
+
+    const rows = await prisma.activeSubstance.findMany({
+      where,
+      select: { dosageForm: true },
+      distinct: ["dosageForm"],
+      orderBy: { dosageForm: "asc" },
+      take: 200,
+    });
+    const dosageForms = rows
+      .map((r) => r.dosageForm)
+      .filter((d): d is string => d != null)
+      .sort((a, b) => a.localeCompare(b, undefined, { sensitivity: "base" }));
+    res.json({ dosageForms });
+  } catch (error) {
+    next(error);
+  }
+};
+
 // Search Active Substances
 export const searchActiveSubstances = async (
   req: Request,
@@ -79,6 +151,7 @@ export const searchActiveSubstances = async (
     const {
       search,
       therapeuticClass,
+      classification,
       companyId,
       requiresPrescription,
       page = "1",
@@ -96,9 +169,10 @@ export const searchActiveSubstances = async (
       ];
     }
 
-    if (therapeuticClass) {
+    const classificationFilter = classification || therapeuticClass;
+    if (classificationFilter) {
       whereClause.classification = {
-        contains: therapeuticClass as string,
+        contains: classificationFilter as string,
         mode: "insensitive",
       };
     }

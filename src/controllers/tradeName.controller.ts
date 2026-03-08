@@ -109,13 +109,15 @@ export const getTradeNameById = async (req: Request, res: Response, next: NextFu
     }
 };
 
-// Search Trade Names — GET /trade-names/search?q=... (or search=...). Optional: activeSubstanceId, companyId, isActive, availabilityStatus, page, limit.
+// Search Trade Names — GET /trade-names/search?q=... Optional: activeSubstanceId, classification, dosageForm, companyId, isActive, availabilityStatus, page, limit.
 export const searchTradeNames = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const {
             q,
             search,
             activeSubstanceId,
+            classification,
+            dosageForm,
             companyId,
             isActive,
             availabilityStatus,
@@ -145,6 +147,16 @@ export const searchTradeNames = async (req: Request, res: Response, next: NextFu
             if (!Number.isNaN(id)) whereClause.activeSubstanceId = id;
         }
 
+        if ((classification !== undefined && classification !== '') || (dosageForm !== undefined && dosageForm !== '')) {
+            whereClause.activeSubstance = whereClause.activeSubstance || {};
+            if (classification !== undefined && classification !== '') {
+                whereClause.activeSubstance.classification = { contains: String(classification), mode: 'insensitive' };
+            }
+            if (dosageForm !== undefined && dosageForm !== '') {
+                whereClause.activeSubstance.dosageForm = { equals: String(dosageForm), mode: 'insensitive' };
+            }
+        }
+
         if (companyId !== undefined && companyId !== '') {
             const id = parseInt(String(companyId), 10);
             if (!Number.isNaN(id)) whereClause.companyId = id;
@@ -168,7 +180,7 @@ export const searchTradeNames = async (req: Request, res: Response, next: NextFu
                 where: whereClause,
                 include: {
                     activeSubstance: {
-                        select: { id: true, activeSubstance: true, classification: true }
+                        select: { id: true, activeSubstance: true, classification: true, dosageForm: true }
                     },
                     company: {
                         select: { id: true, name: true }
