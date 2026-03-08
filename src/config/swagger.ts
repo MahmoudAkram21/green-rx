@@ -326,6 +326,7 @@ s('/notifications/{id}', 'delete', [PATIENT_TAGS.NOTIFICATIONS, DOCTOR_TAGS.NOTI
 s('/notifications/appointment-reminders', 'post', ADMIN_TAG, 'Trigger appointment reminder notifications');
 
 // DRUG INTERACTIONS
+s('/drug-interactions/check-by-trade-name', 'post', [DOCTOR_TAGS.DRUG_SAFETY, PATIENT_TAGS.DRUG_SAFETY, DOCTOR_PATIENTS_SECTION], 'Run full warning check for a drug by trade name ID. Returns blocked flag and all warnings (allergy, disease, lifestyle, pregnancy, lactation, age, organ, drug-drug). Doctor: any patient; Patient: own patientId only.', true, [], { schemaRef: 'CheckByTradeNameRequest' });
 s('/drug-interactions/check', 'post', [DOCTOR_TAGS.DRUG_SAFETY, DOCTOR_PATIENTS_SECTION], 'Check drug safety before prescribing', true, [], { schemaRef: 'DrugSafetyCheckRequest' });
 s('/drug-interactions/prescription/{prescriptionId}', 'get', [PATIENT_TAGS.DRUG_SAFETY, DOCTOR_TAGS.DRUG_SAFETY, DOCTOR_PATIENTS_SECTION], 'Get interaction alerts for a prescription', false, [p('prescriptionId')]);
 s('/drug-interactions/patient/{patientId}', 'get', [PATIENT_TAGS.DRUG_SAFETY, DOCTOR_PATIENTS_SECTION], 'Get prescription-linked drug interaction alerts only (stored DrugInteractionAlert for this patient). For aggregated warnings including self-reported medicines use GET /patients/:patientId/warnings.', false, [p('patientId')]);
@@ -479,8 +480,9 @@ if (paths['/auth/register']?.post) {
   };
 }
 
-// Upload medicine image: multipart with file field "image" (AI extracts trade name + active substance)
+// Upload medicine image: multipart with file field "image" (AI extracts trade name, active substance, concentration, dosage form)
 if (paths['/patient-medicines/patient/{patientId}/upload-image']?.post) {
+  paths['/patient-medicines/patient/{patientId}/upload-image'].post.summary = 'Upload medicine image (AI extracts full drug data; response includes extracted + matched drug details, warnings)';
   paths['/patient-medicines/patient/{patientId}/upload-image'].post.requestBody = {
     required: true,
     content: {
@@ -508,6 +510,10 @@ if (paths['/patient-medicines/patient/{patientId}/upload-image']?.post) {
       }
     }
   };
+  paths['/patient-medicines/patient/{patientId}/upload-image'].post.responses['201'] = {
+    description: 'Created. Returns full detection data: extracted (tradeName, activeSubstance, concentration, dosageForm from image), matchedTradeName (id, title, activeSubstance, company, etc. when matched), matchedActiveSubstance (when only AS matched), plus medicine record, warnings, blocked.',
+    content: { 'application/json': { schema: { $ref: '#/components/schemas/UploadMedicineImageResponse' } } }
+  };
 }
 
 // GET /auth/me: document 200 response with user fields including name
@@ -531,6 +537,14 @@ if (paths['/doctors/me/stats']?.get) {
   paths['/doctors/me/stats'].get.responses['200'] = {
     description: 'Doctor statistics (patients, prescriptions, consultations, appointments, visits, ratings, clinics, averageRating).',
     content: { 'application/json': { schema: { $ref: '#/components/schemas/DoctorMeStatsResponse' } } }
+  };
+}
+
+// POST /drug-interactions/check-by-trade-name: document 200 response
+if (paths['/drug-interactions/check-by-trade-name']?.post) {
+  paths['/drug-interactions/check-by-trade-name'].post.responses['200'] = {
+    description: 'Full warning check result: blocked flag and list of warnings (severity, type, message).',
+    content: { 'application/json': { schema: { $ref: '#/components/schemas/CheckByTradeNameResponse' } } }
   };
 }
 
@@ -942,6 +956,51 @@ const options: Record<string, unknown> = {
             reminderTimes:     { type: 'array', items: { type: 'string' } }
           }
         },
+        UploadMedicineImageResponse: {
+          description: 'POST /patient-medicines/patient/:patientId/upload-image. Full detection data: extracted (from image), matchedTradeName (from DB when found), matchedActiveSubstance (when only AS matched), plus medicine record, warnings, blocked.',
+          type: 'object',
+          properties: {
+            extracted: {
+              type: 'object',
+              description: 'Data detected from the image (trade name, active substance, concentration, dosage form).',
+              properties: {
+                tradeName:       { type: 'string' },
+                activeSubstance: { type: 'string' },
+                concentration:   { type: 'string', nullable: true },
+                dosageForm:     { type: 'string', nullable: true }
+              }
+            },
+            matchedTradeName: {
+              type: 'object',
+              nullable: true,
+              description: 'Matched trade name from DB (id, title, activeSubstance, company, etc.) when found.',
+              properties: {
+                id: { type: 'integer' },
+                title: { type: 'string' },
+                batchNumber: { type: 'string', nullable: true },
+                barCode: { type: 'string', nullable: true },
+                warningNotification: { type: 'string', nullable: true },
+                availabilityStatus: { type: 'string' },
+                activeSubstance: {
+                  type: 'object',
+                  nullable: true,
+                  properties: { id: { type: 'integer' }, activeSubstance: { type: 'string' }, concentration: { type: 'string', nullable: true }, dosageForm: { type: 'string', nullable: true }, classification: { type: 'string', nullable: true }, indication: { type: 'string', nullable: true } }
+                },
+                company: { type: 'object', nullable: true, properties: { id: { type: 'integer' }, name: { type: 'string' } } }
+              }
+            },
+            matchedActiveSubstance: {
+              type: 'object',
+              nullable: true,
+              description: 'Matched active substance from DB when no trade name matched.',
+              properties: { id: { type: 'integer' }, activeSubstance: { type: 'string' }, concentration: { type: 'string', nullable: true }, dosageForm: { type: 'string', nullable: true }, classification: { type: 'string', nullable: true }, indication: { type: 'string', nullable: true } }
+            },
+            warnings: { type: 'array', items: { $ref: '#/components/schemas/Warning' } },
+            blocked: { type: 'boolean' },
+            addedToPatient: { type: 'boolean' },
+            addMedicineRequestId: { type: 'integer', description: 'Present when no full match; request created for admin to add drug.' }
+          }
+        },
         // ── Prescriptions
         CreatePrescriptionRequest: {
           description: 'One prescription. Required: doctorId, patientId, tradeNameId. Optional: dosage, frequency, duration, instructions, validFrom, validUntil, maxRefills, notes. Get tradeNameId from GET /trade-names/search.',
@@ -989,6 +1048,23 @@ const options: Record<string, unknown> = {
         // ── Notifications
         CreateNotificationRequest: { type: 'object', required: ['userId', 'type', 'title', 'message'], properties: { userId: { type: 'integer' }, type: { type: 'string', enum: ['PrescriptionReady', 'DrugInteraction', 'AppointmentReminder', 'SystemAlert'] }, title: { type: 'string' }, message: { type: 'string' } } },
         // ── Drug safety
+        CheckByTradeNameRequest: { description: 'POST /drug-interactions/check-by-trade-name. Run full 8-check warning logic for this patient and drug.', type: 'object', required: ['patientId', 'tradeNameId'], properties: { patientId: { type: 'integer', description: 'Patient to check against (Doctor: any; Patient: must be own id)' }, tradeNameId: { type: 'integer', description: 'Drug trade name ID (from GET /trade-names or search)' } } },
+        CheckByTradeNameResponse: {
+          description: 'Response: blocked (true if any check would block prescribing), warnings array, tradeName (id, title, activeSubstanceName).',
+          type: 'object',
+          properties: {
+            blocked: { type: 'boolean' },
+            warnings: { type: 'array', items: { $ref: '#/components/schemas/Warning' } },
+            tradeName: {
+              type: 'object',
+              properties: {
+                id: { type: 'integer' },
+                title: { type: 'string' },
+                activeSubstanceName: { type: 'string' }
+              }
+            }
+          }
+        },
         DrugSafetyCheckRequest: { type: 'object', required: ['patientId', 'activeSubstanceId'], properties: { patientId: { type: 'integer' }, activeSubstanceId: { type: 'integer' }, tradeNameId: { type: 'integer' } } },
         // ── ADR
         CreateAdrRequest: { type: 'object', required: ['patientId', 'tradeNameId', 'companyId', 'severity', 'reaction', 'startDate'], properties: { patientId: { type: 'integer' }, tradeNameId: { type: 'integer' }, companyId: { type: 'integer' }, activeSubstanceId: { type: 'integer' }, severity: { type: 'string', enum: ['Mild', 'Moderate', 'Severe', 'LifeThreatening'] }, reaction: { type: 'string' }, startDate: { type: 'string', format: 'date-time' }, endDate: { type: 'string', format: 'date-time' }, isAnonymous: { type: 'boolean' } } },

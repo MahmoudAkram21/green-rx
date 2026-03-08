@@ -282,7 +282,53 @@ export const addPatientMedicineByImage = async (req: Request, res: Response, nex
             addMedicineRequestId = request.id;
         }
 
-        const payload: Record<string, unknown> = { ...medicine, addedToPatient: bothFound };
+        // Build response with all detection data: extracted from image + matched drug details from DB
+        const payload: Record<string, unknown> = {
+            ...medicine,
+            addedToPatient: bothFound,
+            // What was detected from the image (trade name, active substance, concentration, dosage form)
+            extracted: {
+                tradeName: extracted?.tradeName ?? '',
+                activeSubstance: extracted?.activeSubstance ?? '',
+                concentration: extracted?.concentration ?? null,
+                dosageForm: extracted?.dosageForm ?? null,
+            },
+            // Full matched drug data from DB (when found): trade name with active substance and company, and/or active substance alone
+            matchedTradeName: medicine.tradeName
+                ? {
+                      id: medicine.tradeName.id,
+                      title: medicine.tradeName.title,
+                      batchNumber: medicine.tradeName.batchNumber,
+                      barCode: medicine.tradeName.barCode,
+                      warningNotification: medicine.tradeName.warningNotification,
+                      availabilityStatus: medicine.tradeName.availabilityStatus,
+                      activeSubstance: medicine.tradeName.activeSubstance
+                          ? {
+                                id: medicine.tradeName.activeSubstance.id,
+                                activeSubstance: medicine.tradeName.activeSubstance.activeSubstance,
+                                concentration: medicine.tradeName.activeSubstance.concentration,
+                                dosageForm: medicine.tradeName.activeSubstance.dosageForm,
+                                classification: medicine.tradeName.activeSubstance.classification,
+                                indication: medicine.tradeName.activeSubstance.indication,
+                            }
+                          : null,
+                      company: medicine.tradeName.company
+                          ? { id: medicine.tradeName.company.id, name: (medicine.tradeName.company as { name?: string }).name }
+                          : null,
+                  }
+                : null,
+            matchedActiveSubstance:
+                medicine.activeSubstance && !medicine.tradeName
+                    ? {
+                          id: medicine.activeSubstance.id,
+                          activeSubstance: medicine.activeSubstance.activeSubstance,
+                          concentration: medicine.activeSubstance.concentration,
+                          dosageForm: medicine.activeSubstance.dosageForm,
+                          classification: medicine.activeSubstance.classification,
+                          indication: medicine.activeSubstance.indication,
+                      }
+                    : null,
+        };
         if (addMedicineRequestId != null) {
             payload.addMedicineRequestId = addMedicineRequestId;
             payload.requestCreatedForMissingData = true;
