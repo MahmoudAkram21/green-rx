@@ -3156,6 +3156,37 @@ async function main() {
         createdBy: superAdmin.id,
       },
     }),
+
+    // Rule 6: Type 2 Diabetes + Metformin (Glucophage) — so GET /patients/:id/warnings returns warnings for patient on Glucophage
+    prisma.diseaseWarningRule.create({
+      data: {
+        diseaseId: diseases[0].id, // Type 2 Diabetes Mellitus
+        ruleType: "WARN_ACTIVE_SUBSTANCE",
+        targetActiveSubstanceId: activeSubstances[3].id, // Metformin (Glucophage)
+        severity: "High",
+        warningMessage:
+          "Monitor renal function and vitamin B12 in diabetic patients on metformin long-term. Consider annual B12 and eGFR check.",
+        autoBlock: false,
+        requiresOverride: false,
+        requiredMonitoring: "eGFR and vitamin B12 annually",
+        createdBy: admin1.id,
+      },
+    }),
+
+    // Rule 7: Hypertension + Metformin — extra warning so byMedicine shows multiple warnings for Glucophage
+    prisma.diseaseWarningRule.create({
+      data: {
+        diseaseId: diseases[1].id, // Hypertension
+        ruleType: "WARN_ACTIVE_SUBSTANCE",
+        targetActiveSubstanceId: activeSubstances[3].id, // Metformin (Glucophage)
+        severity: "Medium",
+        warningMessage:
+          "In hypertensive patients with renal impairment, metformin dose may need adjustment. Monitor BP and renal function.",
+        autoBlock: false,
+        requiresOverride: false,
+        createdBy: admin1.id,
+      },
+    }),
   ]);
 
   console.log(`✅ Created ${warningRules.length} Disease Warning Rules`);
