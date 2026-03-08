@@ -2931,7 +2931,7 @@ async function main() {
   console.log("\n💊 Creating patient self-reported medicines...");
   await prisma.patientMedicine.createMany({
     data: [
-      // Patient 1 (Alice Cooper) — takes Panadol OTC + Glucophage prescribed
+      // Patient 1 (Alice Cooper) — takes Panadol OTC + Glucophage prescribed + Brufen (triggers Diabetes + NSAIDs warning for dr.smith's patients/warnings)
       {
         patientId: patients[0].id,
         tradeNameId: tradeNames[0].id,         // Panadol (in system)
@@ -2948,7 +2948,23 @@ async function main() {
         verifiedBy: admin1.id,
         verifiedAt: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000),
       },
-      // Patient 2 (Bob Martinez) — takes Brufen self-purchased
+      {
+        patientId: patients[0].id,
+        tradeNameId: tradeNames[1].id,         // Brufen (Ibuprofen) — triggers Rule 2: Diabetes + NSAIDs
+        activeSubstanceId: activeSubstances[1].id,
+        medicineName: "Brufen",
+        dosageAmount: 400,
+        frequencyCount: 2,
+        frequencyPeriod: 1,
+        frequencyUnit: "Days",
+        startDate: new Date("2024-03-01"),
+        isOngoing: true,
+        notes: "Self-reported for joint pain; patient has Type 2 Diabetes — warning expected",
+        isVerified: true,
+        verifiedBy: admin1.id,
+        verifiedAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000),
+      },
+      // Patient 2 (Bob Martinez) — takes Brufen self-purchased + Glucophage (triggers Hypertension + Metformin warning for dr.smith's patients/warnings)
       {
         patientId: patients[1].id,
         tradeNameId: tradeNames[1].id,         // Brufen (in system)
@@ -2965,7 +2981,23 @@ async function main() {
         verifiedBy: admin1.id,
         verifiedAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000),
       },
-      // Patient 3 (Carol White) — takes a vitamin supplement NOT in system → image upload
+      {
+        patientId: patients[1].id,
+        tradeNameId: tradeNames[3].id,         // Glucophage (Metformin) — triggers Rule 7: Hypertension + Metformin
+        activeSubstanceId: activeSubstances[3].id,
+        medicineName: "Glucophage",
+        dosageAmount: 500,
+        frequencyCount: 2,
+        frequencyPeriod: 1,
+        frequencyUnit: "Days",
+        startDate: new Date("2024-01-15"),
+        isOngoing: true,
+        notes: "Added for diabetes prevention; patient has hypertension — warning expected",
+        isVerified: true,
+        verifiedBy: admin1.id,
+        verifiedAt: new Date(Date.now() - 20 * 24 * 60 * 60 * 1000),
+      },
+      // Patient 3 (Carol White) — takes a vitamin supplement NOT in system + Brufen (triggers Asthma + NSAIDs warning for dr.smith's patients/warnings)
       {
         patientId: patients[2].id,
         tradeNameId: null,                     // NOT in system
@@ -2980,6 +3012,22 @@ async function main() {
         imageUrl: "/uploads/patient-medicines/sample-pregnacare.jpg",
         imageFileName: "pregnacare.jpg",
         isVerified: false,                     // Pending admin/doctor verification
+      },
+      {
+        patientId: patients[2].id,
+        tradeNameId: tradeNames[1].id,         // Brufen (Ibuprofen) — triggers Rule 8: Asthma + NSAIDs
+        activeSubstanceId: activeSubstances[1].id,
+        medicineName: "Brufen",
+        dosageAmount: 200,
+        frequencyCount: 1,
+        frequencyPeriod: 1,
+        frequencyUnit: "Days",
+        startDate: new Date("2024-06-01"),
+        isOngoing: true,
+        notes: "Occasional use for headaches; patient has asthma — warning expected",
+        isVerified: true,
+        verifiedBy: admin1.id,
+        verifiedAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
       },
       // Patient 4 (David Lee) — takes Losec (in system)
       {
@@ -3252,6 +3300,21 @@ async function main() {
         severity: "Medium",
         warningMessage:
           "In hypertensive patients with renal impairment, metformin dose may need adjustment. Monitor BP and renal function.",
+        autoBlock: false,
+        requiresOverride: false,
+        createdBy: admin1.id,
+      },
+    }),
+
+    // Rule 8: Asthma + NSAIDs (Ibuprofen) — for dr.smith's patients (e.g. Carol White) to have warnings
+    prisma.diseaseWarningRule.create({
+      data: {
+        diseaseId: diseases[2].id, // Asthma
+        ruleType: "WARN_ACTIVE_SUBSTANCE",
+        targetActiveSubstanceId: activeSubstances[1].id, // Ibuprofen
+        severity: "High",
+        warningMessage:
+          "🟠 ASTHMA: NSAIDs may precipitate bronchospasm in aspirin-sensitive asthmatics. Use with caution; prefer paracetamol if needed.",
         autoBlock: false,
         requiresOverride: false,
         createdBy: admin1.id,
