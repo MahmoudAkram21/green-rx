@@ -800,12 +800,15 @@ export const getWarningsForAllMyPatients = async (req: Request, res: Response, n
             }
         });
 
-        const patients: Array<{
+        type WarningItem = { type: string; severity: string; message: string; [k: string]: unknown };
+        const warnings: Array<{
             patientId: number;
             name: string | null;
-            patientName: string | null;
             email: string | null;
-            warnings: Array<{ type: string; severity: string; message: string; [k: string]: unknown }>;
+            type: string;
+            severity: string;
+            message: string;
+            [k: string]: unknown;
         }> = [];
 
         for (const r of relationships) {
@@ -814,16 +817,21 @@ export const getWarningsForAllMyPatients = async (req: Request, res: Response, n
             const user = patient.user as { name: string | null; email: string } | undefined;
             const patientName = user?.name ?? null;
             const payload = await getAggregatedWarningsForPatient(patient.id);
-            patients.push({
-                patientId: patient.id,
-                name: patientName,
-                patientName,
-                email: user?.email ?? null,
-                warnings: payload?.warnings ?? []
-            });
+            const list = (payload?.warnings ?? []) as WarningItem[];
+            for (const w of list) {
+                warnings.push({
+                    patientId: patient.id,
+                    name: patientName,
+                    email: user?.email ?? null,
+                    ...w,
+                    type: w.type ?? '',
+                    severity: w.severity ?? '',
+                    message: w.message ?? ''
+                });
+            }
         }
 
-        res.json({ patients });
+        res.json({ warnings });
     } catch (error) {
         next(error);
     }
