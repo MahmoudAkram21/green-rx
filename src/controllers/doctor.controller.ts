@@ -802,6 +802,7 @@ export const getWarningsForAllMyPatients = async (req: Request, res: Response, n
 
         const patients: Array<{
             patientId: number;
+            name: string | null;
             patientName: string | null;
             email: string | null;
             warnings: Array<{ type: string; severity: string; message: string; [k: string]: unknown }>;
@@ -812,10 +813,12 @@ export const getWarningsForAllMyPatients = async (req: Request, res: Response, n
             const patient = r.patient;
             if (!patient) continue;
             const user = patient.user as { name: string | null; email: string } | undefined;
+            const patientName = user?.name ?? null;
             const payload = await getAggregatedWarningsForPatient(patient.id);
             patients.push({
                 patientId: patient.id,
-                patientName: user?.name ?? null,
+                name: patientName,
+                patientName,
                 email: user?.email ?? null,
                 warnings: payload?.warnings ?? [],
                 byMedicine: payload?.byMedicine ?? []
