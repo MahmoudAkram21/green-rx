@@ -11,6 +11,7 @@ import {
 } from '../zod/doctor.zod';
 import { computeBmi } from '../utils/bmi.util';
 import { haversineDistanceKm } from '../utils/geo.util';
+import { patientFullDetailsInclude, mapPatientToFullDetailsPayload } from '../utils/patientFullDetails.util';
 import { getNearbyDoctorsRadiusKm } from './settings.controller';
 
 // Create or Update Doctor Profile
@@ -789,19 +790,7 @@ export const getPatientDetailsForDoctor = async (req: Request, res: Response, ne
                 patientId_doctorId: { patientId: patId, doctorId: docId }
             },
             include: {
-                patient: {
-                    include: {
-                        user: { select: { name: true, email: true, phone: true } },
-                        medicalHistories: { include: { disease: true } },
-                        familyHistories: { include: { disease: true } },
-                        patientDiseases: { include: { disease: true } },
-                        patientLifestyles: { include: { lifestyle: true } },
-                        patientAllergies: { include: { allergen: true } },
-                        surgicalHistories: { include: { operation: true } },
-                        visits: { orderBy: { visitDate: 'desc' } },
-                        medicalReports: { orderBy: { reportDate: 'desc' } }
-                    }
-                }
+                patient: { include: patientFullDetailsInclude }
             }
         });
 
@@ -810,17 +799,9 @@ export const getPatientDetailsForDoctor = async (req: Request, res: Response, ne
             return;
         }
 
-        const patient = link.patient;
-        const user = patient?.user as { name: string | null; email: string; phone: string | null } | undefined;
-        const bodyMassIndex = patient ? computeBmi(patient.weight, patient.height) : null;
+        const payload = mapPatientToFullDetailsPayload(link.patient);
         res.json({
-            patient: patient ? {
-                ...patient,
-                name: user?.name ?? null,
-                email: user?.email ?? null,
-                phone: user?.phone ?? null,
-                bodyMassIndex: bodyMassIndex ?? undefined
-            } : null,
+            ...payload,
             relationship: {
                 relationshipType: link.relationshipType,
                 startDate: link.startDate,

@@ -13,6 +13,7 @@ import {
 import { generateWarnings } from '../services/warningService';
 import drugInteractionService from '../services/drugInteraction.service';
 import { computeBmi } from '../utils/bmi.util';
+import { patientFullDetailsInclude, mapPatientToFullDetailsPayload } from '../utils/patientFullDetails.util';
 
 /** Compute age in years and age classification from date of birth. */
 function computeAgeAndClassification(dateOfBirth: Date): { age: number; ageClassification: AgeClassification } {
@@ -592,7 +593,7 @@ export const deleteChildProfile = async (req: Request, res: Response, next: Next
     }
 };
 
-// GET /patients/me/full — patient gets own full details (same structure as GET /doctors/:doctorId/patients/:patientId, without doctorId or relationship)
+// GET /patients/me/full — patient gets own full details (same structure and data types as GET /doctors/:doctorId/patients/:patientId, without doctorId or relationship)
 export const getMyFullDetails = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const userId = req.user?.userId;
@@ -603,17 +604,7 @@ export const getMyFullDetails = async (req: Request, res: Response, next: NextFu
 
         const patient = await prisma.patient.findUnique({
             where: { userId },
-            include: {
-                user: { select: { name: true, email: true, phone: true } },
-                medicalHistories: { include: { disease: true } },
-                familyHistories: { include: { disease: true } },
-                patientDiseases: { include: { disease: true } },
-                patientLifestyles: { include: { lifestyle: true } },
-                patientAllergies: { include: { allergen: true } },
-                surgicalHistories: { include: { operation: true } },
-                visits: { orderBy: { visitDate: 'desc' } },
-                medicalReports: { orderBy: { reportDate: 'desc' } }
-            }
+            include: patientFullDetailsInclude
         });
 
         if (!patient) {
@@ -621,17 +612,8 @@ export const getMyFullDetails = async (req: Request, res: Response, next: NextFu
             return;
         }
 
-        const user = patient.user as { name: string | null; email: string; phone: string | null } | undefined;
-        const bodyMassIndex = computeBmi(patient.weight, patient.height);
-        res.json({
-            patient: {
-                ...patient,
-                name: user?.name ?? null,
-                email: user?.email ?? null,
-                phone: user?.phone ?? null,
-                bodyMassIndex: bodyMassIndex ?? undefined
-            }
-        });
+        const payload = mapPatientToFullDetailsPayload(patient);
+        res.json(payload);
     } catch (error) {
         next(error);
     }
