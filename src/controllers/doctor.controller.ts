@@ -806,7 +806,6 @@ export const getWarningsForAllMyPatients = async (req: Request, res: Response, n
             patientName: string | null;
             email: string | null;
             warnings: Array<{ type: string; severity: string; message: string; [k: string]: unknown }>;
-            byMedicine: Array<{ medicineName: string; tradeNameId?: number; activeSubstanceId?: number; warnings: unknown[] }>;
         }> = [];
 
         for (const r of relationships) {
@@ -820,8 +819,7 @@ export const getWarningsForAllMyPatients = async (req: Request, res: Response, n
                 name: patientName,
                 patientName,
                 email: user?.email ?? null,
-                warnings: payload?.warnings ?? [],
-                byMedicine: payload?.byMedicine ?? []
+                warnings: payload?.warnings ?? []
             });
         }
 
