@@ -2153,11 +2153,11 @@ async function main() {
     ],
   });
 
-  // Drug Interaction Alert: Metformin (diabetes) + Ibuprofen (NSAID) interaction
+  // Drug Interaction Alerts (including extra warnings for Patient 1 - Alice Cooper)
   await prisma.drugInteractionAlert.createMany({
     data: [
       {
-        prescriptionId: prescriptions[0].id, // Glucophage prescription
+        prescriptionId: prescriptions[0].id, // Glucophage prescription (Patient 1)
         interactingMedicineId: tradeNames[1].id, // Brufen (Ibuprofen)
         interactionType: "Pharmacodynamic",
         severity: "Moderate",
@@ -2165,6 +2165,24 @@ async function main() {
         acknowledgedByDoctor: true,
         acknowledgedByPatient: false,
         acknowledgedAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000),
+      },
+      {
+        prescriptionId: prescriptions[0].id, // Patient 1 - Glucophage + Panadol
+        interactingMedicineId: tradeNames[0].id, // Panadol (Paracetamol)
+        interactionType: "Pharmacodynamic",
+        severity: "Minor",
+        message: "High doses of paracetamol with metformin may increase risk of lactic acidosis in susceptible patients. Avoid excessive paracetamol; monitor if used long-term.",
+        acknowledgedByDoctor: false,
+        acknowledgedByPatient: false,
+      },
+      {
+        prescriptionId: prescriptions[0].id, // Patient 1 - Glucophage + Losec
+        interactingMedicineId: tradeNames[5].id, // Losec (Omeprazole)
+        interactionType: "Pharmacokinetic",
+        severity: "Moderate",
+        message: "PPIs like omeprazole can reduce vitamin B12 absorption. Long-term metformin use may also affect B12. Consider monitoring B12 in patients on both.",
+        acknowledgedByDoctor: false,
+        acknowledgedByPatient: false,
       },
       {
         prescriptionId: prescriptions[2].id, // Lipitor
