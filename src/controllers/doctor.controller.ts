@@ -804,6 +804,7 @@ export const getWarningsForAllMyPatients = async (req: Request, res: Response, n
         const warnings: Array<{
             patientId: number;
             name: string | null;
+            patientName: string | null;
             email: string | null;
             type: string;
             severity: string;
@@ -822,6 +823,7 @@ export const getWarningsForAllMyPatients = async (req: Request, res: Response, n
                 warnings.push({
                     patientId: patient.id,
                     name: patientName,
+                    patientName,
                     email: user?.email ?? null,
                     ...w,
                     type: w.type ?? '',
