@@ -134,6 +134,7 @@ s('/users/{id}', 'delete', ADMIN_TAG, 'Delete user by ID', true, [p('id')]);
 // ═══════════════════════════════════════════════════
 s('/patients', 'get', ADMIN_TAG, 'Get all patients (Admin/SuperAdmin only)');
 s('/patients', 'post', PATIENT_TAGS.PROFILE, 'Create or update patient profile', true, [], { schemaRef: 'CreatePatientRequest' });
+s('/patients/me/full', 'get', PATIENT_TAGS.PROFILE, 'Get my full details (patient only). Same structure as GET /doctors/{doctorId}/patients/{patientId}: profile, vitals, medicalHistories, familyHistories, patientDiseases, patientLifestyles, patientAllergies, surgicalHistories, visits, medicalReports, name, email, phone, bodyMassIndex. No path params; use Bearer token.', true);
 s('/patients/{id}', 'get', PATIENT_TAGS.PROFILE, 'Get patient by ID', true, [p('id')]);
 s('/patients/user/{userId}', 'get', PATIENT_TAGS.PROFILE, 'Get patient by user ID', true, [p('userId')]);
 
