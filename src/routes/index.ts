@@ -47,6 +47,7 @@ import operationRoutes from './operation.routes';
 import patientShareTokenRoutes from './patientShareToken.routes';
 import sideEffectRoutes from './sideEffect.routes';
 import mySideEffectRoutes from './mySideEffect.routes';
+import batchCheckRoutes from './batchCheck.routes';
 
 // Mount routes (admin first - has nested paths like /admin/side-effects/:id/trade-names)
 // Explicit route for trade-names (avoids nested router matching issues)
@@ -94,6 +95,7 @@ router.use('/operations', operationRoutes);
 router.use('/patient-share-token', patientShareTokenRoutes);
 router.use('/side-effects', sideEffectRoutes);
 router.use('/my-side-effects', mySideEffectRoutes);
+router.use('/batch-check', batchCheckRoutes);
 
 // Example route
 router.get('/', (_req: Request, res: Response) => {

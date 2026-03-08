@@ -2599,8 +2599,9 @@ async function main() {
   console.log("\n📦 Creating batch histories...");
   await prisma.batchHistory.createMany({
     data: [
+      // Panadol — multiple batches (trade name can have many batch numbers)
       {
-        tradeNameId: tradeNames[0].id, // Panadol
+        tradeNameId: tradeNames[0].id,
         batchNumber: "BN-PAN-2024-001",
         manufacturingDate: new Date("2024-01-15"),
         expiryDate: new Date("2026-01-14"),
@@ -2608,7 +2609,24 @@ async function main() {
         isRecalled: false,
       },
       {
-        tradeNameId: tradeNames[1].id, // Brufen
+        tradeNameId: tradeNames[0].id,
+        batchNumber: "BN-PAN-2024-002",
+        manufacturingDate: new Date("2024-03-01"),
+        expiryDate: new Date("2026-02-28"),
+        quantity: 45000,
+        isRecalled: false,
+      },
+      {
+        tradeNameId: tradeNames[0].id,
+        batchNumber: "BN-PAN-2024-003",
+        manufacturingDate: new Date("2024-05-10"),
+        expiryDate: new Date("2026-05-09"),
+        quantity: 48000,
+        isRecalled: false,
+      },
+      // Brufen — multiple batches
+      {
+        tradeNameId: tradeNames[1].id,
         batchNumber: "BN-BRU-2024-001",
         manufacturingDate: new Date("2024-02-10"),
         expiryDate: new Date("2026-02-09"),
@@ -2616,7 +2634,16 @@ async function main() {
         isRecalled: false,
       },
       {
-        tradeNameId: tradeNames[2].id, // Amoxil
+        tradeNameId: tradeNames[1].id,
+        batchNumber: "BN-BRU-2024-002",
+        manufacturingDate: new Date("2024-04-15"),
+        expiryDate: new Date("2026-04-14"),
+        quantity: 32000,
+        isRecalled: false,
+      },
+      // Amoxil
+      {
+        tradeNameId: tradeNames[2].id,
         batchNumber: "BN-AMX-2024-001",
         manufacturingDate: new Date("2024-01-20"),
         expiryDate: new Date("2025-07-19"),
@@ -2624,7 +2651,16 @@ async function main() {
         isRecalled: false,
       },
       {
-        tradeNameId: tradeNames[3].id, // Glucophage
+        tradeNameId: tradeNames[2].id,
+        batchNumber: "BN-AMX-2024-002",
+        manufacturingDate: new Date("2024-06-01"),
+        expiryDate: new Date("2025-11-30"),
+        quantity: 18000,
+        isRecalled: false,
+      },
+      // Glucophage — multiple batches
+      {
+        tradeNameId: tradeNames[3].id,
         batchNumber: "BN-GLC-2024-001",
         manufacturingDate: new Date("2024-03-01"),
         expiryDate: new Date("2026-02-28"),
@@ -2632,7 +2668,24 @@ async function main() {
         isRecalled: false,
       },
       {
-        tradeNameId: tradeNames[6].id, // Lipitor
+        tradeNameId: tradeNames[3].id,
+        batchNumber: "BN-GLC-2024-002",
+        manufacturingDate: new Date("2024-05-12"),
+        expiryDate: new Date("2026-05-11"),
+        quantity: 38000,
+        isRecalled: false,
+      },
+      {
+        tradeNameId: tradeNames[3].id,
+        batchNumber: "BN-GLC-2024-003",
+        manufacturingDate: new Date("2024-08-01"),
+        expiryDate: new Date("2026-07-31"),
+        quantity: 42000,
+        isRecalled: false,
+      },
+      // Lipitor — one recalled batch
+      {
+        tradeNameId: tradeNames[6].id,
         batchNumber: "BN-LIP-2023-099",
         manufacturingDate: new Date("2023-10-01"),
         expiryDate: new Date("2025-09-30"),
@@ -2642,11 +2695,28 @@ async function main() {
         recallDate: new Date("2024-01-10"),
       },
       {
-        tradeNameId: tradeNames[7].id, // Ventolin
+        tradeNameId: tradeNames[6].id,
+        batchNumber: "BN-LIP-2024-001",
+        manufacturingDate: new Date("2024-02-01"),
+        expiryDate: new Date("2026-01-31"),
+        quantity: 30000,
+        isRecalled: false,
+      },
+      // Ventolin
+      {
+        tradeNameId: tradeNames[7].id,
         batchNumber: "BN-VEN-2024-001",
         manufacturingDate: new Date("2024-04-01"),
         expiryDate: new Date("2026-03-31"),
         quantity: 15000,
+        isRecalled: false,
+      },
+      {
+        tradeNameId: tradeNames[7].id,
+        batchNumber: "BN-VEN-2024-002",
+        manufacturingDate: new Date("2024-07-01"),
+        expiryDate: new Date("2026-06-30"),
+        quantity: 16000,
         isRecalled: false,
       },
     ],

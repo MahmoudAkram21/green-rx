@@ -325,6 +325,10 @@ s('/notifications/{id}/read', 'patch', [PATIENT_TAGS.NOTIFICATIONS, DOCTOR_TAGS.
 s('/notifications/{id}', 'delete', [PATIENT_TAGS.NOTIFICATIONS, DOCTOR_TAGS.NOTIFICATIONS, PHARMACIST_TAGS.NOTIFICATIONS], 'Delete a notification', true, [p('id')]);
 s('/notifications/appointment-reminders', 'post', ADMIN_TAG, 'Trigger appointment reminder notifications');
 
+// BATCH NUMBER CHECK (trade name can have many batch numbers in BatchHistory)
+s('/batch-check/trade-name/{tradeNameId}', 'get', [PATIENT_TAGS.MEDICATIONS, PATIENT_TAGS.DRUG_SAFETY, ADMIN_TAG], 'List all batch numbers for a trade name. A trade name can have many batches (e.g. last 3 months from contracted companies). Returns tradeNameId, count, and batches array.', false, [p('tradeNameId')]);
+s('/batch-check', 'post', [PATIENT_TAGS.MEDICATIONS, PATIENT_TAGS.DRUG_SAFETY], 'Check if a batch number is approved (in our database). Send batchNumber in body or upload image of batch section for AI extraction. Returns status: approved | recalled | not_in_database. No auth required. Batch numbers are stored per trade name (one trade name has many batch numbers).', false, []);
+
 // DRUG INTERACTIONS
 s('/drug-interactions/check-by-trade-name', 'post', [DOCTOR_TAGS.DRUG_SAFETY, PATIENT_TAGS.DRUG_SAFETY, DOCTOR_PATIENTS_SECTION], 'Run full warning check for a drug by trade name ID. Returns blocked flag and all warnings (allergy, disease, lifestyle, pregnancy, lactation, age, organ, drug-drug). Doctor: any patient; Patient: own patientId only.', true, [], { schemaRef: 'CheckByTradeNameRequest' });
 s('/drug-interactions/check', 'post', [DOCTOR_TAGS.DRUG_SAFETY, DOCTOR_PATIENTS_SECTION], 'Check drug safety before prescribing', true, [], { schemaRef: 'DrugSafetyCheckRequest' });
@@ -513,6 +517,39 @@ if (paths['/patient-medicines/patient/{patientId}/upload-image']?.post) {
   paths['/patient-medicines/patient/{patientId}/upload-image'].post.responses['201'] = {
     description: 'Created. Returns full detection data: extracted (tradeName, activeSubstance, concentration, dosageForm from image), matchedTradeName (id, title, activeSubstance, company, etc. when matched), matchedActiveSubstance (when only AS matched), plus medicine record, warnings, blocked.',
     content: { 'application/json': { schema: { $ref: '#/components/schemas/UploadMedicineImageResponse' } } }
+  };
+}
+
+// POST /batch-check: optional batchNumber (body) or image (multipart) for AI extraction
+if (paths['/batch-check']?.post) {
+  paths['/batch-check'].post.requestBody = {
+    required: false,
+    content: {
+      'application/json': {
+        schema: { type: 'object', properties: { batchNumber: { type: 'string', description: 'Batch or lot number to check.' } } }
+      },
+      'multipart/form-data': {
+        schema: {
+          type: 'object',
+          properties: {
+            batchNumber: { type: 'string', description: 'Optional. Type batch number manually.' },
+            image:       { type: 'string', format: 'binary', description: 'Optional. Image of batch number on package; AI extracts batch number.' }
+          }
+        }
+      }
+    }
+  };
+  paths['/batch-check'].post.responses['200'] = {
+    description: 'approved: batch in database and not recalled. recalled: batch in database but recalled. not_in_database: batch number not in our system (some companies do not share batch data).',
+    content: { 'application/json': { schema: { $ref: '#/components/schemas/BatchCheckResponse' } } }
+  };
+}
+
+// GET /batch-check/trade-name/:tradeNameId: document 200 response
+if (paths['/batch-check/trade-name/{tradeNameId}']?.get) {
+  paths['/batch-check/trade-name/{tradeNameId}'].get.responses['200'] = {
+    description: 'List of all batch numbers for this trade name. A trade name can have many batches.',
+    content: { 'application/json': { schema: { $ref: '#/components/schemas/BatchListByTradeNameResponse' } } }
   };
 }
 
@@ -999,6 +1036,48 @@ const options: Record<string, unknown> = {
             blocked: { type: 'boolean' },
             addedToPatient: { type: 'boolean' },
             addMedicineRequestId: { type: 'integer', description: 'Present when no full match; request created for admin to add drug.' }
+          }
+        },
+        BatchCheckResponse: {
+          description: 'POST /batch-check. status: approved (in DB, not recalled) | recalled (in DB, recalled) | not_in_database. A trade name can have many batch numbers (BatchHistory); this endpoint checks one batch. When not_in_database, message explains that some companies do not share batch data.',
+          type: 'object',
+          required: ['status', 'batchNumber'],
+          properties: {
+            status:       { type: 'string', enum: ['approved', 'recalled', 'not_in_database'] },
+            batchNumber:  { type: 'string' },
+            message:      { type: 'string', description: 'Present for not_in_database or recalled.' },
+            tradeNameId:  { type: 'integer', description: 'When found in DB.' },
+            tradeName:    { type: 'object', properties: { id: { type: 'integer' }, title: { type: 'string' } }, description: 'When found in DB.' },
+            expiryDate:   { type: 'string', format: 'date-time' },
+            manufacturingDate: { type: 'string', format: 'date-time' },
+            isRecalled:   { type: 'boolean' },
+            recallReason: { type: 'string', nullable: true },
+            recallDate:   { type: 'string', format: 'date-time', nullable: true }
+          }
+        },
+        BatchListByTradeNameResponse: {
+          description: 'GET /batch-check/trade-name/:tradeNameId. A trade name can have many batch numbers. Returns all BatchHistory rows for that trade name.',
+          type: 'object',
+          properties: {
+            tradeNameId: { type: 'integer' },
+            count:       { type: 'integer', description: 'Number of batches.' },
+            batches:     {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  id: { type: 'integer' },
+                  batchNumber: { type: 'string' },
+                  manufacturingDate: { type: 'string', format: 'date-time' },
+                  expiryDate: { type: 'string', format: 'date-time' },
+                  quantity: { type: 'integer', nullable: true },
+                  isRecalled: { type: 'boolean' },
+                  recallReason: { type: 'string', nullable: true },
+                  recallDate: { type: 'string', format: 'date-time', nullable: true },
+                  tradeName: { type: 'object', properties: { id: { type: 'integer' }, title: { type: 'string' } } }
+                }
+              }
+            }
           }
         },
         // ── Prescriptions
