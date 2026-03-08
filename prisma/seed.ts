@@ -691,7 +691,119 @@ async function main() {
       },
     },
   });
-  console.log("✅ Created 2 Pharmacist users");
+
+  // Pending verification pharmacists (for /dashboard/pharmacists/verify)
+  await prisma.user.create({
+    data: {
+      email: "pharmacist.pending1@greenrx.com",
+      name: "Sarah Wilson",
+      passwordHash: hashedPassword,
+      role: "Pharmacist",
+      emailVerified: false,
+      isActive: true,
+      pharmacist: {
+        create: {
+          name: "Sarah Wilson",
+          licenseNumber: "PH-PEND-001",
+          pharmacyName: "Sunrise Pharmacy",
+          phoneNumber: "+1-555-1001",
+          address: "100 Oak Street",
+          city: "Chicago",
+          isVerified: false,
+        },
+      },
+    },
+  });
+
+  await prisma.user.create({
+    data: {
+      email: "pharmacist.pending2@greenrx.com",
+      name: "Ahmed Hassan",
+      passwordHash: hashedPassword,
+      role: "Pharmacist",
+      emailVerified: false,
+      isActive: true,
+      pharmacist: {
+        create: {
+          name: "Ahmed Hassan",
+          licenseNumber: "PH-PEND-002",
+          pharmacyName: "Green Valley Pharmacy",
+          phoneNumber: "+20-111-222-3344",
+          address: "15 Tahrir Square",
+          city: "Cairo",
+          isVerified: false,
+        },
+      },
+    },
+  });
+
+  await prisma.user.create({
+    data: {
+      email: "pharmacist.pending3@greenrx.com",
+      name: "Maria Garcia",
+      passwordHash: hashedPassword,
+      role: "Pharmacist",
+      emailVerified: false,
+      isActive: true,
+      pharmacist: {
+        create: {
+          name: "Maria Garcia",
+          licenseNumber: "PH-PEND-003",
+          pharmacyName: "Downtown Drug Store",
+          phoneNumber: "+1-555-3003",
+          address: "200 Commerce Blvd",
+          city: "Houston",
+          isVerified: false,
+        },
+      },
+    },
+  });
+
+  await prisma.user.create({
+    data: {
+      email: "pharmacist.pending4@greenrx.com",
+      name: "Omar Khalil",
+      passwordHash: hashedPassword,
+      role: "Pharmacist",
+      emailVerified: false,
+      isActive: true,
+      pharmacist: {
+        create: {
+          name: "Omar Khalil",
+          licenseNumber: "PH-PEND-004",
+          pharmacyName: "Al-Noor Pharmacy",
+          phoneNumber: "+966-50-123-4567",
+          address: "King Fahd Road",
+          city: "Riyadh",
+          isVerified: false,
+        },
+      },
+    },
+  });
+
+  await prisma.user.create({
+    data: {
+      email: "pharmacist.pending5@greenrx.com",
+      name: "Jennifer Lee",
+      passwordHash: hashedPassword,
+      role: "Pharmacist",
+      emailVerified: false,
+      isActive: true,
+      pharmacist: {
+        create: {
+          name: "Jennifer Lee",
+          licenseNumber: "PH-PEND-005",
+          pharmacyName: "Wellness Corner",
+          phoneNumber: "+1-555-5005",
+          address: "88 Health Lane",
+          city: "Seattle",
+          isVerified: false,
+        },
+      },
+    },
+  });
+
+  console.log("✅ Created 2 verified + 5 pending Pharmacist users");
 
   // Patients (name on User; age/ageClassification from dateOfBirth; smoking in lifestyle questions)
   const patientUser1 = await prisma.user.create({
@@ -3159,7 +3271,7 @@ async function main() {
   console.log(`   - ${diseases.length} Diseases`);
   console.log(`   - ${pricingPlans.length} Pricing Plans`);
   console.log(
-    `   - 13 Users (1 SuperAdmin, 2 Admins, 3 Doctors, 2 Pharmacists, 5 Patients)`
+    `   - 18 Users (1 SuperAdmin, 2 Admins, 5 Doctors, 7 Pharmacists, 5 Patients)`
   );
   console.log(`   - ${prescriptions.length} Prescriptions`);
   console.log(`   - Comprehensive patient data including:`);
@@ -3413,7 +3525,7 @@ async function main() {
   console.log(`   - ${medicineSuggestions.length} Medicine Suggestions`);
   console.log(`   - ${pricingPlans.length} Pricing Plans`);
   console.log(`   - ${permissions.length} Permissions with role assignments`);
-  console.log(`   - 13 Users (1 SuperAdmin, 2 Admins, 5 Doctors, 2 Pharmacists, 5 Patients)`);
+  console.log(`   - 18 Users (1 SuperAdmin, 2 Admins, 5 Doctors, 7 Pharmacists, 5 Patients)`);
   console.log(`   - ${subscriptions.length} Subscriptions + Payments`);
   console.log(`   - ${prescriptions.length} Prescriptions with versions & interaction alerts`);
   console.log(`   - Comprehensive patient data:`);

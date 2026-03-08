@@ -89,7 +89,16 @@ export const getDoctorById = async (req: Request, res: Response, next: NextFunct
             where: { id: parseInt(id) },
             include: {
                 user: {
-                    select: { email: true, role: true, isActive: true }
+                    select: {
+                        id: true,
+                        email: true,
+                        name: true,
+                        phone: true,
+                        role: true,
+                        isActive: true,
+                        createdAt: true,
+                        lastLoginAt: true
+                    }
                 },
                 patientDoctors: {
                     include: {
@@ -108,7 +117,8 @@ export const getDoctorById = async (req: Request, res: Response, next: NextFunct
                         rating: true,
                         createdAt: true
                     }
-                }
+                },
+                doctorClinics: true
             }
         });
 

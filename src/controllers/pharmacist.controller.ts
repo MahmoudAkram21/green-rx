@@ -59,7 +59,7 @@ export const createOrUpdatePharmacist = async (req: Request, res: Response, next
     }
 };
 
-// Get Pharmacist by ID
+// Get Pharmacist by ID (full details for admin verification view)
 export const getPharmacistById = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { id } = req.params;
@@ -68,7 +68,19 @@ export const getPharmacistById = async (req: Request, res: Response, next: NextF
             where: { id: parseInt(id) },
             include: {
                 user: {
-                    select: { email: true, role: true, isActive: true }
+                    select: {
+                        id: true,
+                        email: true,
+                        name: true,
+                        phone: true,
+                        role: true,
+                        isActive: true,
+                        createdAt: true,
+                        lastLoginAt: true
+                    }
+                },
+                ratings: {
+                    select: { rating: true, createdAt: true }
                 }
             }
         });

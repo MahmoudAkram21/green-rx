@@ -20,24 +20,29 @@ export async function getNearbyDoctorsRadiusKm(): Promise<number> {
     return Math.round(n);
 }
 
-/** GET /settings/logo - Public. Returns logo image or 404. */
+const LOGO_SET_HEADER = 'X-Logo-Set';
+
+/** GET /settings/logo - Public. Returns logo image or 204 No Content with X-Logo-Set: false when no logo (avoids 404 in console). */
 export async function getLogo(_req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
         const row = await prisma.appSetting.findUnique({
             where: { key: LOGO_KEY }
         });
         if (!row?.valueBytes) {
-            res.status(404).end();
+            res.setHeader(LOGO_SET_HEADER, 'false');
+            res.status(204).end();
             return;
         }
         const buf = Buffer.isBuffer(row.valueBytes) ? row.valueBytes : Buffer.from(row.valueBytes as unknown as ArrayBuffer);
         if (!buf.length) {
-            res.status(404).end();
+            res.setHeader(LOGO_SET_HEADER, 'false');
+            res.status(204).end();
             return;
         }
         const contentType = row.contentType || 'image/png';
         res.setHeader('Content-Type', contentType);
         res.setHeader('Cache-Control', 'public, max-age=60');
+        res.setHeader(LOGO_SET_HEADER, 'true');
         res.send(buf);
     } catch (error) {
         next(error);
