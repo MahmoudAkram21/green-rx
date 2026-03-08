@@ -619,6 +619,97 @@ export const getMyFullDetails = async (req: Request, res: Response, next: NextFu
     }
 };
 
+/** Shared result type for aggregated patient warnings (used by GET /patients/:patientId/warnings and GET /doctors/:doctorId/patients/warnings). */
+export type PatientWarningsPayload = {
+    warnings: Array<{ type: string; severity: string; message: string; [k: string]: unknown }>;
+    byMedicine: Array<{ medicineName: string; tradeNameId?: number; activeSubstanceId?: number; warnings: unknown[] }>;
+};
+
+/** Compute aggregated warnings for one patient (prescriptions + self-reported medicines). Returns null if patient not found. */
+export async function getAggregatedWarningsForPatient(patientId: number): Promise<PatientWarningsPayload | null> {
+    const patient = await prisma.patient.findUnique({
+        where: { id: patientId },
+        include: {
+            prescriptions: {
+                where: {
+                    status: { in: ['Approved', 'Filled'] },
+                    validUntil: { gte: new Date() }
+                },
+                include: {
+                    tradeName: { include: { activeSubstance: true } }
+                }
+            },
+            medicines: {
+                where: { isOngoing: true },
+                include: {
+                    tradeName: { include: { activeSubstance: true } },
+                    activeSubstance: true
+                }
+            }
+        }
+    });
+
+    if (!patient) return null;
+
+    const allWarnings: PatientWarningsPayload['warnings'] = [];
+    const byMedicine: PatientWarningsPayload['byMedicine'] = [];
+    const seenTradeNames = new Set<number>();
+    const seenActiveOnly = new Set<number>();
+
+    for (const p of patient.prescriptions) {
+        const tn = p.tradeName;
+        if (!tn || seenTradeNames.has(tn.id)) continue;
+        seenTradeNames.add(tn.id);
+        try {
+            const result = await generateWarnings(patientId, tn.id);
+            const list = result.warnings as Array<{ type: string; severity: string; message: string; [k: string]: unknown }>;
+            allWarnings.push(...list);
+            byMedicine.push({
+                medicineName: tn.title || String(tn.id),
+                tradeNameId: tn.id,
+                warnings: list
+            });
+        } catch (_) {
+            byMedicine.push({ medicineName: tn?.title || String(tn?.id), tradeNameId: tn?.id, warnings: [] });
+        }
+    }
+
+    for (const m of patient.medicines) {
+        if (m.tradeNameId != null && !seenTradeNames.has(m.tradeNameId)) {
+            seenTradeNames.add(m.tradeNameId);
+            try {
+                const result = await generateWarnings(patientId, m.tradeNameId);
+                const list = result.warnings as Array<{ type: string; severity: string; message: string }>;
+                allWarnings.push(...list);
+                byMedicine.push({
+                    medicineName: m.medicineName,
+                    tradeNameId: m.tradeNameId,
+                    activeSubstanceId: m.activeSubstanceId ?? undefined,
+                    warnings: list
+                });
+            } catch (_) {
+                byMedicine.push({ medicineName: m.medicineName, tradeNameId: m.tradeNameId, activeSubstanceId: m.activeSubstanceId ?? undefined, warnings: [] });
+            }
+        } else if (m.activeSubstanceId != null && !seenActiveOnly.has(m.activeSubstanceId)) {
+            seenActiveOnly.add(m.activeSubstanceId);
+            try {
+                const safety = await drugInteractionService.checkDrugSafety(patientId, m.activeSubstanceId, undefined);
+                const list = safety.warnings as Array<{ type: string; severity: string; message: string }>;
+                allWarnings.push(...list);
+                byMedicine.push({
+                    medicineName: m.medicineName,
+                    activeSubstanceId: m.activeSubstanceId,
+                    warnings: list
+                });
+            } catch (_) {
+                byMedicine.push({ medicineName: m.medicineName, activeSubstanceId: m.activeSubstanceId, warnings: [] });
+            }
+        }
+    }
+
+    return { warnings: allWarnings, byMedicine };
+}
+
 // GET /patients/:patientId/warnings — aggregated warnings for all current medicines (prescriptions + self-reported)
 export const getPatientWarnings = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -628,91 +719,12 @@ export const getPatientWarnings = async (req: Request, res: Response, next: Next
             return;
         }
 
-        const patient = await prisma.patient.findUnique({
-            where: { id: patientId },
-            include: {
-                prescriptions: {
-                    where: {
-                        status: { in: ['Approved', 'Filled'] },
-                        validUntil: { gte: new Date() }
-                    },
-                    include: {
-                        tradeName: { include: { activeSubstance: true } }
-                    }
-                },
-                medicines: {
-                    where: { isOngoing: true },
-                    include: {
-                        tradeName: { include: { activeSubstance: true } },
-                        activeSubstance: true
-                    }
-                }
-            }
-        });
-
-        if (!patient) {
+        const result = await getAggregatedWarningsForPatient(patientId);
+        if (!result) {
             res.status(404).json({ error: 'Patient not found' });
             return;
         }
-
-        const allWarnings: Array<{ type: string; severity: string; message: string; [k: string]: unknown }> = [];
-        const byMedicine: Array<{ medicineName: string; tradeNameId?: number; activeSubstanceId?: number; warnings: unknown[] }> = [];
-
-        const seenTradeNames = new Set<number>();
-        const seenActiveOnly = new Set<number>();
-
-        for (const p of patient.prescriptions) {
-            const tn = p.tradeName;
-            if (!tn || seenTradeNames.has(tn.id)) continue;
-            seenTradeNames.add(tn.id);
-            try {
-                const result = await generateWarnings(patientId, tn.id);
-                const list = result.warnings as Array<{ type: string; severity: string; message: string; [k: string]: unknown }>;
-                allWarnings.push(...list);
-                byMedicine.push({
-                    medicineName: tn.title || String(tn.id),
-                    tradeNameId: tn.id,
-                    warnings: list
-                });
-            } catch (_) {
-                byMedicine.push({ medicineName: tn?.title || String(tn?.id), tradeNameId: tn?.id, warnings: [] });
-            }
-        }
-
-        for (const m of patient.medicines) {
-            if (m.tradeNameId != null && !seenTradeNames.has(m.tradeNameId)) {
-                seenTradeNames.add(m.tradeNameId);
-                try {
-                    const result = await generateWarnings(patientId, m.tradeNameId);
-                    const list = result.warnings as Array<{ type: string; severity: string; message: string }>;
-                    allWarnings.push(...list);
-                    byMedicine.push({
-                        medicineName: m.medicineName,
-                        tradeNameId: m.tradeNameId,
-                        activeSubstanceId: m.activeSubstanceId ?? undefined,
-                        warnings: list
-                    });
-                } catch (_) {
-                    byMedicine.push({ medicineName: m.medicineName, tradeNameId: m.tradeNameId, activeSubstanceId: m.activeSubstanceId ?? undefined, warnings: [] });
-                }
-            } else if (m.activeSubstanceId != null && !seenActiveOnly.has(m.activeSubstanceId)) {
-                seenActiveOnly.add(m.activeSubstanceId);
-                try {
-                    const safety = await drugInteractionService.checkDrugSafety(patientId, m.activeSubstanceId, undefined);
-                    const list = safety.warnings as Array<{ type: string; severity: string; message: string }>;
-                    allWarnings.push(...list);
-                    byMedicine.push({
-                        medicineName: m.medicineName,
-                        activeSubstanceId: m.activeSubstanceId,
-                        warnings: list
-                    });
-                } catch (_) {
-                    byMedicine.push({ medicineName: m.medicineName, activeSubstanceId: m.activeSubstanceId, warnings: [] });
-                }
-            }
-        }
-
-        res.json({ warnings: allWarnings, byMedicine });
+        res.json(result);
     } catch (error) {
         next(error);
     }

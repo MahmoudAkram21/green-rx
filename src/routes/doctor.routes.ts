@@ -17,7 +17,8 @@ import {
     getDoctorPatients,
     getPatientDetailsForDoctor,
     removePatient,
-    searchDoctorPatientsByName
+    searchDoctorPatientsByName,
+    getWarningsForAllMyPatients
 } from '../controllers/doctor.controller';
 import { authenticate, authorize } from '../middleware/auth.middleware';
 import { UserRole } from '../../generated/client/client';
@@ -47,8 +48,9 @@ router.post('/:doctorId/clinics', authorize([UserRole.Doctor, UserRole.Admin, Us
 router.patch('/:doctorId/clinics/:clinicId', authorize([UserRole.Doctor, UserRole.Admin, UserRole.SuperAdmin]), updateDoctorClinic);
 router.delete('/:doctorId/clinics/:clinicId', authorize([UserRole.Doctor, UserRole.Admin, UserRole.SuperAdmin]), deleteDoctorClinic);
 
-// Patient-Doctor Relationships (search route must come before /:doctorId/patients to avoid "search" as patientId)
+// Patient-Doctor Relationships (search and warnings before /:doctorId/patients/:patientId so path segments match)
 router.get('/:doctorId/patients/search', authorize([UserRole.Doctor, UserRole.Admin]), searchDoctorPatientsByName);
+router.get('/:doctorId/patients/warnings', authorize([UserRole.Doctor, UserRole.Admin]), getWarningsForAllMyPatients);
 router.get('/:doctorId/patients/:patientId', authorize([UserRole.Doctor, UserRole.Admin]), getPatientDetailsForDoctor);
 router.post('/:doctorId/patients', authorize([UserRole.Doctor, UserRole.Admin]), assignPatient);
 router.get('/:doctorId/patients', authorize([UserRole.Doctor, UserRole.Admin]), getDoctorPatients);

@@ -13,6 +13,7 @@ import { computeBmi } from '../utils/bmi.util';
 import { haversineDistanceKm } from '../utils/geo.util';
 import { patientFullDetailsInclude, mapPatientToFullDetailsPayload } from '../utils/patientFullDetails.util';
 import { getNearbyDoctorsRadiusKm } from './settings.controller';
+import { getAggregatedWarningsForPatient } from './patient.controller';
 
 // Create or Update Doctor Profile
 export const createOrUpdateDoctor = async (req: Request, res: Response, next: NextFunction) => {
@@ -769,6 +770,59 @@ export const searchDoctorPatientsByName = async (req: Request, res: Response, ne
                 endDate: r.endDate
             }))
         });
+    } catch (error) {
+        next(error);
+    }
+};
+
+// GET /doctors/:doctorId/patients/warnings — get aggregated warnings for all patients linked to this doctor
+export const getWarningsForAllMyPatients = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const doctorId = parseInt(req.params.doctorId, 10);
+        if (Number.isNaN(doctorId)) {
+            res.status(400).json({ error: 'Invalid doctorId' });
+            return;
+        }
+        const access = await ensureDoctorAccess(req, doctorId);
+        if (!access) {
+            res.status(404).json({ error: 'Doctor not found or access denied' });
+            return;
+        }
+
+        const relationships = await prisma.patientDoctor.findMany({
+            where: { doctorId: access.doctor.id },
+            include: {
+                patient: {
+                    include: {
+                        user: { select: { name: true, email: true } }
+                    }
+                }
+            }
+        });
+
+        const patients: Array<{
+            patientId: number;
+            patientName: string | null;
+            email: string | null;
+            warnings: Array<{ type: string; severity: string; message: string; [k: string]: unknown }>;
+            byMedicine: Array<{ medicineName: string; tradeNameId?: number; activeSubstanceId?: number; warnings: unknown[] }>;
+        }> = [];
+
+        for (const r of relationships) {
+            const patient = r.patient;
+            if (!patient) continue;
+            const user = patient.user as { name: string | null; email: string } | undefined;
+            const payload = await getAggregatedWarningsForPatient(patient.id);
+            patients.push({
+                patientId: patient.id,
+                patientName: user?.name ?? null,
+                email: user?.email ?? null,
+                warnings: payload?.warnings ?? [],
+                byMedicine: payload?.byMedicine ?? []
+            });
+        }
+
+        res.json({ patients });
     } catch (error) {
         next(error);
     }
