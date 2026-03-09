@@ -141,7 +141,9 @@ class DrugInteractionAlertController {
                 },
                 include: {
                     prescription: {
-                        include: { tradeName: true }
+                        include: {
+                            prescriptionItems: { include: { tradeName: true } }
+                        }
                     },
                     interactingMedicine: true
                 },

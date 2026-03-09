@@ -636,7 +636,9 @@ export async function getAggregatedWarningsForPatient(patientId: number): Promis
                     validUntil: { gte: new Date() }
                 },
                 include: {
-                    tradeName: { include: { activeSubstance: true } }
+                    prescriptionItems: {
+                        include: { tradeName: { include: { activeSubstance: true } } }
+                    }
                 }
             },
             medicines: {
@@ -657,20 +659,22 @@ export async function getAggregatedWarningsForPatient(patientId: number): Promis
     const seenActiveOnly = new Set<number>();
 
     for (const p of patient.prescriptions) {
-        const tn = p.tradeName;
-        if (!tn || seenTradeNames.has(tn.id)) continue;
-        seenTradeNames.add(tn.id);
-        try {
-            const result = await generateWarnings(patientId, tn.id);
-            const list = result.warnings as Array<{ type: string; severity: string; message: string; [k: string]: unknown }>;
-            allWarnings.push(...list);
-            byMedicine.push({
-                medicineName: tn.title || String(tn.id),
-                tradeNameId: tn.id,
-                warnings: list
-            });
-        } catch (_) {
-            byMedicine.push({ medicineName: tn?.title || String(tn?.id), tradeNameId: tn?.id, warnings: [] });
+        for (const item of p.prescriptionItems || []) {
+            const tn = item.tradeName;
+            if (!tn || seenTradeNames.has(tn.id)) continue;
+            seenTradeNames.add(tn.id);
+            try {
+                const result = await generateWarnings(patientId, tn.id);
+                const list = result.warnings as Array<{ type: string; severity: string; message: string; [k: string]: unknown }>;
+                allWarnings.push(...list);
+                byMedicine.push({
+                    medicineName: tn.title || String(tn.id),
+                    tradeNameId: tn.id,
+                    warnings: list
+                });
+            } catch (_) {
+                byMedicine.push({ medicineName: tn?.title || String(tn?.id), tradeNameId: tn?.id, warnings: [] });
+            }
         }
     }
 

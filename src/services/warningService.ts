@@ -61,9 +61,13 @@ export async function generateWarnings(
           validUntil: { gte: new Date() }
         },
         include: {
-          tradeName: {
+          prescriptionItems: {
             include: {
-              activeSubstance: true
+              tradeName: {
+                include: {
+                  activeSubstance: true
+                }
+              }
             }
           }
         }
@@ -467,7 +471,12 @@ function checkDrugInteractions(patient: any, newSubstance: any): Warning[] {
   const substancesToCheck: { activeSubstance: any; label: string }[] = [];
 
   for (const rx of patient.prescriptions) {
-    substancesToCheck.push({ activeSubstance: rx.tradeName.activeSubstance, label: rx.tradeName.activeSubstance.activeSubstance });
+    for (const item of rx.prescriptionItems ?? []) {
+      const tn = item.tradeName;
+      if (tn?.activeSubstance) {
+        substancesToCheck.push({ activeSubstance: tn.activeSubstance, label: tn.activeSubstance.activeSubstance });
+      }
+    }
   }
 
   // Also include self-reported ongoing medicines (patient-added)

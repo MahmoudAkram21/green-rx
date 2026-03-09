@@ -28,8 +28,8 @@ class PrescriptionVersionController {
                 include: {
                     prescription: {
                         include: {
-                            tradeName: {
-                                include: { activeSubstance: true }
+                            prescriptionItems: {
+                                include: { tradeName: { include: { activeSubstance: true } } }
                             },
                             patient: {
                                 select: { age: true, user: { select: { name: true } } }

@@ -55,8 +55,10 @@ class PatientShareLinkController {
                             patientAllergies: { include: { allergen: true } },
                             prescriptions: {
                                 include: {
-                                    tradeName: {
-                                        include: { activeSubstance: true }
+                                    prescriptionItems: {
+                                        include: {
+                                            tradeName: { include: { activeSubstance: true } }
+                                        }
                                     }
                                 }
                             }
@@ -88,8 +90,9 @@ class PatientShareLinkController {
                 }
             });
 
+            const link = shareLink as typeof shareLink & { patient: unknown };
             res.json({
-                patient: shareLink.patient,
+                patient: link.patient,
                 sharedAt: shareLink.createdAt,
                 expiresAt: shareLink.expiresAt
             });

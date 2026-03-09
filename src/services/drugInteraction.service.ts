@@ -60,8 +60,10 @@ class DrugInteractionService {
                 prescriptions: {
                     where: { status: { in: ['Approved', 'Filled'] } },
                     include: {
-                        tradeName: {
-                            include: { activeSubstance: true }
+                        prescriptionItems: {
+                            include: {
+                                tradeName: { include: { activeSubstance: true } }
+                            }
                         }
                     }
                 },
@@ -92,7 +94,7 @@ class DrugInteractionService {
         const alerts: DrugAlert[] = [];
 
         // 1. Check allergy conflicts
-        const allergyCheck = this.checkAllergies(patient.patientAllergies, newDrug);
+        const allergyCheck = this.checkAllergies((patient as any).patientAllergies ?? [], newDrug);
         if (allergyCheck.length > 0) {
             warnings.push(...allergyCheck);
         }
@@ -144,7 +146,7 @@ class DrugInteractionService {
         }
 
         // 7. Check lifestyle-based warnings (e.g. alcohol, caffeine)
-        const lifestyleCheck = this.checkLifestyleWarnings(patient.patientLifestyles ?? [], newDrug);
+        const lifestyleCheck = this.checkLifestyleWarnings((patient as any).patientLifestyles ?? [], newDrug);
         if (lifestyleCheck.length > 0) {
             warnings.push(...lifestyleCheck);
         }
@@ -277,8 +279,14 @@ class DrugInteractionService {
         const warnings: DrugWarning[] = [];
         const alerts: DrugAlert[] = [];
 
-        // Get current medications from prescriptions and self-reported PatientMedicine (ongoing)
-        const fromPrescriptions = (patient.prescriptions || []).map((p: any) => p.tradeName?.activeSubstance).filter(Boolean);
+        // Get current medications from prescriptions (via prescriptionItems) and self-reported PatientMedicine (ongoing)
+        const fromPrescriptions: ActiveSubstance[] = [];
+        for (const p of patient.prescriptions || []) {
+            for (const item of (p as any).prescriptionItems ?? []) {
+                const asub = (item as any).tradeName?.activeSubstance;
+                if (asub) fromPrescriptions.push(asub);
+            }
+        }
         const fromMedicines = (patient.medicines || []).map((m: any) => m.tradeName?.activeSubstance ?? m.activeSubstance).filter(Boolean);
         const currentMeds = [...fromPrescriptions, ...fromMedicines];
 

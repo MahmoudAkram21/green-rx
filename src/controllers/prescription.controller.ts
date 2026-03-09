@@ -10,7 +10,6 @@ const defaultValidUntil = () => new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
 const prescriptionIncludeWithItemsAndVisit = {
     doctor: { include: { user: { select: { email: true, role: true } } } },
     patient: { include: { user: { select: { email: true } } } },
-    tradeName: { include: { activeSubstance: true, company: true } },
     visit: { select: { id: true, visitDate: true, visitType: true, isNewVisit: true } },
     prescriptionItems: {
         orderBy: { sortOrder: 'asc' as const },
@@ -20,43 +19,45 @@ const prescriptionIncludeWithItemsAndVisit = {
     prescriptionVersions: { orderBy: { version: 'desc' as const } }
 };
 
-/** For backward compat: if prescription has items but no tradeName, set top-level from first item */
-function mapFirstItemToLegacy<T extends { tradeName?: unknown; dosage?: string | null; frequency?: string | null; duration?: string | null; instructions?: string | null; prescriptionItems?: Array<{ tradeName: unknown; dosage?: string | null; frequency?: string | null; duration?: string | null; instructions?: string | null }> }>(p: T): T {
-    if (p.prescriptionItems && p.prescriptionItems.length > 0 && !p.tradeName) {
-        const first = p.prescriptionItems[0];
-        return { ...p, tradeName: first.tradeName, dosage: first.dosage ?? p.dosage, frequency: first.frequency ?? p.frequency, duration: first.duration ?? p.duration, instructions: first.instructions ?? p.instructions };
-    }
-    return p;
+// First Visit / prescription body: medicationPlan or items = array of { tradeNameId, dosage?, frequency?, duration?, instructions? }
+function normalizeMedicationItems(body: Record<string, unknown>): Array<{ tradeNameId: number; dosage?: string; frequency?: string; duration?: string; instructions?: string }> | null {
+    const items = body.items ?? body.medicationPlan;
+    if (!Array.isArray(items) || items.length === 0) return null;
+    return items.map((item: any) => ({
+        tradeNameId: Number(item.tradeNameId),
+        dosage: item.dosage != null ? String(item.dosage) : undefined,
+        frequency: item.frequency != null ? String(item.frequency) : undefined,
+        duration: item.duration != null ? String(item.duration) : undefined,
+        instructions: item.instructions != null ? String(item.instructions) : undefined
+    })).filter((i: { tradeNameId: number }) => Number.isFinite(i.tradeNameId));
 }
 
-// Create a new prescription (legacy single medicine OR items array; optional visitId)
+// Create a new prescription (items/medicationPlan array required; First Visit fields optional)
 export const createPrescription = async (req: Request, res: Response) => {
     try {
         const {
             doctorId,
             patientId,
-            tradeNameId,
-            dosage,
-            frequency,
-            duration,
-            instructions,
             validFrom,
             validUntil,
             maxRefills,
             notes,
             visitId: bodyVisitId,
-            items: bodyItems
+            conditionDiagnosis,
+            initialCheckUp,
+            testResultsOrScans,
+            followUpAppointmentDate
         } = req.body;
 
-        const hasItems = Array.isArray(bodyItems) && bodyItems.length > 0;
-        const hasLegacy = doctorId && patientId && tradeNameId;
+        const bodyItems = normalizeMedicationItems(req.body);
+        const hasItems = bodyItems != null && bodyItems.length > 0;
 
         if (!doctorId || !patientId) {
             return res.status(400).json({ message: 'Doctor ID and Patient ID are required' });
         }
-        if (!hasItems && !hasLegacy) {
+        if (!hasItems) {
             return res.status(400).json({
-                message: 'Either tradeNameId (legacy) or items array with at least one { tradeNameId } is required'
+                message: 'items or medicationPlan array with at least one { tradeNameId } is required'
             });
         }
 
@@ -75,66 +76,24 @@ export const createPrescription = async (req: Request, res: Response) => {
         const validFromDate = validFrom ? new Date(validFrom) : defaultValidFrom();
         const validUntilDate = validUntil ? new Date(validUntil) : defaultValidUntil();
 
-        if (hasItems) {
-            // Multi-item prescription: run warnings per item and cross-item
-            const allWarnings: any[] = [];
-            let blocked = false;
-            for (const item of bodyItems) {
-                const wr = await generateWarnings(patientId, item.tradeNameId);
-                allWarnings.push({ tradeNameId: item.tradeNameId, warnings: wr.warnings });
-                if (wr.blocked) blocked = true;
-            }
-            const { checkBatchInteractions } = await import('../services/warningService');
-            const batchWarnings = await checkBatchInteractions(bodyItems.map((i: any) => i.tradeNameId));
-            if (batchWarnings.length) {
-                allWarnings.push({ type: 'batch_interactions', warnings: batchWarnings });
-                if (batchWarnings.some((w: any) => w.severity === 'Critical' || w.severity === 'High')) blocked = true;
-            }
-            if (blocked) {
-                return res.status(400).json({
-                    message: 'Cannot prescribe: Critical warnings detected',
-                    blocked: true,
-                    warnings: allWarnings
-                });
-            }
-
-            const prescription = await prisma.prescription.create({
-                data: {
-                    doctorId,
-                    patientId,
-                    visitId: visitId ?? undefined,
-                    status: PrescriptionStatus.Draft,
-                    prescriptionDate: new Date(),
-                    validFrom: validFromDate,
-                    validUntil: validUntilDate,
-                    maxRefills: maxRefills ?? 0,
-                    notes: notes ?? undefined,
-                    version: 1,
-                    prescriptionItems: {
-                        create: bodyItems.map((item: any, idx: number) => ({
-                            tradeNameId: item.tradeNameId,
-                            dosage: item.dosage ?? undefined,
-                            frequency: item.frequency ?? undefined,
-                            duration: item.duration ?? undefined,
-                            instructions: item.instructions ?? undefined,
-                            sortOrder: idx
-                        }))
-                    }
-                },
-                include: prescriptionIncludeWithItemsAndVisit
-            });
-
-            const mapped = mapFirstItemToLegacy(prescription);
-            return res.status(201).json({ prescription: mapped, warnings: allWarnings });
+        const allWarnings: any[] = [];
+        let blocked = false;
+        for (const item of bodyItems!) {
+            const wr = await generateWarnings(patientId, item.tradeNameId);
+            allWarnings.push({ tradeNameId: item.tradeNameId, warnings: wr.warnings });
+            if (wr.blocked) blocked = true;
         }
-
-        // Legacy single medicine
-        const warningResult = await generateWarnings(patientId, tradeNameId);
-        if (warningResult.blocked) {
+        const { checkBatchInteractions } = await import('../services/warningService');
+        const batchWarnings = await checkBatchInteractions(bodyItems!.map((i) => i.tradeNameId));
+        if (batchWarnings.length) {
+            allWarnings.push({ type: 'batch_interactions', warnings: batchWarnings });
+            if (batchWarnings.some((w: any) => w.severity === 'Critical' || w.severity === 'High')) blocked = true;
+        }
+        if (blocked) {
             return res.status(400).json({
                 message: 'Cannot prescribe: Critical warnings detected',
                 blocked: true,
-                warnings: warningResult.warnings
+                warnings: allWarnings
             });
         }
 
@@ -142,30 +101,33 @@ export const createPrescription = async (req: Request, res: Response) => {
             data: {
                 doctorId,
                 patientId,
-                tradeNameId,
                 visitId: visitId ?? undefined,
                 status: PrescriptionStatus.Draft,
                 prescriptionDate: new Date(),
                 validFrom: validFromDate,
                 validUntil: validUntilDate,
-                dosage,
-                frequency,
-                duration,
-                instructions,
-                maxRefills: maxRefills || 0,
-                notes,
+                maxRefills: maxRefills ?? 0,
+                notes: notes ?? undefined,
                 version: 1,
+                conditionDiagnosis: conditionDiagnosis != null ? String(conditionDiagnosis) : undefined,
+                initialCheckUp: initialCheckUp != null && typeof initialCheckUp === 'object' ? initialCheckUp : undefined,
+                testResultsOrScans: Array.isArray(testResultsOrScans) ? testResultsOrScans : (typeof testResultsOrScans === 'string' ? [testResultsOrScans] : undefined),
+                followUpAppointmentDate: followUpAppointmentDate != null ? new Date(followUpAppointmentDate) : undefined,
                 prescriptionItems: {
-                    create: [{ tradeNameId, dosage, frequency, duration, instructions, sortOrder: 0 }]
+                    create: bodyItems!.map((item, idx) => ({
+                        tradeNameId: item.tradeNameId,
+                        dosage: item.dosage ?? undefined,
+                        frequency: item.frequency ?? undefined,
+                        duration: item.duration ?? undefined,
+                        instructions: item.instructions ?? undefined,
+                        sortOrder: idx
+                    }))
                 }
             },
             include: prescriptionIncludeWithItemsAndVisit
         });
 
-        return res.status(201).json({
-            prescription: mapFirstItemToLegacy(prescription),
-            warnings: warningResult.warnings
-        });
+        return res.status(201).json({ prescription, warnings: allWarnings });
     } catch (error) {
         console.error('Error creating prescription:', error);
         return res.status(500).json({ message: 'Error creating prescription', error });
@@ -244,7 +206,6 @@ export const createBatchPrescriptions = async (req: Request, res: Response) => {
                     data: {
                         doctorId,
                         patientId,
-                        tradeNameId: med.tradeNameId,
                         status: PrescriptionStatus.Draft,
                         prescriptionDate: new Date(),
                         validFrom: validFrom ? new Date(validFrom) : new Date(),
@@ -261,7 +222,6 @@ export const createBatchPrescriptions = async (req: Request, res: Response) => {
                         }
                     },
                     include: {
-                        tradeName: { include: { activeSubstance: true, company: true } },
                         prescriptionItems: { include: { tradeName: { include: { activeSubstance: true, company: true } } } }
                     }
                 })
@@ -300,7 +260,6 @@ export const getPrescriptions = async (req: Request, res: Response) => {
                 include: {
                     doctor: { select: { id: true, name: true, specialization: true } },
                     patient: { select: { id: true, age: true, user: { select: { name: true } } } },
-                    tradeName: { include: { activeSubstance: true, company: true } },
                     visit: { select: { id: true, visitDate: true, visitType: true, isNewVisit: true } },
                     prescriptionItems: {
                         orderBy: { sortOrder: 'asc' },
@@ -313,7 +272,7 @@ export const getPrescriptions = async (req: Request, res: Response) => {
             prisma.prescription.count({ where })
         ]);
 
-        const prescriptions = prescriptionsRaw.map((p) => mapFirstItemToLegacy(p));
+        const prescriptions = prescriptionsRaw;
 
         return res.json({
             prescriptions,
@@ -346,7 +305,6 @@ export const getPrescriptionById = async (req: Request, res: Response) => {
                         patientDiseases: { include: { disease: true } }
                     }
                 },
-                tradeName: { include: { activeSubstance: true, company: true } },
                 visit: { select: { id: true, visitDate: true, visitType: true, isNewVisit: true } },
                 prescriptionItems: {
                     orderBy: { sortOrder: 'asc' },
@@ -363,7 +321,7 @@ export const getPrescriptionById = async (req: Request, res: Response) => {
             return res.status(404).json({ message: 'Prescription not found' });
         }
 
-        return res.json(mapFirstItemToLegacy(prescription));
+        return res.json(prescription);
     } catch (error) {
         console.error('Error fetching prescription:', error);
         return res.status(500).json({ message: 'Error fetching prescription', error });
@@ -374,7 +332,7 @@ export const getPrescriptionById = async (req: Request, res: Response) => {
 export const updatePrescription = async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
-        const { status, dosage, frequency, duration, instructions, notes, changedBy } = req.body;
+        const { status, dosage, frequency, duration, instructions, notes, changedBy, conditionDiagnosis, initialCheckUp, testResultsOrScans, followUpAppointmentDate } = req.body;
 
         const existingPrescription = await prisma.prescription.findUnique({
             where: { id: parseInt(id) }
@@ -389,24 +347,29 @@ export const updatePrescription = async (req: Request, res: Response) => {
             frequency !== existingPrescription.frequency ||
             duration !== existingPrescription.duration;
 
+        const updateData: Record<string, unknown> = {
+            status,
+            dosage,
+            frequency,
+            duration,
+            instructions,
+            notes,
+            version: shouldVersion ? existingPrescription.version + 1 : existingPrescription.version
+        };
+        if (conditionDiagnosis !== undefined) updateData.conditionDiagnosis = conditionDiagnosis == null ? null : String(conditionDiagnosis);
+        if (initialCheckUp !== undefined) updateData.initialCheckUp = initialCheckUp == null ? null : (typeof initialCheckUp === 'object' ? initialCheckUp : undefined);
+        if (testResultsOrScans !== undefined) updateData.testResultsOrScans = Array.isArray(testResultsOrScans) ? testResultsOrScans : (typeof testResultsOrScans === 'string' ? [testResultsOrScans] : null);
+        if (followUpAppointmentDate !== undefined) updateData.followUpAppointmentDate = followUpAppointmentDate == null ? null : new Date(followUpAppointmentDate);
+
         const prescription = await prisma.prescription.update({
             where: { id: parseInt(id) },
-            data: {
-                status,
-                dosage,
-                frequency,
-                duration,
-                instructions,
-                notes,
-                version: shouldVersion ? existingPrescription.version + 1 : existingPrescription.version
-            },
+            data: updateData as any,
             include: {
                 doctor: true,
                 patient: true,
-                tradeName: {
-                    include: {
-                        activeSubstance: true
-                    }
+                prescriptionItems: {
+                    orderBy: { sortOrder: 'asc' },
+                    include: { tradeName: { include: { activeSubstance: true, company: true } } }
                 }
             }
         });

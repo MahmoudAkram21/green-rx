@@ -1657,7 +1657,6 @@ async function main() {
       data: {
         doctorId: doctors[0].id,
         patientId: patients[0].id,
-        tradeNameId: tradeNames[3].id, // Glucophage
         status: "Approved",
         prescriptionDate: new Date(),
         validFrom: new Date(),
@@ -1669,6 +1668,9 @@ async function main() {
         maxRefills: 3,
         notes: "Monitor blood glucose levels",
         isAddedToProfile: true,
+        prescriptionItems: {
+          create: [{ tradeNameId: tradeNames[3].id, dosage: "500mg", frequency: "Twice daily", duration: "90 days", instructions: "Take with meals to reduce GI side effects", sortOrder: 0 }],
+        },
       },
     }),
     // Patient 2 - Hypertension medication
@@ -1676,7 +1678,6 @@ async function main() {
       data: {
         doctorId: doctors[0].id,
         patientId: patients[1].id,
-        tradeNameId: tradeNames[4].id, // Norvasc
         status: "Filled",
         prescriptionDate: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), // 7 days ago
         validFrom: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
@@ -1688,6 +1689,9 @@ async function main() {
         maxRefills: 6,
         currentRefillCount: 1,
         isAddedToProfile: true,
+        prescriptionItems: {
+          create: [{ tradeNameId: tradeNames[4].id, dosage: "5mg", frequency: "Once daily", duration: "90 days", instructions: "Take in the morning with or without food", sortOrder: 0 }],
+        },
       },
     }),
     // Patient 2 - Cholesterol medication
@@ -1695,7 +1699,6 @@ async function main() {
       data: {
         doctorId: doctors[0].id,
         patientId: patients[1].id,
-        tradeNameId: tradeNames[6].id, // Lipitor
         status: "Approved",
         prescriptionDate: new Date(),
         validFrom: new Date(),
@@ -1707,6 +1710,9 @@ async function main() {
         maxRefills: 6,
         notes: "Check lipid panel in 3 months",
         isAddedToProfile: true,
+        prescriptionItems: {
+          create: [{ tradeNameId: tradeNames[6].id, dosage: "20mg", frequency: "Once daily at bedtime", duration: "90 days", instructions: "Take with or without food. Monitor liver enzymes", sortOrder: 0 }],
+        },
       },
     }),
     // Patient 3 - Allergy medication
@@ -1714,7 +1720,6 @@ async function main() {
       data: {
         doctorId: doctors[2].id,
         patientId: patients[2].id,
-        tradeNameId: tradeNames[8].id, // Zyrtec
         status: "Approved",
         prescriptionDate: new Date(),
         validFrom: new Date(),
@@ -1725,6 +1730,9 @@ async function main() {
         instructions: "Take at bedtime to avoid drowsiness during day",
         maxRefills: 2,
         isAddedToProfile: true,
+        prescriptionItems: {
+          create: [{ tradeNameId: tradeNames[8].id, dosage: "10mg", frequency: "Once daily", duration: "30 days", instructions: "Take at bedtime to avoid drowsiness during day", sortOrder: 0 }],
+        },
       },
     }),
     // Patient 4 - GERD medication
@@ -1732,7 +1740,6 @@ async function main() {
       data: {
         doctorId: doctors[2].id,
         patientId: patients[3].id,
-        tradeNameId: tradeNames[5].id, // Losec
         status: "Approved",
         prescriptionDate: new Date(),
         validFrom: new Date(),
@@ -1744,6 +1751,9 @@ async function main() {
         maxRefills: 3,
         notes: "Avoid taking with food",
         isAddedToProfile: true,
+        prescriptionItems: {
+          create: [{ tradeNameId: tradeNames[5].id, dosage: "20mg", frequency: "Once daily", duration: "60 days", instructions: "Take 30 minutes before breakfast on empty stomach", sortOrder: 0 }],
+        },
       },
     }),
     // Patient 5 - Asthma medication
@@ -1751,7 +1761,6 @@ async function main() {
       data: {
         doctorId: doctors[1].id, // Pediatrician
         patientId: patients[4].id,
-        tradeNameId: tradeNames[7].id, // Ventolin
         status: "Approved",
         prescriptionDate: new Date(),
         validFrom: new Date(),
@@ -1764,6 +1773,9 @@ async function main() {
         maxRefills: 2,
         notes: "Rescue medication only",
         isAddedToProfile: true,
+        prescriptionItems: {
+          create: [{ tradeNameId: tradeNames[7].id, dosage: "2 puffs", frequency: "As needed for symptoms", duration: "180 days", instructions: "Use before exercise or when experiencing shortness of breath", sortOrder: 0 }],
+        },
       },
     }),
   ]);

@@ -980,7 +980,6 @@ model TradeName {
   // Relations
   activeSubstance              ActiveSubstance               @relation(fields: [activeSubstanceId], references: [id], onDelete: Cascade)
   company                      Company?                       @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  prescriptions                Prescription[]
   prescriptionItems            PrescriptionItem[]
   contractingCompanyTradeNames ContractingCompanyTradeName[]
   drugInteractionAlerts        DrugInteractionAlert[]
@@ -1054,35 +1053,37 @@ model ContractingCompanyTradeName {
 // ============================================
 
 model Prescription {
-  id                 Int                @id @default(autoincrement())
-  doctorId           Int
-  patientId          Int
-  tradeNameId        Int?               // legacy single-medicine; null when using prescriptionItems
-  visitId            Int?               // optional link to visit (first visit vs follow-up)
-  status             PrescriptionStatus @default(Draft)
-  prescriptionDate   DateTime
-  validFrom          DateTime
-  validUntil         DateTime
-  dosage             String?            // legacy; use prescriptionItems for multi-item
-  frequency          String?
-  duration           String?
-  instructions       String?
-  maxRefills         Int                @default(0)
-  currentRefillCount Int                @default(0)
-  notes              String?
-  version            Int                @default(1)
-  pdfUrl             String? // Generated prescription PDF
-  isSharedViaApp     Boolean            @default(false)
-  sharedVia          Json? // Array of sharing methods ["WhatsApp", "Email", etc.]
-  isAddedToProfile   Boolean            @default(false) // If patient added to concomitant drugs
-  createdAt          DateTime           @default(now())
-  updatedAt          DateTime           @updatedAt
-  deletedAt          DateTime?
+  id                      Int                @id @default(autoincrement())
+  doctorId                Int
+  patientId               Int
+  visitId                 Int?               // optional link to visit (first visit vs follow-up)
+  status                  PrescriptionStatus @default(Draft)
+  prescriptionDate        DateTime
+  validFrom               DateTime
+  validUntil              DateTime
+  dosage                  String?            // legacy display; use prescriptionItems for per-drug data
+  frequency               String?
+  duration                String?
+  instructions            String?
+  maxRefills              Int                @default(0)
+  currentRefillCount      Int                @default(0)
+  notes                   String?
+  version                 Int                @default(1)
+  pdfUrl                  String? // Generated prescription PDF
+  isSharedViaApp          Boolean            @default(false)
+  sharedVia               Json? // Array of sharing methods ["WhatsApp", "Email", etc.]
+  isAddedToProfile        Boolean            @default(false) // If patient added to concomitant drugs
+  conditionDiagnosis      String?            // diagnosis from First Visit / consultation
+  initialCheckUp          Json?              // vitals: height, weight, bloodPressure, bloodGlucose, bodyTemperature, heartRate, respiratoryRate, oxygenSaturation
+  testResultsOrScans      Json?              // array of file names/URLs for uploaded tests or scans
+  followUpAppointmentDate DateTime?          // next appointment date (DD/MM/YYYY from UI)
+  createdAt               DateTime           @default(now())
+  updatedAt               DateTime           @updatedAt
+  deletedAt               DateTime?
 
   // Relations
   doctor                Doctor                 @relation(fields: [doctorId], references: [id], onDelete: Cascade)
   patient               Patient                @relation(fields: [patientId], references: [id], onDelete: Cascade)
-  tradeName             TradeName?             @relation(fields: [tradeNameId], references: [id], onDelete: Cascade)
   visit                 Visit?                 @relation(fields: [visitId], references: [id], onDelete: SetNull)
   prescriptionItems     PrescriptionItem[]
   prescriptionVersions  PrescriptionVersion[]

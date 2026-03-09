@@ -299,8 +299,8 @@ export const getDrugInteractions = async (
         OR: [
           {
             prescription: {
-              tradeNameId: {
-                in: tradeNameIds,
+              prescriptionItems: {
+                some: { tradeNameId: { in: tradeNameIds } },
               },
             },
           },
@@ -314,12 +314,16 @@ export const getDrugInteractions = async (
       include: {
         prescription: {
           include: {
-            tradeName: {
+            prescriptionItems: {
               include: {
-                activeSubstance: {
-                  select: {
-                    id: true,
-                    activeSubstance: true,
+                tradeName: {
+                  include: {
+                    activeSubstance: {
+                      select: {
+                        id: true,
+                        activeSubstance: true,
+                      },
+                    },
                   },
                 },
               },

@@ -257,7 +257,7 @@ s('/add-medicine-requests/{id}/resolve', 'patch', ADMIN_TAG, 'Resolve request: l
 
 // PRESCRIPTIONS
 s('/prescriptions', 'get', [PATIENT_TAGS.PRESCRIPTIONS, DOCTOR_TAGS.PRESCRIPTIONS, DOCTOR_PATIENTS_SECTION], 'List prescriptions (filtered by role)', true, [q('patientId'), q('doctorId')]);
-s('/prescriptions', 'post', [DOCTOR_TAGS.PRESCRIPTIONS, DOCTOR_PATIENTS_SECTION, DOCTOR_ADD_DRUG_SECTION], 'Step 5: Save the drug — create prescription (or prescription items) with tradeNameId from Step 4, dosage, duration, start date, repetitions, notes (runs drug-safety check)', true, [], { schemaRef: 'CreatePrescriptionRequest' });
+s('/prescriptions', 'post', [DOCTOR_TAGS.PRESCRIPTIONS, DOCTOR_PATIENTS_SECTION, DOCTOR_ADD_DRUG_SECTION], 'Create prescription (First Visit style: conditionDiagnosis, initialCheckUp, medicationPlan/items array, testResultsOrScans, followUpAppointmentDate). Required: items or medicationPlan array of { tradeNameId, dosage?, frequency?, duration?, instructions? }. Runs drug-safety check.', true, [], { schemaRef: 'CreatePrescriptionRequest' });
 s('/prescriptions/batch', 'post', [DOCTOR_TAGS.PRESCRIPTIONS, DOCTOR_PATIENTS_SECTION], 'Batch-create prescriptions', true, [], { schemaRef: 'BatchPrescriptionsRequest' });
 s('/prescriptions/{id}', 'get', [PATIENT_TAGS.PRESCRIPTIONS, DOCTOR_TAGS.PRESCRIPTIONS, DOCTOR_PATIENTS_SECTION], 'Get prescription by ID', true, [p('id')]);
 s('/prescriptions/{id}', 'put', [DOCTOR_TAGS.PRESCRIPTIONS, DOCTOR_PATIENTS_SECTION], 'Update a prescription', true, [p('id')], { schemaRef: 'UpdatePrescriptionRequest' });
@@ -1142,21 +1142,27 @@ const options: Record<string, unknown> = {
         },
         // ── Prescriptions
         CreatePrescriptionRequest: {
-          description: 'One prescription. Required: doctorId, patientId, tradeNameId. Optional: dosage, frequency, duration, instructions, validFrom, validUntil, maxRefills, notes. Get tradeNameId from GET /trade-names/search.',
+          description: 'First Visit style: doctorId, patientId, conditionDiagnosis, initialCheckUp (vitals), medicationPlan or items (array of drugs), testResultsOrScans, followUpAppointmentDate. Required: doctorId, patientId, and items or medicationPlan (array of { tradeNameId, dosage?, frequency?, duration?, instructions? }). Get tradeNameId from GET /trade-names/search.',
           type: 'object',
-          required: ['doctorId', 'patientId', 'tradeNameId'],
+          required: ['doctorId', 'patientId'],
           properties: {
-            doctorId:    { type: 'integer', description: 'Required.' },
-            patientId:   { type: 'integer', description: 'Required.' },
-            tradeNameId: { type: 'integer', description: 'Required. Get IDs from GET /trade-names/search?q=...' },
-            dosage:      { type: 'string', description: 'Optional.' },
-            frequency:   { type: 'string', description: 'Optional.' },
-            duration:   { type: 'string', description: 'Optional.' },
-            instructions: { type: 'string', description: 'Optional.' },
-            validFrom:   { type: 'string', format: 'date-time', description: 'Optional.' },
-            validUntil:  { type: 'string', format: 'date-time', description: 'Optional.' },
-            maxRefills:  { type: 'integer', description: 'Optional.' },
-            notes:       { type: 'string', description: 'Optional.' }
+            doctorId:                 { type: 'integer', description: 'Required.' },
+            patientId:                { type: 'integer', description: 'Required.' },
+            items:                    { type: 'array', description: 'Required. Array of drugs. Each: { tradeNameId, dosage?, frequency?, duration?, instructions? }.' },
+            medicationPlan:           { type: 'array', description: 'Alias for items. Array of { tradeNameId, dosage?, frequency?, duration?, instructions? }.' },
+            conditionDiagnosis:       { type: 'string', description: 'Condition diagnosis from First Visit.' },
+            initialCheckUp:           { type: 'object', description: 'Vitals: height, weight, bloodPressure, bloodGlucose, bodyTemperature, heartRate, respiratoryRate, oxygenSaturation (strings with units e.g. "170 Cm").' },
+            testResultsOrScans:       { type: 'array', items: { type: 'string' }, description: 'File names or URLs of uploaded tests/scans.' },
+            followUpAppointmentDate:  { type: 'string', format: 'date-time', description: 'Next appointment date (e.g. DD/MM/YYYY).' },
+            visitId:                  { type: 'integer', description: 'Optional. Link to visit.' },
+            dosage:                   { type: 'string', description: 'Optional (legacy).' },
+            frequency:                { type: 'string', description: 'Optional (legacy).' },
+            duration:                 { type: 'string', description: 'Optional (legacy).' },
+            instructions:             { type: 'string', description: 'Optional (legacy).' },
+            validFrom:                { type: 'string', format: 'date-time', description: 'Optional.' },
+            validUntil:               { type: 'string', format: 'date-time', description: 'Optional.' },
+            maxRefills:               { type: 'integer', description: 'Optional.' },
+            notes:                    { type: 'string', description: 'Optional.' }
           }
         },
         BatchPrescriptionsRequest: {
@@ -1165,7 +1171,7 @@ const options: Record<string, unknown> = {
           required: ['doctorId', 'patientId', 'medicines'],
           properties: { doctorId: { type: 'integer' }, patientId: { type: 'integer' }, medicines: { type: 'array', items: { type: 'object', properties: { tradeNameId: { type: 'integer' }, dosage: { type: 'string' }, frequency: { type: 'string' }, duration: { type: 'string' }, instructions: { type: 'string' }, notes: { type: 'string' } } } }, validFrom: { type: 'string', format: 'date-time' }, validUntil: { type: 'string', format: 'date-time' }, maxRefills: { type: 'integer' } }
         },
-        UpdatePrescriptionRequest: { description: 'All fields optional. Send only fields to update.', type: 'object', properties: { status: { type: 'string' }, dosage: { type: 'string' }, frequency: { type: 'string' }, duration: { type: 'string' }, instructions: { type: 'string' }, notes: { type: 'string' }, changedBy: { type: 'string' } } },
+        UpdatePrescriptionRequest: { description: 'All fields optional. Send only fields to update.', type: 'object', properties: { status: { type: 'string' }, dosage: { type: 'string' }, frequency: { type: 'string' }, duration: { type: 'string' }, instructions: { type: 'string' }, notes: { type: 'string' }, changedBy: { type: 'string' }, conditionDiagnosis: { type: 'string' }, initialCheckUp: { type: 'object' }, testResultsOrScans: { type: 'array', items: { type: 'string' } }, followUpAppointmentDate: { type: 'string', format: 'date-time' } } },
         CreatePrescriptionVersionRequest: { type: 'object', properties: { changes: { type: 'string' } } },
         // ── Appointments
         CreateAppointmentRequest: { description: 'Required: patientId, doctorId, appointmentDate. Optional: duration, notes. Get doctorId from GET /doctors/search.', type: 'object', required: ['patientId', 'doctorId', 'appointmentDate'], properties: { patientId: { type: 'integer', description: 'Required.' }, doctorId: { type: 'integer', description: 'Required. Get from GET /doctors/search.' }, appointmentDate: { type: 'string', format: 'date-time', description: 'Required. ISO 8601.' }, duration: { type: 'integer', description: 'Optional. Minutes.' }, notes: { type: 'string', description: 'Optional.' } } },
