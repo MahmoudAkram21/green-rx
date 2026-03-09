@@ -121,6 +121,14 @@ export const uploadMedicineImage = multer({
   limits: { fileSize: 10 * 1024 * 1024 }, // 10MB
 });
 
+// ── Image in memory (e.g. trade name search by image: no disk write) ────────
+const imageMemoryStorage = multer.memoryStorage();
+export const uploadImageMemory = multer({
+  storage: imageMemoryStorage,
+  fileFilter: medicineImageFilter,
+  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB
+});
+
 // ── Doctor license image upload (registration) ─────────────────────────────
 const doctorLicensesDir = path.join(__dirname, "../../uploads/doctor-licenses");
 if (!fs.existsSync(doctorLicensesDir)) {

@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { z } from 'zod';
 import { prisma } from '../lib/prisma';
 import { createTradeNameSchema, updateTradeNameSchema } from '../zod/tradeName.zod';
+import { extractMedicineFromImage } from '../services/medicineImageExtraction.service';
 
 // Create Trade Name
 export const createTradeName = async (req: Request, res: Response, next: NextFunction) => {
@@ -104,6 +105,84 @@ export const getTradeNameById = async (req: Request, res: Response, next: NextFu
         }
 
         res.json(tradeName);
+    } catch (error) {
+        next(error);
+    }
+};
+
+/**
+ * Search for trade names by image. AI extracts medicine data from the image, then we search the DB.
+ * POST /trade-names/search-by-image with multipart/form-data field "image".
+ */
+export const searchTradeNamesByImage = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        if (!req.file) {
+            res.status(400).json({ error: 'Image file is required. Send as multipart/form-data with field "image".' });
+            return;
+        }
+        const buffer = req.file.buffer as Buffer;
+        const mimeType = req.file.mimetype || 'image/jpeg';
+
+        const extracted = await extractMedicineFromImage(buffer, mimeType);
+        if (!extracted || (!extracted.tradeName && !extracted.activeSubstance)) {
+            res.json({
+                extracted: extracted ?? null,
+                tradeNames: [],
+                activeSubstances: [],
+                message: 'Could not extract medicine details from the image, or image did not contain trade name or active substance.'
+            });
+            return;
+        }
+
+        const [tradeNames, activeSubstances] = await Promise.all([
+            extracted.tradeName
+                ? prisma.tradeName.findMany({
+                      where: {
+                          title: { contains: extracted.tradeName, mode: 'insensitive' },
+                          isActive: true
+                      },
+                      take: 20,
+                      include: {
+                          activeSubstance: { select: { id: true, activeSubstance: true, classification: true, dosageForm: true } },
+                          company: { select: { id: true, name: true } }
+                      }
+                  })
+                : Promise.resolve([]),
+            extracted.activeSubstance
+                ? prisma.activeSubstance.findMany({
+                      where: {
+                          activeSubstance: { contains: extracted.activeSubstance, mode: 'insensitive' },
+                          isActive: true
+                      },
+                      take: 10
+                  })
+                : Promise.resolve([])
+        ]);
+
+        // If we have both trade name and active substance from AI, prefer trade name results that match the active substance
+        let matchedTradeNames = tradeNames;
+        if (tradeNames.length > 0 && extracted.activeSubstance) {
+            const withMatchingSubstance = tradeNames.filter(
+                (t) =>
+                    t.activeSubstance.activeSubstance
+                        .toLowerCase()
+                        .includes(extracted.activeSubstance!.toLowerCase())
+            );
+            if (withMatchingSubstance.length > 0) {
+                matchedTradeNames = withMatchingSubstance;
+            }
+        }
+
+        res.json({
+            extracted: {
+                tradeName: extracted.tradeName,
+                activeSubstance: extracted.activeSubstance,
+                concentration: extracted.concentration ?? null,
+                dosageForm: extracted.dosageForm ?? null
+            },
+            tradeNames: matchedTradeNames,
+            activeSubstances: activeSubstances.length > 0 ? activeSubstances : undefined
+        });
     } catch (error) {
         next(error);
     }

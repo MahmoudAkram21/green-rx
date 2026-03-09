@@ -372,7 +372,8 @@ s('/active-substances/{id}/interactions', 'get', [PATIENT_TAGS.DRUG_SAFETY, DOCT
 s('/trade-names', 'get', [PATIENT_TAGS.MEDICATIONS, PHARMACIST_TAGS.MEDICATIONS_SEARCH], 'List all trade names');
 s('/trade-names', 'post', ADMIN_TAG, 'Create a trade name (Admin/Company)', true, [], { schemaRef: 'CreateTradeNameRequest' });
 s('/trade-names/search', 'get', [DOCTOR_ADD_DRUG_SECTION, DOCTOR_TAGS.PRESCRIPTIONS], 'Step 4: Get trade names matching selected classification, API, and dosage form. Doctor only.', true, [q('q', 'Search text (title or active substance)'), q('search', 'Alias for q'), q('activeSubstanceId'), q('classification'), q('dosageForm'), q('companyId'), q('isActive'), q('availabilityStatus', 'InStock | OutOfStock | Discontinued | Pending'), q('page'), q('limit')]);
-s('/trade-names/{id}', 'get', [PATIENT_TAGS.MEDICATIONS, PHARMACIST_TAGS.MEDICATIONS_SEARCH], 'Get trade name by ID', true, [p('id')]);
+  s('/trade-names/search-by-image', 'post', [PATIENT_TAGS.MEDICATIONS, PHARMACIST_TAGS.MEDICATIONS_SEARCH, DOCTOR_TAGS.PRESCRIPTIONS], 'Search for trade names by image. Upload a medicine package image; AI extracts trade name and active substance, then returns matching trade names from the database.', true);
+  s('/trade-names/{id}', 'get', [PATIENT_TAGS.MEDICATIONS, PHARMACIST_TAGS.MEDICATIONS_SEARCH], 'Get trade name by ID', true, [p('id')]);
 s('/trade-names/{id}', 'put', ADMIN_TAG, 'Update trade name (Admin/Company)', true, [p('id')], { schemaRef: 'UpdateTradeNameRequest' });
 s('/trade-names/{id}', 'delete', ADMIN_TAG, 'Delete trade name (Admin)', true, [p('id')]);
 
@@ -486,6 +487,57 @@ if (paths['/auth/register']?.post) {
     content: {
       'multipart/form-data': {
         schema: { $ref: '#/components/schemas/RegisterRequest' }
+      }
+    }
+  };
+}
+
+// POST /trade-names/search-by-image: multipart with file field "image"
+if (paths['/trade-names/search-by-image']?.post) {
+  paths['/trade-names/search-by-image'].post.requestBody = {
+    required: true,
+    content: {
+      'multipart/form-data': {
+        schema: {
+          type: 'object',
+          required: ['image'],
+          properties: {
+            image: { type: 'string', format: 'binary', description: 'Required. Image of the medicine package (PNG, JPG, JPEG, WebP, GIF, max 10MB). AI extracts trade name and active substance.' }
+          }
+        }
+      }
+    }
+  };
+  paths['/trade-names/search-by-image'].post.responses['200'] = {
+    description: 'Extracted data from image and matching trade names from DB.',
+    content: {
+      'application/json': {
+        schema: {
+          type: 'object',
+          properties: {
+            extracted: {
+              type: 'object',
+              description: 'What the AI read from the image',
+              properties: {
+                tradeName: { type: 'string' },
+                activeSubstance: { type: 'string' },
+                concentration: { type: 'string', nullable: true },
+                dosageForm: { type: 'string', nullable: true }
+              }
+            },
+            tradeNames: {
+              type: 'array',
+              items: { $ref: '#/components/schemas/TradeName' },
+              description: 'Matching trade names from the database (includes activeSubstance, company)'
+            },
+            activeSubstances: {
+              type: 'array',
+              items: { $ref: '#/components/schemas/ActiveSubstance' },
+              description: 'Present when no trade name matched but active substance did'
+            },
+            message: { type: 'string', description: 'Present when extraction failed or returned nothing' }
+          }
+        }
       }
     }
   };
