@@ -1648,137 +1648,161 @@ async function main() {
   console.log("✅ Created patient-doctor relationships (all 5 patients linked to Dr. John Smith)");
 
   // ============================================
-  // SECTION 10: PRESCRIPTIONS
+  // SECTION 10: PRESCRIPTIONS (Prescription + PatientMedicine + PrescriptionMedicine)
   // ============================================
   console.log("\n📋 Creating prescriptions...");
-  const prescriptions = await Promise.all([
-    // Patient 1 - Diabetes medication
-    prisma.prescription.create({
+  const prescriptionSpecs: Array<{
+    doctorId: number;
+    patientId: number;
+    status: "Approved" | "Filled";
+    prescriptionDate: Date;
+    validFrom: Date;
+    validUntil: Date;
+    dosage?: string;
+    frequency?: string;
+    duration?: string;
+    instructions?: string;
+    maxRefills: number;
+    currentRefillCount?: number;
+    notes?: string;
+    tradeNameId: number;
+    medicineName: string;
+  }> = [
+    {
+      doctorId: doctors[0].id,
+      patientId: patients[0].id,
+      status: "Approved",
+      prescriptionDate: new Date(),
+      validFrom: new Date(),
+      validUntil: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
+      dosage: "500mg",
+      frequency: "Twice daily",
+      duration: "90 days",
+      instructions: "Take with meals to reduce GI side effects",
+      maxRefills: 3,
+      notes: "Monitor blood glucose levels",
+      tradeNameId: tradeNames[3].id,
+      medicineName: "Glucophage",
+    },
+    {
+      doctorId: doctors[0].id,
+      patientId: patients[1].id,
+      status: "Filled",
+      prescriptionDate: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
+      validFrom: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
+      validUntil: new Date(Date.now() + 83 * 24 * 60 * 60 * 1000),
+      dosage: "5mg",
+      frequency: "Once daily",
+      duration: "90 days",
+      instructions: "Take in the morning with or without food",
+      maxRefills: 6,
+      currentRefillCount: 1,
+      tradeNameId: tradeNames[4].id,
+      medicineName: "Concor",
+    },
+    {
+      doctorId: doctors[0].id,
+      patientId: patients[1].id,
+      status: "Approved",
+      prescriptionDate: new Date(),
+      validFrom: new Date(),
+      validUntil: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
+      dosage: "20mg",
+      frequency: "Once daily at bedtime",
+      duration: "90 days",
+      instructions: "Take with or without food. Monitor liver enzymes",
+      maxRefills: 6,
+      notes: "Check lipid panel in 3 months",
+      tradeNameId: tradeNames[6].id,
+      medicineName: "Lipitor",
+    },
+    {
+      doctorId: doctors[2].id,
+      patientId: patients[2].id,
+      status: "Approved",
+      prescriptionDate: new Date(),
+      validFrom: new Date(),
+      validUntil: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+      dosage: "10mg",
+      frequency: "Once daily",
+      duration: "30 days",
+      instructions: "Take at bedtime to avoid drowsiness during day",
+      maxRefills: 2,
+      tradeNameId: tradeNames[8].id,
+      medicineName: "Zyrtec",
+    },
+    {
+      doctorId: doctors[2].id,
+      patientId: patients[3].id,
+      status: "Approved",
+      prescriptionDate: new Date(),
+      validFrom: new Date(),
+      validUntil: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000),
+      dosage: "20mg",
+      frequency: "Once daily",
+      duration: "60 days",
+      instructions: "Take 30 minutes before breakfast on empty stomach",
+      maxRefills: 3,
+      notes: "Avoid taking with food",
+      tradeNameId: tradeNames[5].id,
+      medicineName: "Omeprazole",
+    },
+    {
+      doctorId: doctors[1].id,
+      patientId: patients[4].id,
+      status: "Approved",
+      prescriptionDate: new Date(),
+      validFrom: new Date(),
+      validUntil: new Date(Date.now() + 180 * 24 * 60 * 60 * 1000),
+      dosage: "2 puffs",
+      frequency: "As needed for symptoms",
+      duration: "180 days",
+      instructions: "Use before exercise or when experiencing shortness of breath",
+      maxRefills: 2,
+      notes: "Rescue medication only",
+      tradeNameId: tradeNames[7].id,
+      medicineName: "Ventolin",
+    },
+  ];
+
+  const prescriptions: Array<{ id: number }> = [];
+  for (const spec of prescriptionSpecs) {
+    const prescription = await prisma.prescription.create({
       data: {
-        doctorId: doctors[0].id,
-        patientId: patients[0].id,
-        status: "Approved",
-        prescriptionDate: new Date(),
-        validFrom: new Date(),
-        validUntil: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000), // 90 days
-        dosage: "500mg",
-        frequency: "Twice daily",
-        duration: "90 days",
-        instructions: "Take with meals to reduce GI side effects",
-        maxRefills: 3,
-        notes: "Monitor blood glucose levels",
+        doctorId: spec.doctorId,
+        patientId: spec.patientId,
+        status: spec.status,
+        prescriptionDate: spec.prescriptionDate,
+        validFrom: spec.validFrom,
+        validUntil: spec.validUntil,
+        dosage: spec.dosage,
+        frequency: spec.frequency,
+        duration: spec.duration,
+        instructions: spec.instructions,
+        maxRefills: spec.maxRefills,
+        currentRefillCount: spec.currentRefillCount ?? 0,
+        notes: spec.notes,
         isAddedToProfile: true,
-        prescriptionItems: {
-          create: [{ tradeNameId: tradeNames[3].id, dosage: "500mg", frequency: "Twice daily", duration: "90 days", instructions: "Take with meals to reduce GI side effects", sortOrder: 0 }],
-        },
       },
-    }),
-    // Patient 2 - Hypertension medication
-    prisma.prescription.create({
+    });
+    const tn = await prisma.tradeName.findUnique({
+      where: { id: spec.tradeNameId },
+      select: { activeSubstanceId: true },
+    });
+    const pm = await prisma.patientMedicine.create({
       data: {
-        doctorId: doctors[0].id,
-        patientId: patients[1].id,
-        status: "Filled",
-        prescriptionDate: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), // 7 days ago
-        validFrom: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
-        validUntil: new Date(Date.now() + 83 * 24 * 60 * 60 * 1000),
-        dosage: "5mg",
-        frequency: "Once daily",
-        duration: "90 days",
-        instructions: "Take in the morning with or without food",
-        maxRefills: 6,
-        currentRefillCount: 1,
-        isAddedToProfile: true,
-        prescriptionItems: {
-          create: [{ tradeNameId: tradeNames[4].id, dosage: "5mg", frequency: "Once daily", duration: "90 days", instructions: "Take in the morning with or without food", sortOrder: 0 }],
-        },
+        patientId: spec.patientId,
+        tradeNameId: spec.tradeNameId,
+        activeSubstanceId: tn?.activeSubstanceId ?? undefined,
+        medicineName: spec.medicineName,
+        isOngoing: true,
       },
-    }),
-    // Patient 2 - Cholesterol medication
-    prisma.prescription.create({
-      data: {
-        doctorId: doctors[0].id,
-        patientId: patients[1].id,
-        status: "Approved",
-        prescriptionDate: new Date(),
-        validFrom: new Date(),
-        validUntil: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
-        dosage: "20mg",
-        frequency: "Once daily at bedtime",
-        duration: "90 days",
-        instructions: "Take with or without food. Monitor liver enzymes",
-        maxRefills: 6,
-        notes: "Check lipid panel in 3 months",
-        isAddedToProfile: true,
-        prescriptionItems: {
-          create: [{ tradeNameId: tradeNames[6].id, dosage: "20mg", frequency: "Once daily at bedtime", duration: "90 days", instructions: "Take with or without food. Monitor liver enzymes", sortOrder: 0 }],
-        },
-      },
-    }),
-    // Patient 3 - Allergy medication
-    prisma.prescription.create({
-      data: {
-        doctorId: doctors[2].id,
-        patientId: patients[2].id,
-        status: "Approved",
-        prescriptionDate: new Date(),
-        validFrom: new Date(),
-        validUntil: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
-        dosage: "10mg",
-        frequency: "Once daily",
-        duration: "30 days",
-        instructions: "Take at bedtime to avoid drowsiness during day",
-        maxRefills: 2,
-        isAddedToProfile: true,
-        prescriptionItems: {
-          create: [{ tradeNameId: tradeNames[8].id, dosage: "10mg", frequency: "Once daily", duration: "30 days", instructions: "Take at bedtime to avoid drowsiness during day", sortOrder: 0 }],
-        },
-      },
-    }),
-    // Patient 4 - GERD medication
-    prisma.prescription.create({
-      data: {
-        doctorId: doctors[2].id,
-        patientId: patients[3].id,
-        status: "Approved",
-        prescriptionDate: new Date(),
-        validFrom: new Date(),
-        validUntil: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000),
-        dosage: "20mg",
-        frequency: "Once daily",
-        duration: "60 days",
-        instructions: "Take 30 minutes before breakfast on empty stomach",
-        maxRefills: 3,
-        notes: "Avoid taking with food",
-        isAddedToProfile: true,
-        prescriptionItems: {
-          create: [{ tradeNameId: tradeNames[5].id, dosage: "20mg", frequency: "Once daily", duration: "60 days", instructions: "Take 30 minutes before breakfast on empty stomach", sortOrder: 0 }],
-        },
-      },
-    }),
-    // Patient 5 - Asthma medication
-    prisma.prescription.create({
-      data: {
-        doctorId: doctors[1].id, // Pediatrician
-        patientId: patients[4].id,
-        status: "Approved",
-        prescriptionDate: new Date(),
-        validFrom: new Date(),
-        validUntil: new Date(Date.now() + 180 * 24 * 60 * 60 * 1000),
-        dosage: "2 puffs",
-        frequency: "As needed for symptoms",
-        duration: "180 days",
-        instructions:
-          "Use before exercise or when experiencing shortness of breath",
-        maxRefills: 2,
-        notes: "Rescue medication only",
-        isAddedToProfile: true,
-        prescriptionItems: {
-          create: [{ tradeNameId: tradeNames[7].id, dosage: "2 puffs", frequency: "As needed for symptoms", duration: "180 days", instructions: "Use before exercise or when experiencing shortness of breath", sortOrder: 0 }],
-        },
-      },
-    }),
-  ]);
+    });
+    await prisma.prescriptionMedicine.create({
+      data: { prescriptionId: prescription.id, patientMedicineId: pm.id, sortOrder: 0 },
+    });
+    prescriptions.push({ id: prescription.id });
+  }
   console.log(`✅ Created ${prescriptions.length} prescriptions`);
 
   // ============================================

@@ -3,6 +3,7 @@ import {
     createActiveSubstance,
     getActiveSubstanceById,
     listClassifications,
+    listConcentrations,
     listDosageForms,
     searchActiveSubstances,
     updateActiveSubstance,
@@ -21,6 +22,7 @@ router.use(authenticate);
 router.post('/', authorize([UserRole.Admin, UserRole.SuperAdmin, UserRole.Company]), createActiveSubstance);
 router.get('/search', searchActiveSubstances);
 router.get('/classifications', listClassifications);
+router.get('/concentrations', listConcentrations);
 router.get('/dosage-forms', listDosageForms);
 router.get('/:id', getActiveSubstanceById);
 router.put('/:id', authorize([UserRole.Admin, UserRole.SuperAdmin, UserRole.Company]), updateActiveSubstance);

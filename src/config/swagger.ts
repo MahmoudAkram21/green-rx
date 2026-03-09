@@ -256,10 +256,11 @@ s('/add-medicine-requests/{id}', 'get', ADMIN_TAG, 'Get add medicine request by 
 s('/add-medicine-requests/{id}/resolve', 'patch', ADMIN_TAG, 'Resolve request: link trade name/active substance and mark PatientMedicine verified', true, [p('id')], { schemaRef: 'ResolveAddMedicineRequestRequest' });
 
 // PRESCRIPTIONS
-s('/prescriptions', 'get', [PATIENT_TAGS.PRESCRIPTIONS, DOCTOR_TAGS.PRESCRIPTIONS, DOCTOR_PATIENTS_SECTION], 'List prescriptions (filtered by role)', true, [q('patientId'), q('doctorId')]);
-s('/prescriptions', 'post', [DOCTOR_TAGS.PRESCRIPTIONS, DOCTOR_PATIENTS_SECTION, DOCTOR_ADD_DRUG_SECTION], 'Create prescription (First Visit style: conditionDiagnosis, initialCheckUp, medicationPlan/items array, testResultsOrScans, followUpAppointmentDate). Required: items or medicationPlan array of { tradeNameId, dosage?, frequency?, duration?, instructions? }. Runs drug-safety check.', true, [], { schemaRef: 'CreatePrescriptionRequest' });
-s('/prescriptions/batch', 'post', [DOCTOR_TAGS.PRESCRIPTIONS, DOCTOR_PATIENTS_SECTION], 'Batch-create prescriptions', true, [], { schemaRef: 'BatchPrescriptionsRequest' });
-s('/prescriptions/{id}', 'get', [PATIENT_TAGS.PRESCRIPTIONS, DOCTOR_TAGS.PRESCRIPTIONS, DOCTOR_PATIENTS_SECTION], 'Get prescription by ID', true, [p('id')]);
+s('/prescriptions', 'get', [PATIENT_TAGS.PRESCRIPTIONS, DOCTOR_TAGS.PRESCRIPTIONS, DOCTOR_PATIENTS_SECTION], 'List prescriptions (filtered by role). Response includes prescriptionMedicines with patientMedicine (tradeName, activeSubstance).', true, [q('patientId'), q('doctorId')]);
+s('/prescriptions', 'post', [DOCTOR_TAGS.PRESCRIPTIONS, DOCTOR_PATIENTS_SECTION, DOCTOR_ADD_DRUG_SECTION], 'Create prescription (First Visit: conditionDiagnosis, initialCheckUp, medicationPlan/items, testResultsOrScans, followUpAppointmentDate). Required: items or medicationPlan; each item: medicineName (required), tradeNameId? or manual, activeSubstanceId?, dosageAmount?, frequencyCount?, durationValue?, etc. Runs drug-safety check.', true, [], { schemaRef: 'CreatePrescriptionRequest' });
+s('/prescriptions/batch', 'post', [DOCTOR_TAGS.PRESCRIPTIONS, DOCTOR_PATIENTS_SECTION], 'Batch-create prescriptions: one Prescription per medicine, each with one PatientMedicine + PrescriptionMedicine. Runs drug-safety and batch-interaction checks.', true, [], { schemaRef: 'BatchPrescriptionsRequest' });
+s('/prescriptions/{prescriptionId}/medicines', 'post', [DOCTOR_TAGS.PRESCRIPTIONS, DOCTOR_PATIENTS_SECTION, DOCTOR_ADD_DRUG_SECTION], 'Add one medicine to an existing prescription (draft). Body: AddMedicineToPrescriptionRequest (medicineName required, tradeNameId?, activeSubstanceId?, dosageAmount?, frequencyCount?, durationValue?, etc.). Returns prescription with prescriptionMedicines and patientMedicine.', true, [p('prescriptionId')], { schemaRef: 'AddMedicineToPrescriptionRequest' });
+s('/prescriptions/{id}', 'get', [PATIENT_TAGS.PRESCRIPTIONS, DOCTOR_TAGS.PRESCRIPTIONS, DOCTOR_PATIENTS_SECTION], 'Get prescription by ID. Response includes prescriptionMedicines (sortOrder) with nested patientMedicine (tradeName, activeSubstance, dosageAmount, frequencyCount, durationValue, notes).', true, [p('id')]);
 s('/prescriptions/{id}', 'put', [DOCTOR_TAGS.PRESCRIPTIONS, DOCTOR_PATIENTS_SECTION], 'Update a prescription', true, [p('id')], { schemaRef: 'UpdatePrescriptionRequest' });
 s('/prescriptions/{id}', 'delete', [PATIENT_TAGS.PRESCRIPTIONS, DOCTOR_TAGS.PRESCRIPTIONS, DOCTOR_PATIENTS_SECTION], 'Delete a prescription', true, [p('id')]);
 s('/prescriptions/{prescriptionId}/interactions', 'get', [PATIENT_TAGS.PRESCRIPTIONS, PATIENT_TAGS.DRUG_SAFETY, DOCTOR_TAGS.DRUG_SAFETY, DOCTOR_PATIENTS_SECTION], 'Get drug interaction alerts for prescription', true, [p('prescriptionId')]);
@@ -361,6 +362,7 @@ s('/medicine-suggestions/{id}/review', 'patch', ADMIN_TAG, 'Review / approve sug
 // ACTIVE SUBSTANCES
 s('/active-substances', 'post', ADMIN_TAG, 'Create an active substance (Admin/Company)', true, [], { schemaRef: 'CreateActiveSubstanceRequest' });
 s('/active-substances/classifications', 'get', [DOCTOR_ADD_DRUG_SECTION, DOCTOR_TAGS.PRESCRIPTIONS], 'Step 1: Search classifications for the active substance (dropdown / autocomplete). Doctor only.', true, [q('q', 'Filter classifications by substring (case-insensitive)')]);
+s('/active-substances/concentrations', 'get', [DOCTOR_ADD_DRUG_SECTION, DOCTOR_TAGS.PRESCRIPTIONS], 'List concentrations (Conc for this API). Optional: q, classification, activeSubstanceId. Returns { concentrations: string[] }. Doctor only.', true, [q('q'), q('classification'), q('activeSubstanceId')]);
 s('/active-substances/dosage-forms', 'get', [DOCTOR_ADD_DRUG_SECTION, DOCTOR_TAGS.PRESCRIPTIONS], 'Step 3: List dosage forms (optionally filtered by classification and/or selected active substance). Doctor only.', true, [q('q'), q('classification'), q('activeSubstanceId')]);
 s('/active-substances/search', 'get', [DOCTOR_ADD_DRUG_SECTION, DOCTOR_TAGS.PRESCRIPTIONS], 'Step 2: Search API (active substance) by classification; use selected classification from Step 1. Doctor only.', true, [q('q'), q('classification', 'Filter by classification (alias: therapeuticClass)'), q('therapeuticClass'), q('page'), q('limit')]);
 s('/active-substances/{id}', 'get', [PATIENT_TAGS.MEDICATIONS, PHARMACIST_TAGS.MEDICATIONS_SEARCH], 'Get active substance by ID', true, [p('id')]);
@@ -371,7 +373,7 @@ s('/active-substances/{id}/interactions', 'get', [PATIENT_TAGS.DRUG_SAFETY, DOCT
 // TRADE NAMES
 s('/trade-names', 'get', [PATIENT_TAGS.MEDICATIONS, PHARMACIST_TAGS.MEDICATIONS_SEARCH], 'List all trade names');
 s('/trade-names', 'post', ADMIN_TAG, 'Create a trade name (Admin/Company)', true, [], { schemaRef: 'CreateTradeNameRequest' });
-s('/trade-names/search', 'get', [DOCTOR_ADD_DRUG_SECTION, DOCTOR_TAGS.PRESCRIPTIONS], 'Step 4: Get trade names matching selected classification, API, and dosage form. Doctor only.', true, [q('q', 'Search text (title or active substance)'), q('search', 'Alias for q'), q('activeSubstanceId'), q('classification'), q('dosageForm'), q('companyId'), q('isActive'), q('availabilityStatus', 'InStock | OutOfStock | Discontinued | Pending'), q('page'), q('limit')]);
+s('/trade-names/search', 'get', [DOCTOR_ADD_DRUG_SECTION, DOCTOR_TAGS.PRESCRIPTIONS], 'Step 4: Get trade names matching classification, API, concentration, dosage form. Doctor only.', true, [q('q', 'Search text (title or active substance)'), q('search', 'Alias for q'), q('activeSubstanceId'), q('classification'), q('dosageForm'), q('concentration', 'Filter by active substance concentration e.g. 5 mg'), q('companyId'), q('isActive'), q('availabilityStatus', 'InStock | OutOfStock | Discontinued | Pending'), q('page'), q('limit')]);
   s('/trade-names/search-by-image', 'post', [PATIENT_TAGS.MEDICATIONS, PHARMACIST_TAGS.MEDICATIONS_SEARCH, DOCTOR_TAGS.PRESCRIPTIONS], 'Search for trade names by image. Upload a medicine package image; AI extracts trade name and active substance, then returns matching trade names from the database.', true);
   s('/trade-names/{id}', 'get', [PATIENT_TAGS.MEDICATIONS, PHARMACIST_TAGS.MEDICATIONS_SEARCH], 'Get trade name by ID', true, [p('id')]);
 s('/trade-names/{id}', 'put', ADMIN_TAG, 'Update trade name (Admin/Company)', true, [p('id')], { schemaRef: 'UpdateTradeNameRequest' });
@@ -680,7 +682,7 @@ const options: Record<string, unknown> = {
       { name: PATIENT_TAGS.SIDE_EFFECTS, description: 'Report and view medication side effects' },
       { name: DOCTOR_TAGS.AUTH, description: 'Authentication (Doctor)' },
       { name: DOCTOR_PATIENTS_SECTION, description: 'All doctor capabilities with patients: list/search/get details, assign/remove, prescriptions, visits, consultations, medical reports, drug safety, view patient allergies/diseases/medicines.' },
-      { name: DOCTOR_ADD_DRUG_SECTION, description: 'Add A New Drug screen: call these endpoints in order. Step 1 — Search classifications. Step 2 — Search active substances (API) by classification. Step 3 — List dosage forms (optional filters). Step 4 — Search trade names by active substance and dosage form. Step 5 — Create prescription (or prescription items) with chosen tradeNameId, dosage, duration, notes.' },
+      { name: DOCTOR_ADD_DRUG_SECTION, description: 'Add A New Drug screen: Step 1 — GET /active-substances/classifications. Step 2 — GET /active-substances/search (API, filter by classification). Step 3 — GET /active-substances/concentrations (Conc for this API). Step 4 — GET /active-substances/dosage-forms. Step 5 — GET /trade-names/search (classification, API, concentration, dosage form). Step 6 — POST /prescriptions with medicationPlan (each item: medicineName required, tradeNameId? or manual; creates Prescription + PatientMedicine + PrescriptionMedicine). Optional: POST /prescriptions/:prescriptionId/medicines to add one drug to a draft prescription.' },
       { name: DOCTOR_TAGS.MY_PATIENTS, description: 'My patients' },
       { name: DOCTOR_TAGS.PRESCRIPTIONS, description: 'Prescriptions' },
       { name: DOCTOR_TAGS.CONSULTATIONS_VISITS, description: 'Consultations and visits' },
@@ -1140,36 +1142,109 @@ const options: Record<string, unknown> = {
             }
           }
         },
-        // ── Prescriptions
+        // ── Prescriptions (First Visit: Prescription + PatientMedicine + PrescriptionMedicine)
+        MedicationPlanItem: {
+          description: 'One drug in medicationPlan or items. medicineName required; use tradeNameId when selected from system, or omit for manual trade name.',
+          type: 'object',
+          required: ['medicineName'],
+          properties: {
+            medicineName:      { type: 'string', description: 'Required. Trade name title or manual entry.' },
+            tradeNameId:       { type: 'integer', nullable: true, description: 'Optional. Omit if doctor entered manual trade name. From GET /trade-names/search.' },
+            activeSubstanceId: { type: 'integer', nullable: true, description: 'Optional. From API step; can be derived from tradeNameId if not sent.' },
+            dosageAmount:      { type: 'number', nullable: true, description: 'e.g. 5.' },
+            frequencyCount:    { type: 'integer', nullable: true, description: 'e.g. 2 for twice.' },
+            frequencyPeriod:   { type: 'integer', nullable: true, description: 'e.g. 8 for every 8.' },
+            frequencyUnit:     { type: 'string', nullable: true, description: 'e.g. Daily, Weekly (FrequencyUnit).' },
+            durationValue:     { type: 'integer', nullable: true, description: 'e.g. 3.' },
+            durationUnit:      { type: 'string', nullable: true, description: 'e.g. Weeks, Months (DurationUnit).' },
+            startDate:         { type: 'string', format: 'date-time', nullable: true },
+            endDate:           { type: 'string', format: 'date-time', nullable: true },
+            notes:             { type: 'string', nullable: true }
+          }
+        },
         CreatePrescriptionRequest: {
-          description: 'First Visit style: doctorId, patientId, conditionDiagnosis, initialCheckUp (vitals), medicationPlan or items (array of drugs), testResultsOrScans, followUpAppointmentDate. Required: doctorId, patientId, and items or medicationPlan (array of { tradeNameId, dosage?, frequency?, duration?, instructions? }). Get tradeNameId from GET /trade-names/search.',
+          description: 'First Visit: doctorId, patientId, conditionDiagnosis, initialCheckUp (vitals), medicationPlan or items (array of drugs), testResultsOrScans, followUpAppointmentDate. Required: doctorId, patientId, and items or medicationPlan (at least one item with medicineName). Response: prescription with prescriptionMedicines (each with patientMedicine including tradeName, activeSubstance), and warnings.',
           type: 'object',
           required: ['doctorId', 'patientId'],
           properties: {
             doctorId:                 { type: 'integer', description: 'Required.' },
             patientId:                { type: 'integer', description: 'Required.' },
-            items:                    { type: 'array', description: 'Required. Array of drugs. Each: { tradeNameId, dosage?, frequency?, duration?, instructions? }.' },
-            medicationPlan:           { type: 'array', description: 'Alias for items. Array of { tradeNameId, dosage?, frequency?, duration?, instructions? }.' },
-            conditionDiagnosis:       { type: 'string', description: 'Condition diagnosis from First Visit.' },
-            initialCheckUp:           { type: 'object', description: 'Vitals: height, weight, bloodPressure, bloodGlucose, bodyTemperature, heartRate, respiratoryRate, oxygenSaturation (strings with units e.g. "170 Cm").' },
+            items:                    { type: 'array', items: { $ref: '#/components/schemas/MedicationPlanItem' }, description: 'Required for submit. Array of drugs (medicineName required per item).' },
+            medicationPlan:           { type: 'array', items: { $ref: '#/components/schemas/MedicationPlanItem' }, description: 'Alias for items. Same structure.' },
+            conditionDiagnosis:       { type: 'string', description: 'Diagnosis of the condition.' },
+            initialCheckUp:           {
+              type: 'object',
+              description: 'Initial check-up vitals (all optional). Height/weight can be pre-filled from patient if doctor does not measure.',
+              properties: {
+                height:             { type: 'number', description: 'e.g. 170 (Cm).' },
+                weight:             { type: 'number', description: 'e.g. 68 (Kg).' },
+                bloodPressure:      { type: 'string', description: 'e.g. 120/80 MmHg.' },
+                bloodGlucose:       { type: 'number', description: 'e.g. 140 Mg/DL.' },
+                bodyTemperature:    { type: 'number', description: 'e.g. 38 °C.' },
+                heartRate:          { type: 'number', description: 'e.g. 100 Bpm.' },
+                respiratoryRate:    { type: 'string', description: 'e.g. 12-20 Breaths/Min.' },
+                oxygenSaturation:   { type: 'number', description: 'e.g. 95 (%).' }
+              }
+            },
             testResultsOrScans:       { type: 'array', items: { type: 'string' }, description: 'File names or URLs of uploaded tests/scans.' },
-            followUpAppointmentDate:  { type: 'string', format: 'date-time', description: 'Next appointment date (e.g. DD/MM/YYYY).' },
-            visitId:                  { type: 'integer', description: 'Optional. Link to visit.' },
-            dosage:                   { type: 'string', description: 'Optional (legacy).' },
-            frequency:                { type: 'string', description: 'Optional (legacy).' },
-            duration:                 { type: 'string', description: 'Optional (legacy).' },
-            instructions:             { type: 'string', description: 'Optional (legacy).' },
-            validFrom:                { type: 'string', format: 'date-time', description: 'Optional.' },
-            validUntil:               { type: 'string', format: 'date-time', description: 'Optional.' },
-            maxRefills:               { type: 'integer', description: 'Optional.' },
-            notes:                    { type: 'string', description: 'Optional.' }
+            followUpAppointmentDate:  { type: 'string', format: 'date-time', description: 'Follow-up appointment date (e.g. DD/MM/YYYY).' },
+            visitId:                  { type: 'integer', nullable: true, description: 'Optional. Link to visit.' },
+            validFrom:                { type: 'string', format: 'date-time', description: 'Optional. Default: now.' },
+            validUntil:               { type: 'string', format: 'date-time', description: 'Optional. Default e.g. 30 days.' },
+            maxRefills:               { type: 'integer', description: 'Optional. Default 0.' },
+            notes:                    { type: 'string', nullable: true, description: 'Optional.' }
           }
         },
+        AddMedicineToPrescriptionRequest: {
+          description: 'Body for POST /prescriptions/:prescriptionId/medicines. One medication plan item (same shape as element of medicationPlan).',
+          type: 'object',
+          required: ['medicineName'],
+          properties: {
+            medicineName:      { type: 'string' },
+            tradeNameId:       { type: 'integer', nullable: true },
+            activeSubstanceId: { type: 'integer', nullable: true },
+            dosageAmount:      { type: 'number', nullable: true },
+            frequencyCount:    { type: 'integer', nullable: true },
+            frequencyPeriod:   { type: 'integer', nullable: true },
+            frequencyUnit:     { type: 'string', nullable: true },
+            durationValue:     { type: 'integer', nullable: true },
+            durationUnit:      { type: 'string', nullable: true },
+            startDate:         { type: 'string', format: 'date-time', nullable: true },
+            endDate:           { type: 'string', format: 'date-time', nullable: true },
+            notes:             { type: 'string', nullable: true }
+          }
+        },
+        ConcentrationsResponse: {
+          description: 'GET /active-substances/concentrations. Distinct concentration values (e.g. "5 mg", "5 mg/ 20 mg") filtered by classification and/or activeSubstanceId.',
+          type: 'object',
+          properties: { concentrations: { type: 'array', items: { type: 'string' } } }
+        },
         BatchPrescriptionsRequest: {
-          description: 'Batch prescriptions. Required: doctorId, patientId, medicines (array). Optional: validFrom, validUntil, maxRefills. Each medicine: tradeNameId (get from GET /trade-names/search), dosage, frequency, duration, instructions, notes.',
+          description: 'Batch: one Prescription per medicine; each prescription gets one PatientMedicine + PrescriptionMedicine. Required: doctorId, patientId, medicines (array). Each medicine: tradeNameId (from GET /trade-names/search), dosage, frequency, duration, instructions, notes. Runs drug-safety and batch-interaction checks.',
           type: 'object',
           required: ['doctorId', 'patientId', 'medicines'],
-          properties: { doctorId: { type: 'integer' }, patientId: { type: 'integer' }, medicines: { type: 'array', items: { type: 'object', properties: { tradeNameId: { type: 'integer' }, dosage: { type: 'string' }, frequency: { type: 'string' }, duration: { type: 'string' }, instructions: { type: 'string' }, notes: { type: 'string' } } } }, validFrom: { type: 'string', format: 'date-time' }, validUntil: { type: 'string', format: 'date-time' }, maxRefills: { type: 'integer' } }
+          properties: {
+            doctorId:   { type: 'integer', description: 'Required.' },
+            patientId:  { type: 'integer', description: 'Required.' },
+            medicines:  {
+              type: 'array',
+              items: {
+                type: 'object',
+                required: ['tradeNameId'],
+                properties: {
+                  tradeNameId:  { type: 'integer', description: 'From GET /trade-names/search.' },
+                  dosage:       { type: 'string', nullable: true },
+                  frequency:    { type: 'string', nullable: true },
+                  duration:     { type: 'string', nullable: true },
+                  instructions: { type: 'string', nullable: true },
+                  notes:        { type: 'string', nullable: true }
+                }
+              }
+            },
+            validFrom:  { type: 'string', format: 'date-time', nullable: true },
+            validUntil: { type: 'string', format: 'date-time', nullable: true },
+            maxRefills: { type: 'integer', nullable: true }
+          }
         },
         UpdatePrescriptionRequest: { description: 'All fields optional. Send only fields to update.', type: 'object', properties: { status: { type: 'string' }, dosage: { type: 'string' }, frequency: { type: 'string' }, duration: { type: 'string' }, instructions: { type: 'string' }, notes: { type: 'string' }, changedBy: { type: 'string' }, conditionDiagnosis: { type: 'string' }, initialCheckUp: { type: 'object' }, testResultsOrScans: { type: 'array', items: { type: 'string' } }, followUpAppointmentDate: { type: 'string', format: 'date-time' } } },
         CreatePrescriptionVersionRequest: { type: 'object', properties: { changes: { type: 'string' } } },

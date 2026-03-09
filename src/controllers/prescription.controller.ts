@@ -2,34 +2,70 @@ import { Request, Response } from 'express';
 import { prisma } from '../lib/prisma';
 import { PrescriptionStatus } from '../../generated/client/client';
 import { generateWarnings } from '../services/warningService';
+import drugInteractionService from '../services/drugInteraction.service';
 
 const defaultValidFrom = () => new Date();
 const defaultValidUntil = () => new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
 
-/** Include for prescription with items and visit; used by create/get/list */
-const prescriptionIncludeWithItemsAndVisit = {
+/** Include for prescription with medicines (PrescriptionMedicine + PatientMedicine) and visit */
+const prescriptionIncludeWithMedicinesAndVisit = {
     doctor: { include: { user: { select: { email: true, role: true } } } },
     patient: { include: { user: { select: { email: true } } } },
     visit: { select: { id: true, visitDate: true, visitType: true, isNewVisit: true } },
-    prescriptionItems: {
+    prescriptionMedicines: {
         orderBy: { sortOrder: 'asc' as const },
-        include: { tradeName: { include: { activeSubstance: true, company: true } } }
+        include: {
+            patientMedicine: {
+                include: {
+                    tradeName: { include: { activeSubstance: true, company: true } },
+                    activeSubstance: true
+                }
+            }
+        }
     },
     drugInteractionAlerts: true,
     prescriptionVersions: { orderBy: { version: 'desc' as const } }
 };
 
-// First Visit / prescription body: medicationPlan or items = array of { tradeNameId, dosage?, frequency?, duration?, instructions? }
-function normalizeMedicationItems(body: Record<string, unknown>): Array<{ tradeNameId: number; dosage?: string; frequency?: string; duration?: string; instructions?: string }> | null {
+export type MedicationPlanItem = {
+    medicineName: string;
+    tradeNameId?: number | null;
+    activeSubstanceId?: number | null;
+    dosageAmount?: number | null;
+    frequencyCount?: number | null;
+    frequencyPeriod?: number | null;
+    frequencyUnit?: string | null;
+    durationValue?: number | null;
+    durationUnit?: string | null;
+    startDate?: string | null;
+    endDate?: string | null;
+    notes?: string | null;
+};
+
+// First Visit: medicationPlan or items = array of { medicineName, tradeNameId?, activeSubstanceId?, dosageAmount?, ... }
+function normalizeMedicationItems(body: Record<string, unknown>): MedicationPlanItem[] | null {
     const items = body.items ?? body.medicationPlan;
     if (!Array.isArray(items) || items.length === 0) return null;
-    return items.map((item: any) => ({
-        tradeNameId: Number(item.tradeNameId),
-        dosage: item.dosage != null ? String(item.dosage) : undefined,
-        frequency: item.frequency != null ? String(item.frequency) : undefined,
-        duration: item.duration != null ? String(item.duration) : undefined,
-        instructions: item.instructions != null ? String(item.instructions) : undefined
-    })).filter((i: { tradeNameId: number }) => Number.isFinite(i.tradeNameId));
+    const out: MedicationPlanItem[] = [];
+    for (const item of items as any[]) {
+        const name = item.medicineName != null ? String(item.medicineName).trim() : '';
+        if (!name) continue;
+        out.push({
+            medicineName: name,
+            tradeNameId: item.tradeNameId != null ? Number(item.tradeNameId) : null,
+            activeSubstanceId: item.activeSubstanceId != null ? Number(item.activeSubstanceId) : null,
+            dosageAmount: item.dosageAmount != null ? Number(item.dosageAmount) : null,
+            frequencyCount: item.frequencyCount != null ? Number(item.frequencyCount) : null,
+            frequencyPeriod: item.frequencyPeriod != null ? Number(item.frequencyPeriod) : null,
+            frequencyUnit: item.frequencyUnit ?? null,
+            durationValue: item.durationValue != null ? Number(item.durationValue) : null,
+            durationUnit: item.durationUnit ?? null,
+            startDate: item.startDate ?? null,
+            endDate: item.endDate ?? null,
+            notes: item.notes ?? null
+        });
+    }
+    return out.length ? out : null;
 }
 
 // Create a new prescription (items/medicationPlan array required; First Visit fields optional)
@@ -57,15 +93,28 @@ export const createPrescription = async (req: Request, res: Response) => {
         }
         if (!hasItems) {
             return res.status(400).json({
-                message: 'items or medicationPlan array with at least one { tradeNameId } is required'
+                message: 'items or medicationPlan array with at least one item (medicineName required) is required'
             });
+        }
+
+        const pid = Number(patientId);
+
+        // Resolve activeSubstanceId from tradeNameId where missing
+        for (const item of bodyItems!) {
+            if (item.activeSubstanceId == null && item.tradeNameId != null) {
+                const tn = await prisma.tradeName.findUnique({
+                    where: { id: item.tradeNameId },
+                    select: { activeSubstanceId: true }
+                });
+                if (tn) item.activeSubstanceId = tn.activeSubstanceId;
+            }
         }
 
         // Validate visitId if provided
         let visitId: number | undefined;
         if (bodyVisitId != null) {
             const visit = await prisma.visit.findFirst({
-                where: { id: Number(bodyVisitId), doctorId: Number(doctorId), patientId: Number(patientId) }
+                where: { id: Number(bodyVisitId), doctorId: Number(doctorId), patientId: pid }
             });
             if (!visit) {
                 return res.status(400).json({ message: 'Visit not found or does not belong to this doctor and patient' });
@@ -78,16 +127,31 @@ export const createPrescription = async (req: Request, res: Response) => {
 
         const allWarnings: any[] = [];
         let blocked = false;
-        for (const item of bodyItems!) {
-            const wr = await generateWarnings(patientId, item.tradeNameId);
-            allWarnings.push({ tradeNameId: item.tradeNameId, warnings: wr.warnings });
-            if (wr.blocked) blocked = true;
+        for (let i = 0; i < bodyItems!.length; i++) {
+            const item = bodyItems![i];
+            if (item.tradeNameId != null) {
+                const wr = await generateWarnings(pid, item.tradeNameId);
+                allWarnings.push({ index: i, medicineName: item.medicineName, tradeNameId: item.tradeNameId, warnings: wr.warnings });
+                if (wr.blocked) blocked = true;
+            } else if (item.activeSubstanceId != null) {
+                try {
+                    const safety = await drugInteractionService.checkDrugSafety(pid, item.activeSubstanceId, undefined);
+                    const critical = safety.warnings?.some((w: any) => w.severity === 'critical') || safety.hasAllergyConflicts;
+                    allWarnings.push({ index: i, medicineName: item.medicineName, activeSubstanceId: item.activeSubstanceId, warnings: safety.warnings || [] });
+                    if (critical) blocked = true;
+                } catch {
+                    allWarnings.push({ index: i, medicineName: item.medicineName, warnings: [] });
+                }
+            }
         }
-        const { checkBatchInteractions } = await import('../services/warningService');
-        const batchWarnings = await checkBatchInteractions(bodyItems!.map((i) => i.tradeNameId));
-        if (batchWarnings.length) {
-            allWarnings.push({ type: 'batch_interactions', warnings: batchWarnings });
-            if (batchWarnings.some((w: any) => w.severity === 'Critical' || w.severity === 'High')) blocked = true;
+        const tradeNameIds = bodyItems!.map((i) => i.tradeNameId).filter((id): id is number => id != null && Number.isFinite(id));
+        if (tradeNameIds.length > 0) {
+            const { checkBatchInteractions } = await import('../services/warningService');
+            const batchWarnings = await checkBatchInteractions(tradeNameIds);
+            if (batchWarnings.length) {
+                allWarnings.push({ type: 'batch_interactions', warnings: batchWarnings });
+                if (batchWarnings.some((w: any) => w.severity === 'Critical' || w.severity === 'High')) blocked = true;
+            }
         }
         if (blocked) {
             return res.status(400).json({
@@ -99,8 +163,8 @@ export const createPrescription = async (req: Request, res: Response) => {
 
         const prescription = await prisma.prescription.create({
             data: {
-                doctorId,
-                patientId,
+                doctorId: Number(doctorId),
+                patientId: pid,
                 visitId: visitId ?? undefined,
                 status: PrescriptionStatus.Draft,
                 prescriptionDate: new Date(),
@@ -112,22 +176,41 @@ export const createPrescription = async (req: Request, res: Response) => {
                 conditionDiagnosis: conditionDiagnosis != null ? String(conditionDiagnosis) : undefined,
                 initialCheckUp: initialCheckUp != null && typeof initialCheckUp === 'object' ? initialCheckUp : undefined,
                 testResultsOrScans: Array.isArray(testResultsOrScans) ? testResultsOrScans : (typeof testResultsOrScans === 'string' ? [testResultsOrScans] : undefined),
-                followUpAppointmentDate: followUpAppointmentDate != null ? new Date(followUpAppointmentDate) : undefined,
-                prescriptionItems: {
-                    create: bodyItems!.map((item, idx) => ({
-                        tradeNameId: item.tradeNameId,
-                        dosage: item.dosage ?? undefined,
-                        frequency: item.frequency ?? undefined,
-                        duration: item.duration ?? undefined,
-                        instructions: item.instructions ?? undefined,
-                        sortOrder: idx
-                    }))
-                }
-            },
-            include: prescriptionIncludeWithItemsAndVisit
+                followUpAppointmentDate: followUpAppointmentDate != null ? new Date(followUpAppointmentDate) : undefined
+            }
         });
 
-        return res.status(201).json({ prescription, warnings: allWarnings });
+        for (let idx = 0; idx < bodyItems!.length; idx++) {
+            const item = bodyItems![idx];
+            const pm = await prisma.patientMedicine.create({
+                data: {
+                    patientId: pid,
+                    tradeNameId: item.tradeNameId ?? undefined,
+                    activeSubstanceId: item.activeSubstanceId ?? undefined,
+                    medicineName: item.medicineName,
+                    dosageAmount: item.dosageAmount ?? undefined,
+                    frequencyCount: item.frequencyCount ?? undefined,
+                    frequencyPeriod: item.frequencyPeriod ?? undefined,
+                    frequencyUnit: item.frequencyUnit as any ?? undefined,
+                    durationValue: item.durationValue ?? undefined,
+                    durationUnit: item.durationUnit as any ?? undefined,
+                    startDate: item.startDate ? new Date(item.startDate) : undefined,
+                    endDate: item.endDate ? new Date(item.endDate) : undefined,
+                    notes: item.notes ?? undefined,
+                    isOngoing: true
+                }
+            });
+            await prisma.prescriptionMedicine.create({
+                data: { prescriptionId: prescription.id, patientMedicineId: pm.id, sortOrder: idx }
+            });
+        }
+
+        const prescriptionWithMedicines = await prisma.prescription.findUnique({
+            where: { id: prescription.id },
+            include: prescriptionIncludeWithMedicinesAndVisit
+        });
+
+        return res.status(201).json({ prescription: prescriptionWithMedicines, warnings: allWarnings });
     } catch (error) {
         console.error('Error creating prescription:', error);
         return res.status(500).json({ message: 'Error creating prescription', error });
@@ -199,34 +282,59 @@ export const createBatchPrescriptions = async (req: Request, res: Response) => {
             });
         }
 
-        // STEP 4: Create all prescriptions in a transaction (each with one PrescriptionItem)
-        const prescriptions = await prisma.$transaction(
-            medicines.map((med: any, idx: number) =>
-                prisma.prescription.create({
-                    data: {
-                        doctorId,
-                        patientId,
-                        status: PrescriptionStatus.Draft,
-                        prescriptionDate: new Date(),
-                        validFrom: validFrom ? new Date(validFrom) : new Date(),
-                        validUntil: validUntil ? new Date(validUntil) : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
-                        dosage: med.dosage,
-                        frequency: med.frequency,
-                        duration: med.duration,
-                        instructions: med.instructions,
-                        maxRefills: maxRefills || 0,
-                        notes: med.notes,
-                        version: 1,
-                        prescriptionItems: {
-                            create: [{ tradeNameId: med.tradeNameId, dosage: med.dosage, frequency: med.frequency, duration: med.duration, instructions: med.instructions, sortOrder: idx }]
+        // STEP 4: Create each prescription with one PatientMedicine + PrescriptionMedicine link
+        const prescriptions: any[] = [];
+        for (const med of medicines as any[]) {
+            const prescription = await prisma.prescription.create({
+                data: {
+                    doctorId: Number(doctorId),
+                    patientId: Number(patientId),
+                    status: PrescriptionStatus.Draft,
+                    prescriptionDate: new Date(),
+                    validFrom: validFrom ? new Date(validFrom) : new Date(),
+                    validUntil: validUntil ? new Date(validUntil) : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+                    dosage: med.dosage,
+                    frequency: med.frequency,
+                    duration: med.duration,
+                    instructions: med.instructions,
+                    maxRefills: maxRefills || 0,
+                    notes: med.notes,
+                    version: 1
+                }
+            });
+            const tn = await prisma.tradeName.findUnique({
+                where: { id: med.tradeNameId },
+                select: { title: true, activeSubstanceId: true }
+            });
+            const pm = await prisma.patientMedicine.create({
+                data: {
+                    patientId: Number(patientId),
+                    tradeNameId: med.tradeNameId,
+                    activeSubstanceId: tn?.activeSubstanceId ?? undefined,
+                    medicineName: tn?.title ?? `Medicine ${med.tradeNameId}`,
+                    dosageAmount: med.dosage != null ? Number(med.dosage) : undefined,
+                    notes: med.notes ?? undefined,
+                    isOngoing: true
+                }
+            });
+            await prisma.prescriptionMedicine.create({
+                data: { prescriptionId: prescription.id, patientMedicineId: pm.id, sortOrder: 0 }
+            });
+            const full = await prisma.prescription.findUnique({
+                where: { id: prescription.id },
+                include: {
+                    prescriptionMedicines: {
+                        orderBy: { sortOrder: 'asc' },
+                        include: {
+                            patientMedicine: {
+                                include: { tradeName: { include: { activeSubstance: true, company: true } } }
+                            }
                         }
-                    },
-                    include: {
-                        prescriptionItems: { include: { tradeName: { include: { activeSubstance: true, company: true } } } }
                     }
-                })
-            )
-        );
+                }
+            });
+            prescriptions.push(full);
+        }
 
         return res.status(201).json({
             prescriptions,
@@ -261,9 +369,13 @@ export const getPrescriptions = async (req: Request, res: Response) => {
                     doctor: { select: { id: true, name: true, specialization: true } },
                     patient: { select: { id: true, age: true, user: { select: { name: true } } } },
                     visit: { select: { id: true, visitDate: true, visitType: true, isNewVisit: true } },
-                    prescriptionItems: {
+                    prescriptionMedicines: {
                         orderBy: { sortOrder: 'asc' },
-                        include: { tradeName: { include: { activeSubstance: true, company: true } } }
+                        include: {
+                            patientMedicine: {
+                                include: { tradeName: { include: { activeSubstance: true, company: true } }, activeSubstance: true }
+                            }
+                        }
                     },
                     drugInteractionAlerts: true
                 },
@@ -306,9 +418,13 @@ export const getPrescriptionById = async (req: Request, res: Response) => {
                     }
                 },
                 visit: { select: { id: true, visitDate: true, visitType: true, isNewVisit: true } },
-                prescriptionItems: {
+                prescriptionMedicines: {
                     orderBy: { sortOrder: 'asc' },
-                    include: { tradeName: { include: { activeSubstance: true, company: true } } }
+                    include: {
+                        patientMedicine: {
+                            include: { tradeName: { include: { activeSubstance: true, company: true } }, activeSubstance: true }
+                        }
+                    }
                 },
                 drugInteractionAlerts: {
                     include: { interactingMedicine: { include: { activeSubstance: true } } }
@@ -367,9 +483,13 @@ export const updatePrescription = async (req: Request, res: Response) => {
             include: {
                 doctor: true,
                 patient: true,
-                prescriptionItems: {
+                prescriptionMedicines: {
                     orderBy: { sortOrder: 'asc' },
-                    include: { tradeName: { include: { activeSubstance: true, company: true } } }
+                    include: {
+                        patientMedicine: {
+                            include: { tradeName: { include: { activeSubstance: true, company: true } }, activeSubstance: true }
+                        }
+                    }
                 }
             }
         });
@@ -394,6 +514,80 @@ export const updatePrescription = async (req: Request, res: Response) => {
     } catch (error) {
         console.error('Error updating prescription:', error);
         return res.status(500).json({ message: 'Error updating prescription', error });
+    }
+};
+
+// Add one medicine to an existing prescription (e.g. draft First Visit)
+export const addMedicineToPrescription = async (req: Request, res: Response) => {
+    try {
+        const { prescriptionId } = req.params;
+        const body = req.body as Record<string, unknown>;
+        const items = normalizeMedicationItems(body);
+        if (!items || items.length === 0) {
+            return res.status(400).json({ message: 'Request body must include medicineName (and optionally tradeNameId, activeSubstanceId, dosage/timing fields)' });
+        }
+        const item = items[0];
+        const prescId = parseInt(prescriptionId, 10);
+        if (!Number.isFinite(prescId)) {
+            return res.status(400).json({ message: 'Invalid prescriptionId' });
+        }
+        const prescription = await prisma.prescription.findUnique({
+            where: { id: prescId },
+            select: { id: true, patientId: true }
+        });
+        if (!prescription) {
+            return res.status(404).json({ message: 'Prescription not found' });
+        }
+        if (item.activeSubstanceId == null && item.tradeNameId != null) {
+            const tn = await prisma.tradeName.findUnique({
+                where: { id: item.tradeNameId },
+                select: { activeSubstanceId: true }
+            });
+            if (tn) item.activeSubstanceId = tn.activeSubstanceId;
+        }
+        let blocked = false;
+        if (item.tradeNameId != null) {
+            const wr = await generateWarnings(prescription.patientId, item.tradeNameId);
+            if (wr.blocked) blocked = true;
+        } else if (item.activeSubstanceId != null) {
+            try {
+                const safety = await drugInteractionService.checkDrugSafety(prescription.patientId, item.activeSubstanceId, undefined);
+                if (safety.hasAllergyConflicts || (safety.warnings?.some((w: any) => w.severity === 'critical'))) blocked = true;
+            } catch { /* ignore */ }
+        }
+        if (blocked) {
+            return res.status(400).json({ message: 'Cannot add medicine: critical warnings detected', blocked: true });
+        }
+        const count = await prisma.prescriptionMedicine.count({ where: { prescriptionId: prescId } });
+        const pm = await prisma.patientMedicine.create({
+            data: {
+                patientId: prescription.patientId,
+                tradeNameId: item.tradeNameId ?? undefined,
+                activeSubstanceId: item.activeSubstanceId ?? undefined,
+                medicineName: item.medicineName,
+                dosageAmount: item.dosageAmount ?? undefined,
+                frequencyCount: item.frequencyCount ?? undefined,
+                frequencyPeriod: item.frequencyPeriod ?? undefined,
+                frequencyUnit: item.frequencyUnit as any ?? undefined,
+                durationValue: item.durationValue ?? undefined,
+                durationUnit: item.durationUnit as any ?? undefined,
+                startDate: item.startDate ? new Date(item.startDate) : undefined,
+                endDate: item.endDate ? new Date(item.endDate) : undefined,
+                notes: item.notes ?? undefined,
+                isOngoing: true
+            }
+        });
+        await prisma.prescriptionMedicine.create({
+            data: { prescriptionId: prescId, patientMedicineId: pm.id, sortOrder: count }
+        });
+        const updated = await prisma.prescription.findUnique({
+            where: { id: prescId },
+            include: prescriptionIncludeWithMedicinesAndVisit
+        });
+        return res.status(201).json(updated);
+    } catch (error) {
+        console.error('Error adding medicine to prescription:', error);
+        return res.status(500).json({ message: 'Error adding medicine to prescription', error });
     }
 };
 

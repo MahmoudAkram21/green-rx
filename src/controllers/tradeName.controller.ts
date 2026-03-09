@@ -197,6 +197,7 @@ export const searchTradeNames = async (req: Request, res: Response, next: NextFu
             activeSubstanceId,
             classification,
             dosageForm,
+            concentration,
             companyId,
             isActive,
             availabilityStatus,
@@ -226,13 +227,16 @@ export const searchTradeNames = async (req: Request, res: Response, next: NextFu
             if (!Number.isNaN(id)) whereClause.activeSubstanceId = id;
         }
 
-        if ((classification !== undefined && classification !== '') || (dosageForm !== undefined && dosageForm !== '')) {
+        if ((classification !== undefined && classification !== '') || (dosageForm !== undefined && dosageForm !== '') || (concentration !== undefined && concentration !== '')) {
             whereClause.activeSubstance = whereClause.activeSubstance || {};
             if (classification !== undefined && classification !== '') {
                 whereClause.activeSubstance.classification = { contains: String(classification), mode: 'insensitive' };
             }
             if (dosageForm !== undefined && dosageForm !== '') {
                 whereClause.activeSubstance.dosageForm = { equals: String(dosageForm), mode: 'insensitive' };
+            }
+            if (concentration !== undefined && concentration !== '') {
+                whereClause.activeSubstance.concentration = { contains: String(concentration), mode: 'insensitive' };
             }
         }
 

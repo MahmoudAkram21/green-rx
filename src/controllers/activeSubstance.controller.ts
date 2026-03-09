@@ -98,6 +98,49 @@ export const listClassifications = async (
   }
 };
 
+// List distinct concentrations (Conc for this API - doctor Add A New Drug flow)
+export const listConcentrations = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const q = typeof req.query.q === "string" ? req.query.q.trim() : "";
+    const classification = typeof req.query.classification === "string" ? req.query.classification.trim() : "";
+    const activeSubstanceIdParam = req.query.activeSubstanceId;
+    const activeSubstanceId =
+      activeSubstanceIdParam !== undefined && activeSubstanceIdParam !== ""
+        ? parseInt(String(activeSubstanceIdParam), 10)
+        : undefined;
+
+    const where: any = { concentration: { not: null } };
+    if (q) {
+      where.concentration = { contains: q, mode: "insensitive" };
+    }
+    if (classification) {
+      where.classification = { contains: classification, mode: "insensitive" };
+    }
+    if (activeSubstanceId !== undefined && !Number.isNaN(activeSubstanceId)) {
+      where.id = activeSubstanceId;
+    }
+
+    const rows = await prisma.activeSubstance.findMany({
+      where,
+      select: { concentration: true },
+      distinct: ["concentration"],
+      orderBy: { concentration: "asc" },
+      take: 200,
+    });
+    const concentrations = rows
+      .map((r) => r.concentration)
+      .filter((c): c is string => c != null)
+      .sort((a, b) => (a || "").localeCompare(b || "", undefined, { sensitivity: "base" }));
+    res.json({ concentrations });
+  } catch (error) {
+    next(error);
+  }
+};
+
 // List distinct dosage forms (Step 3 of doctor Add A New Drug flow)
 export const listDosageForms = async (
   req: Request,
@@ -299,8 +342,8 @@ export const getDrugInteractions = async (
         OR: [
           {
             prescription: {
-              prescriptionItems: {
-                some: { tradeNameId: { in: tradeNameIds } },
+              prescriptionMedicines: {
+                some: { patientMedicine: { tradeNameId: { in: tradeNameIds } } },
               },
             },
           },
@@ -314,14 +357,18 @@ export const getDrugInteractions = async (
       include: {
         prescription: {
           include: {
-            prescriptionItems: {
+            prescriptionMedicines: {
               include: {
-                tradeName: {
+                patientMedicine: {
                   include: {
-                    activeSubstance: {
-                      select: {
-                        id: true,
-                        activeSubstance: true,
+                    tradeName: {
+                      include: {
+                        activeSubstance: {
+                          select: {
+                            id: true,
+                            activeSubstance: true,
+                          },
+                        },
                       },
                     },
                   },

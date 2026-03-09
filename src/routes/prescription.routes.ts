@@ -6,6 +6,7 @@ import {
     getPrescriptionById,
     updatePrescription,
     deletePrescription,
+    addMedicineToPrescription,
     acknowledgeDrugInteraction,
     getDrugInteractionAlerts
 } from '../controllers/prescription.controller';
@@ -18,8 +19,9 @@ router.use(authenticate);
 
 // Prescription routes
 router.post('/', createPrescription);
-router.post('/batch', createBatchPrescriptions); // NEW: Batch prescription creation
+router.post('/batch', createBatchPrescriptions);
 router.get('/', getPrescriptions);
+router.post('/:prescriptionId/medicines', addMedicineToPrescription);
 router.get('/:id', getPrescriptionById);
 router.put('/:id', updatePrescription);
 router.delete('/:id', deletePrescription);

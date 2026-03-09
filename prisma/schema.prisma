@@ -980,7 +980,6 @@ model TradeName {
   // Relations
   activeSubstance              ActiveSubstance               @relation(fields: [activeSubstanceId], references: [id], onDelete: Cascade)
   company                      Company?                       @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  prescriptionItems            PrescriptionItem[]
   contractingCompanyTradeNames ContractingCompanyTradeName[]
   drugInteractionAlerts        DrugInteractionAlert[]
   batchHistories               BatchHistory[]
@@ -1082,12 +1081,12 @@ model Prescription {
   deletedAt               DateTime?
 
   // Relations
-  doctor                Doctor                 @relation(fields: [doctorId], references: [id], onDelete: Cascade)
-  patient               Patient                @relation(fields: [patientId], references: [id], onDelete: Cascade)
-  visit                 Visit?                 @relation(fields: [visitId], references: [id], onDelete: SetNull)
-  prescriptionItems     PrescriptionItem[]
-  prescriptionVersions  PrescriptionVersion[]
-  drugInteractionAlerts DrugInteractionAlert[]
+  doctor                 Doctor                 @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  patient                Patient                @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  visit                  Visit?                 @relation(fields: [visitId], references: [id], onDelete: SetNull)
+  prescriptionMedicines  PrescriptionMedicine[]
+  prescriptionVersions   PrescriptionVersion[]
+  drugInteractionAlerts  DrugInteractionAlert[]
 
   @@index([doctorId])
   @@index([patientId])
@@ -1097,24 +1096,20 @@ model Prescription {
   @@map("prescriptions")
 }
 
-model PrescriptionItem {
-  id             Int      @id @default(autoincrement())
-  prescriptionId Int
-  tradeNameId    Int
-  dosage         String?
-  frequency      String?
-  duration       String?
-  instructions   String?
-  sortOrder      Int      @default(0)
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+model PrescriptionMedicine {
+  id                Int     @id @default(autoincrement())
+  prescriptionId    Int
+  patientMedicineId Int
+  sortOrder         Int     @default(0)
+  createdAt         DateTime @default(now())
 
-  prescription Prescription @relation(fields: [prescriptionId], references: [id], onDelete: Cascade)
-  tradeName    TradeName    @relation(fields: [tradeNameId], references: [id], onDelete: Cascade)
+  prescription    Prescription    @relation(fields: [prescriptionId], references: [id], onDelete: Cascade)
+  patientMedicine PatientMedicine @relation(fields: [patientMedicineId], references: [id], onDelete: Cascade)
 
+  @@unique([prescriptionId, patientMedicineId])
   @@index([prescriptionId])
-  @@index([tradeNameId])
-  @@map("prescription_items")
+  @@index([patientMedicineId])
+  @@map("prescription_medicines")
 }
 
 model PrescriptionVersion {
@@ -1526,13 +1521,14 @@ model PatientMedicine {
   updatedAt         DateTime  @updatedAt
 
   // Relations
-  patient         Patient          @relation(fields: [patientId], references: [id], onDelete: Cascade)
-  tradeName       TradeName?       @relation(fields: [tradeNameId], references: [id], onDelete: SetNull)
-  activeSubstance ActiveSubstance? @relation(fields: [activeSubstanceId], references: [id], onDelete: SetNull)
-  verifier          User?                 @relation("MedicineVerifier", fields: [verifiedBy], references: [id], onDelete: SetNull)
-  addMedicineRequest AddMedicineRequest?
+  patient                   Patient            @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  tradeName                 TradeName?         @relation(fields: [tradeNameId], references: [id], onDelete: SetNull)
+  activeSubstance           ActiveSubstance?   @relation(fields: [activeSubstanceId], references: [id], onDelete: SetNull)
+  verifier                  User?              @relation("MedicineVerifier", fields: [verifiedBy], references: [id], onDelete: SetNull)
+  prescriptionMedicines      PrescriptionMedicine[]
+  addMedicineRequest        AddMedicineRequest?
   medicineReminderNotifications Notification[]
-  patientSideEffects PatientSideEffect[]
+  patientSideEffects        PatientSideEffect[]
 
   @@index([patientId])
   @@index([tradeNameId])

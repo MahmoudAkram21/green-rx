@@ -60,9 +60,14 @@ class DrugInteractionService {
                 prescriptions: {
                     where: { status: { in: ['Approved', 'Filled'] } },
                     include: {
-                        prescriptionItems: {
+                        prescriptionMedicines: {
                             include: {
-                                tradeName: { include: { activeSubstance: true } }
+                                patientMedicine: {
+                                    include: {
+                                        tradeName: { include: { activeSubstance: true } },
+                                        activeSubstance: true
+                                    }
+                                }
                             }
                         }
                     }
@@ -279,11 +284,12 @@ class DrugInteractionService {
         const warnings: DrugWarning[] = [];
         const alerts: DrugAlert[] = [];
 
-        // Get current medications from prescriptions (via prescriptionItems) and self-reported PatientMedicine (ongoing)
+        // Get current medications from prescriptions (via prescriptionMedicines) and self-reported PatientMedicine (ongoing)
         const fromPrescriptions: ActiveSubstance[] = [];
         for (const p of patient.prescriptions || []) {
-            for (const item of (p as any).prescriptionItems ?? []) {
-                const asub = (item as any).tradeName?.activeSubstance;
+            for (const link of (p as any).prescriptionMedicines ?? []) {
+                const pm = (link as any).patientMedicine;
+                const asub = pm?.tradeName?.activeSubstance ?? pm?.activeSubstance;
                 if (asub) fromPrescriptions.push(asub);
             }
         }

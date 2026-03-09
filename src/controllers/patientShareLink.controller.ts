@@ -55,9 +55,11 @@ class PatientShareLinkController {
                             patientAllergies: { include: { allergen: true } },
                             prescriptions: {
                                 include: {
-                                    prescriptionItems: {
+                                    prescriptionMedicines: {
                                         include: {
-                                            tradeName: { include: { activeSubstance: true } }
+                                            patientMedicine: {
+                                                include: { tradeName: { include: { activeSubstance: true } }, activeSubstance: true }
+                                            }
                                         }
                                     }
                                 }
