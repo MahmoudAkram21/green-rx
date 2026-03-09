@@ -6,6 +6,7 @@ import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from '.
 import { UserRole, AgeClassification, Gender } from '../../generated/client/client';
 import { registerSchema, loginSchema, refreshTokenSchema } from '../zod/auth.zod';
 import { cleanupFile, moveLicenseToRoleFolder } from '../config/multer.config';
+import { computeBmi } from '../utils/bmi.util';
 
 // Register
 export const register = async (req: Request, res: Response, next: NextFunction) => {
@@ -393,6 +394,17 @@ export const logout = async (req: Request, res: Response, next: NextFunction) =>
     }
 };
 
+// Same patient include as GET /patients/:id so auth/me returns full patient data for Patient role
+const patientProfileInclude = {
+    user: { select: { email: true, role: true, isActive: true, name: true } },
+    medicalHistories: { include: { disease: true } },
+    familyHistories: { include: { disease: true } },
+    patientLifestyles: { include: { lifestyle: true } },
+    patientAllergies: { include: { allergen: true } },
+    childrenProfiles: true,
+    patientDiseases: { include: { disease: true } }
+} as const;
+
 // Get Current User Profile
 export const getMe = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -412,7 +424,7 @@ export const getMe = async (req: Request, res: Response, next: NextFunction) => 
                 role: true,
                 isActive: true,
                 createdAt: true,
-                patient: { select: { id: true, userId: true, age: true, gender: true, dateOfBirth: true, weight: true, height: true, bloodType: true } },
+                patient: { select: { id: true } },
                 doctor: { select: { id: true, userId: true, name: true, licenseNumber: true, specialization: true, isVerified: true, doctorClinics: true } },
                 pharmacist: { select: { id: true, userId: true, name: true, licenseNumber: true, isVerified: true } }
             }
@@ -421,6 +433,20 @@ export const getMe = async (req: Request, res: Response, next: NextFunction) => 
         if (!user) {
             res.status(404).json({ error: 'User not found' });
             return;
+        }
+
+        // For Patient role: load full patient data (same as GET /patients/:id) and attach to response
+        if (user.role === 'Patient' && user.patient?.id) {
+            const fullPatient = await prisma.patient.findUnique({
+                where: { id: user.patient.id },
+                include: patientProfileInclude
+            });
+            if (fullPatient) {
+                const bodyMassIndex = computeBmi(fullPatient.weight, fullPatient.height);
+                const patientPayload = { ...fullPatient, bodyMassIndex: bodyMassIndex ?? undefined };
+                res.json({ ...user, patient: patientPayload });
+                return;
+            }
         }
 
         res.json(user);

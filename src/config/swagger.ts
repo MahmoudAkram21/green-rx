@@ -117,7 +117,7 @@ s('/auth/register', 'post', AUTH_TAGS, 'Register a new user', false, [], { schem
 s('/auth/login', 'post', AUTH_TAGS, 'Login and receive tokens', false, [], { schemaRef: 'LoginRequest' });
 s('/auth/refresh', 'post', AUTH_TAGS, 'Refresh access token', false, [], { schemaRef: 'RefreshTokenRequest' });
 s('/auth/logout', 'post', AUTH_TAGS, 'Logout (invalidate token)');
-s('/auth/me', 'get', AUTH_TAGS, 'Get current authenticated user');
+s('/auth/me', 'get', AUTH_TAGS, 'Get current authenticated user. When role is Patient, response includes full patient data (same as GET /patients/:id): user, medicalHistories, familyHistories, patientLifestyles, patientAllergies, childrenProfiles, patientDiseases, bodyMassIndex.');
 s('/auth/dev-reset-superadmin-password', 'post', ADMIN_TAG, '[Dev] Reset superadmin password', false);
 
 // ═══════════════════════════════════════════════════
@@ -753,7 +753,7 @@ const options: Record<string, unknown> = {
           }
         },
         AuthMeResponse: {
-          description: 'Current authenticated user (GET /auth/me). Includes name when set on the user.',
+          description: 'Current authenticated user (GET /auth/me). When role is Patient, patient contains full profile (same structure as GET /patients/:id): user, medicalHistories, familyHistories, patientLifestyles, patientAllergies, childrenProfiles, patientDiseases, bodyMassIndex.',
           type: 'object',
           properties: {
             id:        { type: 'integer', description: 'User ID.' },
@@ -762,7 +762,7 @@ const options: Record<string, unknown> = {
             role:      { type: 'string', enum: ['Patient', 'Doctor', 'Pharmacist', 'Admin', 'SuperAdmin'] },
             isActive:  { type: 'boolean' },
             createdAt: { type: 'string', format: 'date-time' },
-            patient:   { type: 'object', nullable: true, description: 'Patient profile if role is Patient.' },
+            patient:   { type: 'object', nullable: true, description: 'When role is Patient: full patient profile (same as GET /patients/:id): user, medicalHistories, familyHistories, patientLifestyles, patientAllergies, childrenProfiles, patientDiseases, bodyMassIndex.' },
             doctor:    { type: 'object', nullable: true, description: 'Doctor profile if role is Doctor.' },
             pharmacist: { type: 'object', nullable: true, description: 'Pharmacist profile if role is Pharmacist.' }
           }
