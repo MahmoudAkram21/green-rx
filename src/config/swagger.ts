@@ -703,18 +703,19 @@ const options: Record<string, unknown> = {
       schemas: {
         // ── Auth request bodies
         RegisterRequest: {
-          description: 'Create a new user account. Send as multipart/form-data when role=Doctor or Pharmacist. Required: email, password. Optional: role (default Patient), name, phone. When role=Patient, a patient profile is auto-created and the response includes user.patientId. When role=Doctor: name, licenseNumber, specialization, and licenseImage (file) are required; license image is stored under uploads/doctor-licenses/. When role=Pharmacist: name, licenseNumber, and licenseImage (file) are required; license image is stored under uploads/pharmacist-licenses/. Response includes user.doctorId or user.pharmacistId when applicable.',
+          description: 'Create a new user account. Send as multipart/form-data when role=Doctor or Pharmacist. Required: email, password. Optional: role (default Patient), name, phone. When role=Patient, a patient profile is auto-created and the response includes user.patientId. When role=Doctor: name, licenseNumber, specialization, and licenseImage (file) are required; license image is stored under uploads/doctor-licenses/ and the URL is saved as licenseImageUrl on the Doctor profile. When role=Pharmacist: name, licenseNumber, and licenseImage (file) are required; license image is stored under uploads/pharmacist-licenses/ and the URL is saved as licenseImageUrl on the Pharmacist profile. Response includes user.doctorId or user.pharmacistId when applicable.',
           type: 'object',
           required: ['email', 'password'],
           properties: {
-            email:          { type: 'string', format: 'email', example: 'user@example.com', description: 'Required.' },
-            password:       { type: 'string', minLength: 6, example: 'secret123', description: 'Required. Min 6 characters.' },
-            role:           { type: 'string', enum: ['Patient', 'Doctor', 'Pharmacist', 'Admin', 'SuperAdmin'], default: 'Patient', description: 'Optional. Default: Patient.' },
-            name:           { type: 'string', minLength: 2, example: 'John Doe', description: 'Required when role=Doctor or Pharmacist.' },
-            phone:          { type: 'string', example: '+201145441141', description: 'Optional. E.164 format.' },
-            licenseNumber:  { type: 'string', description: 'Required when role=Doctor or Pharmacist. Professional license number.' },
-            specialization: { type: 'string', description: 'Required when role=Doctor. Omit for Pharmacist.' },
-            licenseImage:   { type: 'string', format: 'binary', description: 'Required when role=Doctor or Pharmacist. Image file (PNG, JPG, etc., max 10MB). Stored under uploads/doctor-licenses/ or uploads/pharmacist-licenses/.' }
+            email:           { type: 'string', format: 'email', example: 'user@example.com', description: 'Required.' },
+            password:        { type: 'string', minLength: 6, example: 'secret123', description: 'Required. Min 6 characters.' },
+            role:            { type: 'string', enum: ['Patient', 'Doctor', 'Pharmacist', 'Admin', 'SuperAdmin'], default: 'Patient', description: 'Optional. Default: Patient.' },
+            name:            { type: 'string', minLength: 2, example: 'John Doe', description: 'Required when role=Doctor or Pharmacist.' },
+            phone:           { type: 'string', example: '+201145441141', description: 'Optional. E.164 format.' },
+            licenseNumber:   { type: 'string', description: 'Required when role=Pharmacist or Doctor. Professional license number. For Pharmacist: send this in the request; it is stored on the Pharmacist profile.' },
+            specialization:  { type: 'string', description: 'Required when role=Doctor. Omit for Pharmacist.' },
+            licenseImage:    { type: 'string', format: 'binary', description: 'Required when role=Pharmacist or Doctor. License image file (PNG, JPG, etc., max 10MB). Server stores it under uploads/pharmacist-licenses/ (Pharmacist) or uploads/doctor-licenses/ (Doctor) and saves the file URL as licenseImageUrl on the Pharmacist/Doctor profile.' },
+            licenseImageUrl: { type: 'string', readOnly: true, description: 'Set by server from uploaded licenseImage. Do not send when registering. After registration, the stored URL is available on the Pharmacist/Doctor profile (e.g. GET /pharmacists or GET /doctors/me).' }
           }
         },
         LoginRequest: {
