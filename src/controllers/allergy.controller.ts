@@ -8,8 +8,8 @@ export const getAllergiesByPatient = async (req: Request, res: Response) => {
 
         const patientAllergies = await prisma.patientAllergy.findMany({
             where: { patientId: parseInt(patientId) },
-            orderBy: [{ severity: 'desc' }, { createdAt: 'desc' }],
-            include: { allergen: true },
+            orderBy: { createdAt: 'desc' },
+            include: { allergen: { include: { allergenCategory: { select: { id: true, name: true } } } } },
         });
 
         return res.json(patientAllergies);
@@ -19,7 +19,7 @@ export const getAllergiesByPatient = async (req: Request, res: Response) => {
     }
 };
 
-// Get critical allergies for a patient (Severe or LifeThreatening)
+// Get critical allergies for a patient (those with "Anaphylaxis" reaction or marked notes)
 export const getCriticalAllergies = async (req: Request, res: Response) => {
     try {
         const { patientId } = req.params;
@@ -27,10 +27,10 @@ export const getCriticalAllergies = async (req: Request, res: Response) => {
         const criticalAllergies = await prisma.patientAllergy.findMany({
             where: {
                 patientId: parseInt(patientId),
-                severity: { in: ['Severe', 'LifeThreatening'] },
+                reaction: { contains: 'Anaphylaxis', mode: 'insensitive' },
             },
-            orderBy: { severity: 'desc' },
-            include: { allergen: true },
+            orderBy: { createdAt: 'desc' },
+            include: { allergen: { include: { allergenCategory: { select: { id: true, name: true } } } } },
         });
 
         return res.json({
@@ -82,7 +82,7 @@ export const checkMedicineAllergies = async (req: Request, res: Response) => {
 
         if (conflicts.length > 0) {
             const criticalConflicts = conflicts.filter(
-                (c) => c.severity === 'LifeThreatening' || c.severity === 'Severe'
+                (c) => c.reaction?.toLowerCase().includes('anaphylaxis')
             );
             return res.json({
                 hasConflict: true,

@@ -390,7 +390,6 @@ model MedicalHistory {
 model FamilyHistory {
   id        Int             @id @default(autoincrement())
   patientId Int
-  relation  FamilyRelation
   diseaseId Int
   severity  DiseaseSeverity
   notes     String?
@@ -409,28 +408,32 @@ model FamilyHistory {
 model SurgicalHistory {
   id             Int      @id @default(autoincrement())
   patientId      Int
-  surgeryDate    DateTime
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
-  operationId    Int
+  organId Int
   // Relations
-  operation Operation @relation(fields: [operationId], references: [id], onDelete: Restrict)
   patient Patient @relation(fields: [patientId], references: [id], onDelete: Cascade)
-
+  organ Organ @relation(fields: [organId], references: [id], onDelete: Restrict)
   @@index([patientId])
-  @@unique([patientId, operationId])
+  @@unique([patientId, organId])
   @@map("surgical_histories")
 }
 
-
-model Operation {
-  id        Int      @id @default(autoincrement())
-  name      String
+model Organ {
+  id          Int             @id @default(autoincrement())
+  name        String          @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  SurgicalHistory SurgicalHistory[]
-  @@map("operations")
+  isActive    Boolean         @default(true)
+  deletedAt   DateTime?
+  description String?
+  
+  surgicalHistories SurgicalHistory[]
+  @@map("organs")
 }
+
+
+
 
 // Lifestyle catalog (admin CRUD). Each row = one lifestyle question + ActiveSubstance field to check for drug warnings.
 model Lifestyle {
@@ -464,25 +467,41 @@ model PatientLifestyle {
 }
 
 // Allergen catalog (admin CRUD). Patients link to these via PatientAllergy.
+
+model AllergenCategory {
+  id             Int      @id @default(autoincrement())
+  name           Json     @db.Json // { en: string, ar: string }
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  allergens Allergen[]
+
+  @@index([name])
+  @@map("allergen_categories")
+}
 model Allergen {
   id             Int      @id @default(autoincrement())
   name           String
   allergenType   String?  // "Drug" | "Food" | "Pollen" | etc.
+
+  allergenCategoryId Int
+
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
-
+  
   patientAllergies PatientAllergy[]
+  allergenCategory AllergenCategory @relation(fields: [allergenCategoryId], references: [id], onDelete: Restrict)
 
   @@index([name])
   @@map("allergens")
 }
+
 
 // Patient's allergies (many-to-many: patient links to catalog allergens).
 model PatientAllergy {
   id         Int             @id @default(autoincrement())
   patientId  Int
   allergenId Int
-  severity   AllergySeverity
   reaction   String?
   notes      String?
   createdAt  DateTime        @default(now())
@@ -628,6 +647,8 @@ model Appointment {
 // ============================================
 // DISEASE
 // ============================================
+
+
 
 model Disease {
   id          Int             @id @default(autoincrement())

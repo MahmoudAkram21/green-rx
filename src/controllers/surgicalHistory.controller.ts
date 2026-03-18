@@ -1,24 +1,17 @@
 import { Request, Response, NextFunction } from 'express';
 import { z } from 'zod';
 import { prisma } from '../lib/prisma';
-
+import surgicalHistoryRepository from '../repositories/surgicalHistory.reposiory';
+import { SurgicalHistoryCreateManyInput } from '../../generated/client/models';
 const createSurgicalHistorySchema = z.object({
-  operationId: z.coerce.number().int().positive(),
-  surgeryDate: z.union([
-    z.string().datetime({ offset: true }),
-    z.string().min(1).transform((s) => new Date(s)),
-    z.coerce.date(),
-  ]),
+  
+  organId: z.coerce.number().int().positive(),
 });
 
 export const getSurgicalHistories = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const patientId = parseInt(req.params.patientId);
-    const list = await prisma.surgicalHistory.findMany({
-      where: { patientId },
-      orderBy: { surgeryDate: 'desc' },
-      include: { operation: true },
-    });
+    const list = await surgicalHistoryRepository.getSurgicalHistoriesByPatientId(patientId);
     res.json(list);
   } catch (error) {
     next(error);
@@ -44,19 +37,18 @@ export const addSurgicalHistory = async (req: Request, res: Response, next: Next
     }
 
     for (const v of validatedItems) {
-      const op = await prisma.operation.findUnique({ where: { id: v.operationId } });
-      if (!op) {
-        res.status(400).json({ error: `Operation with id ${v.operationId} not found` });
+      const organ = await prisma.organ.findUnique({ where: { id: v.organId } });
+      if (!organ) {
+        res.status(400).json({ error: `Organ with id ${v.organId} not found` });
         return;
       }
     }
 
-    const data = validatedItems.map((v) => {
-      const surgeryDate = typeof v.surgeryDate === 'string' ? new Date(v.surgeryDate) : v.surgeryDate;
-      return { patientId, operationId: v.operationId, surgeryDate };
+    const data: SurgicalHistoryCreateManyInput[] = validatedItems.map((v) => {
+      return { patientId, organId: v.organId };
     });
 
-    const surgicalHistories = await prisma.surgicalHistory.createManyAndReturn({ data });
+    const surgicalHistories = await surgicalHistoryRepository.createSurgicalHistory(data);
 
     res.status(201).json({
       message: surgicalHistories.length === 1 ? 'Surgical history added successfully' : `${surgicalHistories.length} surgical history entries added successfully`,

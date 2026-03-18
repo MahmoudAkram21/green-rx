@@ -3,11 +3,14 @@ import { z } from 'zod';
 import { prisma } from '../lib/prisma';
 import { createAllergenSchema, updateAllergenSchema } from '../zod/allergen.zod';
 
-/** GET /allergens — list all (for patient dropdown and admin) */
-export const getAllAllergens = async (_req: Request, res: Response, next: NextFunction) => {
+/** GET /allergens — list all (optional ?categoryId=N filter; for patient dropdown and admin) */
+export const getAllAllergens = async (req: Request, res: Response, next: NextFunction) => {
   try {
+    const categoryId = req.query.categoryId ? parseInt(req.query.categoryId as string) : undefined;
     const allergens = await prisma.allergen.findMany({
+      where: categoryId !== undefined ? { allergenCategoryId: categoryId } : undefined,
       orderBy: { name: 'asc' },
+      include: { allergenCategory: { select: { id: true, name: true } } },
     });
     res.json(allergens);
   } catch (error) {
@@ -19,7 +22,10 @@ export const getAllAllergens = async (_req: Request, res: Response, next: NextFu
 export const getAllergenById = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const id = parseInt(req.params.id);
-    const allergen = await prisma.allergen.findUnique({ where: { id } });
+    const allergen = await prisma.allergen.findUnique({
+      where: { id },
+      include: { allergenCategory: { select: { id: true, name: true } } },
+    });
     if (!allergen) {
       res.status(404).json({ error: 'Allergen not found' });
       return;
@@ -34,11 +40,20 @@ export const getAllergenById = async (req: Request, res: Response, next: NextFun
 export const createAllergen = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const validated = createAllergenSchema.parse(req.body);
+
+    const category = await prisma.allergenCategory.findUnique({ where: { id: validated.allergenCategoryId } });
+    if (!category) {
+      res.status(400).json({ error: `Allergen category with id ${validated.allergenCategoryId} not found` });
+      return;
+    }
+
     const allergen = await prisma.allergen.create({
       data: {
         name: validated.name,
+        allergenCategoryId: validated.allergenCategoryId,
         ...(validated.allergenType != null && { allergenType: validated.allergenType }),
       },
+      include: { allergenCategory: { select: { id: true, name: true } } },
     });
     res.status(201).json(allergen);
   } catch (error: any) {
@@ -55,12 +70,23 @@ export const updateAllergen = async (req: Request, res: Response, next: NextFunc
   try {
     const id = parseInt(req.params.id);
     const validated = updateAllergenSchema.parse(req.body);
+
+    if (validated.allergenCategoryId !== undefined) {
+      const category = await prisma.allergenCategory.findUnique({ where: { id: validated.allergenCategoryId } });
+      if (!category) {
+        res.status(400).json({ error: `Allergen category with id ${validated.allergenCategoryId} not found` });
+        return;
+      }
+    }
+
     const allergen = await prisma.allergen.update({
       where: { id },
       data: {
         ...(validated.name !== undefined && { name: validated.name }),
         ...(validated.allergenType !== undefined && { allergenType: validated.allergenType }),
+        ...(validated.allergenCategoryId !== undefined && { allergenCategoryId: validated.allergenCategoryId }),
       },
+      include: { allergenCategory: { select: { id: true, name: true } } },
     });
     res.json(allergen);
   } catch (error: any) {

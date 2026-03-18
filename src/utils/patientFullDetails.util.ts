@@ -12,7 +12,7 @@ export const patientFullDetailsInclude = {
     patientDiseases: { include: { disease: true } },
     patientLifestyles: { include: { lifestyle: true } },
     patientAllergies: { include: { allergen: true } },
-    surgicalHistories: { include: { operation: true } },
+    surgicalHistories: { include: { organ: true } },
     visits: { orderBy: { visitDate: 'desc' as const } },
     medicalReports: { orderBy: { reportDate: 'desc' as const } }
 } as const;

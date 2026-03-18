@@ -295,7 +295,7 @@ export const addFamilyHistory = async (req: Request, res: Response, next: NextFu
         const raw = req.body;
         const items = Array.isArray(raw) ? raw : [raw];
         const validatedItems = z.array(familyHistorySchema).parse(items);
-
+        console.log(raw)
         const patient = await prisma.patient.findUnique({
             where: { id: parseInt(patientId) }
         });
@@ -310,13 +310,28 @@ export const addFamilyHistory = async (req: Request, res: Response, next: NextFu
             return;
         }
 
+        const uniqueDiseaseIds = [...new Set(validatedItems.map((v) => v.diseaseId))];
+        const existingDiseases = await prisma.disease.findMany({
+            where: { id: { in: uniqueDiseaseIds } },
+            select: { id: true },
+        });
+        const existingDiseaseIdSet = new Set(existingDiseases.map((d) => d.id));
+        const missingDiseaseIds = uniqueDiseaseIds.filter((id) => !existingDiseaseIdSet.has(id));
+        if (missingDiseaseIds.length > 0) {
+            res.status(400).json({
+                error: 'Invalid diseaseId(s)',
+                missingDiseaseIds,
+            });
+            return;
+        }
+
         const data = validatedItems.map((v) => ({
             patientId: parseInt(patientId),
-            relation: v.relation,
             diseaseId: v.diseaseId,
             severity: v.severity,
             notes: v.notes
         }));
+        console.log(data)
 
         const familyHistories = await prisma.familyHistory.createManyAndReturn({ data });
 
@@ -330,6 +345,12 @@ export const addFamilyHistory = async (req: Request, res: Response, next: NextFu
             res.status(400).json({ error: error.issues });
             return;
         }
+        // Prisma FK violation (e.g. diseaseId doesn't exist)
+        if (error?.code === 'P2003') {
+            res.status(400).json({ error: 'Foreign key constraint violated', meta: error?.meta });
+            return;
+        }
+        console.log(error)
         next(error);
     }
 };
@@ -429,7 +450,7 @@ export const deletePatientLifestyle = async (req: Request, res: Response, next: 
     }
 };
 
-// Add one or more allergies to patient (from catalog: GET /allergens). Body: single object or array of { allergenId, severity?, reaction?, notes? }.
+// Add one or more allergies to patient (from catalog: GET /allergens). Body: single object or array of { allergenId, reaction?, notes? }.
 export const addAllergy = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const patientId = parseInt(req.params.patientId);
@@ -458,7 +479,6 @@ export const addAllergy = async (req: Request, res: Response, next: NextFunction
         const data = validatedItems.map((v) => ({
             patientId,
             allergenId: v.allergenId,
-            severity: v.severity,
             reaction: v.reaction ?? null,
             notes: v.notes ?? null,
         }));

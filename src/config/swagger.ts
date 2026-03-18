@@ -151,7 +151,7 @@ s('/family-relations', 'get', [PATIENT_TAGS.FAMILY_HISTORY, ADMIN_TAG], 'List fa
 
 // PATIENTS — Surgical History
 s('/patients/{patientId}/surgeries', 'get', PATIENT_TAGS.SURGERIES, 'Get previous surgeries (patientId can be "me" for logged-in patient)', true, [p('patientId')]);
-s('/patients/{patientId}/surgeries', 'post', PATIENT_TAGS.SURGERIES, 'Add surgical history (patientId can be "me"; body: operationId from GET /operations, surgeryDate)', true, [p('patientId')], { schemaRef: 'BatchSurgicalHistoryRequest' });
+s('/patients/{patientId}/surgeries', 'post', PATIENT_TAGS.SURGERIES, 'Add surgical history (patientId can be "me"; body: organId from GET /operations)', true, [p('patientId')], { schemaRef: 'BatchSurgicalHistoryRequest' });
 s('/patients/surgeries/{id}', 'delete', PATIENT_TAGS.SURGERIES, 'Delete a surgical history entry', true, [p('id')]);
 
 // PATIENTS — Lifestyle (catalog: GET /lifestyles; patient answers below)
@@ -166,12 +166,12 @@ s('/lifestyles', 'post', ADMIN_TAG, 'Create a lifestyle question (Admin)', true,
 s('/lifestyles/{id}', 'put', ADMIN_TAG, 'Update a lifestyle question (Admin)', true, [p('id')], { schemaRef: 'UpdateLifestyleRequest' });
 s('/lifestyles/{id}', 'delete', ADMIN_TAG, 'Delete a lifestyle question (Admin)', true, [p('id')], undefined, { '200': 'Success', '204': 'No Content' });
 
-// OPERATIONS (Admin CRUD; GET for patient/mobile dropdown)
-s('/operations', 'get', [PATIENT_TAGS.SURGERIES, ADMIN_TAG], 'List all operations for dropdown (e.g. Add Surgeries screen)', true);
-s('/operations/{id}', 'get', [PATIENT_TAGS.SURGERIES, ADMIN_TAG], 'Get operation by ID', true, [p('id')]);
-s('/operations', 'post', ADMIN_TAG, 'Create an operation (Admin)', true, [], { schemaRef: 'CreateOperationRequest' }, { '200': 'Success', '201': 'Created' });
-s('/operations/{id}', 'put', ADMIN_TAG, 'Update an operation (Admin)', true, [p('id')], { schemaRef: 'UpdateOperationRequest' });
-s('/operations/{id}', 'delete', ADMIN_TAG, 'Delete an operation (Admin)', true, [p('id')], undefined, { '200': 'Success', '204': 'No Content' });
+// OPERATIONS (Organs) (Admin CRUD; GET for patient/mobile dropdown)
+s('/operations', 'get', [PATIENT_TAGS.SURGERIES, ADMIN_TAG], 'List all organs for dropdown (used by Add Surgeries screen)', true);
+s('/operations/{id}', 'get', [PATIENT_TAGS.SURGERIES, ADMIN_TAG], 'Get organ by ID', true, [p('id')]);
+s('/operations', 'post', ADMIN_TAG, 'Create an organ (Admin)', true, [], { schemaRef: 'CreateOperationRequest' }, { '200': 'Success', '201': 'Created' });
+s('/operations/{id}', 'put', ADMIN_TAG, 'Update an organ (Admin)', true, [p('id')], { schemaRef: 'UpdateOperationRequest' });
+s('/operations/{id}', 'delete', ADMIN_TAG, 'Delete an organ (Admin)', true, [p('id')], undefined, { '200': 'Success', '204': 'No Content' });
 
 // PATIENTS — Children
 s('/patients/{patientId}/children', 'get', PATIENT_TAGS.PROFILE, 'Get child profiles for patient', true, [p('patientId')]);
@@ -223,14 +223,24 @@ s('/patient-doctors/{id}/end', 'post', [PATIENT_TAGS.SHARE_WITH_DOCTOR, DOCTOR_T
 s('/allergies/patient/{patientId}', 'get', [PATIENT_TAGS.ALLERGIES, DOCTOR_PATIENTS_SECTION], 'Get all allergies for a patient (PatientAllergy with allergen name)', true, [p('patientId')]);
 s('/allergies/patient/{patientId}/critical', 'get', [PATIENT_TAGS.ALLERGIES, DOCTOR_PATIENTS_SECTION], 'Get critical allergies for a patient', true, [p('patientId')]);
 s('/allergies/check/{patientId}/{medicineId}', 'get', [PATIENT_TAGS.ALLERGIES, DOCTOR_PATIENTS_SECTION], 'Check if medicine conflicts with patient allergies', true, [p('patientId'), p('medicineId')]);
-s('/patients/{patientId}/allergies', 'post', PATIENT_TAGS.ALLERGIES, 'Add allergies to patient — body: array of { allergenId, severity?, reaction?, notes? } (allergenId from GET /allergens)', true, [p('patientId')], { schemaRef: 'BatchPatientAllergyRequest' });
+s('/patients/{patientId}/allergies', 'post', PATIENT_TAGS.ALLERGIES, 'Add allergies to patient — body: array of { allergenId, reaction?, notes? } (allergenId from GET /allergens or GET /allergen-categories/:id/allergens)', true, [p('patientId')], { schemaRef: 'BatchPatientAllergyRequest' });
 s('/patients/{patientId}/allergies/batch', 'post', PATIENT_TAGS.ALLERGIES, 'Add multiple allergies (same as POST .../allergies with array body)', true, [p('patientId')], { schemaRef: 'BatchPatientAllergyRequest' });
 s('/patients/allergies/{allergyId}', 'delete', PATIENT_TAGS.ALLERGIES, 'Remove allergy from patient (PatientAllergy id)', true, [p('allergyId')]);
 
-// ALLERGENS (catalog — Admin CRUD; patients use GET for dropdown when adding allergies)
-s('/allergens', 'get', [PATIENT_TAGS.ALLERGIES, ADMIN_TAG], 'List all allergens for dropdown (e.g. Add Allergies screen)', true);
-s('/allergens/{id}', 'get', [PATIENT_TAGS.ALLERGIES, ADMIN_TAG], 'Get allergen by ID', true, [p('id')]);
-s('/allergens', 'post', ADMIN_TAG, 'Create an allergen (Admin)', true, [], { schemaRef: 'CreateAllergenRequest' }, { '200': 'Success', '201': 'Created' });
+// ALLERGEN CATEGORIES (catalog — GET for patient/doctor dropdown; Admin CRUD)
+s('/allergen-categories', 'get', [PATIENT_TAGS.ALLERGIES, ADMIN_TAG], 'List all allergen categories (id, name, allergen count). Mobile: step 1 — show categories to patient.', true);
+s('/allergen-categories/{id}', 'get', [PATIENT_TAGS.ALLERGIES, ADMIN_TAG], 'Get allergen category by ID', true, [p('id')]);
+s('/allergen-categories/{id}/allergens', 'get', [PATIENT_TAGS.ALLERGIES, ADMIN_TAG], 'Get all allergens for a category. Mobile: step 2 — patient picks allergens from this list.', true, [p('id')]);
+s('/allergen-categories', 'post', ADMIN_TAG, 'Create an allergen category (Admin). Body: name { en, ar? }', true, [], { schemaRef: 'CreateAllergenCategoryRequest' }, { '200': 'Success', '201': 'Created' });
+s('/allergen-categories/{id}', 'put', ADMIN_TAG, 'Update an allergen category (Admin)', true, [p('id')], { schemaRef: 'UpdateAllergenCategoryRequest' });
+s('/allergen-categories/{id}', 'delete', ADMIN_TAG, 'Delete an allergen category (Admin). Fails if it has allergens.', true, [p('id')], undefined, { '200': 'Success', '204': 'No Content' });
+
+// ALLERGENS (catalog — Admin CRUD; patients use GET for dropdown when adding allergies; optional ?categoryId=N filter)
+s('/allergens', 'get', [PATIENT_TAGS.ALLERGIES, ADMIN_TAG], 'List all allergens (optional ?categoryId=N to filter by category). Response includes allergenCategory.', true, [
+  { name: 'categoryId', in: 'query', required: false, schema: { type: 'integer' }, description: 'Optional. Filter allergens by category ID.' }
+]);
+s('/allergens/{id}', 'get', [PATIENT_TAGS.ALLERGIES, ADMIN_TAG], 'Get allergen by ID (includes allergenCategory)', true, [p('id')]);
+s('/allergens', 'post', ADMIN_TAG, 'Create an allergen (Admin). Required: name, allergenCategoryId. Optional: allergenType.', true, [], { schemaRef: 'CreateAllergenRequest' }, { '200': 'Success', '201': 'Created' });
 s('/allergens/{id}', 'put', ADMIN_TAG, 'Update an allergen (Admin)', true, [p('id')], { schemaRef: 'UpdateAllergenRequest' });
 s('/allergens/{id}', 'delete', ADMIN_TAG, 'Delete an allergen (Admin)', true, [p('id')], undefined, { '200': 'Success', '204': 'No Content' });
 
@@ -822,35 +832,28 @@ const options: Record<string, unknown> = {
           minItems: 1,
           items: { $ref: '#/components/schemas/MedicalHistoryRequest' }
         },
-        FamilyRelationEnum: {
-          type: 'string',
-          enum: ['Father', 'Mother', 'Sibling', 'Grandfather', 'Grandmother', 'Uncle', 'Aunt', 'Child', 'Other'],
-          description: 'Allowed values: Father, Mother, Sibling, Grandfather, Grandmother, Uncle, Aunt, Child, Other. Request the full list from GET /family-relations.'
-        },
+
         FamilyHistoryRequest: {
-          description: 'One family history entry. Required: relation, diseaseId, severity. Optional: notes. Get relation options from GET /family-relations. Get diseaseId from GET /diseases.',
+          description: 'One family history entry. Required: diseaseId, severity. Optional: notes. Get diseaseId from GET /diseases.',
           type: 'object',
-          required: ['relation', 'diseaseId', 'severity'],
+          required: ['diseaseId', 'severity'],
           properties: {
-            relation: { $ref: '#/components/schemas/FamilyRelationEnum', description: 'Required. One of: Father, Mother, Sibling, Grandfather, Grandmother, Uncle, Aunt, Child, Other. Get list from GET /family-relations.' },
             diseaseId: { type: 'integer', description: 'Required. Get IDs from GET /diseases.' },
             severity: { $ref: '#/components/schemas/DiseaseSeverity', description: 'Required.' },
-            notes: { type: 'string', description: 'Optional.' }
+            notes: { type: 'string', description: 'Optional.' },
           }
         },
         BatchFamilyHistoryRequest: { type: 'array', minItems: 1, items: { $ref: '#/components/schemas/FamilyHistoryRequest' }, description: 'Send multiple family history entries in one request. Body: array of FamilyHistoryRequest.' },
-        FamilyRelationsResponse: { type: 'array', items: { $ref: '#/components/schemas/FamilyRelationEnum' }, description: 'List of family relation values for dropdowns' },
         SurgicalHistoryRequest: {
-          description: 'One surgical history entry. Required: operationId (from GET /operations), surgeryDate. Use "me" as patientId for the logged-in patient.',
+          description: 'One surgical history entry. Required: organId (from GET /operations). Use "me" as patientId for the logged-in patient.',
           type: 'object',
-          required: ['operationId', 'surgeryDate'],
+          required: ['organId'],
           properties: {
-            operationId:  { type: 'integer', description: 'Required. ID from GET /operations.' },
-            surgeryDate:  { type: 'string', format: 'date-time', description: 'Required. ISO 8601 (e.g. 2026-03-04T19:15:42.771Z) or date-only YYYY-MM-DD.' }
+            organId:  { type: 'integer', description: 'Required. ID from GET /operations.' }
           }
         },
         BatchSurgicalHistoryRequest: {
-          description: 'One or more surgical history entries. Send a single object or array. Each entry: operationId, surgeryDate required. GET /patients/:id/surgeries returns each entry with operation: { id, name }.',
+          description: 'One or more surgical history entries. Send a single object or array. Each entry: organId required. GET /patients/:id/surgeries returns each entry with organ: { id, name }.',
           type: 'array',
           minItems: 1,
           items: { $ref: '#/components/schemas/SurgicalHistoryRequest' }
@@ -879,18 +882,18 @@ const options: Record<string, unknown> = {
           items: { $ref: '#/components/schemas/PatientLifestyleItemRequest' }
         },
         Operation: {
-          description: 'Surgical operation (admin-managed). Used in Add Surgeries dropdown.',
+          description: 'Organ (admin-managed). Returned from GET /operations and used in Add Surgeries dropdown.',
           type: 'object',
           properties: { id: { type: 'integer' }, name: { type: 'string' }, createdAt: { type: 'string', format: 'date-time' }, updatedAt: { type: 'string', format: 'date-time' } }
         },
         CreateOperationRequest: {
-          description: 'Create operation. Required: name.',
+          description: 'Create organ. Required: name.',
           type: 'object',
           required: ['name'],
-          properties: { name: { type: 'string', description: 'Operation name (e.g. Appendectomy)' } }
+          properties: { name: { type: 'string', description: 'Organ name (e.g. Heart, Liver, Kidney)' } }
         },
         UpdateOperationRequest: {
-          description: 'Update operation. All fields optional.',
+          description: 'Update organ. All fields optional.',
           type: 'object',
           properties: { name: { type: 'string' } }
         },
@@ -963,37 +966,81 @@ const options: Record<string, unknown> = {
           properties: { patientId: { type: 'integer', description: 'Required.' }, doctorId: { type: 'integer', description: 'Required. Get from GET /doctors/search.' }, relationshipType: { type: 'string', enum: ['PrimaryCare', 'Specialist', 'Consultation', 'Other'], description: 'Required.' } }
         },
         UpdatePatientDoctorRequest: { description: 'All fields optional. Send only fields to update.', type: 'object', properties: { relationshipType: { type: 'string', enum: ['PrimaryCare', 'Specialist', 'Consultation', 'Other'] }, isActive: { type: 'boolean' }, endDate: { type: 'string', format: 'date-time' } } },
-        // ── Allergens (catalog — GET /allergens for dropdown)
-        Allergen: {
-          description: 'Allergen catalog entry (admin-managed). Patients link via POST /patients/:patientId/allergies with allergenId.',
+        // ── Allergen categories (catalog)
+        AllergenCategoryName: {
+          description: 'Bilingual category name object.',
           type: 'object',
-          properties: { id: { type: 'integer' }, name: { type: 'string' }, allergenType: { type: 'string', nullable: true, enum: ['Drug', 'Food', 'Pollen', 'Dust', 'Pet', 'Fragrance', 'Other'] }, createdAt: { type: 'string', format: 'date-time' }, updatedAt: { type: 'string', format: 'date-time' } }
+          required: ['en'],
+          properties: { en: { type: 'string', description: 'English name. Required.' }, ar: { type: 'string', description: 'Arabic name. Optional.' } }
         },
-        CreateAllergenRequest: {
-          description: 'Create allergen. Required: name. Optional: allergenType.',
+        AllergenCategory: {
+          description: 'Allergen category (admin-managed). Used for grouping allergens in the patient form.',
+          type: 'object',
+          properties: {
+            id:        { type: 'integer' },
+            name:      { $ref: '#/components/schemas/AllergenCategoryName' },
+            _count:    { type: 'object', properties: { allergens: { type: 'integer' } }, description: 'Number of allergens in this category.' },
+            createdAt: { type: 'string', format: 'date-time' },
+            updatedAt: { type: 'string', format: 'date-time' }
+          }
+        },
+        CreateAllergenCategoryRequest: {
+          description: 'Create allergen category. Required: name.en. Optional: name.ar.',
           type: 'object',
           required: ['name'],
-          properties: { name: { type: 'string', description: 'Required. e.g. Penicillin, Peanuts.' }, allergenType: { type: 'string', enum: ['Drug', 'Food', 'Pollen', 'Dust', 'Pet', 'Fragrance', 'Other'], description: 'Optional.' } }
+          properties: { name: { $ref: '#/components/schemas/AllergenCategoryName' } }
+        },
+        UpdateAllergenCategoryRequest: {
+          description: 'Update allergen category. All fields optional.',
+          type: 'object',
+          properties: { name: { $ref: '#/components/schemas/AllergenCategoryName' } }
+        },
+        // ── Allergens (catalog — GET /allergens for dropdown)
+        Allergen: {
+          description: 'Allergen catalog entry (admin-managed). Patients link via POST /patients/:patientId/allergies with allergenId. Response includes allergenCategory.',
+          type: 'object',
+          properties: {
+            id:                  { type: 'integer' },
+            name:                { type: 'string' },
+            allergenType:        { type: 'string', nullable: true, enum: ['Drug', 'Food', 'Pollen', 'Dust', 'Pet', 'Fragrance', 'Other'] },
+            allergenCategoryId:  { type: 'integer', description: 'FK to AllergenCategory.' },
+            allergenCategory:    { $ref: '#/components/schemas/AllergenCategory', nullable: true, description: 'Included in GET responses.' },
+            createdAt:           { type: 'string', format: 'date-time' },
+            updatedAt:           { type: 'string', format: 'date-time' }
+          }
+        },
+        CreateAllergenRequest: {
+          description: 'Create allergen. Required: name, allergenCategoryId. Optional: allergenType.',
+          type: 'object',
+          required: ['name', 'allergenCategoryId'],
+          properties: {
+            name:               { type: 'string', description: 'Required. e.g. Penicillin, Peanuts.' },
+            allergenCategoryId: { type: 'integer', description: 'Required. ID from GET /allergen-categories.' },
+            allergenType:       { type: 'string', enum: ['Drug', 'Food', 'Pollen', 'Dust', 'Pet', 'Fragrance', 'Other'], description: 'Optional.' }
+          }
         },
         UpdateAllergenRequest: {
           description: 'Update allergen. All fields optional.',
           type: 'object',
-          properties: { name: { type: 'string' }, allergenType: { type: 'string', enum: ['Drug', 'Food', 'Pollen', 'Dust', 'Pet', 'Fragrance', 'Other'], nullable: true } }
+          properties: {
+            name:               { type: 'string' },
+            allergenType:       { type: 'string', enum: ['Drug', 'Food', 'Pollen', 'Dust', 'Pet', 'Fragrance', 'Other'], nullable: true },
+            allergenCategoryId: { type: 'integer', description: 'Optional. Move allergen to a different category.' }
+          }
         },
         // ── Patient allergies (link patient to catalog allergen)
         PatientAllergyRequest: {
-          description: 'Add one allergy to patient. Required: allergenId (from GET /allergens). Optional: severity, reaction, notes.',
+          description: 'Add one allergy to patient. Required: allergenId (from GET /allergens or GET /allergen-categories/:id/allergens). Optional: reaction, notes.',
           type: 'object',
           required: ['allergenId'],
           properties: {
-            allergenId: { type: 'integer', description: 'Required. ID from GET /allergens.' },
-            severity:   { type: 'string', enum: ['Mild', 'Moderate', 'Severe', 'LifeThreatening'], default: 'Mild', description: 'Optional.' },
+            allergenId: { type: 'integer', description: 'Required. ID from GET /allergens or GET /allergen-categories/:id/allergens.' },
             reaction:   { type: 'string', description: 'Optional.' },
             notes:      { type: 'string', description: 'Optional.' }
           }
         },
         BatchPatientAllergyRequest: {
-          description: 'One or more allergies. Send single object or array. Each: allergenId required; severity, reaction, notes optional.',
+          description: 'One or more allergies. Send single object or array. Each: allergenId required; reaction, notes optional.',
           type: 'array',
           minItems: 1,
           items: { $ref: '#/components/schemas/PatientAllergyRequest' }

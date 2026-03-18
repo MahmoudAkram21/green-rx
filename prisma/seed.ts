@@ -36,11 +36,12 @@ async function main() {
   await prisma.lifestyle.deleteMany();
   await prisma.patientAllergy.deleteMany();
   await prisma.allergen.deleteMany();
+  await prisma.allergenCategory.deleteMany();
   await prisma.patientDisease.deleteMany();
   await prisma.familyHistory.deleteMany();
   await prisma.medicalHistory.deleteMany();
   await prisma.surgicalHistory.deleteMany();
-  await prisma.operation.deleteMany();
+  await prisma.organ.deleteMany();
   await prisma.patient.deleteMany();
   await prisma.doctorClinic.deleteMany();
   await prisma.doctor.deleteMany();
@@ -971,19 +972,19 @@ async function main() {
   console.log(`✅ Created ${clinicData.length} doctor clinics for ${doctors.length} doctors`);
 
   // ============================================
-  // SECTION 6b: OPERATIONS (for surgical history dropdown)
+  // SECTION 6b: ORGANS (for surgical history dropdown)
   // ============================================
-  console.log("\n🏥 Creating operations...");
-  const opAppendectomy = await prisma.operation.create({ data: { name: "Appendectomy" } });
-  const opCholecystectomy = await prisma.operation.create({ data: { name: "Cholecystectomy" } });
-  const opCataractSurgery = await prisma.operation.create({ data: { name: "Cataract Surgery" } });
-  const opKneeReplacement = await prisma.operation.create({ data: { name: "Knee Replacement" } });
-  await prisma.operation.create({ data: { name: "Cesarean Section" } });
-  const opTonsillectomy = await prisma.operation.create({ data: { name: "Tonsillectomy" } });
-  const opHerniaRepair = await prisma.operation.create({ data: { name: "Hernia Repair" } });
-  await prisma.operation.create({ data: { name: "Hysterectomy" } });
-  await prisma.operation.create({ data: { name: "Gallbladder Removal" } });
-  console.log("✅ Created 9 operations");
+  console.log("\n🫀 Creating organs...");
+  const organHeart = await prisma.organ.create({ data: { name: "Heart" } });
+  const organLiver = await prisma.organ.create({ data: { name: "Liver" } });
+  const organKidney = await prisma.organ.create({ data: { name: "Kidney" } });
+  const organLung = await prisma.organ.create({ data: { name: "Lung" } });
+  const organEye = await prisma.organ.create({ data: { name: "Eye" } });
+  const organAppendix = await prisma.organ.create({ data: { name: "Appendix" } });
+  const organGallbladder = await prisma.organ.create({ data: { name: "Gallbladder" } });
+  const organKnee = await prisma.organ.create({ data: { name: "Knee" } });
+  const organTonsils = await prisma.organ.create({ data: { name: "Tonsils" } });
+  console.log("✅ Created 9 organs");
 
   // ============================================
   // SECTION 7: SUBSCRIPTIONS
@@ -1143,21 +1144,23 @@ async function main() {
     ],
   });
 
-  // Surgical Histories (one entry per patient per operation — @@unique([patientId, operationId]))
+  // Surgical Histories (one entry per patient per organ — @@unique([patientId, organId]))
   await prisma.surgicalHistory.createMany({
     data: [
       // Patient 1 (Alice Cooper)
-      { patientId: patients[0].id, operationId: opAppendectomy.id, surgeryDate: new Date("2015-06-20") },
-      { patientId: patients[0].id, operationId: opCataractSurgery.id, surgeryDate: new Date("2020-03-10") },
+      { patientId: patients[0].id, organId: organAppendix.id },
+      { patientId: patients[0].id, organId: organEye.id },
       // Patient 2 (Bob Martinez)
-      { patientId: patients[1].id, operationId: opKneeReplacement.id, surgeryDate: new Date("2018-11-15") },
-      { patientId: patients[1].id, operationId: opCholecystectomy.id, surgeryDate: new Date("2019-04-22") },
+      { patientId: patients[1].id, organId: organKnee.id },
+      { patientId: patients[1].id, organId: organGallbladder.id },
+      { patientId: patients[1].id, organId: organHeart.id },
       // Patient 3 (Carol White)
-      { patientId: patients[2].id, operationId: opTonsillectomy.id, surgeryDate: new Date("2010-08-05") },
+      { patientId: patients[2].id, organId: organTonsils.id },
       // Patient 4 (David Lee)
-      { patientId: patients[3].id, operationId: opHerniaRepair.id, surgeryDate: new Date("2021-02-14") },
+      { patientId: patients[3].id, organId: organLiver.id },
       // Patient 5 (Emma Thompson)
-      { patientId: patients[4].id, operationId: opHerniaRepair.id, surgeryDate: new Date("2022-07-01") },
+      { patientId: patients[4].id, organId: organLung.id },
+      { patientId: patients[4].id, organId: organKidney.id },
     ],
   });
   console.log("✅ Created surgical histories for patients");
@@ -1168,7 +1171,6 @@ async function main() {
       // Patient 1 (Alice Cooper) - Family History
       {
         patientId: patients[0].id,
-        relation: "Mother",
         diseaseId: diseases[0].id, // Diabetes
         severity: "Moderate",
         notes:
@@ -1176,7 +1178,6 @@ async function main() {
       },
       {
         patientId: patients[0].id,
-        relation: "Father",
         diseaseId: diseases[1].id, // Hypertension
         severity: "Moderate",
         notes:
@@ -1184,14 +1185,12 @@ async function main() {
       },
       {
         patientId: patients[0].id,
-        relation: "Grandmother",
         diseaseId: diseases[0].id, // Diabetes
         severity: "Moderate",
         notes: "Type 2 Diabetes, diagnosed in her 60s",
       },
       {
         patientId: patients[0].id,
-        relation: "Grandfather",
         diseaseId: diseases[7].id, // Coronary Artery Disease
         severity: "Severe",
         notes:
@@ -1199,7 +1198,6 @@ async function main() {
       },
       {
         patientId: patients[0].id,
-        relation: "Sibling",
         diseaseId: diseases[0].id, // Diabetes
         severity: "Mild",
         notes: "Pre-diabetic, managing with diet and exercise",
@@ -1207,7 +1205,6 @@ async function main() {
       // Patient 2 (Bob Martinez) - Extensive Family History
       {
         patientId: patients[1].id,
-        relation: "Father",
         diseaseId: diseases[7].id, // Coronary Artery Disease
         severity: "Severe",
         notes:
@@ -1215,49 +1212,42 @@ async function main() {
       },
       {
         patientId: patients[1].id,
-        relation: "Father",
         diseaseId: diseases[1].id, // Hypertension
         severity: "Moderate",
         notes: "Hypertension diagnosed at age 60, before cardiac event",
       },
       {
         patientId: patients[1].id,
-        relation: "Father",
         diseaseId: diseases[4].id, // Hyperlipidemia
         severity: "Moderate",
         notes: "High cholesterol, on statin therapy",
       },
       {
         patientId: patients[1].id,
-        relation: "Mother",
         diseaseId: diseases[1].id, // Hypertension
         severity: "Mild",
         notes: "Borderline hypertension, managed with lifestyle",
       },
       {
         patientId: patients[1].id,
-        relation: "Sibling",
         diseaseId: diseases[1].id, // Hypertension
         severity: "Mild",
         notes: "Diagnosed at age 45. On medication. Also has pre-diabetes.",
       },
       {
         patientId: patients[1].id,
-        relation: "Sibling",
         diseaseId: diseases[4].id, // Hyperlipidemia
         severity: "Mild",
         notes: "Elevated cholesterol, managing with diet",
       },
       {
         patientId: patients[1].id,
-        relation: "Grandfather",
         diseaseId: diseases[7].id, // Coronary Artery Disease
         severity: "Severe",
         notes: "Multiple heart attacks, died at age 70",
       },
       {
         patientId: patients[1].id,
-        relation: "Uncle",
         diseaseId: diseases[0].id, // Diabetes
         severity: "Moderate",
         notes: "Type 2 Diabetes, diagnosed at age 50",
@@ -1265,14 +1255,12 @@ async function main() {
       // Patient 3 (Carol White) - Allergic Family History
       {
         patientId: patients[2].id,
-        relation: "Mother",
         diseaseId: diseases[6].id, // Allergic Rhinitis
         severity: "Mild",
         notes: "Seasonal allergies, uses antihistamines as needed",
       },
       {
         patientId: patients[2].id,
-        relation: "Father",
         diseaseId: diseases[2].id, // Asthma
         severity: "Moderate",
         notes:
@@ -1280,21 +1268,18 @@ async function main() {
       },
       {
         patientId: patients[2].id,
-        relation: "Grandmother",
         diseaseId: diseases[6].id, // Allergic Rhinitis
         severity: "Mild",
         notes: "Chronic allergies, multiple triggers",
       },
       {
         patientId: patients[2].id,
-        relation: "Sibling",
         diseaseId: diseases[6].id, // Allergic Rhinitis
         severity: "Mild",
         notes: "Similar seasonal allergy pattern",
       },
       {
         patientId: patients[2].id,
-        relation: "Child",
         diseaseId: diseases[6].id, // Allergic Rhinitis (potential)
         severity: "None",
         notes: "Too young to diagnose, but monitoring for allergy symptoms",
@@ -1302,7 +1287,6 @@ async function main() {
       // Patient 4 (David Lee) - GERD and Cardiovascular
       {
         patientId: patients[3].id,
-        relation: "Father",
         diseaseId: diseases[3].id, // GERD
         severity: "Moderate",
         notes:
@@ -1310,28 +1294,24 @@ async function main() {
       },
       {
         patientId: patients[3].id,
-        relation: "Father",
         diseaseId: diseases[1].id, // Hypertension
         severity: "Moderate",
         notes: "Hypertension, on medication",
       },
       {
         patientId: patients[3].id,
-        relation: "Mother",
         diseaseId: diseases[1].id, // Hypertension
         severity: "Mild",
         notes: "Borderline hypertension",
       },
       {
         patientId: patients[3].id,
-        relation: "Grandfather",
         diseaseId: diseases[3].id, // GERD
         severity: "Moderate",
         notes: "Chronic acid reflux, Barrett's esophagus",
       },
       {
         patientId: patients[3].id,
-        relation: "Sibling",
         diseaseId: diseases[3].id, // GERD
         severity: "Mild",
         notes: "Occasional heartburn, manages with OTC medications",
@@ -1339,28 +1319,24 @@ async function main() {
       // Patient 5 (Emma Thompson) - Pediatric Family History
       {
         patientId: patients[4].id,
-        relation: "Mother",
         diseaseId: diseases[2].id, // Asthma
         severity: "Mild",
         notes: "Childhood asthma, resolved in adulthood",
       },
       {
         patientId: patients[4].id,
-        relation: "Father",
         diseaseId: diseases[6].id, // Allergic Rhinitis
         severity: "Mild",
         notes: "Seasonal allergies",
       },
       {
-        patientId: patients[4].id,
-        relation: "Grandmother",
+        patientId: patients[4].id,    
         diseaseId: diseases[2].id, // Asthma
         severity: "Moderate",
         notes: "Adult-onset asthma, uses maintenance inhaler",
       },
       {
         patientId: patients[4].id,
-        relation: "Uncle",
         diseaseId: diseases[2].id, // Asthma
         severity: "Mild",
         notes: "Exercise-induced asthma",
@@ -1368,26 +1344,66 @@ async function main() {
     ],
   });
 
-  // Allergen catalog (admin-managed). Patients link to these via PatientAllergy.
-  const allergenPenicillin = await prisma.allergen.create({ data: { name: "Penicillin", allergenType: "Drug" } });
-  const allergenSulfa = await prisma.allergen.create({ data: { name: "Sulfa drugs", allergenType: "Drug" } });
-  const allergenPollen = await prisma.allergen.create({ data: { name: "Pollen", allergenType: "Pollen" } });
-  const allergenShellfish = await prisma.allergen.create({ data: { name: "Shellfish", allergenType: "Food" } });
-  const allergenDustMites = await prisma.allergen.create({ data: { name: "Dust mites", allergenType: "Dust" } });
-  const allergenLatex = await prisma.allergen.create({ data: { name: "Latex", allergenType: "Other" } });
-  const allergenPeanuts = await prisma.allergen.create({ data: { name: "Peanuts", allergenType: "Food" } });
+  // ============================================
+  // ALLERGEN CATEGORIES + ALLERGEN CATALOG
+  // ============================================
+  console.log("\n🌿 Creating allergen categories...");
+
+  const catRespiratory  = await prisma.allergenCategory.create({ data: { name: { en: "Respiratory",   ar: "الجهاز التنفسي" } } });
+  const catFood         = await prisma.allergenCategory.create({ data: { name: { en: "Food",           ar: "الغذاء" } } });
+  await prisma.allergenCategory.create({ data: { name: { en: "Skin",           ar: "الجلد" } } });
+  await prisma.allergenCategory.create({ data: { name: { en: "Insect Stings",  ar: "لسعات الحشرات" } } });
+  const catMedication   = await prisma.allergenCategory.create({ data: { name: { en: "Medication",     ar: "الأدوية" } } });
+  console.log("✅ Created 5 allergen categories");
+
+  console.log("\n💊 Creating allergen catalog...");
+
+  // Respiratory
+  const allergenPollen = await prisma.allergen.create({ data: { name: "Pollen Grain", allergenType: "Pollen", allergenCategoryId: catRespiratory.id } });
+
+  // Food
+  await prisma.allergen.create({ data: { name: "Lactose",                   allergenType: "Food", allergenCategoryId: catFood.id } });
+  const allergenEggs           = await prisma.allergen.create({ data: { name: "Eggs",         allergenType: "Food", allergenCategoryId: catFood.id } });
+  await prisma.allergen.create({ data: { name: "Egg Yolk",                  allergenType: "Food", allergenCategoryId: catFood.id } });
+  await prisma.allergen.create({ data: { name: "Fish",                      allergenType: "Food", allergenCategoryId: catFood.id } });
+  const allergenMarineProducts = await prisma.allergen.create({ data: { name: "Marine Products", allergenType: "Food", allergenCategoryId: catFood.id } });
+  await prisma.allergen.create({ data: { name: "Nuts",                      allergenType: "Food", allergenCategoryId: catFood.id } });
+  const allergenPeanuts        = await prisma.allergen.create({ data: { name: "Peanuts",        allergenType: "Food", allergenCategoryId: catFood.id } });
+  const allergenWheat          = await prisma.allergen.create({ data: { name: "Wheat",          allergenType: "Food", allergenCategoryId: catFood.id } });
+  const allergenSoybeans       = await prisma.allergen.create({ data: { name: "Soybeans",       allergenType: "Food", allergenCategoryId: catFood.id } });
+  await prisma.allergen.create({ data: { name: "Sesame",                    allergenType: "Food", allergenCategoryId: catFood.id } });
+  await prisma.allergen.create({ data: { name: "Animals Product as Gelatin", allergenType: "Food", allergenCategoryId: catFood.id } });
+
+  // Skin (category created; no allergens in provided list)
+
+  // Insect Stings (category created; no allergens in provided list)
+
+  // Medication
+  const allergenIron          = await prisma.allergen.create({ data: { name: "Iron, Ferric Products",                                           allergenType: "Drug", allergenCategoryId: catMedication.id } });
+  await prisma.allergen.create({                                       data: { name: "Non-steroidal Anti-inflammatory Drugs (e.g. Ketoprofen, Diclofenac)", allergenType: "Drug", allergenCategoryId: catMedication.id } });
+  const allergenPenicillin    = await prisma.allergen.create({ data: { name: "Penicillin",         allergenType: "Drug", allergenCategoryId: catMedication.id } });
+  await prisma.allergen.create({                                       data: { name: "Quinolones",         allergenType: "Drug", allergenCategoryId: catMedication.id } });
+  await prisma.allergen.create({                                       data: { name: "Cephalosporines",    allergenType: "Drug", allergenCategoryId: catMedication.id } });
+  await prisma.allergen.create({                                       data: { name: "Benzodiazepines",    allergenType: "Drug", allergenCategoryId: catMedication.id } });
+  await prisma.allergen.create({                                       data: { name: "Sulfonylureas",      allergenType: "Drug", allergenCategoryId: catMedication.id } });
+  await prisma.allergen.create({                                       data: { name: "Insulin",            allergenType: "Drug", allergenCategoryId: catMedication.id } });
+  await prisma.allergen.create({                                       data: { name: "Anesthetics",        allergenType: "Drug", allergenCategoryId: catMedication.id } });
+  await prisma.allergen.create({                                       data: { name: "Food Colors",        allergenType: "Other", allergenCategoryId: catMedication.id } });
+  await prisma.allergen.create({                                       data: { name: "Hormones",           allergenType: "Drug", allergenCategoryId: catMedication.id } });
+  await prisma.allergen.create({                                       data: { name: "Preservatives Products", allergenType: "Other", allergenCategoryId: catMedication.id } });
   console.log("✅ Created allergen catalog");
 
   // Patient allergies (many-to-many: patient links to catalog)
   await prisma.patientAllergy.createMany({
     data: [
-      { patientId: patients[0].id, allergenId: allergenPenicillin.id, severity: "Severe", reaction: "Anaphylaxis", notes: "Avoid all penicillin derivatives. Use alternative antibiotics." },
-      { patientId: patients[0].id, allergenId: allergenSulfa.id, severity: "Moderate", reaction: "Rash", notes: "Mild rash, avoid sulfonamides" },
-      { patientId: patients[1].id, allergenId: allergenPollen.id, severity: "Mild", reaction: "Rhinitis", notes: "Seasonal, spring and fall" },
-      { patientId: patients[2].id, allergenId: allergenShellfish.id, severity: "Moderate", reaction: "Urticaria", notes: "Hives and swelling" },
-      { patientId: patients[2].id, allergenId: allergenDustMites.id, severity: "Mild", reaction: "Rhinitis" },
-      { patientId: patients[3].id, allergenId: allergenLatex.id, severity: "Moderate", reaction: "Contact dermatitis" },
-      { patientId: patients[4].id, allergenId: allergenPeanuts.id, severity: "Severe", reaction: "Anaphylaxis", notes: "Life-threatening, carry epinephrine" },
+      { patientId: patients[0].id, allergenId: allergenPenicillin.id,    reaction: "Anaphylaxis",       notes: "Avoid all penicillin derivatives. Use alternative antibiotics." },
+      { patientId: patients[0].id, allergenId: allergenIron.id,          reaction: "Rash",              notes: "Skin rash with iron supplements" },
+      { patientId: patients[1].id, allergenId: allergenPollen.id,        reaction: "Rhinitis",          notes: "Seasonal, spring and fall" },
+      { patientId: patients[2].id, allergenId: allergenMarineProducts.id, reaction: "Urticaria",        notes: "Hives and swelling" },
+      { patientId: patients[2].id, allergenId: allergenWheat.id,         reaction: "Rhinitis" },
+      { patientId: patients[3].id, allergenId: allergenSoybeans.id,      reaction: "Contact dermatitis" },
+      { patientId: patients[4].id, allergenId: allergenPeanuts.id,       reaction: "Anaphylaxis",       notes: "Life-threatening, carry epinephrine" },
+      { patientId: patients[4].id, allergenId: allergenEggs.id,          reaction: "Rash",              notes: "Hives appear within 30 minutes" },
     ],
   });
   console.log("✅ Created patient allergies");

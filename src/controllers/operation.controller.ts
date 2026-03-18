@@ -6,7 +6,7 @@ import { createOperationSchema, updateOperationSchema } from '../zod/operation.z
 /** GET /operations — list all operations (for dropdown: Patient, Doctor, Admin) */
 export const getAllOperations = async (_req: Request, res: Response, next: NextFunction) => {
   try {
-    const operations = await prisma.operation.findMany({
+    const operations = await prisma.organ.findMany({
       orderBy: { name: 'asc' },
     });
     res.json(operations);
@@ -19,11 +19,11 @@ export const getAllOperations = async (_req: Request, res: Response, next: NextF
 export const getOperationById = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const id = parseInt(req.params.id);
-    const operation = await prisma.operation.findUnique({
+    const operation = await prisma.organ.findUnique({
       where: { id },
     });
     if (!operation) {
-      res.status(404).json({ error: 'Operation not found' });
+      res.status(404).json({ error: 'Organ not found' });
       return;
     }
     res.json(operation);
@@ -36,7 +36,7 @@ export const getOperationById = async (req: Request, res: Response, next: NextFu
 export const createOperation = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const validated = createOperationSchema.parse(req.body);
-    const operation = await prisma.operation.create({
+    const operation = await prisma.organ.create({
       data: { name: validated.name },
     });
     res.status(201).json(operation);
@@ -54,7 +54,7 @@ export const updateOperation = async (req: Request, res: Response, next: NextFun
   try {
     const id = parseInt(req.params.id);
     const validated = updateOperationSchema.parse(req.body);
-    const operation = await prisma.operation.update({
+    const operation = await prisma.organ.update({
       where: { id },
       data: { ...(validated.name !== undefined && { name: validated.name }) },
     });
@@ -65,7 +65,7 @@ export const updateOperation = async (req: Request, res: Response, next: NextFun
       return;
     }
     if (error.code === 'P2025') {
-      res.status(404).json({ error: 'Operation not found' });
+      res.status(404).json({ error: 'Organ not found' });
       return;
     }
     next(error);
@@ -76,13 +76,13 @@ export const updateOperation = async (req: Request, res: Response, next: NextFun
 export const deleteOperation = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const id = parseInt(req.params.id);
-    await prisma.operation.delete({
+    await prisma.organ.delete({
       where: { id },
     });
     res.status(204).send();
   } catch (error: any) {
     if (error.code === 'P2025') {
-      res.status(404).json({ error: 'Operation not found' });
+      res.status(404).json({ error: 'Organ not found' });
       return;
     }
     next(error);
