@@ -476,7 +476,6 @@ model AllergenCategory {
 
   allergens Allergen[]
 
-  @@index([name])
   @@map("allergen_categories")
 }
 model Allergen {
