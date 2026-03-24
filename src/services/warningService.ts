@@ -1,5 +1,6 @@
 import { prisma } from '../lib/prisma';
 import { WarningSeverity, WarningRuleType } from '../../generated/client/client';
+import { patientAllergyInclude } from '../utils/allergyInclude.util';
 
 export interface Warning {
   severity: WarningSeverity;
@@ -30,7 +31,7 @@ export async function generateWarnings(
   const patient = await prisma.patient.findUnique({
     where: { id: patientId },
     include: {
-      patientAllergies: { include: { allergen: true } },
+      patientAllergies: { include: patientAllergyInclude },
       patientLifestyles: { include: { lifestyle: true } },
       patientDiseases: {
         include: {
@@ -107,7 +108,7 @@ export async function generateWarnings(
   // ============================================
   // CHECK 1: ALLERGY WARNINGS (CRITICAL)
   // ============================================
-  const allergyWarnings = checkAllergyWarnings(patient, tradeName, activeSubstance);
+  const allergyWarnings = checkAllergyWarnings(patient, tradeName, activeSubstance, tradeNameId);
   warnings.push(...allergyWarnings.warnings);
   if (allergyWarnings.blocked) {
     blocked = true;
@@ -182,32 +183,51 @@ export async function generateWarnings(
 // HELPER FUNCTIONS FOR EACH WARNING TYPE
 // ============================================
 
-function checkAllergyWarnings(patient: any, tradeName: any, activeSubstance: any) {
+function checkAllergyWarnings(patient: any, tradeName: any, activeSubstance: any, tradeNameId: number) {
   const warnings: Warning[] = [];
   let blocked = false;
 
   const patientAllergies = patient.patientAllergies ?? [];
+  const substanceLower = (activeSubstance.activeSubstance ?? '').toLowerCase();
+  const tradeNameLower = (tradeName.title ?? '').toLowerCase();
+
   for (const pa of patientAllergies) {
-    const allergenName = pa.allergen?.name ?? '';
-    const allergenLower = allergenName.toLowerCase();
-    const substanceLower = activeSubstance.activeSubstance.toLowerCase();
-    const tradeNameLower = tradeName.title.toLowerCase();
+    let matched = false;
+    let allergyLabel = '';
 
-    if (substanceLower.includes(allergenLower) || tradeNameLower.includes(allergenLower)) {
-      const severity = pa.severity === 'LifeThreatening' || pa.severity === 'Severe'
-        ? WarningSeverity.Critical
-        : WarningSeverity.High;
+    if (pa.activeSubstanceId !== null) {
+      // Direct active substance FK match
+      if (pa.activeSubstanceId === activeSubstance.id) {
+        matched = true;
+        allergyLabel = pa.activeSubstance?.activeSubstance ?? `ActiveSubstance#${pa.activeSubstanceId}`;
+      }
+    } else if (pa.tradeNameId !== null) {
+      // Trade name FK match: same trade name OR same underlying active substance
+      if (pa.tradeNameId === tradeNameId) {
+        matched = true;
+        allergyLabel = pa.tradeName?.title ?? `TradeName#${pa.tradeNameId}`;
+      } else if (pa.tradeName?.activeSubstance?.id === activeSubstance.id) {
+        matched = true;
+        allergyLabel = `${pa.tradeName?.title ?? ''} (active substance: ${pa.tradeName?.activeSubstance?.activeSubstance ?? ''})`;
+      }
+    } else if (pa.allergen) {
+      const allergenName = pa.allergen.name ?? '';
+      const allergenLower = allergenName.toLowerCase();
+      if (allergenLower && (substanceLower.includes(allergenLower) || tradeNameLower.includes(allergenLower) || allergenLower.includes(substanceLower))) {
+        matched = true;
+        allergyLabel = allergenName;
+      }
+    }
 
+    if (matched) {
+      const severity = WarningSeverity.Critical;
       warnings.push({
         severity,
         type: 'AllergyWarning',
-        message: `⚠️ ALLERGY ALERT: Patient is allergic to ${allergenName}. ${pa.reaction || 'Severe allergic reaction possible.'}`,
-        blocked: severity === WarningSeverity.Critical
+        message: `⚠️ ALLERGY ALERT: Patient has a documented allergy to ${allergyLabel}. ${pa.reaction || 'Severe allergic reaction possible.'}`,
+        blocked: true
       });
-
-      if (severity === WarningSeverity.Critical) {
-        blocked = true;
-      }
+      blocked = true;
     }
   }
 

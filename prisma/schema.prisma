@@ -497,22 +497,33 @@ model Allergen {
 }
 
 
-// Patient's allergies (many-to-many: patient links to catalog allergens).
+// Patient's allergies. Exactly one of allergenId, activeSubstanceId, tradeNameId must be set.
 model PatientAllergy {
-  id         Int             @id @default(autoincrement())
-  patientId  Int
-  allergenId Int
-  reaction   String?
-  notes      String?
-  createdAt  DateTime        @default(now())
-  updatedAt  DateTime        @updatedAt
+  id                Int      @id @default(autoincrement())
+  patientId         Int
+  // Catalog allergen (Food, Respiratory, Skin, Insect Stings, or fixed Medication entries like Penicillin)
+  allergenId        Int?
+  // Medication allergy selected from active substance search
+  activeSubstanceId Int?
+  // Medication allergy selected from trade name search
+  tradeNameId       Int?
+  reaction          String?
+  notes             String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
 
-  patient  Patient  @relation(fields: [patientId], references: [id], onDelete: Cascade)
-  allergen Allergen @relation(fields: [allergenId], references: [id], onDelete: Restrict)
+  patient         Patient          @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  allergen        Allergen?        @relation(fields: [allergenId], references: [id], onDelete: Restrict)
+  activeSubstance ActiveSubstance? @relation(fields: [activeSubstanceId], references: [id], onDelete: Restrict)
+  tradeName       TradeName?       @relation(fields: [tradeNameId], references: [id], onDelete: Restrict)
 
   @@unique([patientId, allergenId])
+  @@unique([patientId, activeSubstanceId])
+  @@unique([patientId, tradeNameId])
   @@index([patientId])
   @@index([allergenId])
+  @@index([activeSubstanceId])
+  @@index([tradeNameId])
   @@map("patient_allergies")
 }
 
@@ -937,6 +948,7 @@ model ActiveSubstance {
   patientMedicines               PatientMedicine[]
   addMedicineRequests            AddMedicineRequest[]
   medicationSideEffects          MedicationSideEffect[]
+  patientAllergies               PatientAllergy[]
 
   @@index([activeSubstance])
   @@index([isActive])
@@ -1008,6 +1020,7 @@ model TradeName {
   patientMedicines             PatientMedicine[]
   addMedicineRequests          AddMedicineRequest[]
   tradeNameSideEffects         TradeNameSideEffect[]
+  patientAllergies             PatientAllergy[]
 
   @@index([title])
   @@index([activeSubstanceId])

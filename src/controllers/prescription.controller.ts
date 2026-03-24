@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { prisma } from '../lib/prisma';
 import { PrescriptionStatus } from '../../generated/client/client';
 import { generateWarnings } from '../services/warningService';
+import { patientAllergyInclude } from '../utils/allergyInclude.util';
 import drugInteractionService from '../services/drugInteraction.service';
 
 const defaultValidFrom = () => new Date();
@@ -413,7 +414,7 @@ export const getPrescriptionById = async (req: Request, res: Response) => {
                 patient: {
                     include: {
                         user: { select: { email: true } },
-                        patientAllergies: { include: { allergen: true } },
+                        patientAllergies: { include: patientAllergyInclude },
                         patientDiseases: { include: { disease: true } }
                     }
                 },

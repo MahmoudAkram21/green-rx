@@ -223,7 +223,7 @@ s('/patient-doctors/{id}/end', 'post', [PATIENT_TAGS.SHARE_WITH_DOCTOR, DOCTOR_T
 s('/allergies/patient/{patientId}', 'get', [PATIENT_TAGS.ALLERGIES, DOCTOR_PATIENTS_SECTION], 'Get all allergies for a patient (PatientAllergy with allergen name)', true, [p('patientId')]);
 s('/allergies/patient/{patientId}/critical', 'get', [PATIENT_TAGS.ALLERGIES, DOCTOR_PATIENTS_SECTION], 'Get critical allergies for a patient', true, [p('patientId')]);
 s('/allergies/check/{patientId}/{medicineId}', 'get', [PATIENT_TAGS.ALLERGIES, DOCTOR_PATIENTS_SECTION], 'Check if medicine conflicts with patient allergies', true, [p('patientId'), p('medicineId')]);
-s('/patients/{patientId}/allergies', 'post', PATIENT_TAGS.ALLERGIES, 'Add allergies to patient — body: array of { allergenId, reaction?, notes? } (allergenId from GET /allergens or GET /allergen-categories/:id/allergens)', true, [p('patientId')], { schemaRef: 'BatchPatientAllergyRequest' });
+s('/patients/{patientId}/allergies', 'post', PATIENT_TAGS.ALLERGIES, 'Add allergies to patient. Body: single object or array. Each item must include exactly one of: allergenId (catalog, from GET /allergens or GET /allergen-categories/:id/allergens), activeSubstanceId (Medication, from GET /active-substances/search), or tradeNameId (Medication, from GET /trade-names/search). Optional: reaction, notes.', true, [p('patientId')], { schemaRef: 'BatchPatientAllergyRequest' });
 s('/patients/{patientId}/allergies/batch', 'post', PATIENT_TAGS.ALLERGIES, 'Add multiple allergies (same as POST .../allergies with array body)', true, [p('patientId')], { schemaRef: 'BatchPatientAllergyRequest' });
 s('/patients/allergies/{allergyId}', 'delete', PATIENT_TAGS.ALLERGIES, 'Remove allergy from patient (PatientAllergy id)', true, [p('allergyId')]);
 
@@ -1028,22 +1028,80 @@ const options: Record<string, unknown> = {
             allergenCategoryId: { type: 'integer', description: 'Optional. Move allergen to a different category.' }
           }
         },
-        // ── Patient allergies (link patient to catalog allergen)
+        // ── Patient allergies
         PatientAllergyRequest: {
-          description: 'Add one allergy to patient. Required: allergenId (from GET /allergens or GET /allergen-categories/:id/allergens). Optional: reaction, notes.',
+          description: 'Add one allergy to a patient. Exactly one of allergenId, activeSubstanceId, or tradeNameId must be provided. For Medication category: use activeSubstanceId (from GET /active-substances/search) or tradeNameId (from GET /trade-names/search). For all other categories: use allergenId (from GET /allergens or GET /allergen-categories/:id/allergens). Optional: reaction, notes.',
           type: 'object',
-          required: ['allergenId'],
           properties: {
-            allergenId: { type: 'integer', description: 'Required. ID from GET /allergens or GET /allergen-categories/:id/allergens.' },
-            reaction:   { type: 'string', description: 'Optional.' },
-            notes:      { type: 'string', description: 'Optional.' }
+            allergenId:        { type: 'integer', description: 'Catalog allergen ID (from GET /allergens). Use for Food, Respiratory, Skin, Insect Stings, or Medication catalog entries.' },
+            activeSubstanceId: { type: 'integer', description: 'Active substance ID (from GET /active-substances/search). Use for Medication allergy by active substance.' },
+            tradeNameId:       { type: 'integer', description: 'Trade name ID (from GET /trade-names/search). Use for Medication allergy by trade name.' },
+            reaction:          { type: 'string', description: 'Optional. Observed allergic reaction.' },
+            notes:             { type: 'string', description: 'Optional. Additional notes.' }
           }
         },
         BatchPatientAllergyRequest: {
-          description: 'One or more allergies. Send single object or array. Each: allergenId required; reaction, notes optional.',
+          description: 'Accept either a single allergy object or an array of allergy objects. Single object: { allergenId | activeSubstanceId | tradeNameId, reaction?, notes? }. Array: [ { ... }, { ... } ]. Each item must have exactly one of allergenId, activeSubstanceId, or tradeNameId.',
           type: 'array',
           minItems: 1,
-          items: { $ref: '#/components/schemas/PatientAllergyRequest' }
+          items: { $ref: '#/components/schemas/PatientAllergyRequest' },
+          example: [
+            { allergenId: 1, reaction: 'Rash', notes: 'Mild' },
+            { activeSubstanceId: 5, reaction: 'Nausea' }
+          ]
+        },
+        PatientAllergyResponse: {
+          description: 'A patient allergy entry. Exactly one of allergen, activeSubstance, or tradeName will be populated depending on how the allergy was recorded.',
+          type: 'object',
+          properties: {
+            id:                { type: 'integer' },
+            patientId:         { type: 'integer' },
+            allergenId:        { type: 'integer', nullable: true },
+            activeSubstanceId: { type: 'integer', nullable: true },
+            tradeNameId:       { type: 'integer', nullable: true },
+            reaction:          { type: 'string', nullable: true },
+            notes:             { type: 'string', nullable: true },
+            createdAt:         { type: 'string', format: 'date-time' },
+            updatedAt:         { type: 'string', format: 'date-time' },
+            allergen: {
+              nullable: true,
+              type: 'object',
+              description: 'Populated when allergenId is set.',
+              properties: {
+                id:   { type: 'integer' },
+                name: { type: 'string' },
+                allergenCategory: {
+                  type: 'object', nullable: true,
+                  properties: { id: { type: 'integer' }, name: { type: 'object', description: '{ en, ar }' } }
+                }
+              }
+            },
+            activeSubstance: {
+              nullable: true,
+              type: 'object',
+              description: 'Populated when activeSubstanceId is set.',
+              properties: {
+                id:             { type: 'integer' },
+                activeSubstance: { type: 'string' },
+                concentration:  { type: 'string', nullable: true },
+                classification: { type: 'string', nullable: true }
+              }
+            },
+            tradeName: {
+              nullable: true,
+              type: 'object',
+              description: 'Populated when tradeNameId is set.',
+              properties: {
+                id:    { type: 'integer' },
+                title: { type: 'string' },
+                activeSubstanceId: { type: 'integer' },
+                activeSubstance: {
+                  type: 'object', nullable: true,
+                  properties: { id: { type: 'integer' }, activeSubstance: { type: 'string' } }
+                }
+              }
+            }
+          }
         },
         // ── Patient diseases
         AddPatientDiseaseRequest: {

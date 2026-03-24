@@ -3,6 +3,7 @@ import {
     ActiveSubstance,
     Patient,
 } from '../../generated/client/client';
+import { patientAllergyInclude } from '../utils/allergyInclude.util';
 
 interface DrugInteractionCheck {
     hasDrugInteractions: boolean;
@@ -43,7 +44,7 @@ class DrugInteractionService {
         const patient = await prisma.patient.findUnique({
             where: { id: patientId },
             include: {
-                patientAllergies: { include: { allergen: true } },
+                patientAllergies: { include: patientAllergyInclude },
                 patientLifestyles: { include: { lifestyle: true } },
                 patientDiseases: {
                     include: {
@@ -99,7 +100,7 @@ class DrugInteractionService {
         const alerts: DrugAlert[] = [];
 
         // 1. Check allergy conflicts
-        const allergyCheck = this.checkAllergies((patient as any).patientAllergies ?? [], newDrug);
+        const allergyCheck = this.checkAllergies((patient as any).patientAllergies ?? [], newDrug, _tradeNameId);
         if (allergyCheck.length > 0) {
             warnings.push(...allergyCheck);
         }
@@ -200,41 +201,68 @@ class DrugInteractionService {
     }
 
     /**
-     * Check for allergy conflicts (PatientAllergy with allergen catalog)
+     * Check for allergy conflicts.
+     * Handles catalog allergens (allergenId), active substance allergies (activeSubstanceId), and trade name allergies (tradeNameId).
      */
     private checkAllergies(
-        patientAllergies: Array<{ severity: string; reaction: string | null; allergen: { name: string } }>,
-        drug: ActiveSubstance
+        patientAllergies: Array<{
+            reaction: string | null;
+            allergenId: number | null;
+            activeSubstanceId: number | null;
+            tradeNameId: number | null;
+            allergen: { name: string } | null;
+            activeSubstance: { id: number; activeSubstance: string } | null;
+            tradeName: { id: number; title: string; activeSubstanceId: number; activeSubstance: { id: number; activeSubstance: string } | null } | null;
+        }>,
+        drug: ActiveSubstance,
+        tradeNameId?: number
     ): DrugWarning[] {
         const warnings: DrugWarning[] = [];
+        const drugSubstanceLower = (drug.activeSubstance ?? '').toLowerCase();
+        const drugClassLower = (drug.classification ?? '').toLowerCase();
 
         for (const pa of patientAllergies) {
-            const allergenName = pa.allergen?.name ?? '';
+            let matched = false;
+            let allergyLabel = '';
 
-            // Check contraindications
-            if (Array.isArray(drug.contraindications) &&
-                drug.contraindications.some((c: any) =>
-                    typeof c === 'string' && c.toLowerCase().includes(allergenName.toLowerCase())
-                )) {
-                warnings.push({
-                    type: 'allergy',
-                    severity: pa.severity === 'LifeThreatening' ? 'critical' :
-                        pa.severity === 'Severe' ? 'high' : 'medium',
-                    message: `ALLERGY ALERT: Patient is allergic to ${allergenName}. ` +
-                        `This medication contains or is related to this allergen. ` +
-                        `Severity: ${pa.severity}. Reaction: ${pa.reaction || 'Not specified'}`,
-                    affectedDrug: drug.activeSubstance
-                });
+            if (pa.activeSubstanceId !== null) {
+                // Direct active substance FK match
+                if (pa.activeSubstanceId === drug.id) {
+                    matched = true;
+                    allergyLabel = pa.activeSubstance?.activeSubstance ?? `ActiveSubstance#${pa.activeSubstanceId}`;
+                }
+            } else if (pa.tradeNameId !== null) {
+                // Trade name FK match: match if same trade name OR same underlying active substance
+                if (pa.tradeNameId === tradeNameId) {
+                    matched = true;
+                    allergyLabel = pa.tradeName?.title ?? `TradeName#${pa.tradeNameId}`;
+                } else if (pa.tradeName?.activeSubstance?.id === drug.id) {
+                    matched = true;
+                    allergyLabel = `${pa.tradeName?.title ?? ''} (active substance: ${pa.tradeName?.activeSubstance?.activeSubstance ?? ''})`;
+                }
+            } else if (pa.allergen) {
+                const allergenName = pa.allergen.name ?? '';
+                const allergenLower = allergenName.toLowerCase();
+                if (allergenLower &&
+                    (drugSubstanceLower.includes(allergenLower) || allergenLower.includes(drugSubstanceLower) || drugClassLower.includes(allergenLower))
+                ) {
+                    matched = true;
+                    allergyLabel = allergenName;
+                }
             }
 
-            // Check if allergen name matches drug classification or active substance
-            if (drug.activeSubstance?.toLowerCase().includes(allergenName.toLowerCase()) ||
-                drug.classification?.toLowerCase().includes(allergenName.toLowerCase())) {
+            if (matched) {
+                // Check contraindications for additional context
+                const inContraindications = Array.isArray(drug.contraindications) &&
+                    drug.contraindications.some((c: any) =>
+                        typeof c === 'string' && c.toLowerCase().includes(allergyLabel.toLowerCase())
+                    );
+
                 warnings.push({
                     type: 'allergy',
-                    severity: 'critical',
-                    message: `CRITICAL ALLERGY: Patient has documented allergy to ${allergenName}. ` +
-                        `This medication may cause severe allergic reaction.`,
+                    severity: inContraindications ? 'critical' : 'high',
+                    message: `ALLERGY ALERT: Patient has a documented allergy to ${allergyLabel}. ` +
+                        `Reaction: ${pa.reaction || 'Not specified'}`,
                     affectedDrug: drug.activeSubstance
                 });
             }

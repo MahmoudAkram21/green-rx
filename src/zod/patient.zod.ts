@@ -62,12 +62,27 @@ export const allergySchema = z.object({
   notes: z.string().optional(),
 });
 
-/** For adding catalog allergens to a patient (allergenId from GET /allergens) */
-export const patientAllergySchema = z.object({
-  allergenId: z.number().int().positive(),
-  reaction: z.string().optional().nullable(),
-  notes: z.string().optional().nullable(),
-});
+/**
+ * For adding an allergy to a patient. Exactly one of allergenId, activeSubstanceId, tradeNameId is required.
+ * - allergenId: from GET /allergens or GET /allergen-categories/:id/allergens (Food, Respiratory, Skin, Insect Stings, or Medication catalog allergen)
+ * - activeSubstanceId: from GET /active-substances/search (Medication: patient chose specific active substance)
+ * - tradeNameId: from GET /trade-names/search (Medication: patient chose specific trade name)
+ */
+export const patientAllergySchema = z
+  .object({
+    allergenId:        z.number().int().positive().optional(),
+    activeSubstanceId: z.number().int().positive().optional(),
+    tradeNameId:       z.number().int().positive().optional(),
+    reaction:          z.string().optional().nullable(),
+    notes:             z.string().optional().nullable(),
+  })
+  .refine(
+    (d) => {
+      const set = [d.allergenId, d.activeSubstanceId, d.tradeNameId].filter((v) => v !== undefined);
+      return set.length === 1;
+    },
+    { message: 'Exactly one of allergenId, activeSubstanceId, or tradeNameId must be provided' }
+  );
 
 export const batchAllergySchema = z.array(allergySchema);
 export const batchPatientAllergySchema = z.array(patientAllergySchema);

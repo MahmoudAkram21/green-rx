@@ -14,6 +14,7 @@ import { generateWarnings } from '../services/warningService';
 import drugInteractionService from '../services/drugInteraction.service';
 import { computeBmi } from '../utils/bmi.util';
 import { patientFullDetailsInclude, mapPatientToFullDetailsPayload } from '../utils/patientFullDetails.util';
+import { patientAllergyInclude } from '../utils/allergyInclude.util';
 
 /** Compute age in years and age classification from date of birth. */
 function computeAgeAndClassification(dateOfBirth: Date): { age: number; ageClassification: AgeClassification } {
@@ -170,7 +171,7 @@ export const getPatientById = async (req: Request, res: Response, next: NextFunc
                 medicalHistories: { include: { disease: true } },
                 familyHistories: { include: { disease: true } },
                 patientLifestyles: { include: { lifestyle: true } },
-                patientAllergies: { include: { allergen: true } },
+                patientAllergies: { include: patientAllergyInclude },
                 childrenProfiles: true,
                 patientDiseases: {
                     include: {
@@ -206,7 +207,7 @@ export const getPatientByUserId = async (req: Request, res: Response, next: Next
                 medicalHistories: true,
                 familyHistories: true,
                 patientLifestyles: { include: { lifestyle: true } },
-                patientAllergies: { include: { allergen: true } },
+                patientAllergies: { include: patientAllergyInclude },
                 childrenProfiles: true
             }
         });
@@ -450,7 +451,9 @@ export const deletePatientLifestyle = async (req: Request, res: Response, next: 
     }
 };
 
-// Add one or more allergies to patient (from catalog: GET /allergens). Body: single object or array of { allergenId, reaction?, notes? }.
+// Add one or more allergies to a patient.
+// Body: single object or array of { allergenId | activeSubstanceId | tradeNameId, reaction?, notes? }.
+// Exactly one of allergenId, activeSubstanceId, tradeNameId must be provided per item.
 export const addAllergy = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const patientId = parseInt(req.params.patientId);
@@ -468,19 +471,36 @@ export const addAllergy = async (req: Request, res: Response, next: NextFunction
             return;
         }
 
+        // Validate that each referenced entity exists
         for (const v of validatedItems) {
-            const allergen = await prisma.allergen.findUnique({ where: { id: v.allergenId } });
-            if (!allergen) {
-                res.status(400).json({ error: `Allergen with id ${v.allergenId} not found` });
-                return;
+            if (v.allergenId !== undefined) {
+                const allergen = await prisma.allergen.findUnique({ where: { id: v.allergenId } });
+                if (!allergen) {
+                    res.status(400).json({ error: `Allergen with id ${v.allergenId} not found` });
+                    return;
+                }
+            } else if (v.activeSubstanceId !== undefined) {
+                const as = await prisma.activeSubstance.findUnique({ where: { id: v.activeSubstanceId } });
+                if (!as) {
+                    res.status(400).json({ error: `Active substance with id ${v.activeSubstanceId} not found` });
+                    return;
+                }
+            } else if (v.tradeNameId !== undefined) {
+                const tn = await prisma.tradeName.findUnique({ where: { id: v.tradeNameId } });
+                if (!tn) {
+                    res.status(400).json({ error: `Trade name with id ${v.tradeNameId} not found` });
+                    return;
+                }
             }
         }
 
         const data = validatedItems.map((v) => ({
             patientId,
-            allergenId: v.allergenId,
-            reaction: v.reaction ?? null,
-            notes: v.notes ?? null,
+            allergenId:        v.allergenId        ?? null,
+            activeSubstanceId: v.activeSubstanceId ?? null,
+            tradeNameId:       v.tradeNameId       ?? null,
+            reaction:          v.reaction          ?? null,
+            notes:             v.notes             ?? null,
         }));
         const patientAllergies = await prisma.patientAllergy.createManyAndReturn({ data });
 
@@ -496,7 +516,7 @@ export const addAllergy = async (req: Request, res: Response, next: NextFunction
         }
         if (error?.code === 'P2002') {
             res.status(400).json({
-                error: 'One or more of these allergies are already in your list. Each allergen can only be added once per patient.',
+                error: 'One or more of these allergies are already in your list. Each allergen, active substance, or trade name can only be added once per patient.',
             });
             return;
         }

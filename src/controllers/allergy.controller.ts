@@ -1,7 +1,8 @@
 import { Request, Response } from 'express';
 import { prisma } from '../lib/prisma';
+import { patientAllergyInclude } from '../utils/allergyInclude.util';
 
-// Get all allergies for a patient (PatientAllergy with allergen catalog info)
+// Get all allergies for a patient (PatientAllergy with allergen, activeSubstance, tradeName)
 export const getAllergiesByPatient = async (req: Request, res: Response) => {
     try {
         const { patientId } = req.params;
@@ -9,7 +10,7 @@ export const getAllergiesByPatient = async (req: Request, res: Response) => {
         const patientAllergies = await prisma.patientAllergy.findMany({
             where: { patientId: parseInt(patientId) },
             orderBy: { createdAt: 'desc' },
-            include: { allergen: { include: { allergenCategory: { select: { id: true, name: true } } } } },
+            include: patientAllergyInclude,
         });
 
         return res.json(patientAllergies);
@@ -19,7 +20,7 @@ export const getAllergiesByPatient = async (req: Request, res: Response) => {
     }
 };
 
-// Get critical allergies for a patient (those with "Anaphylaxis" reaction or marked notes)
+// Get critical allergies for a patient (those with "Anaphylaxis" reaction)
 export const getCriticalAllergies = async (req: Request, res: Response) => {
     try {
         const { patientId } = req.params;
@@ -30,7 +31,7 @@ export const getCriticalAllergies = async (req: Request, res: Response) => {
                 reaction: { contains: 'Anaphylaxis', mode: 'insensitive' },
             },
             orderBy: { createdAt: 'desc' },
-            include: { allergen: { include: { allergenCategory: { select: { id: true, name: true } } } } },
+            include: patientAllergyInclude,
         });
 
         return res.json({
@@ -47,10 +48,11 @@ export const getCriticalAllergies = async (req: Request, res: Response) => {
 export const checkMedicineAllergies = async (req: Request, res: Response) => {
     try {
         const { patientId, medicineId } = req.params;
+        const medicineIdNum = parseInt(medicineId);
 
         const patientAllergies = await prisma.patientAllergy.findMany({
             where: { patientId: parseInt(patientId) },
-            include: { allergen: true },
+            include: patientAllergyInclude,
         });
 
         if (patientAllergies.length === 0) {
@@ -61,7 +63,7 @@ export const checkMedicineAllergies = async (req: Request, res: Response) => {
         }
 
         const medicine = await prisma.tradeName.findUnique({
-            where: { id: parseInt(medicineId) },
+            where: { id: medicineIdNum },
             include: { activeSubstance: true },
         });
 
@@ -69,15 +71,29 @@ export const checkMedicineAllergies = async (req: Request, res: Response) => {
             return res.status(404).json({ message: 'Medicine not found' });
         }
 
+        const substanceLower = (medicine.activeSubstance?.activeSubstance || '').toLowerCase();
+        const titleLower = (medicine.title || '').toLowerCase();
+
         const conflicts = patientAllergies.filter((pa) => {
-            const allergenLower = (pa.allergen.name || '').toLowerCase();
-            const substanceLower = (medicine.activeSubstance?.activeSubstance || '').toLowerCase();
-            const titleLower = (medicine.title || '').toLowerCase();
-            return (
-                substanceLower.includes(allergenLower) ||
-                titleLower.includes(allergenLower) ||
-                allergenLower.includes(substanceLower)
-            );
+            // Direct FK match: trade name or active substance
+            if (pa.tradeNameId === medicineIdNum) return true;
+            if (pa.activeSubstanceId !== null && pa.activeSubstanceId === medicine.activeSubstanceId) return true;
+            // Catalog allergen name string match
+            if (pa.allergen) {
+                const allergenLower = (pa.allergen.name || '').toLowerCase();
+                if (allergenLower && (substanceLower.includes(allergenLower) || titleLower.includes(allergenLower) || allergenLower.includes(substanceLower))) return true;
+            }
+            // Active substance string match
+            if (pa.activeSubstance) {
+                const asLower = (pa.activeSubstance.activeSubstance || '').toLowerCase();
+                if (asLower && (substanceLower.includes(asLower) || asLower.includes(substanceLower))) return true;
+            }
+            // Trade name string match
+            if (pa.tradeName) {
+                const tnLower = (pa.tradeName.title || '').toLowerCase();
+                if (tnLower && titleLower.includes(tnLower)) return true;
+            }
+            return false;
         });
 
         if (conflicts.length > 0) {
