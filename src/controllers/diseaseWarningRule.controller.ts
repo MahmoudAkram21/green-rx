@@ -21,7 +21,7 @@ class DiseaseWarningRuleController {
           activeSubstance: {
             select: {
               id: true,
-              activeSubstance: true
+              name: true
             }
           },
           creator: {
@@ -224,7 +224,7 @@ class DiseaseWarningRuleController {
           activeSubstance: {
             select: {
               id: true,
-              activeSubstance: true
+              name: true
             }
           }
         },

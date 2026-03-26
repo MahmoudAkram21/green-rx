@@ -7,14 +7,13 @@ import {
     medicalHistorySchema,
     familyHistorySchema,
     batchPatientLifestyleSchema,
-    batchPatientAllergySchema,
+    patientAllergyReportSchema,
     childProfileSchema
 } from '../zod/patient.zod';
 import { generateWarnings } from '../services/warningService';
 import drugInteractionService from '../services/drugInteraction.service';
 import { computeBmi } from '../utils/bmi.util';
 import { patientFullDetailsInclude, mapPatientToFullDetailsPayload } from '../utils/patientFullDetails.util';
-import { patientAllergyInclude } from '../utils/allergyInclude.util';
 
 /** Compute age in years and age classification from date of birth. */
 function computeAgeAndClassification(dateOfBirth: Date): { age: number; ageClassification: AgeClassification } {
@@ -54,8 +53,11 @@ export const createOrUpdatePatient = async (req: Request, res: Response, next: N
             ageClassification = classificationInput ?? AgeClassification.Adults;
         }
 
+        const isFemale = validatedData.gender === 'Female';
         const patientData = {
             ...rest,
+            contracipient: isFemale ? rest.contracipient : undefined,
+            isContracipientHormonal: isFemale ? rest.isContracipientHormonal : undefined,
             dateOfBirth: dateOfBirth ? new Date(dateOfBirth) : undefined,
             age,
             ageClassification
@@ -171,7 +173,7 @@ export const getPatientById = async (req: Request, res: Response, next: NextFunc
                 medicalHistories: { include: { disease: true } },
                 familyHistories: { include: { disease: true } },
                 patientLifestyles: { include: { lifestyle: true } },
-                patientAllergies: { include: patientAllergyInclude },
+                allergyReports: true,
                 childrenProfiles: true,
                 patientDiseases: {
                     include: {
@@ -207,7 +209,7 @@ export const getPatientByUserId = async (req: Request, res: Response, next: Next
                 medicalHistories: true,
                 familyHistories: true,
                 patientLifestyles: { include: { lifestyle: true } },
-                patientAllergies: { include: patientAllergyInclude },
+                allergyReports: true,
                 childrenProfiles: true
             }
         });
@@ -452,72 +454,151 @@ export const deletePatientLifestyle = async (req: Request, res: Response, next: 
 };
 
 // Add one or more allergies to a patient.
-// Body: single object or array of { allergenId | activeSubstanceId | tradeNameId, reaction?, notes? }.
-// Exactly one of allergenId, activeSubstanceId, tradeNameId must be provided per item.
+// Body: one report payload with optional tradeNameId and related IDs arrays.
 export const addAllergy = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const patientId = parseInt(req.params.patientId);
-        const raw = req.body;
-        const items = Array.isArray(raw) ? raw : [raw];
-        const validatedItems = batchPatientAllergySchema.parse(items);
+        const payload = patientAllergyReportSchema.parse(req.body);
+        const allergenIds = Array.from(new Set(payload.allergenIds ?? []));
+        const activeSubstanceIds = Array.from(new Set(payload.activeSubstanceIds ?? []));
+        const excipientIds = Array.from(new Set(payload.excipientIds ?? []));
+        const classificationIds = Array.from(new Set(payload.classificationIds ?? []));
 
         const patient = await prisma.patient.findUnique({ where: { id: patientId } });
         if (!patient) {
             res.status(404).json({ error: 'Patient not found' });
             return;
         }
-        if (validatedItems.length === 0) {
-            res.status(400).json({ error: 'At least one allergy entry is required' });
-            return;
-        }
 
-        // Validate that each referenced entity exists
-        for (const v of validatedItems) {
-            if (v.allergenId !== undefined) {
-                const allergen = await prisma.allergen.findUnique({ where: { id: v.allergenId } });
-                if (!allergen) {
-                    res.status(400).json({ error: `Allergen with id ${v.allergenId} not found` });
-                    return;
-                }
-            } else if (v.activeSubstanceId !== undefined) {
-                const as = await prisma.activeSubstance.findUnique({ where: { id: v.activeSubstanceId } });
-                if (!as) {
-                    res.status(400).json({ error: `Active substance with id ${v.activeSubstanceId} not found` });
-                    return;
-                }
-            } else if (v.tradeNameId !== undefined) {
-                const tn = await prisma.tradeName.findUnique({ where: { id: v.tradeNameId } });
-                if (!tn) {
-                    res.status(400).json({ error: `Trade name with id ${v.tradeNameId} not found` });
-                    return;
-                }
+        if (payload.tradeNameId !== undefined) {
+            const tradeName = await prisma.tradeName.findUnique({ where: { id: payload.tradeNameId } });
+            if (!tradeName) {
+                res.status(400).json({ error: `Trade name with id ${payload.tradeNameId} not found` });
+                return;
             }
         }
 
-        const data = validatedItems.map((v) => ({
-            patientId,
-            allergenId:        v.allergenId        ?? null,
-            activeSubstanceId: v.activeSubstanceId ?? null,
-            tradeNameId:       v.tradeNameId       ?? null,
-            reaction:          v.reaction          ?? null,
-            notes:             v.notes             ?? null,
-        }));
-        const patientAllergies = await prisma.patientAllergy.createManyAndReturn({ data });
+        if (allergenIds.length > 0) {
+            const found = await prisma.allergen.findMany({ where: { id: { in: allergenIds } }, select: { id: true } });
+            if (found.length !== allergenIds.length) {
+                res.status(400).json({ error: 'One or more allergenIds are invalid' });
+                return;
+            }
+        }
 
+        if (activeSubstanceIds.length > 0) {
+            const found = await prisma.activeSubstance.findMany({
+                where: { id: { in: activeSubstanceIds } },
+                select: { id: true }
+            });
+            if (found.length !== activeSubstanceIds.length) {
+                res.status(400).json({ error: 'One or more activeSubstanceIds are invalid' });
+                return;
+            }
+        }
+
+        if (excipientIds.length > 0) {
+            const found = await prisma.excipient.findMany({ where: { id: { in: excipientIds } }, select: { id: true } });
+            if (found.length !== excipientIds.length) {
+                res.status(400).json({ error: 'One or more excipientIds are invalid' });
+                return;
+            }
+        }
+
+        if (classificationIds.length > 0) {
+            const found = await prisma.classification.findMany({
+                where: { id: { in: classificationIds } },
+                select: { id: true }
+            });
+            if (found.length !== classificationIds.length) {
+                res.status(400).json({ error: 'One or more classificationIds are invalid' });
+                return;
+            }
+        }
+
+        const report = await prisma.$transaction(async (tx) => {
+            const upserted = await tx.patientAllergyReport.upsert({
+                where: { patientId },
+                create: {
+                    patientId,
+                    tradeNameId: payload.tradeNameId ?? null,
+                    reaction: payload.reaction ?? null,
+                    notes: payload.notes ?? null,
+                },
+                update: {
+                    tradeNameId: payload.tradeNameId ?? null,
+                    reaction: payload.reaction ?? null,
+                    notes: payload.notes ?? null,
+                },
+                select: { id: true },
+            });
+
+            await Promise.all([
+                tx.patientAllergy.deleteMany({ where: { patientAllergyReportId: upserted.id } }),
+                tx.activeSubstancePatientAllergy.deleteMany({ where: { patientAllergyReportId: upserted.id } }),
+                tx.excipientPatientAllergy.deleteMany({ where: { patientAllergyReportId: upserted.id } }),
+                tx.classificationPatientAllergy.deleteMany({ where: { patientAllergyReportId: upserted.id } }),
+            ]);
+
+            if (allergenIds.length > 0) {
+                await tx.patientAllergy.createMany({
+                    data: allergenIds.map((allergenId) => ({
+                        patientAllergyReportId: upserted.id,
+                        allergenId,
+                    })),
+                });
+            }
+
+            if (activeSubstanceIds.length > 0) {
+                await tx.activeSubstancePatientAllergy.createMany({
+                    data: activeSubstanceIds.map((activeSubstanceId) => ({
+                        patientAllergyReportId: upserted.id,
+                        activeSubstanceId,
+                    })),
+                });
+            }
+
+            if (excipientIds.length > 0) {
+                await tx.excipientPatientAllergy.createMany({
+                    data: excipientIds.map((excipientId) => ({
+                        patientAllergyReportId: upserted.id,
+                        excipientId,
+                    })),
+                });
+            }
+
+            if (classificationIds.length > 0) {
+                await tx.classificationPatientAllergy.createMany({
+                    data: classificationIds.map((classificationId) => ({
+                        patientAllergyReportId: upserted.id,
+                        classificationId,
+                    })),
+                });
+            }
+
+            return tx.patientAllergyReport.findUnique({
+                where: { id: upserted.id },
+                include: {
+                    tradeName: { select: { id: true, title: true } },
+                    patientAllergies: { select: { id: true, allergenId: true } },
+                    activeSubstancePatientAllergies: { select: { id: true, activeSubstanceId: true } },
+                    excipientPatientAllergies: { select: { id: true, excipientId: true } },
+                    classificationPatientAllergies: { select: { id: true, classificationId: true } },
+                },
+            });
+        });
+
+        if (!report) {
+            res.status(500).json({ error: 'Failed to save allergy report' });
+            return;
+        }
         res.status(201).json({
-            message: patientAllergies.length === 1 ? 'Allergy added successfully' : `${patientAllergies.length} allergies added successfully`,
-            count: patientAllergies.length,
-            allergies: patientAllergies,
+            message: 'Allergy report saved successfully',
+            report,
         });
     } catch (error: any) {
         if (error instanceof z.ZodError) {
             res.status(400).json({ error: error.issues });
-            return;
-        }
-        if (error?.code === 'P2002') {
-            res.status(400).json({
-                error: 'One or more of these allergies are already in your list. Each allergen, active substance, or trade name can only be added once per patient.',
-            });
             return;
         }
         next(error);

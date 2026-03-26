@@ -1,5 +1,4 @@
 import { computeBmi } from './bmi.util';
-import { patientAllergyInclude } from './allergyInclude.util';
 
 /**
  * Standard include for "full patient details" (profile, vitals, health status, visit files).
@@ -12,7 +11,7 @@ export const patientFullDetailsInclude = {
     familyHistories: { include: { disease: true } },
     patientDiseases: { include: { disease: true } },
     patientLifestyles: { include: { lifestyle: true } },
-    patientAllergies: { include: patientAllergyInclude },
+    allergyReports: true,
     surgicalHistories: { include: { organ: true } },
     visits: { orderBy: { visitDate: 'desc' as const } },
     medicalReports: { orderBy: { reportDate: 'desc' as const } }

@@ -27,7 +27,7 @@ class DrugInteractionAlertController {
                 prisma.patient.findUnique({ where: { id: patientId }, select: { id: true } }),
                 prisma.tradeName.findUnique({
                     where: { id: tradeNameId },
-                    select: { id: true, title: true, activeSubstance: { select: { activeSubstance: true } } }
+                    select: { id: true, title: true, activeSubstance: { select: { name: true } } }
                 })
             ]);
 
@@ -48,7 +48,7 @@ class DrugInteractionAlertController {
                 tradeName: {
                     id: tradeName.id,
                     title: tradeName.title,
-                    activeSubstanceName: tradeName.activeSubstance?.activeSubstance ?? null
+                    activeSubstanceName: tradeName.activeSubstance?.name ?? null
                 }
             });
         } catch (error) {

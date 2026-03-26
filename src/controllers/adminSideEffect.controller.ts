@@ -60,7 +60,7 @@ export const createSideEffect = async (req: Request, res: Response, next: NextFu
             where: { id: sideEffect.id },
             include: {
                 medicationSideEffects: {
-                    include: { activeSubstance: { select: { id: true, activeSubstance: true } } },
+                    include: { activeSubstance: { select: { id: true, name: true } } },
                 },
             },
         });
@@ -111,7 +111,7 @@ export const updateSideEffect = async (req: Request, res: Response, next: NextFu
             data: updateData,
             include: {
                 medicationSideEffects: {
-                    include: { activeSubstance: { select: { id: true, activeSubstance: true } } },
+                    include: { activeSubstance: { select: { id: true, name: true } } },
                 },
             },
         });
@@ -160,7 +160,7 @@ export const attachTradeNames = async (req: Request, res: Response, next: NextFu
             where: { id },
             include: {
                 medicationSideEffects: {
-                    include: { activeSubstance: { select: { id: true, activeSubstance: true } } },
+                    include: { activeSubstance: { select: { id: true, name: true } } },
                 },
             },
         });
@@ -214,7 +214,7 @@ export const listSideEffects = async (_req: Request, res: Response, next: NextFu
         const sideEffects = await prisma.sideEffect.findMany({
             include: {
                 medicationSideEffects: {
-                    include: { activeSubstance: { select: { id: true, activeSubstance: true } } },
+                    include: { activeSubstance: { select: { id: true, name: true } } },
                 },
             },
             orderBy: { name: 'asc' },
@@ -230,7 +230,7 @@ export const listSideEffects = async (_req: Request, res: Response, next: NextFu
                 createdAt: s.createdAt,
                 medications: s.medicationSideEffects.map((m) => ({
                     id: m.activeSubstance.id,
-                    name: m.activeSubstance.activeSubstance,
+                    name: m.activeSubstance.name,
                 })),
             })),
         });
@@ -245,7 +245,7 @@ export const listPendingSideEffects = async (_req: Request, res: Response, next:
             where: { status: SideEffectStatus.Pending, createdBy: SideEffectCreatedBy.Patient },
             include: {
                 medicationSideEffects: {
-                    include: { activeSubstance: { select: { id: true, activeSubstance: true } } },
+                    include: { activeSubstance: { select: { id: true, name: true } } },
                 },
             },
             orderBy: { createdAt: 'desc' },
@@ -262,7 +262,7 @@ export const listPendingSideEffects = async (_req: Request, res: Response, next:
                 createdAt: s.createdAt,
                 medications: s.medicationSideEffects.map((m) => ({
                     id: m.activeSubstance.id,
-                    name: m.activeSubstance.activeSubstance,
+                    name: m.activeSubstance.name,
                 })),
             })),
         });
@@ -295,7 +295,7 @@ export const approveSideEffect = async (req: Request, res: Response, next: NextF
             data: { status: SideEffectStatus.Approved },
             include: {
                 medicationSideEffects: {
-                    include: { activeSubstance: { select: { id: true, activeSubstance: true } } },
+                    include: { activeSubstance: { select: { id: true, name: true } } },
                 },
             },
         });

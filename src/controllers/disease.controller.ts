@@ -41,7 +41,7 @@ export const getDiseaseById = async (req: Request, res: Response, next: NextFunc
                 diseaseActiveSubstanceWarnings: {
                     include: {
                         activeSubstance: {
-                            select: { id: true, activeSubstance: true }
+                            select: { id: true, name: true }
                         }
                     }
                 },
@@ -172,7 +172,7 @@ export const createDiseaseWarning = async (req: Request, res: Response, next: Ne
             data: validatedData,
             include: {
                 disease: { select: { name: true } },
-                activeSubstance: { select: { activeSubstance: true } }
+                activeSubstance: { select: { name: true } }
             }
         });
 
@@ -202,7 +202,7 @@ export const getDiseaseWarnings = async (req: Request, res: Response, next: Next
             where: { diseaseId: parseInt(diseaseId) },
             include: {
                 activeSubstance: {
-                    select: { id: true, activeSubstance: true }
+                    select: { id: true, name: true }
                 }
             },
             orderBy: { severity: 'desc' }

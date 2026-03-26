@@ -13,7 +13,7 @@ export const createTradeName = async (req: Request, res: Response, next: NextFun
             data: validatedData as any,
             include: {
                 activeSubstance: {
-                    select: { activeSubstance: true }
+                    select: { name: true }
                 },
                 company: {
                     select: { name: true }
@@ -49,7 +49,7 @@ export const listTradeNames = async (req: Request, res: Response, next: NextFunc
         const [tradeNames, total] = await Promise.all([
             prisma.tradeName.findMany({
                 include: {
-                    activeSubstance: { select: { activeSubstance: true, id: true } },
+                    activeSubstance: { select: { name: true, id: true } },
                     company: { select: { name: true, id: true } }
                 },
                 orderBy: { title: 'asc' },
@@ -143,7 +143,14 @@ export const searchTradeNamesByImage = async (req: Request, res: Response, next:
                       },
                       take: 20,
                       include: {
-                          activeSubstance: { select: { id: true, activeSubstance: true, classification: true, dosageForm: true } },
+                          activeSubstance: {
+                              select: {
+                                  id: true,
+                                  name: true,
+                                  classificationId: true,
+                                  dosageForm: true
+                              }
+                          },
                           company: { select: { id: true, name: true } }
                       }
                   })
@@ -151,7 +158,7 @@ export const searchTradeNamesByImage = async (req: Request, res: Response, next:
             extracted.activeSubstance
                 ? prisma.activeSubstance.findMany({
                       where: {
-                          activeSubstance: { contains: extracted.activeSubstance, mode: 'insensitive' },
+                          name: { contains: extracted.activeSubstance, mode: 'insensitive' },
                           isActive: true
                       },
                       take: 10
@@ -164,7 +171,7 @@ export const searchTradeNamesByImage = async (req: Request, res: Response, next:
         if (tradeNames.length > 0 && extracted.activeSubstance) {
             const withMatchingSubstance = tradeNames.filter(
                 (t) =>
-                    t.activeSubstance.activeSubstance
+                    t.activeSubstance.name
                         .toLowerCase()
                         .includes(extracted.activeSubstance!.toLowerCase())
             );
@@ -216,7 +223,7 @@ export const searchTradeNames = async (req: Request, res: Response, next: NextFu
                 { title: { contains: query, mode: 'insensitive' } },
                 {
                     activeSubstance: {
-                        activeSubstance: { contains: query, mode: 'insensitive' }
+                        name: { contains: query, mode: 'insensitive' }
                     }
                 }
             ];
@@ -230,7 +237,7 @@ export const searchTradeNames = async (req: Request, res: Response, next: NextFu
         if ((classification !== undefined && classification !== '') || (dosageForm !== undefined && dosageForm !== '') || (concentration !== undefined && concentration !== '')) {
             whereClause.activeSubstance = whereClause.activeSubstance || {};
             if (classification !== undefined && classification !== '') {
-                whereClause.activeSubstance.classification = { contains: String(classification), mode: 'insensitive' };
+                whereClause.activeSubstance.classification = { is: { name: { contains: String(classification), mode: 'insensitive' } } };
             }
             if (dosageForm !== undefined && dosageForm !== '') {
                 whereClause.activeSubstance.dosageForm = { equals: String(dosageForm), mode: 'insensitive' };
@@ -263,7 +270,7 @@ export const searchTradeNames = async (req: Request, res: Response, next: NextFu
                 where: whereClause,
                 include: {
                     activeSubstance: {
-                        select: { id: true, activeSubstance: true, classification: true, dosageForm: true }
+                        select: { id: true, name: true, classificationId: true, dosageForm: true }
                     },
                     company: {
                         select: { id: true, name: true }

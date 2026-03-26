@@ -210,7 +210,7 @@ export const addPatientMedicineByImage = async (req: Request, res: Response, nex
                 extracted.activeSubstance
                     ? prisma.activeSubstance.findMany({
                           where: {
-                              activeSubstance: { contains: extracted!.activeSubstance, mode: 'insensitive' },
+                              name: { contains: extracted!.activeSubstance, mode: 'insensitive' },
                               isActive: true,
                           },
                           take: 5,
@@ -221,7 +221,7 @@ export const addPatientMedicineByImage = async (req: Request, res: Response, nex
             if (tradeNames.length > 0) {
                 const chosen =
                     tradeNames.find((t) =>
-                        t.activeSubstance.activeSubstance
+                        t.activeSubstance.name
                             .toLowerCase()
                             .includes((extracted!.activeSubstance || '').toLowerCase())
                     ) ?? tradeNames[0];
@@ -298,17 +298,16 @@ export const addPatientMedicineByImage = async (req: Request, res: Response, nex
                 ? {
                       id: medicine.tradeName.id,
                       title: medicine.tradeName.title,
-                      batchNumber: medicine.tradeName.batchNumber,
                       barCode: medicine.tradeName.barCode,
                       warningNotification: medicine.tradeName.warningNotification,
                       availabilityStatus: medicine.tradeName.availabilityStatus,
                       activeSubstance: medicine.tradeName.activeSubstance
                           ? {
                                 id: medicine.tradeName.activeSubstance.id,
-                                activeSubstance: medicine.tradeName.activeSubstance.activeSubstance,
+                                activeSubstance: medicine.tradeName.activeSubstance.name,
                                 concentration: medicine.tradeName.activeSubstance.concentration,
                                 dosageForm: medicine.tradeName.activeSubstance.dosageForm,
-                                classification: medicine.tradeName.activeSubstance.classification,
+                                classificationId: medicine.tradeName.activeSubstance.classificationId,
                                 indication: medicine.tradeName.activeSubstance.indication,
                             }
                           : null,
@@ -321,10 +320,10 @@ export const addPatientMedicineByImage = async (req: Request, res: Response, nex
                 medicine.activeSubstance && !medicine.tradeName
                     ? {
                           id: medicine.activeSubstance.id,
-                          activeSubstance: medicine.activeSubstance.activeSubstance,
+                          activeSubstance: medicine.activeSubstance.name,
                           concentration: medicine.activeSubstance.concentration,
                           dosageForm: medicine.activeSubstance.dosageForm,
-                          classification: medicine.activeSubstance.classification,
+                          classificationId: medicine.activeSubstance.classificationId,
                           indication: medicine.activeSubstance.indication,
                       }
                     : null,

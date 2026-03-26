@@ -18,7 +18,7 @@ export const listAddMedicineRequests = async (req: Request, res: Response, next:
                     patient: { select: { id: true, user: { select: { name: true, email: true } } } },
                     patientMedicine: { select: { id: true, medicineName: true, imageUrl: true } },
                     matchedTradeName: { select: { id: true, title: true } },
-                    matchedActiveSubstance: { select: { id: true, activeSubstance: true } },
+                    matchedActiveSubstance: { select: { id: true, name: true } },
                 },
                 skip: (Number(page) - 1) * Number(limit),
                 take: Number(limit),

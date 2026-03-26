@@ -159,12 +159,33 @@ async function main() {
   // SECTION 2: ACTIVE SUBSTANCES
   // ============================================
   console.log("\n💊 Creating active substances...");
+  const classificationNames = [
+    "Analgesic/Antipyretic",
+    "NSAID",
+    "Antibiotic (Penicillin)",
+    "Antidiabetic (Biguanide)",
+    "Calcium Channel Blocker",
+    "Proton Pump Inhibitor",
+    "Statin",
+    "Beta-2 Agonist",
+    "Antihistamine",
+    "ARB (Angiotensin Receptor Blocker)",
+  ];
+  await prisma.classification.createMany({
+    data: classificationNames.map((name) => ({ name })),
+    skipDuplicates: true,
+  });
+  const classifications = await prisma.classification.findMany({
+    where: { name: { in: classificationNames } },
+    select: { id: true, name: true },
+  });
+  const classificationByName = new Map(classifications.map((c) => [c.name, c.id]));
   const activeSubstances = await Promise.all([
     prisma.activeSubstance.create({
       data: {
-        activeSubstance: "Paracetamol",
+        name: "Paracetamol",
         concentration: "500mg",
-        classification: "Analgesic/Antipyretic",
+        classificationId: classificationByName.get("Analgesic/Antipyretic"),
         dosageForm: "Tablet",
         indication: "Pain relief and fever reduction",
         adultDoseMaxPerDay: "4000mg",
@@ -175,9 +196,9 @@ async function main() {
     }),
     prisma.activeSubstance.create({
       data: {
-        activeSubstance: "Ibuprofen",
+        name: "Ibuprofen",
         concentration: "400mg",
-        classification: "NSAID",
+        classificationId: classificationByName.get("NSAID"),
         dosageForm: "Tablet",
         indication: "Pain, inflammation, and fever",
         adultDoseMaxPerDay: "2400mg",
@@ -188,9 +209,9 @@ async function main() {
     }),
     prisma.activeSubstance.create({
       data: {
-        activeSubstance: "Amoxicillin",
+        name: "Amoxicillin",
         concentration: "500mg",
-        classification: "Antibiotic (Penicillin)",
+        classificationId: classificationByName.get("Antibiotic (Penicillin)"),
         dosageForm: "Capsule",
         indication: "Bacterial infections",
         adultDoseMaxPerDay: "3000mg",
@@ -200,9 +221,9 @@ async function main() {
     }),
     prisma.activeSubstance.create({
       data: {
-        activeSubstance: "Metformin",
+        name: "Metformin",
         concentration: "500mg",
-        classification: "Antidiabetic (Biguanide)",
+        classificationId: classificationByName.get("Antidiabetic (Biguanide)"),
         dosageForm: "Tablet",
         indication: "Type 2 Diabetes Mellitus",
         adultDoseMaxPerDay: "2550mg",
@@ -212,9 +233,9 @@ async function main() {
     }),
     prisma.activeSubstance.create({
       data: {
-        activeSubstance: "Amlodipine",
+        name: "Amlodipine",
         concentration: "5mg",
-        classification: "Calcium Channel Blocker",
+        classificationId: classificationByName.get("Calcium Channel Blocker"),
         dosageForm: "Tablet",
         indication: "Hypertension, Angina",
         adultDoseMaxPerDay: "10mg",
@@ -223,9 +244,9 @@ async function main() {
     }),
     prisma.activeSubstance.create({
       data: {
-        activeSubstance: "Omeprazole",
+        name: "Omeprazole",
         concentration: "20mg",
-        classification: "Proton Pump Inhibitor",
+        classificationId: classificationByName.get("Proton Pump Inhibitor"),
         dosageForm: "Capsule",
         indication: "GERD, Peptic ulcer",
         adultDoseMaxPerDay: "40mg",
@@ -234,9 +255,9 @@ async function main() {
     }),
     prisma.activeSubstance.create({
       data: {
-        activeSubstance: "Atorvastatin",
+        name: "Atorvastatin",
         concentration: "20mg",
-        classification: "Statin",
+        classificationId: classificationByName.get("Statin"),
         dosageForm: "Tablet",
         indication: "Hyperlipidemia",
         adultDoseMaxPerDay: "80mg",
@@ -246,10 +267,10 @@ async function main() {
     }),
     prisma.activeSubstance.create({
       data: {
-        activeSubstance: "Salbutamol",
+        name: "Salbutamol",
         concentration: "100mcg",
         dosageForm: "Inhaler",
-        classification: "Beta-2 Agonist",
+        classificationId: classificationByName.get("Beta-2 Agonist"),
         indication: "Asthma, COPD",
         adultDoseMaxPerDay: "800mcg",
         cardiacWarning: "Use with caution in cardiac disease",
@@ -257,9 +278,9 @@ async function main() {
     }),
     prisma.activeSubstance.create({
       data: {
-        activeSubstance: "Cetirizine",
+        name: "Cetirizine",
         concentration: "10mg",
-        classification: "Antihistamine",
+        classificationId: classificationByName.get("Antihistamine"),
         dosageForm: "Tablet",
         indication: "Allergic rhinitis, Urticaria",
         adultDoseMaxPerDay: "10mg",
@@ -268,9 +289,9 @@ async function main() {
     }),
     prisma.activeSubstance.create({
       data: {
-        activeSubstance: "Losartan",
+        name: "Losartan",
         concentration: "50mg",
-        classification: "ARB (Angiotensin Receptor Blocker)",
+        classificationId: classificationByName.get("ARB (Angiotensin Receptor Blocker)"),
         dosageForm: "Tablet",
         indication: "Hypertension, Heart failure",
         adultDoseMaxPerDay: "100mg",
@@ -292,7 +313,6 @@ async function main() {
         activeSubstanceId: activeSubstances[0].id,
         companyId: companies[2].id, // GSK
         availabilityStatus: "InStock",
-        stockQuantity: 5000,
       },
     }),
     prisma.tradeName.create({
@@ -301,7 +321,6 @@ async function main() {
         activeSubstanceId: activeSubstances[1].id,
         companyId: companies[0].id, // Pfizer
         availabilityStatus: "InStock",
-        stockQuantity: 3000,
       },
     }),
     prisma.tradeName.create({
@@ -310,7 +329,6 @@ async function main() {
         activeSubstanceId: activeSubstances[2].id,
         companyId: companies[2].id, // GSK
         availabilityStatus: "InStock",
-        stockQuantity: 2000,
       },
     }),
     prisma.tradeName.create({
@@ -319,7 +337,6 @@ async function main() {
         activeSubstanceId: activeSubstances[3].id,
         companyId: companies[3].id, // Sanofi
         availabilityStatus: "InStock",
-        stockQuantity: 4000,
       },
     }),
     prisma.tradeName.create({
@@ -328,7 +345,6 @@ async function main() {
         activeSubstanceId: activeSubstances[4].id,
         companyId: companies[0].id, // Pfizer
         availabilityStatus: "InStock",
-        stockQuantity: 3500,
       },
     }),
     prisma.tradeName.create({
@@ -337,7 +353,6 @@ async function main() {
         activeSubstanceId: activeSubstances[5].id,
         companyId: companies[1].id, // Novartis
         availabilityStatus: "InStock",
-        stockQuantity: 2500,
       },
     }),
     prisma.tradeName.create({
@@ -346,7 +361,6 @@ async function main() {
         activeSubstanceId: activeSubstances[6].id,
         companyId: companies[0].id, // Pfizer
         availabilityStatus: "InStock",
-        stockQuantity: 4500,
       },
     }),
     prisma.tradeName.create({
@@ -355,7 +369,6 @@ async function main() {
         activeSubstanceId: activeSubstances[7].id,
         companyId: companies[2].id, // GSK
         availabilityStatus: "InStock",
-        stockQuantity: 1500,
       },
     }),
     prisma.tradeName.create({
@@ -364,7 +377,6 @@ async function main() {
         activeSubstanceId: activeSubstances[8].id,
         companyId: companies[1].id, // Novartis
         availabilityStatus: "InStock",
-        stockQuantity: 3000,
       },
     }),
     prisma.tradeName.create({
@@ -373,11 +385,68 @@ async function main() {
         activeSubstanceId: activeSubstances[9].id,
         companyId: companies[0].id, // Pfizer
         availabilityStatus: "InStock",
-        stockQuantity: 2800,
       },
     }),
   ]);
   console.log(`✅ Created ${tradeNames.length} trade names`);
+
+  // ============================================
+  // SECTION 3.1: EXCIPIENTS
+  // ============================================
+  console.log("\n🧪 Creating excipients...");
+  const excipients = await Promise.all([
+    prisma.excipient.create({
+      data: {
+        name: "Lactose Monohydrate",
+        description: "Common tablet filler/diluent in oral solid dosage forms",
+      },
+    }),
+    prisma.excipient.create({
+      data: {
+        name: "Microcrystalline Cellulose",
+        description: "Binder and filler used in compressed tablets",
+      },
+    }),
+    prisma.excipient.create({
+      data: {
+        name: "Magnesium Stearate",
+        description: "Lubricant used to prevent ingredients from sticking during manufacturing",
+      },
+    }),
+    prisma.excipient.create({
+      data: {
+        name: "Sodium Benzoate",
+        description: "Preservative in liquid and oral formulations",
+      },
+    }),
+    prisma.excipient.create({
+      data: {
+        name: "Propylene Glycol",
+        description: "Solvent/humectant used in liquid dosage forms",
+      },
+    }),
+    prisma.excipient.create({
+      data: {
+        name: "Polysorbate 80",
+        description: "Emulsifier to stabilize suspensions and injections",
+      },
+    }),
+  ]);
+  console.log(`✅ Created ${excipients.length} excipients`);
+
+  await prisma.excipientTradeName.createMany({
+    data: [
+      { tradeNameId: tradeNames[0].id, excipientId: excipients[0].id }, // Panadol -> Lactose
+      { tradeNameId: tradeNames[0].id, excipientId: excipients[2].id }, // Panadol -> Magnesium Stearate
+      { tradeNameId: tradeNames[1].id, excipientId: excipients[1].id }, // Brufen -> MCC
+      { tradeNameId: tradeNames[2].id, excipientId: excipients[2].id }, // Amoxil -> Magnesium Stearate
+      { tradeNameId: tradeNames[3].id, excipientId: excipients[4].id }, // Glucophage -> Propylene Glycol
+      { tradeNameId: tradeNames[7].id, excipientId: excipients[5].id }, // Ventolin -> Polysorbate 80
+      { tradeNameId: tradeNames[9].id, excipientId: excipients[3].id }, // Cozaar -> Sodium Benzoate
+    ],
+    skipDuplicates: true,
+  });
+  console.log("✅ Linked excipients to trade names");
 
   // ============================================
   // SECTION 4: DISEASES
@@ -1393,19 +1462,31 @@ async function main() {
   await prisma.allergen.create({                                       data: { name: "Preservatives Products", allergenType: "Other", allergenCategoryId: catMedication.id } });
   console.log("✅ Created allergen catalog");
 
-  // Patient allergies (many-to-many: patient links to catalog)
-  await prisma.patientAllergy.createMany({
-    data: [
-      { patientId: patients[0].id, allergenId: allergenPenicillin.id,    reaction: "Anaphylaxis",       notes: "Avoid all penicillin derivatives. Use alternative antibiotics." },
-      { patientId: patients[0].id, allergenId: allergenIron.id,          reaction: "Rash",              notes: "Skin rash with iron supplements" },
-      { patientId: patients[1].id, allergenId: allergenPollen.id,        reaction: "Rhinitis",          notes: "Seasonal, spring and fall" },
-      { patientId: patients[2].id, allergenId: allergenMarineProducts.id, reaction: "Urticaria",        notes: "Hives and swelling" },
-      { patientId: patients[2].id, allergenId: allergenWheat.id,         reaction: "Rhinitis" },
-      { patientId: patients[3].id, allergenId: allergenSoybeans.id,      reaction: "Contact dermatitis" },
-      { patientId: patients[4].id, allergenId: allergenPeanuts.id,       reaction: "Anaphylaxis",       notes: "Life-threatening, carry epinephrine" },
-      { patientId: patients[4].id, allergenId: allergenEggs.id,          reaction: "Rash",              notes: "Hives appear within 30 minutes" },
-    ],
-  });
+  // Patient allergies (new model: PatientAllergyReport + PatientAllergy joins)
+  const patientAllergySeed = [
+    { patientId: patients[0].id, allergenIds: [allergenPenicillin.id, allergenIron.id], reaction: "Anaphylaxis", notes: "Avoid all penicillin derivatives. Use alternative antibiotics." },
+    { patientId: patients[1].id, allergenIds: [allergenPollen.id], reaction: "Rhinitis", notes: "Seasonal, spring and fall" },
+    { patientId: patients[2].id, allergenIds: [allergenMarineProducts.id, allergenWheat.id], reaction: "Urticaria", notes: "Hives and swelling" },
+    { patientId: patients[3].id, allergenIds: [allergenSoybeans.id], reaction: "Contact dermatitis" },
+    { patientId: patients[4].id, allergenIds: [allergenPeanuts.id, allergenEggs.id], reaction: "Anaphylaxis", notes: "Life-threatening, carry epinephrine" },
+  ];
+
+  for (const entry of patientAllergySeed) {
+    const report = await prisma.patientAllergyReport.create({
+      data: {
+        patientId: entry.patientId,
+        reaction: entry.reaction,
+        notes: entry.notes,
+      },
+    });
+
+    await prisma.patientAllergy.createMany({
+      data: entry.allergenIds.map((allergenId) => ({
+        patientAllergyReportId: report.id,
+        allergenId,
+      })),
+    });
+  }
   console.log("✅ Created patient allergies");
 
   // Patient Diseases - Comprehensive
@@ -3348,8 +3429,8 @@ async function main() {
         ruleType: "BLOCK_ACTIVE_SUBSTANCE",
         targetActiveSubstanceId: activeSubstances.find(
           (a) =>
-            a.activeSubstance.includes("MMR") ||
-            a.activeSubstance.includes("Vaccine")
+            a.name.includes("MMR") ||
+            a.name.includes("Vaccine")
         )?.id,
         severity: "Critical",
         warningMessage:
@@ -3369,8 +3450,8 @@ async function main() {
         ruleType: "WARN_ACTIVE_SUBSTANCE",
         targetActiveSubstanceId: activeSubstances.find(
           (a) =>
-            a.activeSubstance.includes("Ibuprofen") ||
-            a.activeSubstance.includes("NSAID")
+            a.name.includes("Ibuprofen") ||
+            a.name.includes("NSAID")
         )?.id,
         severity: "High",
         warningMessage:

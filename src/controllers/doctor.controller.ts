@@ -10,7 +10,6 @@ import {
     updateDoctorClinicSchema
 } from '../zod/doctor.zod';
 import { computeBmi } from '../utils/bmi.util';
-import { patientAllergyInclude } from '../utils/allergyInclude.util';
 import { haversineDistanceKm } from '../utils/geo.util';
 import { patientFullDetailsInclude, mapPatientToFullDetailsPayload } from '../utils/patientFullDetails.util';
 import { getNearbyDoctorsRadiusKm } from './settings.controller';
@@ -761,7 +760,7 @@ export const searchDoctorPatientsByName = async (req: Request, res: Response, ne
                 patient: {
                     include: {
                         user: { select: { name: true, email: true, phone: true } },
-                        patientAllergies: { include: patientAllergyInclude },
+                        allergyReports: true,
                         patientDiseases: { include: { disease: true } }
                     }
                 }
@@ -901,7 +900,7 @@ export const getDoctorPatients = async (req: Request, res: Response, next: NextF
                 patient: {
                     include: {
                         user: { select: { name: true, email: true, phone: true } },
-                        patientAllergies: { include: patientAllergyInclude },
+                        allergyReports: true,
                         patientDiseases: {
                             include: {
                                 disease: true

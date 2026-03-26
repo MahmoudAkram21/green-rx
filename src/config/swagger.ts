@@ -223,8 +223,8 @@ s('/patient-doctors/{id}/end', 'post', [PATIENT_TAGS.SHARE_WITH_DOCTOR, DOCTOR_T
 s('/allergies/patient/{patientId}', 'get', [PATIENT_TAGS.ALLERGIES, DOCTOR_PATIENTS_SECTION], 'Get all allergies for a patient (PatientAllergy with allergen name)', true, [p('patientId')]);
 s('/allergies/patient/{patientId}/critical', 'get', [PATIENT_TAGS.ALLERGIES, DOCTOR_PATIENTS_SECTION], 'Get critical allergies for a patient', true, [p('patientId')]);
 s('/allergies/check/{patientId}/{medicineId}', 'get', [PATIENT_TAGS.ALLERGIES, DOCTOR_PATIENTS_SECTION], 'Check if medicine conflicts with patient allergies', true, [p('patientId'), p('medicineId')]);
-s('/patients/{patientId}/allergies', 'post', PATIENT_TAGS.ALLERGIES, 'Add allergies to patient. Body: single object or array. Each item must include exactly one of: allergenId (catalog, from GET /allergens or GET /allergen-categories/:id/allergens), activeSubstanceId (Medication, from GET /active-substances/search), or tradeNameId (Medication, from GET /trade-names/search). Optional: reaction, notes.', true, [p('patientId')], { schemaRef: 'BatchPatientAllergyRequest' });
-s('/patients/{patientId}/allergies/batch', 'post', PATIENT_TAGS.ALLERGIES, 'Add multiple allergies (same as POST .../allergies with array body)', true, [p('patientId')], { schemaRef: 'BatchPatientAllergyRequest' });
+s('/patients/{patientId}/allergies', 'post', PATIENT_TAGS.ALLERGIES, 'Create or replace the patient allergy report. Body supports optional tradeNameId plus arrays: allergenIds, activeSubstanceIds, excipientIds, classificationIds. At least one of these must be provided. Optional: reaction, notes.', true, [p('patientId')], { schemaRef: 'PatientAllergyReportRequest' });
+s('/patients/{patientId}/allergies/batch', 'post', PATIENT_TAGS.ALLERGIES, 'Alias of POST /patients/{patientId}/allergies (same request body).', true, [p('patientId')], { schemaRef: 'PatientAllergyReportRequest' });
 s('/patients/allergies/{allergyId}', 'delete', PATIENT_TAGS.ALLERGIES, 'Remove allergy from patient (PatientAllergy id)', true, [p('allergyId')]);
 
 // ALLERGEN CATEGORIES (catalog — GET for patient/doctor dropdown; Admin CRUD)
@@ -243,6 +243,20 @@ s('/allergens/{id}', 'get', [PATIENT_TAGS.ALLERGIES, ADMIN_TAG], 'Get allergen b
 s('/allergens', 'post', ADMIN_TAG, 'Create an allergen (Admin). Required: name, allergenCategoryId. Optional: allergenType.', true, [], { schemaRef: 'CreateAllergenRequest' }, { '200': 'Success', '201': 'Created' });
 s('/allergens/{id}', 'put', ADMIN_TAG, 'Update an allergen (Admin)', true, [p('id')], { schemaRef: 'UpdateAllergenRequest' });
 s('/allergens/{id}', 'delete', ADMIN_TAG, 'Delete an allergen (Admin)', true, [p('id')], undefined, { '200': 'Success', '204': 'No Content' });
+
+// EXCIPIENTS (catalog — patients read active items; admin full CRUD)
+s('/excipients', 'get', [PATIENT_TAGS.ALLERGIES, ADMIN_TAG], 'List excipients. Patient/default: active only. Admin can use ?scope=admin&includeInactive=true.', true, [
+  q('search', 'Optional text search by excipient name'),
+  q('scope', 'Optional: set to "admin" to include admin view behavior'),
+  q('includeInactive', 'Optional (admin scope): true to include inactive entries')
+]);
+s('/excipients/search', 'get', PATIENT_TAGS.ALLERGIES, 'Patient search endpoint for active excipients by text. Requires ?q=...', true, [
+  q('q', 'Required search text')
+]);
+s('/excipients/{id}', 'get', [PATIENT_TAGS.ALLERGIES, ADMIN_TAG], 'Get excipient by ID. Patient/default returns only active records; admin can use ?scope=admin.', true, [p('id'), q('scope', 'Optional: set to "admin"')]);
+s('/excipients', 'post', ADMIN_TAG, 'Create excipient (Admin)', true, [], { schemaRef: 'CreateExcipientRequest' }, { '200': 'Success', '201': 'Created' });
+s('/excipients/{id}', 'put', ADMIN_TAG, 'Update excipient (Admin)', true, [p('id')], { schemaRef: 'UpdateExcipientRequest' });
+s('/excipients/{id}', 'delete', ADMIN_TAG, 'Soft-delete excipient by setting isActive=false (Admin)', true, [p('id')], undefined, { '200': 'Success', '204': 'No Content' });
 
 // PATIENT DISEASES (Current diseases)
 s('/patient-diseases/patient/{patientId}', 'get', [PATIENT_TAGS.CURRENT_DISEASES, DOCTOR_PATIENTS_SECTION], 'Get diseases for a patient', true, [p('patientId')]);
@@ -481,7 +495,7 @@ s('/my-side-effects', 'get', [PATIENT_TAGS.SIDE_EFFECTS, DOCTOR_PATIENTS_SECTION
 s('/my-side-effects/by-medication/{medicationId}', 'get', [PATIENT_TAGS.SIDE_EFFECTS, DOCTOR_PATIENTS_SECTION], 'Get side effects reported by the patient for a specific medication', true, [p('medicationId')]);
 
 // IMPORT
-s('/import/active-substances', 'post', ADMIN_TAG, 'Import active substances from Excel/CSV file');
+s('/import/active-substances', 'post', ADMIN_TAG, 'Import active substances from Excel/CSV file. Uses fixed column indexes (not header titles). Column 180 (Trade Name) is parsed as comma-separated values and each value is inserted into TradeName linked to the created active substance.');
 s('/import/{entityType}', 'post', ADMIN_TAG, 'Generic entity import', true, [ps('entityType')]);
 s('/import/history', 'get', ADMIN_TAG, 'Get import history');
 
@@ -548,6 +562,58 @@ if (paths['/trade-names/search-by-image']?.post) {
               description: 'Present when no trade name matched but active substance did'
             },
             message: { type: 'string', description: 'Present when extraction failed or returned nothing' }
+          }
+        }
+      }
+    }
+  };
+}
+
+// POST /import/active-substances: multipart with file field "file"
+if (paths['/import/active-substances']?.post) {
+  paths['/import/active-substances'].post.requestBody = {
+    required: true,
+    content: {
+      'multipart/form-data': {
+        schema: {
+          type: 'object',
+          required: ['file'],
+          properties: {
+            file: {
+              type: 'string',
+              format: 'binary',
+              description: 'Required. Excel/CSV file. Import uses fixed column indexes; headers are ignored.'
+            }
+          }
+        }
+      }
+    }
+  };
+
+  paths['/import/active-substances'].post.responses['200'] = {
+    description: 'Import completed. Creates ActiveSubstance rows and TradeName rows from column 180 (comma-separated).',
+    content: {
+      'application/json': {
+        schema: {
+          type: 'object',
+          properties: {
+            message: { type: 'string', example: 'Import completed' },
+            total: { type: 'integer' },
+            successful: { type: 'integer' },
+            created: { type: 'integer' },
+            updated: { type: 'integer' },
+            failed: { type: 'integer' },
+            errors: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  row: { type: 'integer' },
+                  data: { type: 'string' },
+                  error: { type: 'string' }
+                }
+              }
+            }
           }
         }
       }
@@ -796,7 +862,9 @@ const options: Record<string, unknown> = {
             pregnancyWarning: { type: 'boolean', default: false, description: 'Optional.' },
             pregnancyStatus:  { type: 'boolean', description: 'Optional.' },
             trimester:        { type: 'integer', minimum: 1, maximum: 3, description: 'Optional. 1–3.' },
-            lactation:        { type: 'boolean', default: false, description: 'Optional.' }
+            lactation:        { type: 'boolean', default: false, description: 'Optional.' },
+            contracipient:    { type: 'boolean', description: 'Optional. Female only.' },
+            isContracipientHormonal: { type: 'boolean', description: 'Optional. Female only.' },
           }
         },
         // ── User
@@ -1028,79 +1096,77 @@ const options: Record<string, unknown> = {
             allergenCategoryId: { type: 'integer', description: 'Optional. Move allergen to a different category.' }
           }
         },
-        // ── Patient allergies
-        PatientAllergyRequest: {
-          description: 'Add one allergy to a patient. Exactly one of allergenId, activeSubstanceId, or tradeNameId must be provided. For Medication category: use activeSubstanceId (from GET /active-substances/search) or tradeNameId (from GET /trade-names/search). For all other categories: use allergenId (from GET /allergens or GET /allergen-categories/:id/allergens). Optional: reaction, notes.',
+        // ── Excipients (catalog)
+        Excipient: {
+          description: 'Excipient catalog entry used in allergy reports and trade-name composition.',
           type: 'object',
           properties: {
-            allergenId:        { type: 'integer', description: 'Catalog allergen ID (from GET /allergens). Use for Food, Respiratory, Skin, Insect Stings, or Medication catalog entries.' },
-            activeSubstanceId: { type: 'integer', description: 'Active substance ID (from GET /active-substances/search). Use for Medication allergy by active substance.' },
-            tradeNameId:       { type: 'integer', description: 'Trade name ID (from GET /trade-names/search). Use for Medication allergy by trade name.' },
-            reaction:          { type: 'string', description: 'Optional. Observed allergic reaction.' },
-            notes:             { type: 'string', description: 'Optional. Additional notes.' }
+            id:          { type: 'integer' },
+            name:        { type: 'string' },
+            description: { type: 'string', nullable: true },
+            isActive:    { type: 'boolean' },
+            createdAt:   { type: 'string', format: 'date-time' },
+            updatedAt:   { type: 'string', format: 'date-time' }
           }
         },
-        BatchPatientAllergyRequest: {
-          description: 'Accept either a single allergy object or an array of allergy objects. Single object: { allergenId | activeSubstanceId | tradeNameId, reaction?, notes? }. Array: [ { ... }, { ... } ]. Each item must have exactly one of allergenId, activeSubstanceId, or tradeNameId.',
-          type: 'array',
-          minItems: 1,
-          items: { $ref: '#/components/schemas/PatientAllergyRequest' },
-          example: [
-            { allergenId: 1, reaction: 'Rash', notes: 'Mild' },
-            { activeSubstanceId: 5, reaction: 'Nausea' }
-          ]
+        CreateExcipientRequest: {
+          description: 'Create excipient (Admin).',
+          type: 'object',
+          required: ['name'],
+          properties: {
+            name:        { type: 'string' },
+            description: { type: 'string', nullable: true },
+            isActive:    { type: 'boolean', default: true }
+          }
         },
-        PatientAllergyResponse: {
-          description: 'A patient allergy entry. Exactly one of allergen, activeSubstance, or tradeName will be populated depending on how the allergy was recorded.',
+        UpdateExcipientRequest: {
+          description: 'Update excipient (Admin). All fields optional.',
+          type: 'object',
+          properties: {
+            name:        { type: 'string' },
+            description: { type: 'string', nullable: true },
+            isActive:    { type: 'boolean' }
+          }
+        },
+        // ── Patient allergies (report + relation tables)
+        PatientAllergyReportRequest: {
+          description: 'Create/replace a patient allergy report. Provide any combination of tradeNameId, allergenIds, activeSubstanceIds, excipientIds, classificationIds. At least one source must be provided.',
+          type: 'object',
+          properties: {
+            tradeNameId:       { type: 'integer', description: 'Optional trade name ID from GET /trade-names/search.' },
+            allergenIds:       { type: 'array', items: { type: 'integer' }, description: 'Optional catalog allergen IDs from GET /allergens.' },
+            activeSubstanceIds:{ type: 'array', items: { type: 'integer' }, description: 'Optional active substance IDs from GET /active-substances/search.' },
+            excipientIds:      { type: 'array', items: { type: 'integer' }, description: 'Optional excipient IDs.' },
+            classificationIds: { type: 'array', items: { type: 'integer' }, description: 'Optional classification IDs.' },
+            reaction:          { type: 'string', nullable: true },
+            notes:             { type: 'string', nullable: true }
+          },
+          example: {
+            tradeNameId: 17,
+            allergenIds: [2, 5],
+            activeSubstanceIds: [12],
+            excipientIds: [4],
+            classificationIds: [3],
+            reaction: 'Rash',
+            notes: 'Observed after repeated use'
+          }
+        },
+        PatientAllergyReportResponse: {
+          description: 'Patient allergy report with related allergy links.',
           type: 'object',
           properties: {
             id:                { type: 'integer' },
             patientId:         { type: 'integer' },
-            allergenId:        { type: 'integer', nullable: true },
-            activeSubstanceId: { type: 'integer', nullable: true },
             tradeNameId:       { type: 'integer', nullable: true },
             reaction:          { type: 'string', nullable: true },
             notes:             { type: 'string', nullable: true },
             createdAt:         { type: 'string', format: 'date-time' },
             updatedAt:         { type: 'string', format: 'date-time' },
-            allergen: {
-              nullable: true,
-              type: 'object',
-              description: 'Populated when allergenId is set.',
-              properties: {
-                id:   { type: 'integer' },
-                name: { type: 'string' },
-                allergenCategory: {
-                  type: 'object', nullable: true,
-                  properties: { id: { type: 'integer' }, name: { type: 'object', description: '{ en, ar }' } }
-                }
-              }
-            },
-            activeSubstance: {
-              nullable: true,
-              type: 'object',
-              description: 'Populated when activeSubstanceId is set.',
-              properties: {
-                id:             { type: 'integer' },
-                activeSubstance: { type: 'string' },
-                concentration:  { type: 'string', nullable: true },
-                classification: { type: 'string', nullable: true }
-              }
-            },
-            tradeName: {
-              nullable: true,
-              type: 'object',
-              description: 'Populated when tradeNameId is set.',
-              properties: {
-                id:    { type: 'integer' },
-                title: { type: 'string' },
-                activeSubstanceId: { type: 'integer' },
-                activeSubstance: {
-                  type: 'object', nullable: true,
-                  properties: { id: { type: 'integer' }, activeSubstance: { type: 'string' } }
-                }
-              }
-            }
+            tradeName: { nullable: true, type: 'object', properties: { id: { type: 'integer' }, title: { type: 'string' } } },
+            patientAllergies: { type: 'array', items: { type: 'object', properties: { id: { type: 'integer' }, allergenId: { type: 'integer' } } } },
+            activeSubstancePatientAllergies: { type: 'array', items: { type: 'object', properties: { id: { type: 'integer' }, activeSubstanceId: { type: 'integer' } } } },
+            excipientPatientAllergies: { type: 'array', items: { type: 'object', properties: { id: { type: 'integer' }, excipientId: { type: 'integer' } } } },
+            classificationPatientAllergies: { type: 'array', items: { type: 'object', properties: { id: { type: 'integer' }, classificationId: { type: 'integer' } } } }
           }
         },
         // ── Patient diseases
@@ -1182,7 +1248,6 @@ const options: Record<string, unknown> = {
               properties: {
                 id: { type: 'integer' },
                 title: { type: 'string' },
-                batchNumber: { type: 'string', nullable: true },
                 barCode: { type: 'string', nullable: true },
                 warningNotification: { type: 'string', nullable: true },
                 availabilityStatus: { type: 'string' },
@@ -1411,8 +1476,8 @@ const options: Record<string, unknown> = {
         CreateActiveSubstanceRequest: { type: 'object', required: ['activeSubstance'], properties: { activeSubstance: { type: 'string' }, concentration: { type: 'string' }, classification: { type: 'string' }, dosageForm: { type: 'string' }, indication: { type: 'string' }, pregnancyWarning: { type: 'string' }, lactationWarning: { type: 'string' }, contraindications: {}, isActive: { type: 'boolean' } } },
         UpdateActiveSubstanceRequest: { type: 'object', properties: { activeSubstance: { type: 'string' }, concentration: { type: 'string' }, classification: { type: 'string' }, isActive: { type: 'boolean' } } },
         // ── Trade names
-        CreateTradeNameRequest: { type: 'object', required: ['title', 'activeSubstanceId', 'companyId'], properties: { title: { type: 'string' }, activeSubstanceId: { type: 'integer' }, companyId: { type: 'integer' }, batchNumber: { type: 'string' }, barCode: { type: 'string' }, warningNotification: { type: 'string' }, availabilityStatus: { type: 'string', enum: ['InStock', 'OutOfStock', 'Discontinued', 'Pending'] }, stockQuantity: { type: 'integer' }, expiryDate: { type: 'string', format: 'date-time' } } },
-        UpdateTradeNameRequest: { type: 'object', properties: { title: { type: 'string' }, activeSubstanceId: { type: 'integer' }, companyId: { type: 'integer' }, availabilityStatus: { type: 'string' }, stockQuantity: { type: 'integer' } } },
+        CreateTradeNameRequest: { type: 'object', required: ['title', 'activeSubstanceId', 'companyId'], properties: { title: { type: 'string' }, activeSubstanceId: { type: 'integer' }, companyId: { type: 'integer' }, barCode: { type: 'string' }, warningNotification: { type: 'string' }, availabilityStatus: { type: 'string', enum: ['InStock', 'OutOfStock', 'Discontinued', 'Pending'] } } },
+        UpdateTradeNameRequest: { type: 'object', properties: { title: { type: 'string' }, activeSubstanceId: { type: 'integer' }, companyId: { type: 'integer' }, availabilityStatus: { type: 'string' } } },
         // ── Diseases
         CreateDiseaseRequest: { type: 'object', required: ['name', 'severity'], properties: { name: { type: 'string' }, severity: { type: 'string', enum: ['None', 'Mild', 'Moderate', 'Severe'] }, description: { type: 'string' } } },
         UpdateDiseaseRequest: { type: 'object', properties: { name: { type: 'string' }, severity: { type: 'string' }, description: { type: 'string' } } },

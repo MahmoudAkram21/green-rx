@@ -1,6 +1,5 @@
 import { Request, Response } from 'express';
 import { prisma } from '../lib/prisma';
-import { patientAllergyInclude } from '../utils/allergyInclude.util';
 
 // Create consultation
 export const createConsultation = async (req: Request, res: Response) => {
@@ -81,7 +80,7 @@ export const getConsultationById = async (req: Request, res: Response) => {
             include: {
                 patient: {
                     include: {
-                        patientAllergies: { include: patientAllergyInclude },
+                        allergyReports: true,
                         patientDiseases: {
                             include: {
                                 disease: true

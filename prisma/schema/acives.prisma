@@ -1,0 +1,291 @@
+
+model ActiveSubstance {
+  id              Int     @id @default(autoincrement())
+  name String
+  concentration   String?
+  classificationId Int?
+  classification Classification? @relation(fields: [classificationId], references: [id], onDelete: Cascade)
+  dosageForm      String?
+  indication      String?
+
+  // Dosage Fields
+  adultDoseMaxPerDay String?
+  adultDoseMgPerKg   String?
+  doseInKg           String?
+  pediatricDose      String?
+
+  // Content Fields
+  eliminationPathway            String?
+
+  // Warning Fields
+  contraindications           Json?
+  pregnancyWarning            String?
+  lactationWarning            String?
+  reproductiveWarningFemale   String?
+  reproductiveWarningMale     String?
+  specialPopulationChildren   String?
+  specialPopulationElderly    String?
+  ethnicAction                String?
+  hepaticWarning              String?
+  renalWarning                String?
+  medicationErrorWarning      String?
+  carcinogenicityMutagenicity String?
+  gitWarning                  String?
+  metabolismWarning           String?
+  pulmonaryWarning            String?
+  immuneSystemWarning         String?
+  infectionWarning            String?
+  bloodWarning                String?
+  vascularWarning             String?
+  electrolyteImbalanceWarning String?
+  cardiacWarning              String?
+  psychiatricWarning          String?
+  nervousSystemWarning        String?
+  skinConnectiveTissueWarning String?
+  musculoSkeletalWarning      String?
+  eyeDisordersWarning         String?
+  earDisordersWarning         String?
+
+  // Drug Interaction Fields (JSON arrays)
+  interactionVitaminsFood        Json?
+  interactionBisphosphonates     Json?
+  interactionAlcohol             Json?
+  interactionMuscleRelaxant      Json?
+  interactionRetinoids           Json?
+  interactionCorticosteroids     Json?
+  interactionXanthines           Json?
+  interactionSympathomimetics    Json?
+  interactionAnticholinergic     Json?
+  interactionChemotherapy        Json?
+  interactionAntibiotics         Json?
+  interactionHormones            Json?
+  interactionStatins             Json?
+  interactionAntihypertensive    Json?
+  interactionAntidiuretics       Json?
+  interactionAntidepressant      Json?
+  interactionAntidiabetic        Json?
+  interactionLowBloodSugarAgents Json?
+  interactionDigoxin             Json?
+  interactionAnticoagulant       Json?
+  interactionNSAIDs              Json?
+  interactionImmunosuppressive   Json?
+  interactionAntacids            Json?
+  interactionUricosurics         Json?
+  interactionProtectants         Json?
+  interactionAntiParkinson       Json?
+  interactionHIVProtease         Json?
+  ironChelator                   String?
+  interactionBloodProduct        Json?
+  interactionVaccines            Json?
+  interactionAnthelmintics       Json?
+  interactionPDE5Inhibitors      Json?
+  interferenceLabTests           String?
+  effectOnDriving                String?
+
+  // Side Effects Fields (JSON arrays by frequency)
+  veryCommonGIT             Json?
+  veryCommonBlood           Json?
+  veryCommonVascular        Json?
+  veryCommonCardiac         Json?
+  veryCommonMusculoskeletal Json?
+  veryCommonNervousSystem   Json?
+  veryCommonEye             Json?
+  veryCommonMetabolism      Json?
+  veryCommonEar             Json?
+  veryCommonRespiratory     Json?
+  veryCommonSkin            Json?
+  veryCommonInfection       Json?
+  veryCommonPsychiatric     Json?
+  veryCommonRenal           Json?
+  veryCommonHepatic         Json?
+  veryCommonGeneral         Json?
+  commonGIT                 Json?
+  commonVascular            Json?
+  commonInfections          Json?
+  commonRespiratory         Json?
+  commonCardiac             Json?
+  commonBlood               Json?
+  commonSkin                Json?
+  commonEye                 Json?
+  commonEar                 Json?
+  commonMetabolism          Json?
+  commonGeneral             Json?
+  commonHepatobiliary       Json?
+  commonImmunity            Json?
+  commonPsychiatric         Json?
+  commonNervousSystem       Json?
+  commonRenal               Json?
+  commonMusculoskeletal     Json?
+  uncommonNervous           Json?
+  uncommonInfections        Json?
+  uncommonPsychiatric       Json?
+  uncommonEye               Json?
+  uncommonRespiratory       Json?
+  uncommonSkin              Json?
+  uncommonRenal             Json?
+  uncommonHepatobiliary     Json?
+  uncommonVascular          Json?
+  uncommonGIT               Json?
+  uncommonMusculoskeletal   Json?
+  uncommonMetabolism        Json?
+  uncommonEar               Json?
+  uncommonCardiac           Json?
+  uncommonBlood             Json?
+  uncommonImmunity          Json?
+  uncommonGeneral           Json?
+  rareEar                   Json?
+  rareBlood                 Json?
+  rareGIT                   Json?
+  rareHepatic               Json?
+  rareInfections            Json?
+  rareCardiac               Json?
+  rareVascular              Json?
+  rareImmune                Json?
+  rareMetabolism            Json?
+  rareNervous               Json?
+  rareMusculoskeletal       Json?
+  rarePsychiatric           Json?
+  rareEye                   Json?
+  rareRenal                 Json?
+  rareSkin                  Json?
+  rareRespiratory           Json?
+  rareEndocrine             Json?
+  rareGeneral               Json?
+  veryRareVascular          Json?
+  veryRareEndocrine         Json?
+  veryRareNervous           Json?
+  veryRarePsychiatric       Json?
+  veryRareEye               Json?
+  veryRareMusculoskeletal   Json?
+  veryRareBlood             Json?
+  veryRareCardiac           Json?
+  veryRareImmune            Json?
+  veryRareEar               Json?
+  veryRareRenal             Json?
+  veryRareGIT               Json?
+  veryRareHepatobiliary     Json?
+  veryRareInfections        Json?
+  veryRareRespiratory       Json?
+  veryRareSkin              Json?
+  veryRareGeneral           Json?
+  veryRareMetabolism        Json?
+  unknownNervous            Json?
+  unknownMusculoskeletal    Json?
+  unknownPsychiatric        Json?
+  unknownHepatobiliary      Json?
+  unknownRenal              Json?
+  unknownSkin               Json?
+  unknownRespiratory        Json?
+  unknownImmune             Json?
+  unknownVascular           Json?
+  unknownEar                Json?
+  unknownGIT                Json?
+  unknownGeneral            Json?
+  unknownMetabolism         Json?
+  unknownEye                Json?
+  unknownBlood              Json?
+  unknownCardiac            Json?
+  unknownInfections         Json?
+  unknownEndocrine          Json?
+
+  // Additional Fields
+  additiveRMM          String?
+  pregnancyCategory    String?
+  additionalMonitoring String?
+  highlightedWarning   String?
+  version              Int       @default(1)
+  isActive             Boolean   @default(true)
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+  deletedAt            DateTime?
+
+  // Relations
+  tradeNames                     TradeName[]
+  diseaseActiveSubstanceWarnings DiseaseActiveSubstanceWarning[]
+  diseaseWarningRules            DiseaseWarningRule[]
+  medicineAlternatives           MedicineAlternative[]           @relation("PrimarySubstance")
+  alternativeTo                  MedicineAlternative[]           @relation("AlternativeSubstance")
+  adverseReactions               AdverseDrugReaction[]
+  patientMedicines               PatientMedicine[]
+  addMedicineRequests            AddMedicineRequest[]
+  medicationSideEffects          MedicationSideEffect[]
+  activeSubstancePatientAllergies ActiveSubstancePatientAllergy[]
+  allergenActiveSubstances AllergenActiveSubstance[]
+
+  @@index([name])
+  @@index([isActive])
+  @@map("active_substances")
+}
+
+
+model Classification {
+    id Int @id @default(autoincrement())
+    name String
+    description String?
+    isActive Boolean @default(true)
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    activeSubstances ActiveSubstance[]
+    classificationPatientAllergies ClassificationPatientAllergy[]
+    @@index([name])
+    @@index([isActive])
+    @@map("classifications")
+}
+
+model TradeName {
+  id                  Int                        @id @default(autoincrement())
+  title               String
+  activeSubstanceId   Int
+  companyId           Int?
+  warningNotification String? // for doctors only
+  barCode             String?
+  availabilityStatus  MedicineAvailabilityStatus @default(InStock)
+  isActive            Boolean                    @default(true)
+  createdAt           DateTime                   @default(now())
+  updatedAt           DateTime                   @updatedAt
+  deletedAt           DateTime?
+
+  // Relations
+  activeSubstance              ActiveSubstance               @relation(fields: [activeSubstanceId], references: [id], onDelete: Cascade)
+  company                      Company?                       @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  contractingCompanyTradeNames ContractingCompanyTradeName[]
+  drugInteractionAlerts        DrugInteractionAlert[]
+  batchHistories               BatchHistory[]
+  adverseReactions             AdverseDrugReaction[]
+  patientMedicines             PatientMedicine[]
+  addMedicineRequests          AddMedicineRequest[]
+  tradeNameSideEffects         TradeNameSideEffect[]
+  patientAllergies             PatientAllergyReport[]
+  excipientTradeName           ExcipientTradeName[]
+  @@index([title])
+  @@index([activeSubstanceId])
+  @@index([companyId])
+  @@index([availabilityStatus])
+
+  @@map("trade_names")
+}
+
+
+model Excipient {
+    id Int @id @default(autoincrement())
+    name String
+    description String?
+    isActive Boolean @default(true)
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    excipientTradeName ExcipientTradeName[]
+    excipientPatientAllergies ExcipientPatientAllergy[]
+    allergenExcipients AllergenExcipient[]
+}
+
+model ExcipientTradeName {
+    id Int @id @default(autoincrement())
+    excipientId Int
+    tradeNameId Int
+    isActive Boolean @default(true)
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    excipient Excipient @relation(fields: [excipientId], references: [id], onDelete: Cascade)
+    tradeName TradeName @relation(fields: [tradeNameId], references: [id], onDelete: Cascade)
+    @@unique([excipientId, tradeNameId])
+}

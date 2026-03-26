@@ -21,7 +21,8 @@ class ExportController {
     async exportActiveSubstances(req: Request, res: Response, next: NextFunction) {
         try {
             const activeSubstances = await prisma.activeSubstance.findMany({
-                orderBy: { activeSubstance: 'asc' }
+                orderBy: { name: 'asc' },
+                include: { classification: { select: { name: true } } },
             });
 
             const workbook = new ExcelJS.Workbook();
@@ -223,16 +224,16 @@ class ExportController {
                 const row: any = {};
                 
                 // Map all fields
-                row.activeSubstance = substance.activeSubstance || '';
+                row.activeSubstance = substance.name || '';
                 row.concentration = substance.concentration || '';
-                row.classification = substance.classification || '';
+                row.classification = substance.classification?.name || '';
                 row.dosageForm = substance.dosageForm || '';
                 row.indication = substance.indication || '';
                 row.adultDoseMaxPerDay = substance.adultDoseMaxPerDay || '';
                 row.adultDoseMgPerKg = substance.adultDoseMgPerKg || '';
                 row.doseInKg = substance.doseInKg || '';
                 row.pediatricDose = substance.pediatricDose || '';
-                row.glucoseContent = substance.glucoseContent || '';
+                row.glucoseContent = '';
                 row.eliminationPathway = substance.eliminationPathway || '';
                 row.contraindications = this.formatField(substance.contraindications);
                 row.pregnancyWarning = substance.pregnancyWarning || '';
@@ -482,8 +483,6 @@ class ExportController {
                 { header: 'Active Substance', key: 'activeSubstance', width: 30 },
                 { header: 'Company', key: 'company', width: 25 },
                 { header: 'Availability Status', key: 'availabilityStatus', width: 20 },
-                { header: 'Stock Quantity', key: 'stockQuantity', width: 15 },
-                { header: 'Expiry Date', key: 'expiryDate', width: 15 },
                 { header: 'Created At', key: 'createdAt', width: 20 },
             ];
 
@@ -491,11 +490,9 @@ class ExportController {
                 worksheet.addRow({
                     id: tn.id,
                     title: tn.title,
-                    activeSubstance: tn.activeSubstance.activeSubstance,
+                    activeSubstance: tn.activeSubstance.name,
                     company: tn.company?.name ?? '',
                     availabilityStatus: tn.availabilityStatus,
-                    stockQuantity: tn.stockQuantity,
-                    expiryDate: tn.expiryDate,
                     createdAt: tn.createdAt
                 });
             });
@@ -565,7 +562,7 @@ class ExportController {
                     severity: disease.severity,
                     description: disease.description,
                     warnings: disease.diseaseActiveSubstanceWarnings
-                        .map((w: any) => `${w.activeSubstance.activeSubstance} (${w.severity})`)
+                        .map((w: any) => `${w.activeSubstance.name} (${w.severity})`)
                         .join('; '),
                     createdAt: disease.createdAt
                 });

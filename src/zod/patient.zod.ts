@@ -19,6 +19,8 @@ export const createPatientSchema = z.object({
   trimester: z.number().int().min(1).max(3).optional(),
   pregnancyWarning: z.boolean().optional(),
   lactation: z.boolean().optional(),
+  contracipient: z.boolean().optional(),
+  isContracipientHormonal: z.boolean().optional(),
   bloodType: z.string().trim().optional(), // e.g. A+, A-, B+, B-, AB+, AB-, O+, O-
 });
 
@@ -63,29 +65,34 @@ export const allergySchema = z.object({
 });
 
 /**
- * For adding an allergy to a patient. Exactly one of allergenId, activeSubstanceId, tradeNameId is required.
- * - allergenId: from GET /allergens or GET /allergen-categories/:id/allergens (Food, Respiratory, Skin, Insect Stings, or Medication catalog allergen)
- * - activeSubstanceId: from GET /active-substances/search (Medication: patient chose specific active substance)
- * - tradeNameId: from GET /trade-names/search (Medication: patient chose specific trade name)
+ * Patient allergy report payload (new relation model):
+ * - One report row per patient, with optional tradeName link and metadata (reaction/notes)
+ * - Related allergens/actives/excipients/classifications stored in join tables
  */
-export const patientAllergySchema = z
+export const patientAllergyReportSchema = z
   .object({
-    allergenId:        z.number().int().positive().optional(),
-    activeSubstanceId: z.number().int().positive().optional(),
-    tradeNameId:       z.number().int().positive().optional(),
-    reaction:          z.string().optional().nullable(),
-    notes:             z.string().optional().nullable(),
+    tradeNameId: z.number().int().positive().optional(),
+    allergenIds: z.array(z.number().int().positive()).optional().default([]),
+    activeSubstanceIds: z.array(z.number().int().positive()).optional().default([]),
+    excipientIds: z.array(z.number().int().positive()).optional().default([]),
+    classificationIds: z.array(z.number().int().positive()).optional().default([]),
+    reaction: z.string().optional().nullable(),
+    notes: z.string().optional().nullable(),
   })
   .refine(
-    (d) => {
-      const set = [d.allergenId, d.activeSubstanceId, d.tradeNameId].filter((v) => v !== undefined);
-      return set.length === 1;
-    },
-    { message: 'Exactly one of allergenId, activeSubstanceId, or tradeNameId must be provided' }
+    (d) =>
+      Boolean(d.tradeNameId) ||
+      (d.allergenIds?.length ?? 0) > 0 ||
+      (d.activeSubstanceIds?.length ?? 0) > 0 ||
+      (d.excipientIds?.length ?? 0) > 0 ||
+      (d.classificationIds?.length ?? 0) > 0,
+    {
+      message:
+        "At least one of tradeNameId, allergenIds, activeSubstanceIds, excipientIds, or classificationIds must be provided",
+    }
   );
 
 export const batchAllergySchema = z.array(allergySchema);
-export const batchPatientAllergySchema = z.array(patientAllergySchema);
 
 export const childProfileSchema = z.object({
   name: z.string().min(1),

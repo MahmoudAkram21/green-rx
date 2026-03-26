@@ -46,7 +46,7 @@ export const getCompanyById = async (req: Request, res: Response, next: NextFunc
                 tradeNames: {
                     take: 10,
                     select: { id: true, title: true, activeSubstance: {
-                        select: { id: true, activeSubstance: true }
+                        select: { id: true, name: true }
                     } }
                 },
                 _count: {

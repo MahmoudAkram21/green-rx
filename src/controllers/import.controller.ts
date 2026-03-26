@@ -1,17 +1,28 @@
 import { Request, Response, NextFunction } from "express";
 import ExcelJS from "exceljs";
 import * as fs from "fs";
+import * as path from "path";
 import { prisma } from "../lib/prisma";
 import { cleanupFile } from "../config/multer.config";
 
 const BATCH_SIZE = 100;
 
+async function loadWorkbook(filePath: string): Promise<ExcelJS.Workbook> {
+  const workbook = new ExcelJS.Workbook();
+  const ext = path.extname(filePath).toLowerCase();
+  if (ext === ".csv") {
+    await workbook.csv.readFile(filePath);
+  } else {
+    await workbook.xlsx.readFile(filePath);
+  }
+  return workbook;
+}
+
 /** Read Excel/CSV file and return array of row objects (like XLSX.utils.sheet_to_json). */
 async function readSheetToJson(
   filePath: string
 ): Promise<{ sheetNames: string[]; rows: Record<string, unknown>[] }> {
-  const workbook = new ExcelJS.Workbook();
-  await workbook.xlsx.readFile(filePath);
+  const workbook = await loadWorkbook(filePath);
   const sheetNames = workbook.worksheets.map((ws) => ws.name);
   if (sheetNames.length === 0) {
     return { sheetNames: [], rows: [] };
@@ -29,7 +40,7 @@ async function readSheetToJson(
           : "";
   });
   const rows: Record<string, unknown>[] = [];
-  const rowCount = worksheet.rowCount ?? 0;
+  const rowCount = worksheet.rowCount ?? 0; 
   for (let r = 2; r <= rowCount; r++) {
     const row = worksheet.getRow(r);
     const obj: Record<string, unknown> = {};
@@ -50,7 +61,264 @@ async function readSheetToJson(
   return { sheetNames, rows };
 }
 
+/** Read Excel file and return rows indexed by 1-based column number (header row is skipped). */
+async function readSheetByColIndex(
+  filePath: string
+): Promise<{ sheetNames: string[]; rows: Record<number, unknown>[] }> {
+  const workbook = await loadWorkbook(filePath);
+  const sheetNames = workbook.worksheets.map((ws) => ws.name);
+  if (sheetNames.length === 0) {
+    return { sheetNames: [], rows: [] };
+  }
+  const worksheet = workbook.worksheets[0];
+  const rows: Record<number, unknown>[] = [];
+  const rowCount = worksheet.rowCount ?? 0;
+  for (let r = 2; r <= rowCount; r++) {
+    const excelRow = worksheet.getRow(r);
+    const obj: Record<number, unknown> = {};
+    excelRow.eachCell({ includeEmpty: true }, (cell, colNumber) => {
+      const v = cell.value;
+      obj[colNumber] =
+        v != null && typeof v === "object" && "result" in v
+          ? (v as { result: unknown }).result
+          : v != null && typeof v === "object" && "text" in v
+            ? (v as { text: string }).text
+            : v != null
+              ? v
+              : "";
+    });
+    rows.push(obj);
+  }
+  return { sheetNames, rows };
+}
+
+/**
+ * Maps 1-based Excel column index → { field: Prisma field name, isArray: parse as array }
+ * Column order matches the actual client CSV layout (183 columns total).
+ * Columns with no matching Prisma field (e.g. excipients, Trade Name) are intentionally omitted.
+ */
+const ACTIVE_SUBSTANCE_COLUMNS: Record<number, { field: string; isArray: boolean }> = {
+  // ── Basic Info (cols 1–9) ─────────────────────────────────────────────────
+  1:   { field: "activeSubstance",               isArray: false },
+  2:   { field: "concentration",                 isArray: false },
+  3:   { field: "classification",                isArray: false },
+  4:   { field: "dosageForm",                    isArray: false },
+  5:   { field: "indication",                    isArray: false },
+  // ── Dosage (cols 6–9) ─────────────────────────────────────────────────────
+  6:   { field: "adultDoseMaxPerDay",            isArray: false },
+  7:   { field: "adultDoseMgPerKg",              isArray: false },
+  8:   { field: "doseInKg",                      isArray: false },
+  9:   { field: "pediatricDose",                 isArray: false },
+  // col 10 = "excipients" → separate model, not stored on activeSubstance
+  // ── Warnings (cols 11–37) ─────────────────────────────────────────────────
+  11:  { field: "eliminationPathway",            isArray: false },
+  12:  { field: "contraindications",             isArray: true  },
+  13:  { field: "pregnancyWarning",              isArray: false },
+  14:  { field: "reproductiveWarningFemale",     isArray: false },
+  15:  { field: "reproductiveWarningMale",       isArray: false },
+  16:  { field: "specialPopulationChildren",     isArray: false },
+  17:  { field: "specialPopulationElderly",      isArray: false },
+  18:  { field: "ethnicAction",                  isArray: false },
+  19:  { field: "hepaticWarning",                isArray: false },
+  20:  { field: "renalWarning",                  isArray: false },
+  21:  { field: "medicationErrorWarning",        isArray: false },
+  22:  { field: "carcinogenicityMutagenicity",   isArray: false },
+  23:  { field: "gitWarning",                    isArray: false },
+  24:  { field: "metabolismWarning",             isArray: false },
+  25:  { field: "pulmonaryWarning",              isArray: false },
+  26:  { field: "immuneSystemWarning",           isArray: false },
+  27:  { field: "infectionWarning",              isArray: false },
+  28:  { field: "bloodWarning",                  isArray: false },
+  29:  { field: "vascularWarning",               isArray: false },
+  30:  { field: "electrolyteImbalanceWarning",   isArray: false },
+  31:  { field: "cardiacWarning",                isArray: false },
+  32:  { field: "psychiatricWarning",            isArray: false },
+  33:  { field: "nervousSystemWarning",          isArray: false },
+  34:  { field: "skinConnectiveTissueWarning",   isArray: false },
+  35:  { field: "musculoSkeletalWarning",        isArray: false },
+  36:  { field: "eyeDisordersWarning",           isArray: false },
+  37:  { field: "earDisordersWarning",           isArray: false },
+  // ── Drug Interactions (cols 38–69) ───────────────────────────────────────
+  38:  { field: "interactionVitaminsFood",       isArray: true  },
+  39:  { field: "interactionBisphosphonates",    isArray: true  },
+  40:  { field: "interactionAlcohol",            isArray: true  },
+  41:  { field: "interactionMuscleRelaxant",     isArray: true  },
+  42:  { field: "interactionRetinoids",          isArray: true  },
+  43:  { field: "interactionCorticosteroids",    isArray: true  },
+  44:  { field: "interactionXanthines",          isArray: true  },
+  45:  { field: "interactionSympathomimetics",   isArray: true  },
+  46:  { field: "interactionAnticholinergic",    isArray: true  },
+  47:  { field: "interactionChemotherapy",       isArray: true  },
+  48:  { field: "interactionAntibiotics",        isArray: true  },
+  49:  { field: "interactionHormones",           isArray: true  },
+  50:  { field: "interactionStatins",            isArray: true  },
+  51:  { field: "interactionAntihypertensive",   isArray: true  },
+  52:  { field: "interactionAntidiuretics",      isArray: true  },
+  53:  { field: "interactionAntidepressant",     isArray: true  },
+  54:  { field: "interactionAntidiabetic",       isArray: true  },
+  55:  { field: "interactionLowBloodSugarAgents",isArray: true  },
+  56:  { field: "interactionDigoxin",            isArray: true  },
+  57:  { field: "interactionAnticoagulant",      isArray: true  },
+  58:  { field: "interactionNSAIDs",             isArray: true  },
+  59:  { field: "interactionImmunosuppressive",  isArray: true  },
+  60:  { field: "interactionAntacids",           isArray: true  },
+  61:  { field: "interactionUricosurics",        isArray: true  },
+  62:  { field: "interactionProtectants",        isArray: true  },
+  63:  { field: "interactionAntiParkinson",      isArray: true  },
+  64:  { field: "interactionHIVProtease",        isArray: true  },
+  65:  { field: "ironChelator",                  isArray: false },
+  66:  { field: "interactionBloodProduct",       isArray: true  },
+  67:  { field: "interactionVaccines",           isArray: true  },
+  68:  { field: "interactionAnthelmintics",      isArray: true  },
+  69:  { field: "interactionPDE5Inhibitors",     isArray: true  },
+  // ── Lab / Driving (cols 70–71) ────────────────────────────────────────────
+  70:  { field: "interferenceLabTests",          isArray: false },
+  71:  { field: "effectOnDriving",               isArray: false },
+  // ── Side Effects: Very Common (cols 72–87) ───────────────────────────────
+  72:  { field: "veryCommonGIT",                 isArray: true  },
+  73:  { field: "veryCommonBlood",               isArray: true  },
+  74:  { field: "veryCommonVascular",            isArray: true  },
+  75:  { field: "veryCommonCardiac",             isArray: true  },
+  76:  { field: "veryCommonMusculoskeletal",     isArray: true  },
+  77:  { field: "veryCommonNervousSystem",       isArray: true  },
+  78:  { field: "veryCommonEye",                 isArray: true  },
+  79:  { field: "veryCommonMetabolism",          isArray: true  },
+  80:  { field: "veryCommonEar",                 isArray: true  },
+  81:  { field: "veryCommonRespiratory",         isArray: true  },
+  82:  { field: "veryCommonSkin",                isArray: true  },
+  83:  { field: "veryCommonInfection",           isArray: true  },
+  84:  { field: "veryCommonPsychiatric",         isArray: true  },
+  85:  { field: "veryCommonRenal",               isArray: true  },
+  86:  { field: "veryCommonHepatic",             isArray: true  },
+  87:  { field: "veryCommonGeneral",             isArray: true  },
+  // ── Side Effects: Common (cols 88–104) ───────────────────────────────────
+  88:  { field: "commonGIT",                     isArray: true  },
+  89:  { field: "commonVascular",                isArray: true  },
+  90:  { field: "commonInfections",              isArray: true  },
+  91:  { field: "commonRespiratory",             isArray: true  },
+  92:  { field: "commonCardiac",                 isArray: true  },
+  93:  { field: "commonBlood",                   isArray: true  },
+  94:  { field: "commonSkin",                    isArray: true  },
+  95:  { field: "commonEye",                     isArray: true  },
+  96:  { field: "commonEar",                     isArray: true  },
+  97:  { field: "commonMetabolism",              isArray: true  },
+  98:  { field: "commonGeneral",                 isArray: true  },
+  99:  { field: "commonHepatobiliary",           isArray: true  },
+  100: { field: "commonImmunity",                isArray: true  },
+  101: { field: "commonPsychiatric",             isArray: true  },
+  102: { field: "commonNervousSystem",           isArray: true  },
+  103: { field: "commonRenal",                   isArray: true  },
+  104: { field: "commonMusculoskeletal",         isArray: true  },
+  // ── Side Effects: Uncommon (cols 105–121) ────────────────────────────────
+  105: { field: "uncommonNervous",               isArray: true  },
+  106: { field: "uncommonInfections",            isArray: true  },
+  107: { field: "uncommonPsychiatric",           isArray: true  },
+  108: { field: "uncommonEye",                   isArray: true  },
+  109: { field: "uncommonRespiratory",           isArray: true  },
+  110: { field: "uncommonSkin",                  isArray: true  },
+  111: { field: "uncommonRenal",                 isArray: true  },
+  112: { field: "uncommonHepatobiliary",         isArray: true  },
+  113: { field: "uncommonVascular",              isArray: true  },
+  114: { field: "uncommonGIT",                   isArray: true  },
+  115: { field: "uncommonMusculoskeletal",       isArray: true  },
+  116: { field: "uncommonMetabolism",            isArray: true  },
+  117: { field: "uncommonEar",                   isArray: true  },
+  118: { field: "uncommonCardiac",               isArray: true  },
+  119: { field: "uncommonBlood",                 isArray: true  },
+  120: { field: "uncommonImmunity",              isArray: true  },
+  121: { field: "uncommonGeneral",               isArray: true  },
+  // ── Side Effects: Rare (cols 122–139) ────────────────────────────────────
+  122: { field: "rareEar",                       isArray: true  },
+  123: { field: "rareBlood",                     isArray: true  },
+  124: { field: "rareGIT",                       isArray: true  },
+  125: { field: "rareHepatic",                   isArray: true  },
+  126: { field: "rareInfections",                isArray: true  },
+  127: { field: "rareCardiac",                   isArray: true  },
+  128: { field: "rareVascular",                  isArray: true  },
+  129: { field: "rareImmune",                    isArray: true  },
+  130: { field: "rareMetabolism",                isArray: true  },
+  131: { field: "rareNervous",                   isArray: true  },
+  132: { field: "rareMusculoskeletal",           isArray: true  },
+  133: { field: "rarePsychiatric",               isArray: true  },
+  134: { field: "rareEye",                       isArray: true  },
+  135: { field: "rareRenal",                     isArray: true  },
+  136: { field: "rareSkin",                      isArray: true  },
+  137: { field: "rareRespiratory",               isArray: true  },
+  138: { field: "rareEndocrine",                 isArray: true  },
+  139: { field: "rareGeneral",                   isArray: true  },
+  // ── Side Effects: Very Rare (cols 140–157) ───────────────────────────────
+  140: { field: "veryRareVascular",              isArray: true  },
+  141: { field: "veryRareEndocrine",             isArray: true  },
+  142: { field: "veryRareNervous",               isArray: true  },
+  143: { field: "veryRarePsychiatric",           isArray: true  },
+  144: { field: "veryRareEye",                   isArray: true  },
+  145: { field: "veryRareMusculoskeletal",       isArray: true  },
+  146: { field: "veryRareBlood",                 isArray: true  },
+  147: { field: "veryRareCardiac",               isArray: true  },
+  148: { field: "veryRareImmune",                isArray: true  },
+  149: { field: "veryRareEar",                   isArray: true  },
+  150: { field: "veryRareRenal",                 isArray: true  },
+  151: { field: "veryRareGIT",                   isArray: true  },
+  152: { field: "veryRareHepatobiliary",         isArray: true  },
+  153: { field: "veryRareInfections",            isArray: true  },
+  154: { field: "veryRareRespiratory",           isArray: true  },
+  155: { field: "veryRareSkin",                  isArray: true  },
+  156: { field: "veryRareGeneral",               isArray: true  },
+  157: { field: "veryRareMetabolism",            isArray: true  },
+  // ── Side Effects: Unknown (cols 158–175) ─────────────────────────────────
+  158: { field: "unknownNervous",                isArray: true  },
+  159: { field: "unknownMusculoskeletal",        isArray: true  },
+  160: { field: "unknownPsychiatric",            isArray: true  },
+  161: { field: "unknownHepatobiliary",          isArray: true  },
+  162: { field: "unknownRenal",                  isArray: true  },
+  163: { field: "unknownSkin",                   isArray: true  },
+  164: { field: "unknownRespiratory",            isArray: true  },
+  165: { field: "unknownImmune",                 isArray: true  },
+  166: { field: "unknownVascular",               isArray: true  },
+  167: { field: "unknownEar",                    isArray: true  },
+  168: { field: "unknownGIT",                    isArray: true  },
+  169: { field: "unknownGeneral",                isArray: true  },
+  170: { field: "unknownMetabolism",             isArray: true  },
+  171: { field: "unknownEye",                    isArray: true  },
+  172: { field: "unknownBlood",                  isArray: true  },
+  173: { field: "unknownCardiac",                isArray: true  },
+  174: { field: "unknownInfections",             isArray: true  },
+  175: { field: "unknownEndocrine",              isArray: true  },
+  // ── Additional (cols 176–179) ─────────────────────────────────────────────
+  176: { field: "additiveRMM",                   isArray: false },
+  177: { field: "pregnancyCategory",             isArray: false },
+  178: { field: "additionalMonitoring",          isArray: false },
+  179: { field: "highlightedWarning",            isArray: false },
+  // col 180 = Trade Name (handled during active-substance import to create TradeName rows)
+  // cols 181–183 = MAH, Batch Number, Bar Code (currently skipped in this flow)
+};
+
 class ImportController {
+  private activeSubstanceDbColumnsCache: Set<string> | null = null;
+
+  private async getActiveSubstanceDbColumns(): Promise<Set<string> | null> {
+    if (this.activeSubstanceDbColumnsCache) {
+      return this.activeSubstanceDbColumnsCache;
+    }
+    try {
+      const columns = await prisma.$queryRaw<Array<{ column_name: string }>>`
+        SELECT column_name
+        FROM information_schema.columns
+        WHERE table_schema = 'public' AND table_name = 'active_substances'
+      `;
+      this.activeSubstanceDbColumnsCache = new Set(
+        columns.map((row) => row.column_name)
+      );
+      return this.activeSubstanceDbColumnsCache;
+    } catch (error) {
+      console.warn(
+        "Could not read active_substances columns from information_schema; falling back to full payload.",
+        error
+      );
+      return null;
+    }
+  }
+
   // Import Active Substances from Excel/CSV
   async importActiveSubstances(
     req: Request,
@@ -71,15 +339,15 @@ class ImportController {
           .json({ error: "File not found or invalid" }) as any;
       }
 
-      let rawData: any[];
+      let rawData: Record<number, unknown>[];
       try {
-        const { sheetNames, rows } = await readSheetToJson(filePath);
+        const { sheetNames, rows } = await readSheetByColIndex(filePath);
         if (!sheetNames.length || rows.length === 0) {
           return res
             .status(400)
             .json({ error: "File contains no sheets or is empty" }) as any;
         }
-        rawData = rows as any[];
+        rawData = rows;
       } catch (error: any) {
         return res.status(400).json({
           error: "Failed to read file",
@@ -97,402 +365,86 @@ class ImportController {
         created: 0,
         updated: 0,
         failed: 0,
-        errors: [] as Array<{ row: number; data: string; error: string }>
+        errors: [] as Array<{ row: number; data: string; error: string }>,
       };
 
-      // Debug: Log first row keys to see what Excel parsed
-      if (rawData.length > 0) {
-        console.log("First row keys:", Object.keys(rawData[0]));
-        console.log(
-          "Sample row data:",
-          JSON.stringify(rawData[0], null, 2).substring(0, 500)
-        );
-      }
+      const activeSubstanceDbColumns = await this.getActiveSubstanceDbColumns();
 
-      // Process in batches
       for (let i = 0; i < rawData.length; i += BATCH_SIZE) {
         const batch = rawData.slice(i, i + BATCH_SIZE);
 
         for (const row of batch) {
+          const rowIndex = i + batch.indexOf(row) + 2;
           try {
-            // Validate required field - try multiple variations
-            const activeSubstanceName =
-              row["Active substance"] ||
-              row["activeSubstance"] ||
-              row["Active Substance"] ||
-              row["Active substance "] ||
-              this.getFieldValue(row, [
-                "Active substance",
-                "activeSubstance",
-                "Active Substance",
-              ]);
-
-            if (
-              !activeSubstanceName ||
-              String(activeSubstanceName).trim() === ""
-            ) {
-              throw new Error(
-                `Active substance name is required. Available keys: ${Object.keys(
-                  row
-                )
-                  .slice(0, 10)
-                  .join(", ")}`
-              );
+            console.log("row", row);
+            const activeSubstanceName = row[1];
+            if (!activeSubstanceName || String(activeSubstanceName).trim() === "") {
+              throw new Error("Active substance name is required (column 1 is empty)");
             }
 
-            // Map CSV columns to database fields - comprehensive mapping
-            const data: any = {
-              activeSubstance: String(activeSubstanceName).trim(),
-              concentration: this.getFieldValue(row, [
-                "Concentration ",
-                "Concentration",
-                "concentration",
-              ]),
-              classification: this.getFieldValue(row, [
-                "Classification",
-                "classification",
-              ]),
-              dosageForm: this.getFieldValue(row, [
-                "Dosage form",
-                "dosageForm",
-              ]),
-              indication: this.getFieldValue(row, [
-                "Indication ",
-                "Indication",
-                "indication",
-              ]),
-
-              // Dosage Fields
-              adultDoseMaxPerDay: this.getFieldValue(row, [
-                "Adult Dose (Max. Dose per day)",
-                "adultDoseMaxPerDay",
-              ]),
-              adultDoseMgPerKg: this.getFieldValue(row, [
-                "Adult dose (mg/kg - iF applicable) ",
-                "adultDoseMgPerKg",
-              ]),
-              doseInKg: this.getFieldValue(row, [
-                "Dose in Kg (for children) starting from 17 years",
-                "doseInKg",
-              ]),
-              pediatricDose: this.getFieldValue(row, [
-                "Pediatric Dose ",
-                "Pediatric Dose",
-                "pediatricDose",
-              ]),
-
-              // Content Fields
-              glucoseContent: this.getFieldValue(row, [
-                "Glucose/Lactose/Fructose Content/Preservatives in Occular Products",
-                "glucoseContent",
-              ]),
-              lactoseContent: this.getFieldValue(row, ["lactoseContent"]),
-              fructoseContent: this.getFieldValue(row, ["fructoseContent"]),
-              preservativesInOcularProducts: this.getFieldValue(row, [
-                "preservativesInOcularProducts",
-              ]),
-              eliminationPathway: this.getFieldValue(row, [
-                "Elimination Pathway",
-                "eliminationPathway",
-              ]),
-
-              // Warning Fields
-              contraindications: this.parseArrayField(
-                this.getFieldValue(row, [
-                  "Contraindication ",
-                  "Contraindication",
-                  "contraindications",
-                ])
-              ),
-              pregnancyWarning: this.getFieldValue(row, [
-                "Female (Pegnancy Warning & Lactation)",
-                "pregnancyWarning",
-              ]),
-              lactationWarning: this.getFieldValue(row, ["lactationWarning"]),
-              reproductiveWarningFemale: this.getFieldValue(row, [
-                "Warning (Reproductive ADR /Urinogenital) - Female",
-                "reproductiveWarningFemale",
-              ]),
-              reproductiveWarningMale: this.getFieldValue(row, [
-                "Warning (Reproductive ADR /Urinogenital) - Male",
-                "reproductiveWarningMale",
-              ]),
-              specialPopulationChildren: this.getFieldValue(row, [
-                "Warning (Special Population)- Children",
-                "specialPopulationChildren",
-              ]),
-              specialPopulationElderly: this.getFieldValue(row, [
-                "Warning (Special Population)- Elderly",
-                "specialPopulationElderly",
-              ]),
-              ethnicAction: this.getFieldValue(row, [
-                "Ethenic Action",
-                "Ethenic Action ",
-                "ethnicAction",
-              ]),
-              hepaticWarning: this.getFieldValue(row, [
-                "Warning (Hepatic)",
-                "hepaticWarning",
-              ]),
-              renalWarning: this.getFieldValue(row, [
-                "Warning (Renal) ",
-                "Warning (Renal)",
-                "renalWarning",
-              ]),
-              medicationErrorWarning: this.getFieldValue(row, [
-                "Warning to avoid Potential Medication error",
-                "medicationErrorWarning",
-              ]),
-              carcinogenicityMutagenicity: this.getFieldValue(row, [
-                "Carcinogenicity /Mutagenicity",
-                "carcinogenicityMutagenicity",
-              ]),
-              gitWarning: this.getFieldValue(row, [
-                "Warning (GIT)",
-                "gitWarning",
-              ]),
-              metabolismWarning: this.getFieldValue(row, [
-                "Warning (Metabolism)",
-                "metabolismWarning",
-              ]),
-              pulmonaryWarning: this.getFieldValue(row, [
-                "Warning (Pulmonary)",
-                "pulmonaryWarning",
-              ]),
-              immuneSystemWarning: this.getFieldValue(row, [
-                "Warning (Immune System)",
-                "immuneSystemWarning",
-              ]),
-              infectionWarning: this.getFieldValue(row, [
-                "Warning (Infection)",
-                "infectionWarning",
-              ]),
-              bloodWarning: this.getFieldValue(row, [
-                "Warning  (Blood)",
-                "Warning (Blood)",
-                "bloodWarning",
-              ]),
-              vascularWarning: this.getFieldValue(row, [
-                "Warning (Vascular)",
-                "vascularWarning",
-              ]),
-              electrolyteImbalanceWarning: this.getFieldValue(row, [
-                "Warning (Electrolyte imbalance)",
-                "electrolyteImbalanceWarning",
-              ]),
-              cardiacWarning: this.getFieldValue(row, [
-                "Warning (Cardiac)",
-                "cardiacWarning",
-              ]),
-              psychiatricWarning: this.getFieldValue(row, [
-                "Warning (Psychatric)",
-                "Warning (Psychiatric)",
-                "psychiatricWarning",
-              ]),
-              nervousSystemWarning: this.getFieldValue(row, [
-                "Warning (Nervous System)",
-                "nervousSystemWarning",
-              ]),
-              skinConnectiveTissueWarning: this.getFieldValue(row, [
-                "Warning (Skin & Connective Tissue)",
-                "skinConnectiveTissueWarning",
-              ]),
-              musculoSkeletalWarning: this.getFieldValue(row, [
-                "Warning (Musclo-Skeletal)",
-                "musculoSkeletalWarning",
-              ]),
-              eyeDisordersWarning: this.getFieldValue(row, [
-                "Warning (Eye disorders)",
-                "eyeDisordersWarning",
-              ]),
-              earDisordersWarning: this.getFieldValue(row, [
-                "Warning (Ear disorders)",
-                "earDisordersWarning",
-              ]),
-
-              // Additional Fields
-              additiveRMM: this.getFieldValue(row, [
-                "Additive RMM ",
-                "Additive RMM",
-                "additiveRMM",
-              ]),
-              pregnancyCategory: this.getFieldValue(row, [
-                "Pregnacy  Category",
-                "Pregnancy Category",
-                "pregnancyCategory",
-              ]),
-              highlightedWarning: this.getFieldValue(row, [
-                "Highlighted warning",
-                "Highlighted warning ",
-                "highlightedWarning",
-              ]),
-              interferenceLabTests: this.getFieldValue(row, [
-                "Interference with laboratory tests / Investigations",
-                "interferenceLabTests",
-              ]),
-              effectOnDriving: this.getFieldValue(row, [
-                "Effect on Driving & using Machines",
-                "effectOnDriving",
-              ]),
-              ironChelator: this.getFieldValue(row, [
-                "Iron Chelator ",
-                "Iron Chelator",
-                "ironChelator",
-              ]),
-            };
-
-            // Map drug interaction fields dynamically
-            const interactionFieldMap: { [key: string]: string } = {
-              "Harmful  Drug Interaction with Viatmins/food/digestive enzymes/ colestyramine":
-                "interactionVitaminsFood",
-              "Harmful  Drug Interaction with bisphosphonates ":
-                "interactionBisphosphonates",
-              " harmful  Drug Interaction with Alcohol ": "interactionAlcohol",
-              "Drug interaction with Muscle relaxant":
-                "interactionMuscleRelaxant",
-              "Drug Interaction  with Retenoids": "interactionRetinoids",
-              "Drug Interaction  with Corticosteroids":
-                "interactionCorticosteroids",
-              "Drug Interactions with xanthines (theophylline, caffeine or pentoxifylline)":
-                "interactionXanthines",
-              "Drug Interactions with Sympathomimetics (such as epinephrine [adrenaline], or salbutamol, terbutaline used to treat asthma)":
-                "interactionSympathomimetics",
-              "Drug Interactions with Anticholinergic (e.g Atropine) ":
-                "interactionAnticholinergic",
-              "Drug Interaction with Chemotherapy & Neoplastic /5-HT3 antagonist (anti-vomiting)":
-                "interactionChemotherapy",
-              "Drug Interaction with Antibiotics/Antifungal ":
-                "interactionAntibiotics",
-              "Drug Interaction with hormons /Antihormones":
-                "interactionHormones",
-              "Drug Interaction with Statins /Antilipidemic":
-                "interactionStatins",
-              "Drug Interaction with Antihypertensive agents /antiarrhythmic drugs":
-                "interactionAntihypertensive",
-              "Drug Interaction with Antidiuretics agents /Laxatives":
-                "interactionAntidiuretics",
-              "Drug Interaction with Antidepressant /anticonvulsant agents ":
-                "interactionAntidepressant",
-              "Drug Interaction with Antidiabetic agents ":
-                "interactionAntidiabetic",
-              "Drug Interaction with agents treating low blood sugar level":
-                "interactionLowBloodSugarAgents",
-              "Drug Interaction with Digioxin/cardiac Glycosids (Organic compounds)/Anti-arrhythmias":
-                "interactionDigoxin",
-              "Drug Interaction with anticoagulant (as Warfarin (Vitamin K antagonists)":
-                "interactionAnticoagulant",
-              "Drug Interaction with NSAIDs/Paracetamol/ Narcotic analgiscs/Antihistaminic":
-                "interactionNSAIDs",
-              "Drug Interaction with immunosuppressive\nagents":
-                "interactionImmunosuppressive",
-              "Drug Interaction with antacids": "interactionAntacids",
-              "Drug Interaction with Uricosurics (e.g Probenecid)":
-                "interactionUricosurics",
-              "Drug Interaction with Protectants (Sucralfate)":
-                "interactionProtectants",
-              "Drug Interaction with Anti-Parkinson Drugs (Dopamine Agonist)/alzheimer's disease":
-                "interactionAntiParkinson",
-              "Drug interaction with (HIV-1 protease inhibitor)/other antiviral drugs (HCV antiviral":
-                "interactionHIVProtease",
-              "Drug Interaction (Blood Product/ Immunoglobulin) ":
-                "interactionBloodProduct",
-              "Drug Interaction with Vaccines": "interactionVaccines",
-              "Drug interactions with anthelmintics /antimalaria (Parasites)/antiprotozoal ":
-                "interactionAnthelmintics",
-              "Drug interactions with PDE5 inhibitors ":
-                "interactionPDE5Inhibitors",
-            };
-
-            for (const csvKey in interactionFieldMap) {
-              const dbKey = interactionFieldMap[csvKey];
-              if (
-                row[csvKey] !== undefined &&
-                row[csvKey] !== null &&
-                row[csvKey] !== ""
-              ) {
-                data[dbKey] = this.parseArrayField(row[csvKey]);
-              }
-            }
-
-            // Map side effects fields dynamically
-            for (const key in row) {
-              if (
-                key.includes("Very Common") ||
-                key.includes("Common") ||
-                key.includes("Uncommon") ||
-                key.includes("Rare") ||
-                key.includes("Very Rare") ||
-                key.includes("Unknown")
-              ) {
-                const fieldName = this.mapSideEffectField(key);
-                if (
-                  fieldName &&
-                  row[key] !== undefined &&
-                  row[key] !== null &&
-                  row[key] !== ""
-                ) {
-                  data[fieldName] = this.parseArrayField(row[key]);
-                }
-              }
-            }
-
-            // Remove undefined/null values to avoid Prisma issues
             const cleanData: any = {};
-            for (const key in data) {
-              if (
-                data[key] !== undefined &&
-                data[key] !== null &&
-                data[key] !== ""
-              ) {
-                cleanData[key] = data[key];
+            for (const [colStr, { field, isArray }] of Object.entries(ACTIVE_SUBSTANCE_COLUMNS)) {
+              if (activeSubstanceDbColumns && !activeSubstanceDbColumns.has(field)) {
+                continue;
               }
+              const value = row[Number(colStr)];
+              if (value === undefined || value === null || value === "") continue;
+              cleanData[field] = isArray
+                ? this.parseArrayField(value)
+                : String(value).trim();
             }
 
-            // Ensure required field exists
             if (!cleanData.activeSubstance) {
               throw new Error("Active substance name is required");
             }
 
-            // Always create new record (allow duplicates)
-            await prisma.activeSubstance.create({ data: cleanData });
+            const createdActiveSubstance = await prisma.activeSubstance.create({
+              data: cleanData,
+              // Important: DB may be behind Prisma schema. Returning only `id`
+              // avoids selecting missing columns on INSERT response.
+              select: { id: true },
+            });
+
+            // Column 180 contains one or many trade names, comma-separated.
+            // Create TradeName records linked to the newly created active substance.
+            const tradeNameCell = row[180];
+            const parsedTradeNames = this.parseCommaSeparatedTradeNames(tradeNameCell);
+            for (const tradeNameTitle of parsedTradeNames) {
+              await prisma.tradeName.create({
+                data: {
+                  title: tradeNameTitle,
+                  activeSubstanceId: createdActiveSubstance.id,
+                },
+              });
+            }
             results.created++;
             results.successful++;
           } catch (error: any) {
             results.failed++;
             const errorMsg = error.message || String(error);
-            console.error(
-              `Row ${i + batch.indexOf(row) + 2} error:`,
-              errorMsg,
-              error
-            );
+            console.error(`Row ${rowIndex} error:`, errorMsg);
             results.errors.push({
-              row: i + batch.indexOf(row) + 2, // +2 for header and 0-index
-              data: String(row["Active substance"] ?? "Unknown"),
+              row: rowIndex,
+              data: String(row[1] ?? "Unknown"),
               error: errorMsg,
             });
           }
         }
       }
 
-      // Create import history record
       const fileExtension =
         req.file.originalname.split(".").pop()?.toLowerCase() || "csv";
       const userId = (req as any).user?.id;
 
-      // Verify user exists or find/create a default admin user
       let validUserId = userId;
       if (!validUserId) {
-        // Try to find the first admin user
         const adminUser = await prisma.user.findFirst({
-          where: {
-            role: { in: ["Admin", "SuperAdmin"] },
-          },
+          where: { role: { in: ["Admin", "SuperAdmin"] } },
           select: { id: true },
         });
         validUserId = adminUser?.id;
       }
 
-      // If still no valid user, skip history creation (optional)
       if (validUserId) {
         try {
           await prisma.importHistory.create({
@@ -509,25 +461,16 @@ class ImportController {
             },
           });
         } catch (historyError: any) {
-          // Log but don't fail the import if history creation fails
-          console.error(
-            "Failed to create import history:",
-            historyError.message
-          );
+          console.error("Failed to create import history:", historyError.message);
         }
       }
 
-      // Cleanup uploaded file
       if (filePath) {
         cleanupFile(filePath);
       }
 
-      res.json({
-        message: "Import completed",
-        ...results,
-      });
+      res.json({ message: "Import completed", ...results });
     } catch (error: any) {
-      // Cleanup uploaded file on error
       if (filePath) {
         try {
           cleanupFile(filePath);
@@ -535,14 +478,11 @@ class ImportController {
           console.error("File cleanup error:", cleanupError);
         }
       }
-
       console.error("Import error:", error);
-      console.error("Error stack:", error.stack);
       res.status(500).json({
         error: "Import failed",
         message: error.message || "Unknown error occurred",
-        details:
-          process.env.NODE_ENV === "development" ? error.stack : undefined,
+        details: process.env.NODE_ENV === "development" ? error.stack : undefined,
       });
     }
   }
@@ -643,17 +583,13 @@ class ImportController {
               results.errors.push("Row missing required fields: title, activeSubstanceId, companyId");
               continue;
             }
-            const batchNumber = this.getFieldValue(row, ["batchnumber", "batch number"]);
             const barCode = this.getFieldValue(row, ["barcode", "bar code"]);
-            const stockQuantity = this.getFieldValue(row, ["stockquantity", "stock quantity"]);
             await prisma.tradeName.create({
               data: {
                 title: String(title),
                 activeSubstanceId: Number(activeSubstanceId),
                 companyId: Number(companyId),
-                batchNumber: batchNumber ? String(batchNumber) : undefined,
                 barCode: barCode ? String(barCode) : undefined,
-                stockQuantity: stockQuantity ? Number(stockQuantity) : undefined,
               },
             });
             results.successful++;
@@ -815,216 +751,18 @@ class ImportController {
     return null;
   }
 
-  private mapSideEffectField(csvKey: string): string | null {
-    const normalized = csvKey.trim().replace(/\s+/g, " ");
-    const lower = normalized.toLowerCase();
+  private parseCommaSeparatedTradeNames(value: unknown): string[] {
+    if (value === undefined || value === null) return [];
 
-    // Determine frequency prefix
-    let prefix = "";
-    if (lower.includes("very common")) prefix = "veryCommon";
-    else if (
-      lower.includes("common") &&
-      !lower.includes("uncommon") &&
-      !lower.includes("very")
-    )
-      prefix = "common";
-    else if (lower.includes("uncommon")) prefix = "uncommon";
-    else if (lower.includes("very rare")) prefix = "veryRare";
-    else if (lower.includes("rare") && !lower.includes("very")) prefix = "rare";
-    else if (lower.includes("unknown")) prefix = "unknown";
-    else return null;
+    const normalized = String(value)
+      .split(",")
+      .map((item) => item.trim())
+      .filter((item) => item.length > 0);
 
-    // Determine system suffix - match exact Prisma schema field names
-    let suffix = "";
-    if (lower.includes("git") || lower.includes("gastrointestinal")) {
-      suffix = "GIT";
-    } else if (lower.includes("blood") || lower.includes("lymphatic")) {
-      suffix = "Blood";
-    } else if (lower.includes("vascular")) {
-      suffix = "Vascular";
-    } else if (lower.includes("cardiac") || lower.includes("heart")) {
-      suffix = "Cardiac";
-    } else if (lower.includes("musculoskeletal") || lower.includes("musculo")) {
-      suffix = "Musculoskeletal";
-    } else if (lower.includes("nervous") && !lower.includes("psychiatric")) {
-      if (
-        prefix === "uncommon" ||
-        prefix === "rare" ||
-        prefix === "veryRare" ||
-        prefix === "unknown"
-      ) {
-        suffix = "Nervous";
-      } else {
-        suffix = "NervousSystem";
-      }
-    } else if (lower.includes("eye") || lower.includes("ocular")) {
-      suffix = "Eye";
-    } else if (lower.includes("metabolism") || lower.includes("nutrition")) {
-      suffix = "Metabolism";
-    } else if (lower.includes("ear") || lower.includes("labyrinth")) {
-      suffix = "Ear";
-    } else if (
-      lower.includes("respiratory") ||
-      lower.includes("respiratory") ||
-      lower.includes("pulmonary")
-    ) {
-      suffix = "Respiratory";
-    } else if (lower.includes("skin") || lower.includes("subcutaneous")) {
-      suffix = "Skin";
-    } else if (lower.includes("infection") || lower.includes("infestation")) {
-      suffix = "Infections";
-    } else if (lower.includes("psychiatric")) {
-      suffix = "Psychiatric";
-    } else if (lower.includes("renal") || lower.includes("kidney")) {
-      suffix = "Renal";
-    } else if (
-      lower.includes("hepatic") ||
-      lower.includes("hepatobiliary") ||
-      lower.includes("liver")
-    ) {
-      if (
-        prefix === "common" ||
-        prefix === "uncommon" ||
-        prefix === "veryRare" ||
-        prefix === "unknown"
-      ) {
-        suffix = "Hepatobiliary";
-      } else {
-        suffix = "Hepatic";
-      }
-    } else if (lower.includes("immune") || lower.includes("immunity")) {
-      if (prefix === "common" || prefix === "uncommon") {
-        suffix = "Immunity";
-      } else if (prefix === "rare" || prefix === "veryRare") {
-        suffix = "Immune";
-      } else {
-        suffix = "Immune";
-      }
-    } else if (lower.includes("endocrine")) {
-      suffix = "Endocrine";
-    } else if (lower.includes("general")) {
-      suffix = "General";
-    } else {
-      return null;
-    }
-
-    // Special handling for specific field name variations
-    const fieldName = `${prefix}${suffix}`;
-
-    // Validate against known Prisma schema field names
-    const validFields = [
-      "veryCommonGIT",
-      "veryCommonBlood",
-      "veryCommonVascular",
-      "veryCommonCardiac",
-      "veryCommonMusculoskeletal",
-      "veryCommonNervousSystem",
-      "veryCommonEye",
-      "veryCommonMetabolism",
-      "veryCommonEar",
-      "veryCommonRespiratory",
-      "veryCommonSkin",
-      "veryCommonInfection",
-      "veryCommonPsychiatric",
-      "veryCommonRenal",
-      "veryCommonHepatic",
-      "veryCommonGeneral",
-      "commonGIT",
-      "commonVascular",
-      "commonInfections",
-      "commonRespiratory",
-      "commonCardiac",
-      "commonBlood",
-      "commonSkin",
-      "commonEye",
-      "commonEar",
-      "commonMetabolism",
-      "commonGeneral",
-      "commonHepatobiliary",
-      "commonImmunity",
-      "commonPsychiatric",
-      "commonNervousSystem",
-      "commonRenal",
-      "commonMusculoskeletal",
-      "uncommonNervous",
-      "uncommonInfections",
-      "uncommonPsychiatric",
-      "uncommonEye",
-      "uncommonRespiratory",
-      "uncommonSkin",
-      "uncommonRenal",
-      "uncommonHepatobiliary",
-      "uncommonVascular",
-      "uncommonGIT",
-      "uncommonMusculoskeletal",
-      "uncommonMetabolism",
-      "uncommonEar",
-      "uncommonCardiac",
-      "uncommonBlood",
-      "uncommonImmunity",
-      "uncommonGeneral",
-      "rareEar",
-      "rareBlood",
-      "rareGIT",
-      "rareHepatic",
-      "rareInfections",
-      "rareCardiac",
-      "rareVascular",
-      "rareImmune",
-      "rareMetabolism",
-      "rareNervous",
-      "rareMusculoskeletal",
-      "rarePsychiatric",
-      "rareEye",
-      "rareRenal",
-      "rareSkin",
-      "rareRespiratory",
-      "rareEndocrine",
-      "rareGeneral",
-      "veryRareVascular",
-      "veryRareEndocrine",
-      "veryRareNervous",
-      "veryRarePsychiatric",
-      "veryRareEye",
-      "veryRareMusculoskeletal",
-      "veryRareBlood",
-      "veryRareCardiac",
-      "veryRareImmune",
-      "veryRareEar",
-      "veryRareRenal",
-      "veryRareGIT",
-      "veryRareHepatobiliary",
-      "veryRareInfections",
-      "veryRareRespiratory",
-      "veryRareSkin",
-      "veryRareGeneral",
-      "veryRareMetabolism",
-      "unknownNervous",
-      "unknownMusculoskeletal",
-      "unknownPsychiatric",
-      "unknownHepatobiliary",
-      "unknownRenal",
-      "unknownSkin",
-      "unknownRespiratory",
-      "unknownImmune",
-      "unknownVascular",
-      "unknownEar",
-      "unknownGIT",
-      "unknownGeneral",
-      "unknownMetabolism",
-      "unknownEye",
-      "unknownBlood",
-      "unknownCardiac",
-      "unknownInfections",
-      "unknownEndocrine",
-    ];
-
-    if (validFields.includes(fieldName)) {
-      return fieldName;
-    }
-
-    return null;
+    // De-duplicate trade names per row while preserving order.
+    return Array.from(new Set(normalized));
   }
+
 }
 
 export default new ImportController();

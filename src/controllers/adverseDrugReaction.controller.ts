@@ -21,7 +21,7 @@ class AdverseDrugReactionController {
                         select: { title: true }
                     },
                     activeSubstance: {
-                        select: { activeSubstance: true }
+                        select: { name: true }
                     }
                 }
             });
@@ -155,7 +155,7 @@ class AdverseDrugReactionController {
                 include: {
                     patient: { select: { id: true, age: true, gender: true } },
                     tradeName: { select: { title: true, id: true } },
-                    activeSubstance: { select: { activeSubstance: true, id: true } },
+                    activeSubstance: { select: { name: true, id: true } },
                     company: { select: { name: true, id: true } }
                 }
             });

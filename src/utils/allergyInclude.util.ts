@@ -7,13 +7,13 @@
  */
 export const patientAllergyInclude = {
   allergen: { include: { allergenCategory: { select: { id: true, name: true } } } },
-  activeSubstance: { select: { id: true, activeSubstance: true, concentration: true, classification: true } },
+  activeSubstance: { select: { id: true, name: true, concentration: true, classificationId: true } },
   tradeName: {
     select: {
       id: true,
       title: true,
       activeSubstanceId: true,
-      activeSubstance: { select: { id: true, activeSubstance: true } },
+      activeSubstance: { select: { id: true, name: true } },
     },
   },
 } as const;

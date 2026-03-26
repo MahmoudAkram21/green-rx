@@ -1,6 +1,5 @@
 import { prisma } from '../lib/prisma';
 import { WarningSeverity, WarningRuleType } from '../../generated/client/client';
-import { patientAllergyInclude } from '../utils/allergyInclude.util';
 
 export interface Warning {
   severity: WarningSeverity;
@@ -31,7 +30,13 @@ export async function generateWarnings(
   const patient = await prisma.patient.findUnique({
     where: { id: patientId },
     include: {
-      patientAllergies: { include: patientAllergyInclude },
+      allergyReports: {
+        include: {
+          patientAllergies: { include: { allergen: true } },
+          activeSubstancePatientAllergies: { include: { activeSubstance: true } },
+          tradeName: { include: { activeSubstance: true } }
+        }
+      },
       patientLifestyles: { include: { lifestyle: true } },
       patientDiseases: {
         include: {
@@ -187,7 +192,38 @@ function checkAllergyWarnings(patient: any, tradeName: any, activeSubstance: any
   const warnings: Warning[] = [];
   let blocked = false;
 
-  const patientAllergies = patient.patientAllergies ?? [];
+  const report = (patient as any).allergyReports;
+  const patientAllergies = [
+    ...((report?.patientAllergies ?? []).map((x: any) => ({
+      allergenId: x.allergenId ?? null,
+      activeSubstanceId: null,
+      tradeNameId: null,
+      allergen: x.allergen ?? null,
+      activeSubstance: null,
+      tradeName: null,
+      reaction: report?.reaction ?? null,
+    }))),
+    ...((report?.activeSubstancePatientAllergies ?? []).map((x: any) => ({
+      allergenId: null,
+      activeSubstanceId: x.activeSubstanceId ?? null,
+      tradeNameId: null,
+      allergen: null,
+      activeSubstance: x.activeSubstance ?? null,
+      tradeName: null,
+      reaction: report?.reaction ?? null,
+    }))),
+    ...(report?.tradeName
+      ? [{
+          allergenId: null,
+          activeSubstanceId: null,
+          tradeNameId: report.tradeNameId ?? null,
+          allergen: null,
+          activeSubstance: null,
+          tradeName: report.tradeName,
+          reaction: report?.reaction ?? null,
+        }]
+      : []),
+  ];
   const substanceLower = (activeSubstance.activeSubstance ?? '').toLowerCase();
   const tradeNameLower = (tradeName.title ?? '').toLowerCase();
 

@@ -2,7 +2,6 @@ import { Request, Response, NextFunction } from 'express';
 import { randomUUID } from 'crypto';
 import QRCode from 'qrcode';
 import { prisma } from '../lib/prisma';
-import { patientAllergyInclude } from '../utils/allergyInclude.util';
 
 const TOKEN_EXPIRY_MINUTES = 10;
 
@@ -115,7 +114,7 @@ export const redeemShareToken = async (req: Request, res: Response, next: NextFu
                 include: {
                     user: { select: { id: true, name: true, email: true } },
                     patientDiseases: { include: { disease: true } },
-                    patientAllergies: { include: patientAllergyInclude },
+                    allergyReports: true,
                 },
             }),
         ]);
@@ -154,7 +153,7 @@ export const redeemShareToken = async (req: Request, res: Response, next: NextFu
                       gender: patient.gender,
                       bloodType: patient.bloodType,
                       diseases: patient.patientDiseases,
-                      allergies: patient.patientAllergies,
+                      allergies: patient.allergyReports,
                   }
                 : null,
         });

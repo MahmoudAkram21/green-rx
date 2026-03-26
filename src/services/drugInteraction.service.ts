@@ -3,7 +3,6 @@ import {
     ActiveSubstance,
     Patient,
 } from '../../generated/client/client';
-import { patientAllergyInclude } from '../utils/allergyInclude.util';
 
 interface DrugInteractionCheck {
     hasDrugInteractions: boolean;
@@ -44,7 +43,13 @@ class DrugInteractionService {
         const patient = await prisma.patient.findUnique({
             where: { id: patientId },
             include: {
-                patientAllergies: { include: patientAllergyInclude },
+                allergyReports: {
+                    include: {
+                        patientAllergies: { include: { allergen: true } },
+                        activeSubstancePatientAllergies: { include: { activeSubstance: true } },
+                        tradeName: { include: { activeSubstance: true } }
+                    }
+                },
                 patientLifestyles: { include: { lifestyle: true } },
                 patientDiseases: {
                     include: {
@@ -100,7 +105,37 @@ class DrugInteractionService {
         const alerts: DrugAlert[] = [];
 
         // 1. Check allergy conflicts
-        const allergyCheck = this.checkAllergies((patient as any).patientAllergies ?? [], newDrug, _tradeNameId);
+        const report = (patient as any).allergyReports;
+        const normalizedPatientAllergies = [
+            ...((report?.patientAllergies ?? []).map((x: any) => ({
+                reaction: report?.reaction ?? null,
+                allergenId: x.allergenId ?? null,
+                activeSubstanceId: null,
+                tradeNameId: null,
+                allergen: x.allergen ?? null,
+                activeSubstance: null,
+                tradeName: null
+            }))),
+            ...((report?.activeSubstancePatientAllergies ?? []).map((x: any) => ({
+                reaction: report?.reaction ?? null,
+                allergenId: null,
+                activeSubstanceId: x.activeSubstanceId ?? null,
+                tradeNameId: null,
+                allergen: null,
+                activeSubstance: x.activeSubstance ?? null,
+                tradeName: null
+            }))),
+            ...(report?.tradeName ? [{
+                reaction: report?.reaction ?? null,
+                allergenId: null,
+                activeSubstanceId: null,
+                tradeNameId: report.tradeNameId ?? null,
+                allergen: null,
+                activeSubstance: null,
+                tradeName: report.tradeName
+            }] : [])
+        ];
+        const allergyCheck = this.checkAllergies(normalizedPatientAllergies, newDrug, _tradeNameId);
         if (allergyCheck.length > 0) {
             warnings.push(...allergyCheck);
         }
@@ -126,7 +161,7 @@ class DrugInteractionService {
                 type: 'pregnancy',
                 severity: 'high',
                 message: `Pregnancy Warning: ${newDrug.pregnancyWarning}`,
-                affectedDrug: newDrug.activeSubstance
+                affectedDrug: newDrug.name
             });
         }
 
@@ -135,7 +170,7 @@ class DrugInteractionService {
                 type: 'lactation',
                 severity: 'high',
                 message: `Lactation Warning: ${newDrug.lactationWarning}`,
-                affectedDrug: newDrug.activeSubstance
+                affectedDrug: newDrug.name
             });
         }
 
@@ -194,7 +229,7 @@ class DrugInteractionService {
                 type: 'lifestyle',
                 severity: 'medium',
                 message: `Lifestyle: Patient indicated "${pl.lifestyle.question}". This medicine has a relevant warning: ${message}`,
-                affectedDrug: drug.activeSubstance
+                affectedDrug: drug.name
             });
         }
         return warnings;
@@ -211,15 +246,15 @@ class DrugInteractionService {
             activeSubstanceId: number | null;
             tradeNameId: number | null;
             allergen: { name: string } | null;
-            activeSubstance: { id: number; activeSubstance: string } | null;
-            tradeName: { id: number; title: string; activeSubstanceId: number; activeSubstance: { id: number; activeSubstance: string } | null } | null;
+            activeSubstance: { id: number; name: string } | null;
+            tradeName: { id: number; title: string; activeSubstanceId: number; activeSubstance: { id: number; name: string } | null } | null;
         }>,
         drug: ActiveSubstance,
         tradeNameId?: number
     ): DrugWarning[] {
         const warnings: DrugWarning[] = [];
-        const drugSubstanceLower = (drug.activeSubstance ?? '').toLowerCase();
-        const drugClassLower = (drug.classification ?? '').toLowerCase();
+        const drugSubstanceLower = (drug.name ?? '').toLowerCase();
+        const drugClassLower = String(drug.classificationId ?? '').toLowerCase();
 
         for (const pa of patientAllergies) {
             let matched = false;
@@ -229,7 +264,7 @@ class DrugInteractionService {
                 // Direct active substance FK match
                 if (pa.activeSubstanceId === drug.id) {
                     matched = true;
-                    allergyLabel = pa.activeSubstance?.activeSubstance ?? `ActiveSubstance#${pa.activeSubstanceId}`;
+                    allergyLabel = pa.activeSubstance?.name ?? `ActiveSubstance#${pa.activeSubstanceId}`;
                 }
             } else if (pa.tradeNameId !== null) {
                 // Trade name FK match: match if same trade name OR same underlying active substance
@@ -238,7 +273,7 @@ class DrugInteractionService {
                     allergyLabel = pa.tradeName?.title ?? `TradeName#${pa.tradeNameId}`;
                 } else if (pa.tradeName?.activeSubstance?.id === drug.id) {
                     matched = true;
-                    allergyLabel = `${pa.tradeName?.title ?? ''} (active substance: ${pa.tradeName?.activeSubstance?.activeSubstance ?? ''})`;
+                    allergyLabel = `${pa.tradeName?.title ?? ''} (active substance: ${pa.tradeName?.activeSubstance?.name ?? ''})`;
                 }
             } else if (pa.allergen) {
                 const allergenName = pa.allergen.name ?? '';
@@ -263,7 +298,7 @@ class DrugInteractionService {
                     severity: inContraindications ? 'critical' : 'high',
                     message: `ALLERGY ALERT: Patient has a documented allergy to ${allergyLabel}. ` +
                         `Reaction: ${pa.reaction || 'Not specified'}`,
-                    affectedDrug: drug.activeSubstance
+                        affectedDrug: drug.name
                 });
             }
         }
@@ -293,7 +328,7 @@ class DrugInteractionService {
                         severity: warning.severity.toLowerCase() as any,
                         message: `Disease Warning (${patientDisease.disease.name}): ${warning.warningMessage}. ` +
                             `Additional info: ${warningFieldValue}`,
-                        affectedDrug: drug.activeSubstance
+                        affectedDrug: drug.name
                     });
                 }
             }
@@ -403,21 +438,21 @@ class DrugInteractionService {
                         }
 
                         // Search for current drug name in the interaction text (case-insensitive)
-                        if (searchText.toLowerCase().includes(currentDrug.activeSubstance.toLowerCase())) {
+                        if (searchText.toLowerCase().includes(currentDrug.name.toLowerCase())) {
                             const drugClass = fieldToClassMap[field] || field.replace('interaction', '');
                             
                             warnings.push({
                                 type: 'interaction',
                                 severity: 'high',
                                 message: `Drug Interaction with ${drugClass}: ${interactionText}`,
-                                affectedDrug: newDrug.activeSubstance,
-                                conflictingDrug: currentDrug.activeSubstance
+                                affectedDrug: newDrug.name,
+                                conflictingDrug: currentDrug.name
                             });
 
                             alerts.push({
                                 interactionType: drugClass,
                                 severity: 'Major',
-                                message: `Interaction detected between ${newDrug.activeSubstance} and ${currentDrug.activeSubstance}`,
+                                message: `Interaction detected between ${newDrug.name} and ${currentDrug.name}`,
                                 requiresAcknowledgement: true
                             });
                         }
@@ -444,7 +479,7 @@ class DrugInteractionService {
                 type: 'age',
                 severity: 'medium',
                 message: `Elderly Patient Warning: ${drug.specialPopulationElderly}`,
-                affectedDrug: drug.activeSubstance
+                affectedDrug: drug.name
             });
         }
 
@@ -454,7 +489,7 @@ class DrugInteractionService {
                 type: 'age',
                 severity: 'medium',
                 message: `Pediatric Warning: ${drug.specialPopulationChildren}`,
-                affectedDrug: drug.activeSubstance
+                affectedDrug: drug.name
             });
         }
 
@@ -465,7 +500,7 @@ class DrugInteractionService {
                 severity: 'high',
                 message: `No pediatric dosing information available for this medication. ` +
                     `Consultation with specialist recommended.`,
-                affectedDrug: drug.activeSubstance
+                affectedDrug: drug.name
             });
         }
 
@@ -491,7 +526,7 @@ class DrugInteractionService {
                     type: 'disease',
                     severity: 'medium',
                     message: `${check.type} Warning: ${check.warning}`,
-                    affectedDrug: drug.activeSubstance
+                    affectedDrug: drug.name
                 });
             }
         }

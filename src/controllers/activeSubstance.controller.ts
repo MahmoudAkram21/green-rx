@@ -77,20 +77,15 @@ export const listClassifications = async (
 ) => {
   try {
     const q = typeof req.query.q === "string" ? req.query.q.trim() : "";
-    const where: any = { classification: { not: null } };
-    if (q) {
-      where.classification = { contains: q, mode: "insensitive" };
-    }
-    const rows = await prisma.activeSubstance.findMany({
-      where,
-      select: { classification: true },
-      distinct: ["classification"],
-      orderBy: { classification: "asc" },
+    const rows = await prisma.classification.findMany({
+      where: q ? { name: { contains: q, mode: "insensitive" } } : undefined,
+      select: { name: true },
+      orderBy: { name: "asc" },
       take: 200,
     });
     const classifications = rows
-      .map((r) => r.classification)
-      .filter((c): c is string => c != null)
+      .map((r) => r.name)
+      .filter((c): c is string => c != null && c !== "")
       .sort((a, b) => a.localeCompare(b, undefined, { sensitivity: "base" }));
     res.json({ classifications });
   } catch (error) {
@@ -118,7 +113,7 @@ export const listConcentrations = async (
       where.concentration = { contains: q, mode: "insensitive" };
     }
     if (classification) {
-      where.classification = { contains: classification, mode: "insensitive" };
+      where.classification = { is: { name: { contains: classification, mode: "insensitive" } } };
     }
     if (activeSubstanceId !== undefined && !Number.isNaN(activeSubstanceId)) {
       where.id = activeSubstanceId;
@@ -161,7 +156,7 @@ export const listDosageForms = async (
       where.dosageForm = { contains: q, mode: "insensitive" };
     }
     if (classification) {
-      where.classification = { contains: classification, mode: "insensitive" };
+      where.classification = { is: { name: { contains: classification, mode: "insensitive" } } };
     }
     if (activeSubstanceId !== undefined && !Number.isNaN(activeSubstanceId)) {
       where.id = activeSubstanceId;
@@ -195,8 +190,6 @@ export const searchActiveSubstances = async (
       search,
       therapeuticClass,
       classification,
-      companyId,
-      requiresPrescription,
       page = "1",
       limit = "20",
     } = req.query;
@@ -206,27 +199,26 @@ export const searchActiveSubstances = async (
     if (search) {
       whereClause.OR = [
         {
-          activeSubstance: { contains: search as string, mode: "insensitive" },
+          name: { contains: search as string, mode: "insensitive" },
         },
-        { classification: { contains: search as string, mode: "insensitive" } },
+        {
+          classification: {
+            is: { name: { contains: search as string, mode: "insensitive" } },
+          },
+        },
       ];
     }
 
     const classificationFilter = classification || therapeuticClass;
     if (classificationFilter) {
       whereClause.classification = {
-        contains: classificationFilter as string,
-        mode: "insensitive",
+        is: {
+          name: { contains: classificationFilter as string, mode: "insensitive" },
+        },
       };
     }
 
-    if (companyId) {
-      whereClause.companyId = parseInt(companyId as string);
-    }
-
-    if (requiresPrescription !== undefined) {
-      whereClause.requiresPrescription = requiresPrescription === "true";
-    }
+    // NOTE: companyId/requiresPrescription were removed from ActiveSubstance schema.
 
     const skip = (parseInt(page as string) - 1) * parseInt(limit as string);
     const take = parseInt(limit as string);
@@ -236,7 +228,7 @@ export const searchActiveSubstances = async (
         where: whereClause,
         skip,
         take,
-        orderBy: { activeSubstance: "asc" },
+        orderBy: { name: "asc" },
         include: {
           _count: { select: { tradeNames: true } },
         },
@@ -366,7 +358,7 @@ export const getDrugInteractions = async (
                         activeSubstance: {
                           select: {
                             id: true,
-                            activeSubstance: true,
+                            name: true,
                           },
                         },
                       },
@@ -382,7 +374,7 @@ export const getDrugInteractions = async (
             activeSubstance: {
               select: {
                 id: true,
-                activeSubstance: true,
+                name: true,
               },
             },
           },

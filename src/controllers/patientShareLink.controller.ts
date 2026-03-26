@@ -52,7 +52,7 @@ class PatientShareLinkController {
                 include: {
                     patient: {
                         include: {
-                            patientAllergies: { include: { allergen: { include: { allergenCategory: { select: { id: true, name: true } } } }, activeSubstance: { select: { id: true, activeSubstance: true } }, tradeName: { select: { id: true, title: true, activeSubstanceId: true, activeSubstance: { select: { id: true, activeSubstance: true } } } } } },
+                            allergyReports: true,
                             prescriptions: {
                                 include: {
                                     prescriptionMedicines: {

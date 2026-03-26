@@ -7,7 +7,6 @@ import { UserRole, AgeClassification, Gender } from '../../generated/client/clie
 import { registerSchema, loginSchema, refreshTokenSchema } from '../zod/auth.zod';
 import { cleanupFile, moveLicenseToRoleFolder } from '../config/multer.config';
 import { computeBmi } from '../utils/bmi.util';
-import { patientAllergyInclude } from '../utils/allergyInclude.util';
 
 // Register
 export const register = async (req: Request, res: Response, next: NextFunction) => {
@@ -401,7 +400,7 @@ const patientProfileInclude = {
     medicalHistories: { include: { disease: true } },
     familyHistories: { include: { disease: true } },
     patientLifestyles: { include: { lifestyle: true } },
-    patientAllergies: { include: patientAllergyInclude },
+    allergyReports: true,
     childrenProfiles: true,
     patientDiseases: { include: { disease: true } }
 } as const;
