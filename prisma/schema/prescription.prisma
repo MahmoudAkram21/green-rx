@@ -1,0 +1,76 @@
+model Prescription {
+  id                      Int                @id @default(autoincrement())
+  doctorId                Int
+  patientId               Int
+  visitId                 Int? // optional link to visit (first visit vs follow-up)
+  status                  PrescriptionStatus @default(Draft)
+  prescriptionDate        DateTime
+  validFrom               DateTime
+  validUntil              DateTime
+  dosage                  String? // legacy display; use prescriptionItems for per-drug data
+  frequency               String?
+  duration                String?
+  instructions            String?
+  maxRefills              Int                @default(0)
+  currentRefillCount      Int                @default(0)
+  notes                   String?
+  version                 Int                @default(1)
+  pdfUrl                  String? // Generated prescription PDF
+  isSharedViaApp          Boolean            @default(false)
+  sharedVia               Json? // Array of sharing methods ["WhatsApp", "Email", etc.]
+  isAddedToProfile        Boolean            @default(false) // If patient added to concomitant drugs
+  conditionDiagnosis      String? // diagnosis from First Visit / consultation
+  initialCheckUp          Json? // vitals: height, weight, bloodPressure, bloodGlucose, bodyTemperature, heartRate, respiratoryRate, oxygenSaturation
+  testResultsOrScans      Json? // array of file names/URLs for uploaded tests or scans
+  followUpAppointmentDate DateTime? // next appointment date (DD/MM/YYYY from UI)
+  createdAt               DateTime           @default(now())
+  updatedAt               DateTime           @updatedAt
+  deletedAt               DateTime?
+
+  // Relations
+  doctor                Doctor                 @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  patient               Patient                @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  visit                 Visit?                 @relation(fields: [visitId], references: [id], onDelete: SetNull)
+  prescriptionMedicines PrescriptionMedicine[]
+  prescriptionVersions  PrescriptionVersion[]
+  drugInteractionAlerts DrugInteractionAlert[]
+
+  @@index([doctorId])
+  @@index([patientId])
+  @@index([visitId])
+  @@index([status])
+  @@index([prescriptionDate])
+  @@map("prescriptions")
+}
+
+model PrescriptionMedicine {
+  id                Int      @id @default(autoincrement())
+  prescriptionId    Int
+  patientMedicineId Int
+  sortOrder         Int      @default(0)
+  createdAt         DateTime @default(now())
+
+  prescription    Prescription    @relation(fields: [prescriptionId], references: [id], onDelete: Cascade)
+  patientMedicine PatientMedicine @relation(fields: [patientMedicineId], references: [id], onDelete: Cascade)
+
+  @@unique([prescriptionId, patientMedicineId])
+  @@index([prescriptionId])
+  @@index([patientMedicineId])
+  @@map("prescription_medicines")
+}
+
+model PrescriptionVersion {
+  id             Int      @id @default(autoincrement())
+  prescriptionId Int
+  version        Int
+  changes        Json? // what changed
+  changedBy      Int // User ID
+  createdAt      DateTime @default(now())
+
+  // Relations
+  prescription Prescription @relation(fields: [prescriptionId], references: [id], onDelete: Cascade)
+
+  @@index([prescriptionId])
+  @@index([version])
+  @@map("prescription_versions")
+}
