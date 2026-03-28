@@ -1,128 +1,145 @@
-
 model AllergenCategory {
-  id             Int      @id @default(autoincrement())
-  name           Json     @db.Json // { en: string, ar: string }
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  id        Int      @id @default(autoincrement())
+  name      Json     @db.Json // { en: string, ar: string }
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   allergens Allergen[]
 
   @@map("allergen_categories")
 }
+
 model Allergen {
-  id             Int      @id @default(autoincrement())
-  name           String
+  id   Int    @id @default(autoincrement())
+  name String
 
   allergenCategoryId Int
 
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  createdAt                DateTime                  @default(now())
+  updatedAt                DateTime                  @updatedAt
   allergenActiveSubstances AllergenActiveSubstance[]
-  allergenCategory AllergenCategory @relation(fields: [allergenCategoryId], references: [id], onDelete: Restrict)
-  patientAllergies PatientAllergy[]
-  allergenExcipients AllergenExcipient[]
+  allergenCategory         AllergenCategory          @relation(fields: [allergenCategoryId], references: [id], onDelete: Restrict)
+  patientAllergies         PatientAllergy[]
+  allergenExcipients       AllergenExcipient[]
+
   @@index([name])
   @@map("allergens")
 }
 
 model AllergenActiveSubstance {
-    id Int @id @default(autoincrement())
-    allergenId Int
-    activeSubstanceId Int
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-    allergen Allergen @relation(fields: [allergenId], references: [id], onDelete: Cascade)
-    activeSubstance ActiveSubstance @relation(fields: [activeSubstanceId], references: [id], onDelete: Cascade)
-    @@unique([allergenId, activeSubstanceId])
-    @@map("allergen_active_substances")
+  id                Int             @id @default(autoincrement())
+  allergenId        Int
+  activeSubstanceId Int
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  allergen          Allergen        @relation(fields: [allergenId], references: [id], onDelete: Cascade)
+  activeSubstance   ActiveSubstance @relation(fields: [activeSubstanceId], references: [id], onDelete: Cascade)
+
+  @@unique([allergenId, activeSubstanceId])
+  @@map("allergen_active_substances")
 }
 
 model AllergenExcipient {
-    id Int @id @default(autoincrement())
-    allergenId Int
-    excipientId Int
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-    allergen Allergen @relation(fields: [allergenId], references: [id], onDelete: Cascade)
-    excipient Excipient @relation(fields: [excipientId], references: [id], onDelete: Cascade)
-    @@unique([allergenId, excipientId])
-    @@map("allergen_excipients")
+  id          Int       @id @default(autoincrement())
+  allergenId  Int
+  excipientId Int
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  allergen    Allergen  @relation(fields: [allergenId], references: [id], onDelete: Cascade)
+  excipient   Excipient @relation(fields: [excipientId], references: [id], onDelete: Cascade)
+
+  @@unique([allergenId, excipientId])
+  @@map("allergen_excipients")
 }
-
-
-
 
 model PatientAllergy {
-    id Int @id @default(autoincrement())
-    patientAllergyReportId Int
-    allergenId Int
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-    allergen Allergen @relation(fields: [allergenId], references: [id], onDelete: Restrict)
-    patientAllergyReport PatientAllergyReport @relation(fields: [patientAllergyReportId], references: [id], onDelete: Cascade)
-    @@map("patient_allergy")
+  id                     Int                  @id @default(autoincrement())
+  patientAllergyReportId Int
+  allergenId             Int
+  createdAt              DateTime             @default(now())
+  updatedAt              DateTime             @updatedAt
+  allergen               Allergen             @relation(fields: [allergenId], references: [id], onDelete: Restrict)
+  patientAllergyReport   PatientAllergyReport @relation(fields: [patientAllergyReportId], references: [id], onDelete: Cascade)
+
+  @@map("patient_allergy")
 }
+
 // Patient's allergies. Exactly one of allergenId, activeSubstanceId, tradeNameId must be set.
 model PatientAllergyReport {
-  id                Int      @id @default(autoincrement())
-  patientId         Int     @unique
+  id          Int      @id @default(autoincrement())
+  patientId   Int      @unique
   // Catalog allergen (Food, Respiratory, Skin, Insect Stings, or fixed Medication entries like Penicillin)
   // Medication allergy selected from active substance search
   // Medication allergy selected from trade name search
-  tradeNameId       Int?
-  reaction          String?
-  notes             String?
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  tradeNameId Int?
+  reaction    String?
+  notes       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
-//   patient         Patient        @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  //   patient         Patient        @relation(fields: [patientId], references: [id], onDelete: Cascade)
 
-  classificationPatientAllergies ClassificationPatientAllergy[]
-  patientAllergies PatientAllergy[]
-  tradeName       TradeName?       @relation(fields: [tradeNameId], references: [id], onDelete: Restrict)
-  excipientPatientAllergies ExcipientPatientAllergy[] 
+  classificationPatientAllergies  ClassificationPatientAllergy[]
+  patientAllergies                PatientAllergy[]
+  tradeName                       TradenamePatientAllergy[]
+  excipientPatientAllergies       ExcipientPatientAllergy[]
   activeSubstancePatientAllergies ActiveSubstancePatientAllergy[]
-  patient Patient @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  patient                         Patient                         @relation(fields: [patientId], references: [id], onDelete: Cascade)
+
   @@unique([patientId, tradeNameId])
   @@index([patientId])
   @@index([tradeNameId])
   @@map("patient_allergy_reports")
 }
 
-model ClassificationPatientAllergy {
-    id Int @id @default(autoincrement())
-    patientAllergyReportId Int
-    classificationId Int
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-    patientAllergyReport PatientAllergyReport @relation(fields: [patientAllergyReportId], references: [id], onDelete: Cascade)
-    classification Classification @relation(fields: [classificationId], references: [id], onDelete: Cascade)
-    @@unique([patientAllergyReportId, classificationId])
-    @@map("classification_patient_allergy")
+model TradenamePatientAllergy {
+  id                     Int                  @id @default(autoincrement())
+  patientAllergyReportId Int
+  tradeNameId            Int
+  createdAt              DateTime             @default(now())
+  updatedAt              DateTime             @updatedAt
+  patientAllergyReport   PatientAllergyReport @relation(fields: [patientAllergyReportId], references: [id], onDelete: Cascade)
+  tradeName              TradeName            @relation(fields: [tradeNameId], references: [id], onDelete: Restrict)
+
+  @@unique([patientAllergyReportId, tradeNameId])
+  @@map("tradename_patient_allergy")
 }
 
+model ClassificationPatientAllergy {
+  id                     Int                  @id @default(autoincrement())
+  patientAllergyReportId Int
+  classificationId       Int
+  createdAt              DateTime             @default(now())
+  updatedAt              DateTime             @updatedAt
+  patientAllergyReport   PatientAllergyReport @relation(fields: [patientAllergyReportId], references: [id], onDelete: Cascade)
+  classification         Classification       @relation(fields: [classificationId], references: [id], onDelete: Cascade)
+
+  @@unique([patientAllergyReportId, classificationId])
+  @@map("classification_patient_allergy")
+}
 
 model ExcipientPatientAllergy {
-    id Int @id @default(autoincrement())
-    patientAllergyReportId Int
-    excipientId Int
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-    patientAllergyReport PatientAllergyReport @relation(fields: [patientAllergyReportId], references: [id], onDelete: Cascade)
-    excipient Excipient @relation(fields: [excipientId], references: [id], onDelete: Cascade)
-    @@unique([patientAllergyReportId, excipientId])
-    @@map("excipient_patient_allergies")
+  id                     Int                  @id @default(autoincrement())
+  patientAllergyReportId Int
+  excipientId            Int
+  createdAt              DateTime             @default(now())
+  updatedAt              DateTime             @updatedAt
+  patientAllergyReport   PatientAllergyReport @relation(fields: [patientAllergyReportId], references: [id], onDelete: Cascade)
+  excipient              Excipient            @relation(fields: [excipientId], references: [id], onDelete: Cascade)
+
+  @@unique([patientAllergyReportId, excipientId])
+  @@map("excipient_patient_allergies")
 }
 
-
 model ActiveSubstancePatientAllergy {
-    id Int @id @default(autoincrement())
-    patientAllergyReportId Int
-    activeSubstanceId Int
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-    patientAllergyReport PatientAllergyReport @relation(fields: [patientAllergyReportId], references: [id], onDelete: Cascade)
-    activeSubstance ActiveSubstance @relation(fields: [activeSubstanceId], references: [id], onDelete: Cascade)
-    @@unique([patientAllergyReportId, activeSubstanceId])
-    @@map("active_substance_patient_allergies")
+  id                     Int                  @id @default(autoincrement())
+  patientAllergyReportId Int
+  activeSubstanceId      Int
+  createdAt              DateTime             @default(now())
+  updatedAt              DateTime             @updatedAt
+  patientAllergyReport   PatientAllergyReport @relation(fields: [patientAllergyReportId], references: [id], onDelete: Cascade)
+  activeSubstance        ActiveSubstance      @relation(fields: [activeSubstanceId], references: [id], onDelete: Cascade)
+
+  @@unique([patientAllergyReportId, activeSubstanceId])
+  @@map("active_substance_patient_allergies")
 }

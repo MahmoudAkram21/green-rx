@@ -77,8 +77,12 @@ async function loadPatientAllergyReport(patientId: number) {
       },
       tradeName: {
         include: {
-          activeSubstance: { select: { id: true, name: true, classificationId: true } },
-        },
+          tradeName: {
+            include: {
+              activeSubstance: { select: { id: true, name: true, classificationId: true } },
+            },
+          }
+        }
       },
     },
   });
@@ -182,8 +186,11 @@ export async function checkAllergyConflicts(input: AllergyCheckInput): Promise<A
 
   // ── 2. Trade name FK match ───────────────────────────────────────────────────
   if (resolvedTradeNameId && report.tradeNameId) {
+
+
+
     // Direct trade name match
-    if (report.tradeNameId === resolvedTradeNameId) {
+    if (report.tradeName === resolvedTradeNameId) {
       conflicts.push({
         type: 'trade_name',
         matchedId: report.tradeNameId,

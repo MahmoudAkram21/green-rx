@@ -1,12 +1,11 @@
-
 model ActiveSubstance {
-  id              Int     @id @default(autoincrement())
-  name String
-  concentration   String?
+  id               Int             @id @default(autoincrement())
+  name             String
+  concentration    String?
   classificationId Int?
-  classification Classification? @relation(fields: [classificationId], references: [id], onDelete: Cascade)
-  dosageForm      String?
-  indication      String?
+  classification   Classification? @relation(fields: [classificationId], references: [id], onDelete: Cascade)
+  dosageForm       String?
+  indication       String?
 
   // Dosage Fields
   adultDoseMaxPerDay String?
@@ -15,7 +14,7 @@ model ActiveSubstance {
   pediatricDose      String?
 
   // Content Fields
-  eliminationPathway            String?
+  eliminationPathway String?
 
   // Warning Fields
   contraindications           Json?
@@ -200,36 +199,36 @@ model ActiveSubstance {
   deletedAt            DateTime?
 
   // Relations
-  tradeNames                     TradeName[]
-  diseaseActiveSubstanceWarnings DiseaseActiveSubstanceWarning[]
-  diseaseWarningRules            DiseaseWarningRule[]
-  medicineAlternatives           MedicineAlternative[]           @relation("PrimarySubstance")
-  alternativeTo                  MedicineAlternative[]           @relation("AlternativeSubstance")
-  adverseReactions               AdverseDrugReaction[]
-  patientMedicines               PatientMedicine[]
-  addMedicineRequests            AddMedicineRequest[]
-  medicationSideEffects          MedicationSideEffect[]
+  tradeNames                      TradeName[]
+  diseaseActiveSubstanceWarnings  DiseaseActiveSubstanceWarning[]
+  diseaseWarningRules             DiseaseWarningRule[]
+  medicineAlternatives            MedicineAlternative[]           @relation("PrimarySubstance")
+  alternativeTo                   MedicineAlternative[]           @relation("AlternativeSubstance")
+  adverseReactions                AdverseDrugReaction[]
+  patientMedicines                PatientMedicine[]
+  addMedicineRequests             AddMedicineRequest[]
+  medicationSideEffects           MedicationSideEffect[]
   activeSubstancePatientAllergies ActiveSubstancePatientAllergy[]
-  allergenActiveSubstances AllergenActiveSubstance[]
+  allergenActiveSubstances        AllergenActiveSubstance[]
 
   @@index([name])
   @@index([isActive])
   @@map("active_substances")
 }
 
-
 model Classification {
-    id Int @id @default(autoincrement())
-    name String
-    description String?
-    isActive Boolean @default(true)
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-    activeSubstances ActiveSubstance[]
-    classificationPatientAllergies ClassificationPatientAllergy[]
-    @@index([name])
-    @@index([isActive])
-    @@map("classifications")
+  id                             Int                            @id @default(autoincrement())
+  name                           String
+  description                    String?
+  isActive                       Boolean                        @default(true)
+  createdAt                      DateTime                       @default(now())
+  updatedAt                      DateTime                       @updatedAt
+  activeSubstances               ActiveSubstance[]
+  classificationPatientAllergies ClassificationPatientAllergy[]
+
+  @@index([name])
+  @@index([isActive])
+  @@map("classifications")
 }
 
 model TradeName {
@@ -247,7 +246,7 @@ model TradeName {
 
   // Relations
   activeSubstance              ActiveSubstance               @relation(fields: [activeSubstanceId], references: [id], onDelete: Cascade)
-  company                      Company?                       @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  company                      Company?                      @relation(fields: [companyId], references: [id], onDelete: Cascade)
   contractingCompanyTradeNames ContractingCompanyTradeName[]
   drugInteractionAlerts        DrugInteractionAlert[]
   batchHistories               BatchHistory[]
@@ -255,37 +254,37 @@ model TradeName {
   patientMedicines             PatientMedicine[]
   addMedicineRequests          AddMedicineRequest[]
   tradeNameSideEffects         TradeNameSideEffect[]
-  patientAllergies             PatientAllergyReport[]
   excipientTradeName           ExcipientTradeName[]
+  tradnamePatientAllergies     TradenamePatientAllergy[]
+
   @@index([title])
   @@index([activeSubstanceId])
   @@index([companyId])
   @@index([availabilityStatus])
-
   @@map("trade_names")
 }
 
-
 model Excipient {
-    id Int @id @default(autoincrement())
-    name String
-    description String?
-    isActive Boolean @default(true)
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-    excipientTradeName ExcipientTradeName[]
-    excipientPatientAllergies ExcipientPatientAllergy[]
-    allergenExcipients AllergenExcipient[]
+  id                        Int                       @id @default(autoincrement())
+  name                      String
+  description               String?
+  isActive                  Boolean                   @default(true)
+  createdAt                 DateTime                  @default(now())
+  updatedAt                 DateTime                  @updatedAt
+  excipientTradeName        ExcipientTradeName[]
+  excipientPatientAllergies ExcipientPatientAllergy[]
+  allergenExcipients        AllergenExcipient[]
 }
 
 model ExcipientTradeName {
-    id Int @id @default(autoincrement())
-    excipientId Int
-    tradeNameId Int
-    isActive Boolean @default(true)
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-    excipient Excipient @relation(fields: [excipientId], references: [id], onDelete: Cascade)
-    tradeName TradeName @relation(fields: [tradeNameId], references: [id], onDelete: Cascade)
-    @@unique([excipientId, tradeNameId])
+  id          Int       @id @default(autoincrement())
+  excipientId Int
+  tradeNameId Int
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  excipient   Excipient @relation(fields: [excipientId], references: [id], onDelete: Cascade)
+  tradeName   TradeName @relation(fields: [tradeNameId], references: [id], onDelete: Cascade)
+
+  @@unique([excipientId, tradeNameId])
 }

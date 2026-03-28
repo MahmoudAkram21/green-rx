@@ -10,9 +10,9 @@ export const getAllergiesByPatient = async (req: Request, res: Response) => {
             where: { patientId: parseInt(patientId) },
             orderBy: { createdAt: 'desc' },
             include: {
-                patientAllergies: { include: { allergen: { select: { id: true, name: true }  , include:{allergenCategory : true}} } },
-                activeSubstancePatientAllergies: { include: { activeSubstance: { select: { id: true, name: true , classificationId: true } } } },
-                tradeName: { select: { id: true, title: true, activeSubstanceId: true, activeSubstance: { select: { id: true, name: true , classificationId: true } } } },
+                patientAllergies: { include: { allergen: { select: { id: true, name: true }, include: { allergenCategory: true } } } },
+                activeSubstancePatientAllergies: { include: { activeSubstance: { select: { id: true, name: true, classificationId: true } } } },
+                tradeName: { select: { id: true, tradeName: { select: { title: true, activeSubstanceId: true, activeSubstance: { select: { id: true, name: true, classificationId: true } } } } } },
             },
         });
 
@@ -53,9 +53,9 @@ export const checkMedicineAllergies = async (req: Request, res: Response) => {
         const { patientId, medicineId } = req.params;
         const medicineIdNum = parseInt(medicineId);
 
-       const patientAllergyReport = await prisma.patientAllergyReport.findUniqueOrThrow({
+        const patientAllergyReport = await prisma.patientAllergyReport.findUniqueOrThrow({
             where: { patientId: parseInt(patientId) },
-            select : {
+            select: {
                 id: true,
                 patientId: true,
                 tradeNameId: true,
@@ -65,9 +65,9 @@ export const checkMedicineAllergies = async (req: Request, res: Response) => {
                 updatedAt: true,
                 patientAllergies: true,
                 tradeName: true,
-                excipientPatientAllergies : true,
-                activeSubstancePatientAllergies : { select: { id: true, activeSubstanceId: true  , activeSubstance : true} },
-                classificationPatientAllergies : true,
+                excipientPatientAllergies: true,
+                activeSubstancePatientAllergies: { select: { id: true, activeSubstanceId: true, activeSubstance: true } },
+                classificationPatientAllergies: true,
             },
         });
 
@@ -80,43 +80,44 @@ export const checkMedicineAllergies = async (req: Request, res: Response) => {
 
         const medicine = await prisma.tradeName.findUnique({
             where: { id: medicineIdNum },
-            select: { id: true, title: true, activeSubstanceId: true, activeSubstance: { select: { id: true, name: true , classificationId: true } } , excipientTradeName: { include: { excipient: { select: { id: true, name: true } } } } },
+            select: { id: true, title: true, activeSubstanceId: true, activeSubstance: { select: { id: true, name: true, classificationId: true } }, excipientTradeName: { include: { excipient: { select: { id: true, name: true } } } } },
         });
 
         if (!medicine) {
             return res.status(404).json({ message: 'Medicine not found' });
         }
 
-         const conflicts: {
-            actives : number[],
-            excipients : number[],
-            allergens : number[],
-            classifications : number[],
-         } = {
-            actives : [],
-            excipients : [],
-            allergens : [],
-            classifications : [],
-         };
-
-         if (patientAllergyReport.tradeName?.id === medicine.id) {
-            conflicts.actives.push(medicine.activeSubstanceId);
-            medicine.activeSubstance?.classificationId && conflicts.classifications.push(medicine.activeSubstance?.classificationId);
-            medicine.excipientTradeName.forEach((et) => {
-                patientAllergyReport.excipientPatientAllergies.forEach((epa) => {
-                    if (epa.excipientId === et.excipientId) conflicts.excipients.push(epa.excipientId);
+        const conflicts: {
+            actives: number[],
+            excipients: number[],
+            allergens: number[],
+            classifications: number[],
+        } = {
+            actives: [],
+            excipients: [],
+            allergens: [],
+            classifications: [],
+        };
+        patientAllergyReport.tradeName.map((tradeName) => {
+            if (tradeName?.id === medicine.id) {
+                conflicts.actives.push(medicine.activeSubstanceId);
+                medicine.activeSubstance?.classificationId && conflicts.classifications.push(medicine.activeSubstance?.classificationId);
+                medicine.excipientTradeName.forEach((et) => {
+                    patientAllergyReport.excipientPatientAllergies.forEach((epa) => {
+                        if (epa.excipientId === et.excipientId) conflicts.excipients.push(epa.excipientId);
+                    });
                 });
-            });
-         }
-         patientAllergyReport.activeSubstancePatientAllergies.forEach((pa) => {
+            }
+        })
+        patientAllergyReport.activeSubstancePatientAllergies.forEach((pa) => {
             if (pa.activeSubstanceId === medicine.activeSubstanceId) conflicts.actives.push(pa.activeSubstanceId);
             if (pa.activeSubstance.classificationId === medicine.activeSubstance.classificationId && medicine.activeSubstance.classificationId) conflicts.classifications.push(medicine.activeSubstance.classificationId);
-         });
-         patientAllergyReport.classificationPatientAllergies.forEach((cpa) => {
+        });
+        patientAllergyReport.classificationPatientAllergies.forEach((cpa) => {
             if (cpa.classificationId === medicine.activeSubstance.classificationId && medicine.activeSubstance.classificationId) conflicts.classifications.push(cpa.classificationId);
-         });
+        });
 
-         
+
 
         if (conflicts.actives.length > 0 || conflicts.excipients.length > 0 || conflicts.classifications.length > 0) {
             return res.json({

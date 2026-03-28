@@ -1,3 +1,5 @@
+/** @format */
+
 import { z } from "zod";
 import {
   Gender,
@@ -13,8 +15,14 @@ export const createPatientSchema = z.object({
   dateOfBirth: z.string().datetime().optional(), // when provided, age and ageClassification are computed by backend
   age: z.number().int().min(0).max(150).optional(), // optional; ignored if dateOfBirth provided
   ageClassification: z.nativeEnum(AgeClassification).optional(), // optional; computed from dateOfBirth when provided
-  weight: z.number().positive({ message: "Weight must be greater than zero" }).optional(),
-  height: z.number().positive({ message: "Height must be greater than zero" }).optional(),
+  weight: z
+    .number()
+    .positive({ message: "Weight must be greater than zero" })
+    .optional(),
+  height: z
+    .number()
+    .positive({ message: "Height must be greater than zero" })
+    .optional(),
   pregnancyStatus: z.boolean().optional(),
   trimester: z.number().int().min(1).max(3).optional(),
   pregnancyWarning: z.boolean().optional(),
@@ -52,9 +60,19 @@ export const patientLifestyleItemSchema = z.object({
   value: z.boolean().default(false),
 });
 
-export const batchPatientLifestyleSchema = z.array(patientLifestyleItemSchema).min(1);
+export const batchPatientLifestyleSchema = z
+  .array(patientLifestyleItemSchema)
+  .min(1);
 
-const allergenTypeEnum = z.enum(["Drug", "Food", "Pollen", "Dust", "Pet", "Fragrance", "Other"]);
+const allergenTypeEnum = z.enum([
+  "Drug",
+  "Food",
+  "Pollen",
+  "Dust",
+  "Pet",
+  "Fragrance",
+  "Other",
+]);
 
 export const allergySchema = z.object({
   allergen: z.string().min(1),
@@ -71,17 +89,23 @@ export const allergySchema = z.object({
  */
 export const patientAllergyReportSchema = z
   .object({
-    tradeNameId: z.number().int().positive().optional(),
+    tradeNameIds: z.array(z.number().positive()).optional(),
     allergenIds: z.array(z.number().int().positive()).optional().default([]),
-    activeSubstanceIds: z.array(z.number().int().positive()).optional().default([]),
+    activeSubstanceIds: z
+      .array(z.number().int().positive())
+      .optional()
+      .default([]),
     excipientIds: z.array(z.number().int().positive()).optional().default([]),
-    classificationIds: z.array(z.number().int().positive()).optional().default([]),
+    classificationIds: z
+      .array(z.number().int().positive())
+      .optional()
+      .default([]),
     reaction: z.string().optional().nullable(),
     notes: z.string().optional().nullable(),
   })
   .refine(
     (d) =>
-      Boolean(d.tradeNameId) ||
+      Boolean(d.tradeNameIds) ||
       (d.allergenIds?.length ?? 0) > 0 ||
       (d.activeSubstanceIds?.length ?? 0) > 0 ||
       (d.excipientIds?.length ?? 0) > 0 ||
@@ -89,7 +113,7 @@ export const patientAllergyReportSchema = z
     {
       message:
         "At least one of tradeNameId, allergenIds, activeSubstanceIds, excipientIds, or classificationIds must be provided",
-    }
+    },
   );
 
 export const batchAllergySchema = z.array(allergySchema);
@@ -99,8 +123,14 @@ export const childProfileSchema = z.object({
   dateOfBirth: z.string().datetime(),
   gender: z.nativeEnum(Gender),
   ageClassification: z.nativeEnum(AgeClassification),
-  weight: z.number().positive({ message: "Weight must be greater than zero" }).optional(),
-  height: z.number().positive({ message: "Height must be greater than zero" }).optional(),
+  weight: z
+    .number()
+    .positive({ message: "Weight must be greater than zero" })
+    .optional(),
+  height: z
+    .number()
+    .positive({ message: "Height must be greater than zero" })
+    .optional(),
   allergies: z.any().optional(), // JSON
   diseases: z.any().optional(), // JSON
   medicalHistory: z.any().optional(), // JSON

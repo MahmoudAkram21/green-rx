@@ -1,3 +1,5 @@
+/** @format */
+
 import "dotenv/config";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient, Prisma } from "../generated/client/client";
@@ -179,7 +181,9 @@ async function main() {
     where: { name: { in: classificationNames } },
     select: { id: true, name: true },
   });
-  const classificationByName = new Map(classifications.map((c) => [c.name, c.id]));
+  const classificationByName = new Map(
+    classifications.map((c) => [c.name, c.id]),
+  );
   const activeSubstances = await Promise.all([
     prisma.activeSubstance.create({
       data: {
@@ -291,7 +295,9 @@ async function main() {
       data: {
         name: "Losartan",
         concentration: "50mg",
-        classificationId: classificationByName.get("ARB (Angiotensin Receptor Blocker)"),
+        classificationId: classificationByName.get(
+          "ARB (Angiotensin Receptor Blocker)",
+        ),
         dosageForm: "Tablet",
         indication: "Hypertension, Heart failure",
         adultDoseMaxPerDay: "100mg",
@@ -410,7 +416,8 @@ async function main() {
     prisma.excipient.create({
       data: {
         name: "Magnesium Stearate",
-        description: "Lubricant used to prevent ingredients from sticking during manufacturing",
+        description:
+          "Lubricant used to prevent ingredients from sticking during manufacturing",
       },
     }),
     prisma.excipient.create({
@@ -1007,7 +1014,15 @@ async function main() {
   // SECTION 6a: DOCTOR CLINICS (multiple clinics per doctor)
   // ============================================
   console.log("\n🏥 Creating doctor clinics...");
-  const clinicData: Array<{ doctorId: number; name: string; address: string; city: string; latitude: number; longitude: number; workingHours: object }> = [];
+  const clinicData: Array<{
+    doctorId: number;
+    name: string;
+    address: string;
+    city: string;
+    latitude: number;
+    longitude: number;
+    workingHours: object;
+  }> = [];
   const workingHoursWeek = [
     { day: "monday", startTime: "09:00", endTime: "17:00" },
     { day: "tuesday", startTime: "09:00", endTime: "17:00" },
@@ -1033,12 +1048,17 @@ async function main() {
         city: d.city ?? "City",
         latitude: 40.72,
         longitude: -74.01,
-        workingHours: [{ day: "monday", startTime: "14:00", endTime: "18:00" }, { day: "wednesday", startTime: "14:00", endTime: "18:00" }],
+        workingHours: [
+          { day: "monday", startTime: "14:00", endTime: "18:00" },
+          { day: "wednesday", startTime: "14:00", endTime: "18:00" },
+        ],
       });
     }
   }
   await prisma.doctorClinic.createMany({ data: clinicData });
-  console.log(`✅ Created ${clinicData.length} doctor clinics for ${doctors.length} doctors`);
+  console.log(
+    `✅ Created ${clinicData.length} doctor clinics for ${doctors.length} doctors`,
+  );
 
   // ============================================
   // SECTION 6b: ORGANS (for surgical history dropdown)
@@ -1049,8 +1069,12 @@ async function main() {
   const organKidney = await prisma.organ.create({ data: { name: "Kidney" } });
   const organLung = await prisma.organ.create({ data: { name: "Lung" } });
   const organEye = await prisma.organ.create({ data: { name: "Eye" } });
-  const organAppendix = await prisma.organ.create({ data: { name: "Appendix" } });
-  const organGallbladder = await prisma.organ.create({ data: { name: "Gallbladder" } });
+  const organAppendix = await prisma.organ.create({
+    data: { name: "Appendix" },
+  });
+  const organGallbladder = await prisma.organ.create({
+    data: { name: "Gallbladder" },
+  });
   const organKnee = await prisma.organ.create({ data: { name: "Knee" } });
   const organTonsils = await prisma.organ.create({ data: { name: "Tonsils" } });
   console.log("✅ Created 9 organs");
@@ -1399,7 +1423,7 @@ async function main() {
         notes: "Seasonal allergies",
       },
       {
-        patientId: patients[4].id,    
+        patientId: patients[4].id,
         diseaseId: diseases[2].id, // Asthma
         severity: "Moderate",
         notes: "Adult-onset asthma, uses maintenance inhaler",
@@ -1418,57 +1442,139 @@ async function main() {
   // ============================================
   console.log("\n🌿 Creating allergen categories...");
 
-  const catRespiratory  = await prisma.allergenCategory.create({ data: { name: { en: "Respiratory",   ar: "الجهاز التنفسي" } } });
-  const catFood         = await prisma.allergenCategory.create({ data: { name: { en: "Food",           ar: "الغذاء" } } });
-  await prisma.allergenCategory.create({ data: { name: { en: "Skin",           ar: "الجلد" } } });
-  await prisma.allergenCategory.create({ data: { name: { en: "Insect Stings",  ar: "لسعات الحشرات" } } });
-  const catMedication   = await prisma.allergenCategory.create({ data: { name: { en: "Medication",     ar: "الأدوية" } } });
+  const catRespiratory = await prisma.allergenCategory.create({
+    data: { name: { en: "Respiratory", ar: "الجهاز التنفسي" } },
+  });
+  const catFood = await prisma.allergenCategory.create({
+    data: { name: { en: "Food", ar: "الغذاء" } },
+  });
+  await prisma.allergenCategory.create({
+    data: { name: { en: "Skin", ar: "الجلد" } },
+  });
+  await prisma.allergenCategory.create({
+    data: { name: { en: "Insect Stings", ar: "لسعات الحشرات" } },
+  });
+  const catMedication = await prisma.allergenCategory.create({
+    data: { name: { en: "Medication", ar: "الأدوية" } },
+  });
   console.log("✅ Created 5 allergen categories");
 
   console.log("\n💊 Creating allergen catalog...");
 
   // Respiratory
-  const allergenPollen = await prisma.allergen.create({ data: { name: "Pollen Grain", allergenCategoryId: catRespiratory.id } });
+  const allergenPollen = await prisma.allergen.create({
+    data: { name: "Pollen Grain", allergenCategoryId: catRespiratory.id },
+  });
 
   // Food
-  await prisma.allergen.create({ data: { name: "Lactose",                   allergenCategoryId: catFood.id } });
-  const allergenEggs           = await prisma.allergen.create({ data: { name: "Eggs",         allergenCategoryId: catFood.id } });
-  await prisma.allergen.create({ data: { name: "Egg Yolk",                  allergenCategoryId: catFood.id } });
-  await prisma.allergen.create({ data: { name: "Fish",                      allergenCategoryId: catFood.id } });
-  const allergenMarineProducts = await prisma.allergen.create({ data: { name: "Marine Products", allergenCategoryId: catFood.id } });
-  await prisma.allergen.create({ data: { name: "Nuts",                      allergenCategoryId: catFood.id } });
-  const allergenPeanuts        = await prisma.allergen.create({ data: { name: "Peanuts",        allergenCategoryId: catFood.id } });
-  const allergenWheat          = await prisma.allergen.create({ data: { name: "Wheat",          allergenCategoryId: catFood.id } });
-  const allergenSoybeans       = await prisma.allergen.create({ data: { name: "Soybeans",       allergenCategoryId: catFood.id } });
-  await prisma.allergen.create({ data: { name: "Sesame",                    allergenCategoryId: catFood.id } });
-  await prisma.allergen.create({ data: { name: "Animals Product as Gelatin", allergenCategoryId: catFood.id } });
+  await prisma.allergen.create({
+    data: { name: "Lactose", allergenCategoryId: catFood.id },
+  });
+  const allergenEggs = await prisma.allergen.create({
+    data: { name: "Eggs", allergenCategoryId: catFood.id },
+  });
+  await prisma.allergen.create({
+    data: { name: "Egg Yolk", allergenCategoryId: catFood.id },
+  });
+  await prisma.allergen.create({
+    data: { name: "Fish", allergenCategoryId: catFood.id },
+  });
+  const allergenMarineProducts = await prisma.allergen.create({
+    data: { name: "Marine Products", allergenCategoryId: catFood.id },
+  });
+  await prisma.allergen.create({
+    data: { name: "Nuts", allergenCategoryId: catFood.id },
+  });
+  const allergenPeanuts = await prisma.allergen.create({
+    data: { name: "Peanuts", allergenCategoryId: catFood.id },
+  });
+  const allergenWheat = await prisma.allergen.create({
+    data: { name: "Wheat", allergenCategoryId: catFood.id },
+  });
+  const allergenSoybeans = await prisma.allergen.create({
+    data: { name: "Soybeans", allergenCategoryId: catFood.id },
+  });
+  await prisma.allergen.create({
+    data: { name: "Sesame", allergenCategoryId: catFood.id },
+  });
+  await prisma.allergen.create({
+    data: {
+      name: "Animals Product as Gelatin",
+      allergenCategoryId: catFood.id,
+    },
+  });
 
   // Skin (category created; no allergens in provided list)
 
   // Insect Stings (category created; no allergens in provided list)
 
   // Medication
-  const allergenIron          = await prisma.allergen.create({ data: { name: "Iron, Ferric Products",                                           allergenCategoryId: catMedication.id } });
-  await prisma.allergen.create({                                       data: { name: "Non-steroidal Anti-inflammatory Drugs (e.g. Ketoprofen, Diclofenac)", allergenCategoryId: catMedication.id } });
-  const allergenPenicillin    = await prisma.allergen.create({ data: { name: "Penicillin",         allergenCategoryId: catMedication.id } });
-  await prisma.allergen.create({                                       data: { name: "Quinolones",         allergenCategoryId: catMedication.id } });
-  await prisma.allergen.create({                                       data: { name: "Cephalosporines",    allergenCategoryId: catMedication.id } });
-  await prisma.allergen.create({                                       data: { name: "Benzodiazepines",    allergenCategoryId: catMedication.id } });
-  await prisma.allergen.create({                                       data: { name: "Sulfonylureas",      allergenCategoryId: catMedication.id } });
-  await prisma.allergen.create({                                       data: { name: "Insulin",            allergenCategoryId: catMedication.id } });
-  await prisma.allergen.create({                                       data: { name: "Anesthetics",        allergenCategoryId: catMedication.id } });
-  await prisma.allergen.create({                                       data: { name: "Food Colors",        allergenCategoryId: catMedication.id } });
-  await prisma.allergen.create({                                       data: { name: "Hormones",           allergenCategoryId: catMedication.id } });
-  await prisma.allergen.create({                                       data: { name: "Preservatives Products", allergenCategoryId: catMedication.id } });
+  const allergenIron = await prisma.allergen.create({
+    data: {
+      name: "Iron, Ferric Products",
+      allergenCategoryId: catMedication.id,
+    },
+  });
+  await prisma.allergen.create({
+    data: {
+      name: "Non-steroidal Anti-inflammatory Drugs (e.g. Ketoprofen, Diclofenac)",
+      allergenCategoryId: catMedication.id,
+    },
+  });
+  const allergenPenicillin = await prisma.allergen.create({
+    data: { name: "Penicillin", allergenCategoryId: catMedication.id },
+  });
+  await prisma.allergen.create({
+    data: { name: "Quinolones", allergenCategoryId: catMedication.id },
+  });
+  await prisma.allergen.create({
+    data: { name: "Cephalosporines", allergenCategoryId: catMedication.id },
+  });
+  await prisma.allergen.create({
+    data: { name: "Benzodiazepines", allergenCategoryId: catMedication.id },
+  });
+  await prisma.allergen.create({
+    data: { name: "Sulfonylureas", allergenCategoryId: catMedication.id },
+  });
+  await prisma.allergen.create({
+    data: { name: "Insulin", allergenCategoryId: catMedication.id },
+  });
+  await prisma.allergen.create({
+    data: { name: "Anesthetics", allergenCategoryId: catMedication.id },
+  });
+  await prisma.allergen.create({
+    data: { name: "Food Colors", allergenCategoryId: catMedication.id },
+  });
+  await prisma.allergen.create({
+    data: { name: "Hormones", allergenCategoryId: catMedication.id },
+  });
+  await prisma.allergen.create({
+    data: {
+      name: "Preservatives Products",
+      allergenCategoryId: catMedication.id,
+    },
+  });
   console.log("✅ Created allergen catalog");
 
   // Link allergens to active substances and excipients
   await prisma.allergenActiveSubstance.createMany({
     data: [
-      { allergenId: allergenPenicillin.id, activeSubstanceId: activeSubstances[2].id }, // Penicillin -> Amoxicillin
-      { allergenId: allergenIron.id, activeSubstanceId: activeSubstances[3].id }, // Iron sensitivity context -> Metformin use-case cohort
-      { allergenId: allergenPollen.id, activeSubstanceId: activeSubstances[7].id }, // Pollen/allergic cohort -> Salbutamol
-      { allergenId: allergenPeanuts.id, activeSubstanceId: activeSubstances[8].id }, // Allergic cohort -> Cetirizine
+      {
+        allergenId: allergenPenicillin.id,
+        activeSubstanceId: activeSubstances[2].id,
+      }, // Penicillin -> Amoxicillin
+      {
+        allergenId: allergenIron.id,
+        activeSubstanceId: activeSubstances[3].id,
+      }, // Iron sensitivity context -> Metformin use-case cohort
+      {
+        allergenId: allergenPollen.id,
+        activeSubstanceId: activeSubstances[7].id,
+      }, // Pollen/allergic cohort -> Salbutamol
+      {
+        allergenId: allergenPeanuts.id,
+        activeSubstanceId: activeSubstances[8].id,
+      }, // Allergic cohort -> Cetirizine
     ],
     skipDuplicates: true,
   });
@@ -1486,11 +1592,35 @@ async function main() {
 
   // Patient allergies (new model: PatientAllergyReport + PatientAllergy joins)
   const patientAllergySeed = [
-    { patientId: patients[0].id, allergenIds: [allergenPenicillin.id, allergenIron.id], reaction: "Anaphylaxis", notes: "Avoid all penicillin derivatives. Use alternative antibiotics." },
-    { patientId: patients[1].id, allergenIds: [allergenPollen.id], reaction: "Rhinitis", notes: "Seasonal, spring and fall" },
-    { patientId: patients[2].id, allergenIds: [allergenMarineProducts.id, allergenWheat.id], reaction: "Urticaria", notes: "Hives and swelling" },
-    { patientId: patients[3].id, allergenIds: [allergenSoybeans.id], reaction: "Contact dermatitis" },
-    { patientId: patients[4].id, allergenIds: [allergenPeanuts.id, allergenEggs.id], reaction: "Anaphylaxis", notes: "Life-threatening, carry epinephrine" },
+    {
+      patientId: patients[0].id,
+      allergenIds: [allergenPenicillin.id, allergenIron.id],
+      reaction: "Anaphylaxis",
+      notes: "Avoid all penicillin derivatives. Use alternative antibiotics.",
+    },
+    {
+      patientId: patients[1].id,
+      allergenIds: [allergenPollen.id],
+      reaction: "Rhinitis",
+      notes: "Seasonal, spring and fall",
+    },
+    {
+      patientId: patients[2].id,
+      allergenIds: [allergenMarineProducts.id, allergenWheat.id],
+      reaction: "Urticaria",
+      notes: "Hives and swelling",
+    },
+    {
+      patientId: patients[3].id,
+      allergenIds: [allergenSoybeans.id],
+      reaction: "Contact dermatitis",
+    },
+    {
+      patientId: patients[4].id,
+      allergenIds: [allergenPeanuts.id, allergenEggs.id],
+      reaction: "Anaphylaxis",
+      notes: "Life-threatening, carry epinephrine",
+    },
   ];
 
   for (const entry of patientAllergySeed) {
@@ -1612,62 +1742,200 @@ async function main() {
 
   // Lifestyle catalog (admin-managed questions + ActiveSubstance field for drug warnings)
   const lifestyleAlcohol = await prisma.lifestyle.create({
-    data: { question: "Alcohol use", activeSubstanceField: "interactionAlcohol" },
+    data: {
+      question: "Alcohol use",
+      activeSubstanceField: "interactionAlcohol",
+    },
   });
   const lifestyleCaffeine = await prisma.lifestyle.create({
-    data: { question: "Excess caffeine / xanthines", activeSubstanceField: "interactionXanthines" },
+    data: {
+      question: "Excess caffeine / xanthines",
+      activeSubstanceField: "interactionXanthines",
+    },
   });
   const lifestyleVitaminsFood = await prisma.lifestyle.create({
-    data: { question: "Vitamins / food interactions", activeSubstanceField: "interactionVitaminsFood" },
+    data: {
+      question: "Vitamins / food interactions",
+      activeSubstanceField: "interactionVitaminsFood",
+    },
   });
   const lifestyleMuscleRelaxant = await prisma.lifestyle.create({
-    data: { question: "Muscle relaxant use", activeSubstanceField: "interactionMuscleRelaxant" },
+    data: {
+      question: "Muscle relaxant use",
+      activeSubstanceField: "interactionMuscleRelaxant",
+    },
   });
   const lifestyleAnticoagulant = await prisma.lifestyle.create({
-    data: { question: "Anticoagulant use", activeSubstanceField: "interactionAnticoagulant" },
+    data: {
+      question: "Anticoagulant use",
+      activeSubstanceField: "interactionAnticoagulant",
+    },
   });
   const lifestyleCorticosteroids = await prisma.lifestyle.create({
-    data: { question: "Corticosteroid use", activeSubstanceField: "interactionCorticosteroids" },
+    data: {
+      question: "Corticosteroid use",
+      activeSubstanceField: "interactionCorticosteroids",
+    },
   });
 
   // Patient lifestyle answers (many-to-many: patientId, lifestyleId, value) — all patients have answers for all questions
   await prisma.patientLifestyle.createMany({
     data: [
       // Patient 0
-      { patientId: patients[0].id, lifestyleId: lifestyleAlcohol.id, value: false },
-      { patientId: patients[0].id, lifestyleId: lifestyleCaffeine.id, value: true },
-      { patientId: patients[0].id, lifestyleId: lifestyleVitaminsFood.id, value: true },
-      { patientId: patients[0].id, lifestyleId: lifestyleMuscleRelaxant.id, value: false },
-      { patientId: patients[0].id, lifestyleId: lifestyleAnticoagulant.id, value: false },
-      { patientId: patients[0].id, lifestyleId: lifestyleCorticosteroids.id, value: false },
+      {
+        patientId: patients[0].id,
+        lifestyleId: lifestyleAlcohol.id,
+        value: false,
+      },
+      {
+        patientId: patients[0].id,
+        lifestyleId: lifestyleCaffeine.id,
+        value: true,
+      },
+      {
+        patientId: patients[0].id,
+        lifestyleId: lifestyleVitaminsFood.id,
+        value: true,
+      },
+      {
+        patientId: patients[0].id,
+        lifestyleId: lifestyleMuscleRelaxant.id,
+        value: false,
+      },
+      {
+        patientId: patients[0].id,
+        lifestyleId: lifestyleAnticoagulant.id,
+        value: false,
+      },
+      {
+        patientId: patients[0].id,
+        lifestyleId: lifestyleCorticosteroids.id,
+        value: false,
+      },
       // Patient 1
-      { patientId: patients[1].id, lifestyleId: lifestyleAlcohol.id, value: false },
-      { patientId: patients[1].id, lifestyleId: lifestyleCaffeine.id, value: false },
-      { patientId: patients[1].id, lifestyleId: lifestyleVitaminsFood.id, value: false },
-      { patientId: patients[1].id, lifestyleId: lifestyleMuscleRelaxant.id, value: false },
-      { patientId: patients[1].id, lifestyleId: lifestyleAnticoagulant.id, value: true },
-      { patientId: patients[1].id, lifestyleId: lifestyleCorticosteroids.id, value: false },
+      {
+        patientId: patients[1].id,
+        lifestyleId: lifestyleAlcohol.id,
+        value: false,
+      },
+      {
+        patientId: patients[1].id,
+        lifestyleId: lifestyleCaffeine.id,
+        value: false,
+      },
+      {
+        patientId: patients[1].id,
+        lifestyleId: lifestyleVitaminsFood.id,
+        value: false,
+      },
+      {
+        patientId: patients[1].id,
+        lifestyleId: lifestyleMuscleRelaxant.id,
+        value: false,
+      },
+      {
+        patientId: patients[1].id,
+        lifestyleId: lifestyleAnticoagulant.id,
+        value: true,
+      },
+      {
+        patientId: patients[1].id,
+        lifestyleId: lifestyleCorticosteroids.id,
+        value: false,
+      },
       // Patient 2
-      { patientId: patients[2].id, lifestyleId: lifestyleAlcohol.id, value: false },
-      { patientId: patients[2].id, lifestyleId: lifestyleCaffeine.id, value: false },
-      { patientId: patients[2].id, lifestyleId: lifestyleVitaminsFood.id, value: true },
-      { patientId: patients[2].id, lifestyleId: lifestyleMuscleRelaxant.id, value: false },
-      { patientId: patients[2].id, lifestyleId: lifestyleAnticoagulant.id, value: false },
-      { patientId: patients[2].id, lifestyleId: lifestyleCorticosteroids.id, value: true },
+      {
+        patientId: patients[2].id,
+        lifestyleId: lifestyleAlcohol.id,
+        value: false,
+      },
+      {
+        patientId: patients[2].id,
+        lifestyleId: lifestyleCaffeine.id,
+        value: false,
+      },
+      {
+        patientId: patients[2].id,
+        lifestyleId: lifestyleVitaminsFood.id,
+        value: true,
+      },
+      {
+        patientId: patients[2].id,
+        lifestyleId: lifestyleMuscleRelaxant.id,
+        value: false,
+      },
+      {
+        patientId: patients[2].id,
+        lifestyleId: lifestyleAnticoagulant.id,
+        value: false,
+      },
+      {
+        patientId: patients[2].id,
+        lifestyleId: lifestyleCorticosteroids.id,
+        value: true,
+      },
       // Patient 3
-      { patientId: patients[3].id, lifestyleId: lifestyleAlcohol.id, value: false },
-      { patientId: patients[3].id, lifestyleId: lifestyleCaffeine.id, value: true },
-      { patientId: patients[3].id, lifestyleId: lifestyleVitaminsFood.id, value: false },
-      { patientId: patients[3].id, lifestyleId: lifestyleMuscleRelaxant.id, value: true },
-      { patientId: patients[3].id, lifestyleId: lifestyleAnticoagulant.id, value: false },
-      { patientId: patients[3].id, lifestyleId: lifestyleCorticosteroids.id, value: false },
+      {
+        patientId: patients[3].id,
+        lifestyleId: lifestyleAlcohol.id,
+        value: false,
+      },
+      {
+        patientId: patients[3].id,
+        lifestyleId: lifestyleCaffeine.id,
+        value: true,
+      },
+      {
+        patientId: patients[3].id,
+        lifestyleId: lifestyleVitaminsFood.id,
+        value: false,
+      },
+      {
+        patientId: patients[3].id,
+        lifestyleId: lifestyleMuscleRelaxant.id,
+        value: true,
+      },
+      {
+        patientId: patients[3].id,
+        lifestyleId: lifestyleAnticoagulant.id,
+        value: false,
+      },
+      {
+        patientId: patients[3].id,
+        lifestyleId: lifestyleCorticosteroids.id,
+        value: false,
+      },
       // Patient 4
-      { patientId: patients[4].id, lifestyleId: lifestyleAlcohol.id, value: false },
-      { patientId: patients[4].id, lifestyleId: lifestyleCaffeine.id, value: false },
-      { patientId: patients[4].id, lifestyleId: lifestyleVitaminsFood.id, value: false },
-      { patientId: patients[4].id, lifestyleId: lifestyleMuscleRelaxant.id, value: false },
-      { patientId: patients[4].id, lifestyleId: lifestyleAnticoagulant.id, value: false },
-      { patientId: patients[4].id, lifestyleId: lifestyleCorticosteroids.id, value: false },
+      {
+        patientId: patients[4].id,
+        lifestyleId: lifestyleAlcohol.id,
+        value: false,
+      },
+      {
+        patientId: patients[4].id,
+        lifestyleId: lifestyleCaffeine.id,
+        value: false,
+      },
+      {
+        patientId: patients[4].id,
+        lifestyleId: lifestyleVitaminsFood.id,
+        value: false,
+      },
+      {
+        patientId: patients[4].id,
+        lifestyleId: lifestyleMuscleRelaxant.id,
+        value: false,
+      },
+      {
+        patientId: patients[4].id,
+        lifestyleId: lifestyleAnticoagulant.id,
+        value: false,
+      },
+      {
+        patientId: patients[4].id,
+        lifestyleId: lifestyleCorticosteroids.id,
+        value: false,
+      },
     ],
   });
 
@@ -1717,7 +1985,9 @@ async function main() {
   console.log(`   - ${familyHistoryCount} Family History records`);
   console.log(`   - ${allergyCount} Allergy records`);
   console.log(`   - ${patientDiseaseCount} Patient Disease records`);
-  console.log(`   - ${lifestyleCatalogCount} Lifestyle catalog, ${patientLifestyleCount} PatientLifestyle records`);
+  console.log(
+    `   - ${lifestyleCatalogCount} Lifestyle catalog, ${patientLifestyleCount} PatientLifestyle records`,
+  );
   console.log(`   - ${childProfileCount} Child Profile records`);
 
   // ============================================
@@ -1764,7 +2034,9 @@ async function main() {
       },
     ],
   });
-  console.log("✅ Created patient-doctor relationships (all 5 patients linked to Dr. John Smith)");
+  console.log(
+    "✅ Created patient-doctor relationships (all 5 patients linked to Dr. John Smith)",
+  );
 
   // ============================================
   // SECTION 10: PRESCRIPTIONS (Prescription + PatientMedicine + PrescriptionMedicine)
@@ -1876,7 +2148,8 @@ async function main() {
       dosage: "2 puffs",
       frequency: "As needed for symptoms",
       duration: "180 days",
-      instructions: "Use before exercise or when experiencing shortness of breath",
+      instructions:
+        "Use before exercise or when experiencing shortness of breath",
       maxRefills: 2,
       notes: "Rescue medication only",
       tradeNameId: tradeNames[7].id,
@@ -1918,7 +2191,11 @@ async function main() {
       },
     });
     await prisma.prescriptionMedicine.create({
-      data: { prescriptionId: prescription.id, patientMedicineId: pm.id, sortOrder: 0 },
+      data: {
+        prescriptionId: prescription.id,
+        patientMedicineId: pm.id,
+        sortOrder: 0,
+      },
     });
     prescriptions.push({ id: prescription.id });
   }
@@ -2269,7 +2546,8 @@ async function main() {
         userId: patientUser1.id,
         type: "PrescriptionReady",
         title: "Prescription Ready",
-        message: "Your prescription for Glucophage is ready for pickup at City Pharmacy",
+        message:
+          "Your prescription for Glucophage is ready for pickup at City Pharmacy",
         isRead: false,
         deliveryStatus: "Delivered",
       },
@@ -2294,7 +2572,8 @@ async function main() {
         userId: patientUser1.id,
         type: "AppointmentReminder",
         title: "Upcoming Appointment",
-        message: "Reminder: You have a diabetes checkup with Dr. Smith in 2 days",
+        message:
+          "Reminder: You have a diabetes checkup with Dr. Smith in 2 days",
         isRead: true,
         readAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
         deliveryStatus: "Delivered",
@@ -2303,7 +2582,8 @@ async function main() {
         userId: patientUser5.id,
         type: "AppointmentReminder",
         title: "Pediatric Checkup Reminder",
-        message: "Emma's asthma management review with Dr. Johnson is in 14 days",
+        message:
+          "Emma's asthma management review with Dr. Johnson is in 14 days",
         isRead: false,
         deliveryStatus: "Delivered",
       },
@@ -2320,7 +2600,8 @@ async function main() {
         userId: doctorUser1.id,
         type: "DrugInteraction",
         title: "Drug Interaction Alert",
-        message: "Potential interaction detected between Metformin and Ibuprofen for patient Bob Martinez",
+        message:
+          "Potential interaction detected between Metformin and Ibuprofen for patient Bob Martinez",
         isRead: false,
         deliveryStatus: "Delivered",
       },
@@ -2328,7 +2609,8 @@ async function main() {
         userId: doctorUser2.id,
         type: "SystemAlert",
         title: "Account Verified",
-        message: "Your doctor account has been verified. You can now create prescriptions.",
+        message:
+          "Your doctor account has been verified. You can now create prescriptions.",
         isRead: true,
         readAt: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000),
         deliveryStatus: "Delivered",
@@ -2337,7 +2619,8 @@ async function main() {
         userId: admin1.id,
         type: "SystemAlert",
         title: "Pending Doctor Verifications",
-        message: "There are 2 doctors awaiting verification: Dr. Emily Chen and Dr. Robert Kumar",
+        message:
+          "There are 2 doctors awaiting verification: Dr. Emily Chen and Dr. Robert Kumar",
         isRead: false,
         deliveryStatus: "Delivered",
       },
@@ -2345,7 +2628,8 @@ async function main() {
         userId: superAdmin.id,
         type: "SystemAlert",
         title: "New ADR Report Submitted",
-        message: "A new adverse drug reaction report has been submitted for Zyrtec (Cetirizine)",
+        message:
+          "A new adverse drug reaction report has been submitted for Zyrtec (Cetirizine)",
         isRead: false,
         deliveryStatus: "Delivered",
       },
@@ -2384,7 +2668,9 @@ async function main() {
   // ============================================
   // SECTION 14: PRESCRIPTION VERSIONS + DRUG INTERACTION ALERTS
   // ============================================
-  console.log("\n📋 Creating prescription versions and drug interaction alerts...");
+  console.log(
+    "\n📋 Creating prescription versions and drug interaction alerts...",
+  );
   await prisma.prescriptionVersion.createMany({
     data: [
       {
@@ -2402,13 +2688,20 @@ async function main() {
       {
         prescriptionId: prescriptions[1].id, // Norvasc - status update
         version: 2,
-        changes: { status: { from: "Approved", to: "Filled" }, currentRefillCount: { from: 0, to: 1 } },
+        changes: {
+          status: { from: "Approved", to: "Filled" },
+          currentRefillCount: { from: 0, to: 1 },
+        },
         changedBy: doctorUser1.id,
       },
       {
         prescriptionId: prescriptions[2].id, // Lipitor
         version: 1,
-        changes: { created: true, dosage: "20mg", frequency: "Once daily at bedtime" },
+        changes: {
+          created: true,
+          dosage: "20mg",
+          frequency: "Once daily at bedtime",
+        },
         changedBy: doctorUser1.id,
       },
       {
@@ -2428,7 +2721,8 @@ async function main() {
         interactingMedicineId: tradeNames[1].id, // Brufen (Ibuprofen)
         interactionType: "Pharmacodynamic",
         severity: "Moderate",
-        message: "NSAIDs like Ibuprofen may reduce the effectiveness of Metformin and increase risk of lactic acidosis. Monitor blood glucose closely.",
+        message:
+          "NSAIDs like Ibuprofen may reduce the effectiveness of Metformin and increase risk of lactic acidosis. Monitor blood glucose closely.",
         acknowledgedByDoctor: true,
         acknowledgedByPatient: false,
         acknowledgedAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000),
@@ -2438,7 +2732,8 @@ async function main() {
         interactingMedicineId: tradeNames[0].id, // Panadol (Paracetamol)
         interactionType: "Pharmacodynamic",
         severity: "Minor",
-        message: "High doses of paracetamol with metformin may increase risk of lactic acidosis in susceptible patients. Avoid excessive paracetamol; monitor if used long-term.",
+        message:
+          "High doses of paracetamol with metformin may increase risk of lactic acidosis in susceptible patients. Avoid excessive paracetamol; monitor if used long-term.",
         acknowledgedByDoctor: false,
         acknowledgedByPatient: false,
       },
@@ -2447,7 +2742,8 @@ async function main() {
         interactingMedicineId: tradeNames[5].id, // Losec (Omeprazole)
         interactionType: "Pharmacokinetic",
         severity: "Moderate",
-        message: "PPIs like omeprazole can reduce vitamin B12 absorption. Long-term metformin use may also affect B12. Consider monitoring B12 in patients on both.",
+        message:
+          "PPIs like omeprazole can reduce vitamin B12 absorption. Long-term metformin use may also affect B12. Consider monitoring B12 in patients on both.",
         acknowledgedByDoctor: false,
         acknowledgedByPatient: false,
       },
@@ -2456,7 +2752,8 @@ async function main() {
         interactingMedicineId: tradeNames[4].id, // Norvasc (Amlodipine)
         interactionType: "Pharmacokinetic",
         severity: "Minor",
-        message: "Amlodipine may slightly increase Atorvastatin levels. Monitor for statin-related side effects such as myalgia.",
+        message:
+          "Amlodipine may slightly increase Atorvastatin levels. Monitor for statin-related side effects such as myalgia.",
         acknowledgedByDoctor: true,
         acknowledgedByPatient: true,
         acknowledgedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
@@ -2501,17 +2798,43 @@ async function main() {
 
   await prisma.contractingCompanyTradeName.createMany({
     data: [
-      { contractingCompanyId: contractingCompanies[0].id, tradeNameId: tradeNames[1].id }, // MedSupply + Brufen
-      { contractingCompanyId: contractingCompanies[0].id, tradeNameId: tradeNames[4].id }, // MedSupply + Norvasc
-      { contractingCompanyId: contractingCompanies[0].id, tradeNameId: tradeNames[6].id }, // MedSupply + Lipitor
-      { contractingCompanyId: contractingCompanies[1].id, tradeNameId: tradeNames[0].id }, // PharmaDist + Panadol
-      { contractingCompanyId: contractingCompanies[1].id, tradeNameId: tradeNames[2].id }, // PharmaDist + Amoxil
-      { contractingCompanyId: contractingCompanies[1].id, tradeNameId: tradeNames[7].id }, // PharmaDist + Ventolin
-      { contractingCompanyId: contractingCompanies[2].id, tradeNameId: tradeNames[5].id }, // NovaDist + Losec
-      { contractingCompanyId: contractingCompanies[2].id, tradeNameId: tradeNames[8].id }, // NovaDist + Zyrtec
+      {
+        contractingCompanyId: contractingCompanies[0].id,
+        tradeNameId: tradeNames[1].id,
+      }, // MedSupply + Brufen
+      {
+        contractingCompanyId: contractingCompanies[0].id,
+        tradeNameId: tradeNames[4].id,
+      }, // MedSupply + Norvasc
+      {
+        contractingCompanyId: contractingCompanies[0].id,
+        tradeNameId: tradeNames[6].id,
+      }, // MedSupply + Lipitor
+      {
+        contractingCompanyId: contractingCompanies[1].id,
+        tradeNameId: tradeNames[0].id,
+      }, // PharmaDist + Panadol
+      {
+        contractingCompanyId: contractingCompanies[1].id,
+        tradeNameId: tradeNames[2].id,
+      }, // PharmaDist + Amoxil
+      {
+        contractingCompanyId: contractingCompanies[1].id,
+        tradeNameId: tradeNames[7].id,
+      }, // PharmaDist + Ventolin
+      {
+        contractingCompanyId: contractingCompanies[2].id,
+        tradeNameId: tradeNames[5].id,
+      }, // NovaDist + Losec
+      {
+        contractingCompanyId: contractingCompanies[2].id,
+        tradeNameId: tradeNames[8].id,
+      }, // NovaDist + Zyrtec
     ],
   });
-  console.log(`✅ Created ${contractingCompanies.length} contracting companies with trade name links`);
+  console.log(
+    `✅ Created ${contractingCompanies.length} contracting companies with trade name links`,
+  );
 
   // ============================================
   // SECTION 16: MEDICINE ALTERNATIVES
@@ -2523,7 +2846,8 @@ async function main() {
         // Ibuprofen → Paracetamol (for pain, when NSAID contraindicated)
         activeSubstanceId: activeSubstances[1].id,
         alternativeActiveSubstanceId: activeSubstances[0].id,
-        reason: "Safer alternative for patients with GI issues, renal impairment, or cardiovascular risk",
+        reason:
+          "Safer alternative for patients with GI issues, renal impairment, or cardiovascular risk",
       },
       {
         // Paracetamol → Ibuprofen (for inflammatory pain)
@@ -2535,20 +2859,23 @@ async function main() {
         // Losartan → Amlodipine (ARB → CCB for hypertension)
         activeSubstanceId: activeSubstances[9].id,
         alternativeActiveSubstanceId: activeSubstances[4].id,
-        reason: "Alternative antihypertensive when ARB is not tolerated or contraindicated in pregnancy",
+        reason:
+          "Alternative antihypertensive when ARB is not tolerated or contraindicated in pregnancy",
       },
       {
         // Atorvastatin → Cetirizine is not an alt, use Losartan as alt for Atorvastatin → different drug class
         activeSubstanceId: activeSubstances[6].id,
         alternativeActiveSubstanceId: activeSubstances[9].id,
-        reason: "When statin is contraindicated (myopathy), consider ARB for cardiovascular protection",
+        reason:
+          "When statin is contraindicated (myopathy), consider ARB for cardiovascular protection",
       },
       {
         // Amoxicillin → Cetirizine is not right; Amoxicillin alternative is itself in different class
         // Salbutamol (inhaler) → Cetirizine for allergy-induced asthma prevention
         activeSubstanceId: activeSubstances[7].id,
         alternativeActiveSubstanceId: activeSubstances[8].id,
-        reason: "For allergy-triggered asthma, antihistamines can reduce trigger exposure",
+        reason:
+          "For allergy-triggered asthma, antihistamines can reduce trigger exposure",
       },
     ],
   });
@@ -2689,7 +3016,10 @@ async function main() {
     { name: "Tendon rupture", nameAr: "تمزق الوتر" },
     { name: "Rhabdomyolysis", nameAr: "انحلال العضلات" },
     { name: "Serotonin syndrome", nameAr: "متلازمة السيروتونين" },
-    { name: "Neuroleptic malignant syndrome", nameAr: "متلازمة الذهان الخبيثة" },
+    {
+      name: "Neuroleptic malignant syndrome",
+      nameAr: "متلازمة الذهان الخبيثة",
+    },
     { name: "Extrapyramidal symptoms", nameAr: "أعراض خارج هرمية" },
     { name: "Tardive dyskinesia", nameAr: "خلل الحركة المتأخر" },
     { name: "Restless legs", nameAr: "متلازمة تململ الساقين" },
@@ -2731,10 +3061,12 @@ async function main() {
         where: { name },
         create: { name, nameAr },
         update: { nameAr },
-      })
-    )
+      }),
+    ),
   );
-  const sideEffectMap = Object.fromEntries(sideEffects.map((s) => [s.name, s.id]));
+  const sideEffectMap = Object.fromEntries(
+    sideEffects.map((s) => [s.name, s.id]),
+  );
 
   const medicationSideEffectData: Array<{
     activeSubstanceId: number;
@@ -2743,50 +3075,225 @@ async function main() {
     bodySystem?: string;
   }> = [
     // Paracetamol (0)
-    { activeSubstanceId: activeSubstances[0].id, sideEffectId: sideEffectMap["Headache"], frequency: "Rare", bodySystem: "NervousSystem" },
-    { activeSubstanceId: activeSubstances[0].id, sideEffectId: sideEffectMap["Nausea"], frequency: "Common", bodySystem: "GIT" },
-    { activeSubstanceId: activeSubstances[0].id, sideEffectId: sideEffectMap["Rash"], frequency: "Uncommon", bodySystem: "Skin" },
-    { activeSubstanceId: activeSubstances[0].id, sideEffectId: sideEffectMap["Liver damage"], frequency: "Rare", bodySystem: "Hepatic" },
+    {
+      activeSubstanceId: activeSubstances[0].id,
+      sideEffectId: sideEffectMap["Headache"],
+      frequency: "Rare",
+      bodySystem: "NervousSystem",
+    },
+    {
+      activeSubstanceId: activeSubstances[0].id,
+      sideEffectId: sideEffectMap["Nausea"],
+      frequency: "Common",
+      bodySystem: "GIT",
+    },
+    {
+      activeSubstanceId: activeSubstances[0].id,
+      sideEffectId: sideEffectMap["Rash"],
+      frequency: "Uncommon",
+      bodySystem: "Skin",
+    },
+    {
+      activeSubstanceId: activeSubstances[0].id,
+      sideEffectId: sideEffectMap["Liver damage"],
+      frequency: "Rare",
+      bodySystem: "Hepatic",
+    },
     // Ibuprofen (1)
-    { activeSubstanceId: activeSubstances[1].id, sideEffectId: sideEffectMap["Headache"], frequency: "Common", bodySystem: "NervousSystem" },
-    { activeSubstanceId: activeSubstances[1].id, sideEffectId: sideEffectMap["Nausea"], frequency: "Common", bodySystem: "GIT" },
-    { activeSubstanceId: activeSubstances[1].id, sideEffectId: sideEffectMap["Dizziness"], frequency: "Common", bodySystem: "NervousSystem" },
-    { activeSubstanceId: activeSubstances[1].id, sideEffectId: sideEffectMap["Stomach upset"], frequency: "VeryCommon", bodySystem: "GIT" },
-    { activeSubstanceId: activeSubstances[1].id, sideEffectId: sideEffectMap["GI bleeding"], frequency: "Rare", bodySystem: "GIT" },
+    {
+      activeSubstanceId: activeSubstances[1].id,
+      sideEffectId: sideEffectMap["Headache"],
+      frequency: "Common",
+      bodySystem: "NervousSystem",
+    },
+    {
+      activeSubstanceId: activeSubstances[1].id,
+      sideEffectId: sideEffectMap["Nausea"],
+      frequency: "Common",
+      bodySystem: "GIT",
+    },
+    {
+      activeSubstanceId: activeSubstances[1].id,
+      sideEffectId: sideEffectMap["Dizziness"],
+      frequency: "Common",
+      bodySystem: "NervousSystem",
+    },
+    {
+      activeSubstanceId: activeSubstances[1].id,
+      sideEffectId: sideEffectMap["Stomach upset"],
+      frequency: "VeryCommon",
+      bodySystem: "GIT",
+    },
+    {
+      activeSubstanceId: activeSubstances[1].id,
+      sideEffectId: sideEffectMap["GI bleeding"],
+      frequency: "Rare",
+      bodySystem: "GIT",
+    },
     // Amoxicillin (2)
-    { activeSubstanceId: activeSubstances[2].id, sideEffectId: sideEffectMap["Nausea"], frequency: "Common", bodySystem: "GIT" },
-    { activeSubstanceId: activeSubstances[2].id, sideEffectId: sideEffectMap["Diarrhea"], frequency: "Common", bodySystem: "GIT" },
-    { activeSubstanceId: activeSubstances[2].id, sideEffectId: sideEffectMap["Rash"], frequency: "Common", bodySystem: "Skin" },
-    { activeSubstanceId: activeSubstances[2].id, sideEffectId: sideEffectMap["Allergic reaction"], frequency: "Rare", bodySystem: "Immune" },
+    {
+      activeSubstanceId: activeSubstances[2].id,
+      sideEffectId: sideEffectMap["Nausea"],
+      frequency: "Common",
+      bodySystem: "GIT",
+    },
+    {
+      activeSubstanceId: activeSubstances[2].id,
+      sideEffectId: sideEffectMap["Diarrhea"],
+      frequency: "Common",
+      bodySystem: "GIT",
+    },
+    {
+      activeSubstanceId: activeSubstances[2].id,
+      sideEffectId: sideEffectMap["Rash"],
+      frequency: "Common",
+      bodySystem: "Skin",
+    },
+    {
+      activeSubstanceId: activeSubstances[2].id,
+      sideEffectId: sideEffectMap["Allergic reaction"],
+      frequency: "Rare",
+      bodySystem: "Immune",
+    },
     // Metformin (3)
-    { activeSubstanceId: activeSubstances[3].id, sideEffectId: sideEffectMap["Nausea"], frequency: "VeryCommon", bodySystem: "GIT" },
-    { activeSubstanceId: activeSubstances[3].id, sideEffectId: sideEffectMap["Diarrhea"], frequency: "Common", bodySystem: "GIT" },
-    { activeSubstanceId: activeSubstances[3].id, sideEffectId: sideEffectMap["Stomach upset"], frequency: "Common", bodySystem: "GIT" },
+    {
+      activeSubstanceId: activeSubstances[3].id,
+      sideEffectId: sideEffectMap["Nausea"],
+      frequency: "VeryCommon",
+      bodySystem: "GIT",
+    },
+    {
+      activeSubstanceId: activeSubstances[3].id,
+      sideEffectId: sideEffectMap["Diarrhea"],
+      frequency: "Common",
+      bodySystem: "GIT",
+    },
+    {
+      activeSubstanceId: activeSubstances[3].id,
+      sideEffectId: sideEffectMap["Stomach upset"],
+      frequency: "Common",
+      bodySystem: "GIT",
+    },
     // Amlodipine (4)
-    { activeSubstanceId: activeSubstances[4].id, sideEffectId: sideEffectMap["Headache"], frequency: "VeryCommon", bodySystem: "NervousSystem" },
-    { activeSubstanceId: activeSubstances[4].id, sideEffectId: sideEffectMap["Dizziness"], frequency: "Common", bodySystem: "NervousSystem" },
-    { activeSubstanceId: activeSubstances[4].id, sideEffectId: sideEffectMap["Edema"], frequency: "Common", bodySystem: "Vascular" },
-    { activeSubstanceId: activeSubstances[4].id, sideEffectId: sideEffectMap["Flushing"], frequency: "Common", bodySystem: "Vascular" },
+    {
+      activeSubstanceId: activeSubstances[4].id,
+      sideEffectId: sideEffectMap["Headache"],
+      frequency: "VeryCommon",
+      bodySystem: "NervousSystem",
+    },
+    {
+      activeSubstanceId: activeSubstances[4].id,
+      sideEffectId: sideEffectMap["Dizziness"],
+      frequency: "Common",
+      bodySystem: "NervousSystem",
+    },
+    {
+      activeSubstanceId: activeSubstances[4].id,
+      sideEffectId: sideEffectMap["Edema"],
+      frequency: "Common",
+      bodySystem: "Vascular",
+    },
+    {
+      activeSubstanceId: activeSubstances[4].id,
+      sideEffectId: sideEffectMap["Flushing"],
+      frequency: "Common",
+      bodySystem: "Vascular",
+    },
     // Omeprazole (5)
-    { activeSubstanceId: activeSubstances[5].id, sideEffectId: sideEffectMap["Headache"], frequency: "Common", bodySystem: "NervousSystem" },
-    { activeSubstanceId: activeSubstances[5].id, sideEffectId: sideEffectMap["Nausea"], frequency: "Common", bodySystem: "GIT" },
-    { activeSubstanceId: activeSubstances[5].id, sideEffectId: sideEffectMap["Abdominal pain"], frequency: "Common", bodySystem: "GIT" },
+    {
+      activeSubstanceId: activeSubstances[5].id,
+      sideEffectId: sideEffectMap["Headache"],
+      frequency: "Common",
+      bodySystem: "NervousSystem",
+    },
+    {
+      activeSubstanceId: activeSubstances[5].id,
+      sideEffectId: sideEffectMap["Nausea"],
+      frequency: "Common",
+      bodySystem: "GIT",
+    },
+    {
+      activeSubstanceId: activeSubstances[5].id,
+      sideEffectId: sideEffectMap["Abdominal pain"],
+      frequency: "Common",
+      bodySystem: "GIT",
+    },
     // Atorvastatin (6)
-    { activeSubstanceId: activeSubstances[6].id, sideEffectId: sideEffectMap["Headache"], frequency: "Common", bodySystem: "NervousSystem" },
-    { activeSubstanceId: activeSubstances[6].id, sideEffectId: sideEffectMap["Muscle pain"], frequency: "Common", bodySystem: "Musculoskeletal" },
-    { activeSubstanceId: activeSubstances[6].id, sideEffectId: sideEffectMap["Nausea"], frequency: "Common", bodySystem: "GIT" },
+    {
+      activeSubstanceId: activeSubstances[6].id,
+      sideEffectId: sideEffectMap["Headache"],
+      frequency: "Common",
+      bodySystem: "NervousSystem",
+    },
+    {
+      activeSubstanceId: activeSubstances[6].id,
+      sideEffectId: sideEffectMap["Muscle pain"],
+      frequency: "Common",
+      bodySystem: "Musculoskeletal",
+    },
+    {
+      activeSubstanceId: activeSubstances[6].id,
+      sideEffectId: sideEffectMap["Nausea"],
+      frequency: "Common",
+      bodySystem: "GIT",
+    },
     // Salbutamol (7)
-    { activeSubstanceId: activeSubstances[7].id, sideEffectId: sideEffectMap["Tremor"], frequency: "VeryCommon", bodySystem: "NervousSystem" },
-    { activeSubstanceId: activeSubstances[7].id, sideEffectId: sideEffectMap["Palpitations"], frequency: "Common", bodySystem: "Cardiac" },
-    { activeSubstanceId: activeSubstances[7].id, sideEffectId: sideEffectMap["Headache"], frequency: "Common", bodySystem: "NervousSystem" },
+    {
+      activeSubstanceId: activeSubstances[7].id,
+      sideEffectId: sideEffectMap["Tremor"],
+      frequency: "VeryCommon",
+      bodySystem: "NervousSystem",
+    },
+    {
+      activeSubstanceId: activeSubstances[7].id,
+      sideEffectId: sideEffectMap["Palpitations"],
+      frequency: "Common",
+      bodySystem: "Cardiac",
+    },
+    {
+      activeSubstanceId: activeSubstances[7].id,
+      sideEffectId: sideEffectMap["Headache"],
+      frequency: "Common",
+      bodySystem: "NervousSystem",
+    },
     // Cetirizine (8)
-    { activeSubstanceId: activeSubstances[8].id, sideEffectId: sideEffectMap["Drowsiness"], frequency: "Common", bodySystem: "NervousSystem" },
-    { activeSubstanceId: activeSubstances[8].id, sideEffectId: sideEffectMap["Dry mouth"], frequency: "Common", bodySystem: "GIT" },
-    { activeSubstanceId: activeSubstances[8].id, sideEffectId: sideEffectMap["Headache"], frequency: "Common", bodySystem: "NervousSystem" },
+    {
+      activeSubstanceId: activeSubstances[8].id,
+      sideEffectId: sideEffectMap["Drowsiness"],
+      frequency: "Common",
+      bodySystem: "NervousSystem",
+    },
+    {
+      activeSubstanceId: activeSubstances[8].id,
+      sideEffectId: sideEffectMap["Dry mouth"],
+      frequency: "Common",
+      bodySystem: "GIT",
+    },
+    {
+      activeSubstanceId: activeSubstances[8].id,
+      sideEffectId: sideEffectMap["Headache"],
+      frequency: "Common",
+      bodySystem: "NervousSystem",
+    },
     // Losartan (9)
-    { activeSubstanceId: activeSubstances[9].id, sideEffectId: sideEffectMap["Dizziness"], frequency: "Common", bodySystem: "NervousSystem" },
-    { activeSubstanceId: activeSubstances[9].id, sideEffectId: sideEffectMap["Headache"], frequency: "Common", bodySystem: "NervousSystem" },
-    { activeSubstanceId: activeSubstances[9].id, sideEffectId: sideEffectMap["Fatigue"], frequency: "Common", bodySystem: "General" },
+    {
+      activeSubstanceId: activeSubstances[9].id,
+      sideEffectId: sideEffectMap["Dizziness"],
+      frequency: "Common",
+      bodySystem: "NervousSystem",
+    },
+    {
+      activeSubstanceId: activeSubstances[9].id,
+      sideEffectId: sideEffectMap["Headache"],
+      frequency: "Common",
+      bodySystem: "NervousSystem",
+    },
+    {
+      activeSubstanceId: activeSubstances[9].id,
+      sideEffectId: sideEffectMap["Fatigue"],
+      frequency: "Common",
+      bodySystem: "General",
+    },
   ];
 
   await prisma.medicationSideEffect.createMany({
@@ -2799,7 +3306,9 @@ async function main() {
     skipDuplicates: true,
   });
 
-  console.log(`✅ Created ${sideEffects.length} side effects, ${medicationSideEffectData.length} active-substance (medication) side effect links`);
+  console.log(
+    `✅ Created ${sideEffects.length} side effects, ${medicationSideEffectData.length} active-substance (medication) side effect links`,
+  );
 
   // ============================================
   // SECTION 17: DISEASE ACTIVE SUBSTANCE WARNINGS
@@ -2811,49 +3320,56 @@ async function main() {
         diseaseId: diseases[0].id, // Type 2 Diabetes
         activeSubstanceId: activeSubstances[1].id, // Ibuprofen
         warningFieldName: "gitWarning",
-        warningMessage: "NSAIDs in diabetic patients increase risk of renal impairment and mask hypoglycemia symptoms. Monitor blood glucose and renal function closely.",
+        warningMessage:
+          "NSAIDs in diabetic patients increase risk of renal impairment and mask hypoglycemia symptoms. Monitor blood glucose and renal function closely.",
         severity: "High",
       },
       {
         diseaseId: diseases[1].id, // Hypertension
         activeSubstanceId: activeSubstances[1].id, // Ibuprofen
         warningFieldName: "vascularWarning",
-        warningMessage: "NSAIDs can elevate blood pressure and reduce efficacy of antihypertensives. Avoid or use with close BP monitoring.",
+        warningMessage:
+          "NSAIDs can elevate blood pressure and reduce efficacy of antihypertensives. Avoid or use with close BP monitoring.",
         severity: "High",
       },
       {
         diseaseId: diseases[1].id, // Hypertension
         activeSubstanceId: activeSubstances[9].id, // Losartan
         warningFieldName: "renalWarning",
-        warningMessage: "ARBs require renal function monitoring in hypertensive patients, especially elderly or those with pre-existing kidney disease.",
+        warningMessage:
+          "ARBs require renal function monitoring in hypertensive patients, especially elderly or those with pre-existing kidney disease.",
         severity: "Medium",
       },
       {
         diseaseId: diseases[5].id, // Chronic Kidney Disease
         activeSubstanceId: activeSubstances[3].id, // Metformin
         warningFieldName: "renalWarning",
-        warningMessage: "Metformin is contraindicated in severe renal impairment (eGFR < 30). Risk of lactic acidosis. Dose reduction required if eGFR 30-45.",
+        warningMessage:
+          "Metformin is contraindicated in severe renal impairment (eGFR < 30). Risk of lactic acidosis. Dose reduction required if eGFR 30-45.",
         severity: "Critical",
       },
       {
         diseaseId: diseases[5].id, // Chronic Kidney Disease
         activeSubstanceId: activeSubstances[1].id, // Ibuprofen
         warningFieldName: "renalWarning",
-        warningMessage: "NSAIDs are contraindicated in chronic kidney disease as they can cause acute kidney injury and worsen renal function.",
+        warningMessage:
+          "NSAIDs are contraindicated in chronic kidney disease as they can cause acute kidney injury and worsen renal function.",
         severity: "Critical",
       },
       {
         diseaseId: diseases[2].id, // Asthma
         activeSubstanceId: activeSubstances[1].id, // Ibuprofen
         warningFieldName: "pulmonaryWarning",
-        warningMessage: "NSAIDs can trigger bronchospasm in aspirin/NSAID-sensitive asthmatic patients (Samter's triad). Contraindicated in known NSAID-sensitive asthma.",
+        warningMessage:
+          "NSAIDs can trigger bronchospasm in aspirin/NSAID-sensitive asthmatic patients (Samter's triad). Contraindicated in known NSAID-sensitive asthma.",
         severity: "High",
       },
       {
         diseaseId: diseases[7].id, // Coronary Artery Disease
         activeSubstanceId: activeSubstances[1].id, // Ibuprofen
         warningFieldName: "cardiacWarning",
-        warningMessage: "NSAIDs increase cardiovascular risk in patients with established CAD. Use minimum effective dose for shortest possible duration.",
+        warningMessage:
+          "NSAIDs increase cardiovascular risk in patients with established CAD. Use minimum effective dose for shortest possible duration.",
         severity: "Critical",
       },
     ],
@@ -2958,7 +3474,8 @@ async function main() {
         expiryDate: new Date("2025-09-30"),
         quantity: 25000,
         isRecalled: true,
-        recallReason: "Labeling error — incorrect dosage information on package insert",
+        recallReason:
+          "Labeling error — incorrect dosage information on package insert",
         recallDate: new Date("2024-01-10"),
       },
       {
@@ -2995,44 +3512,186 @@ async function main() {
   // ============================================
   console.log("\n🔐 Creating permissions and role permissions...");
   const permissions = await Promise.all([
-    prisma.permission.create({ data: { code: "users.view", name: "View Users", description: "Can view user list and profiles", adminOnly: true } }),
-    prisma.permission.create({ data: { code: "users.manage", name: "Manage Users", description: "Can create, update, and deactivate users", adminOnly: true } }),
-    prisma.permission.create({ data: { code: "doctors.verify", name: "Verify Doctors", description: "Can approve or reject doctor applications", adminOnly: true } }),
-    prisma.permission.create({ data: { code: "pharmacists.verify", name: "Verify Pharmacists", description: "Can approve or reject pharmacist applications", adminOnly: true } }),
-    prisma.permission.create({ data: { code: "medicines.view", name: "View Medicines", description: "Can browse the medicine catalog", adminOnly: false } }),
-    prisma.permission.create({ data: { code: "medicines.manage", name: "Manage Medicines", description: "Can create, edit, and delete active substances and trade names", adminOnly: true } }),
-    prisma.permission.create({ data: { code: "prescriptions.create", name: "Create Prescriptions", description: "Can write new prescriptions", adminOnly: false } }),
-    prisma.permission.create({ data: { code: "prescriptions.view", name: "View Prescriptions", description: "Can view prescription records", adminOnly: false } }),
-    prisma.permission.create({ data: { code: "reports.view", name: "View Reports", description: "Can view analytics and ADR reports", adminOnly: true } }),
-    prisma.permission.create({ data: { code: "import.manage", name: "Manage Imports", description: "Can import bulk data from Excel files", adminOnly: true } }),
-    prisma.permission.create({ data: { code: "export.manage", name: "Manage Exports", description: "Can export data to Excel files", adminOnly: true } }),
-    prisma.permission.create({ data: { code: "audit.view", name: "View Audit Logs", description: "Can view system audit trail", adminOnly: true } }),
-    prisma.permission.create({ data: { code: "settings.manage", name: "Manage Settings", description: "Can update application settings", adminOnly: true } }),
-    prisma.permission.create({ data: { code: "adr.submit", name: "Submit ADR", description: "Can submit adverse drug reaction reports", adminOnly: false } }),
-    prisma.permission.create({ data: { code: "adr.review", name: "Review ADR", description: "Can review and close ADR reports", adminOnly: true } }),
+    prisma.permission.create({
+      data: {
+        code: "users.view",
+        name: "View Users",
+        description: "Can view user list and profiles",
+        adminOnly: true,
+      },
+    }),
+    prisma.permission.create({
+      data: {
+        code: "users.manage",
+        name: "Manage Users",
+        description: "Can create, update, and deactivate users",
+        adminOnly: true,
+      },
+    }),
+    prisma.permission.create({
+      data: {
+        code: "doctors.verify",
+        name: "Verify Doctors",
+        description: "Can approve or reject doctor applications",
+        adminOnly: true,
+      },
+    }),
+    prisma.permission.create({
+      data: {
+        code: "pharmacists.verify",
+        name: "Verify Pharmacists",
+        description: "Can approve or reject pharmacist applications",
+        adminOnly: true,
+      },
+    }),
+    prisma.permission.create({
+      data: {
+        code: "medicines.view",
+        name: "View Medicines",
+        description: "Can browse the medicine catalog",
+        adminOnly: false,
+      },
+    }),
+    prisma.permission.create({
+      data: {
+        code: "medicines.manage",
+        name: "Manage Medicines",
+        description:
+          "Can create, edit, and delete active substances and trade names",
+        adminOnly: true,
+      },
+    }),
+    prisma.permission.create({
+      data: {
+        code: "prescriptions.create",
+        name: "Create Prescriptions",
+        description: "Can write new prescriptions",
+        adminOnly: false,
+      },
+    }),
+    prisma.permission.create({
+      data: {
+        code: "prescriptions.view",
+        name: "View Prescriptions",
+        description: "Can view prescription records",
+        adminOnly: false,
+      },
+    }),
+    prisma.permission.create({
+      data: {
+        code: "reports.view",
+        name: "View Reports",
+        description: "Can view analytics and ADR reports",
+        adminOnly: true,
+      },
+    }),
+    prisma.permission.create({
+      data: {
+        code: "import.manage",
+        name: "Manage Imports",
+        description: "Can import bulk data from Excel files",
+        adminOnly: true,
+      },
+    }),
+    prisma.permission.create({
+      data: {
+        code: "export.manage",
+        name: "Manage Exports",
+        description: "Can export data to Excel files",
+        adminOnly: true,
+      },
+    }),
+    prisma.permission.create({
+      data: {
+        code: "audit.view",
+        name: "View Audit Logs",
+        description: "Can view system audit trail",
+        adminOnly: true,
+      },
+    }),
+    prisma.permission.create({
+      data: {
+        code: "settings.manage",
+        name: "Manage Settings",
+        description: "Can update application settings",
+        adminOnly: true,
+      },
+    }),
+    prisma.permission.create({
+      data: {
+        code: "adr.submit",
+        name: "Submit ADR",
+        description: "Can submit adverse drug reaction reports",
+        adminOnly: false,
+      },
+    }),
+    prisma.permission.create({
+      data: {
+        code: "adr.review",
+        name: "Review ADR",
+        description: "Can review and close ADR reports",
+        adminOnly: true,
+      },
+    }),
   ]);
 
   await prisma.rolePermission.createMany({
     data: [
       // SuperAdmin gets all permissions
-      ...permissions.map(p => ({ role: "SuperAdmin", permissionId: p.id })),
+      ...permissions.map((p) => ({ role: "SuperAdmin", permissionId: p.id })),
       // Admin gets most permissions except settings
-      ...permissions.filter(p => p.code !== "settings.manage").map(p => ({ role: "Admin", permissionId: p.id })),
+      ...permissions
+        .filter((p) => p.code !== "settings.manage")
+        .map((p) => ({ role: "Admin", permissionId: p.id })),
       // Doctor permissions
-      { role: "Doctor", permissionId: permissions.find(p => p.code === "medicines.view")!.id },
-      { role: "Doctor", permissionId: permissions.find(p => p.code === "prescriptions.create")!.id },
-      { role: "Doctor", permissionId: permissions.find(p => p.code === "prescriptions.view")!.id },
-      { role: "Doctor", permissionId: permissions.find(p => p.code === "adr.submit")!.id },
+      {
+        role: "Doctor",
+        permissionId: permissions.find((p) => p.code === "medicines.view")!.id,
+      },
+      {
+        role: "Doctor",
+        permissionId: permissions.find(
+          (p) => p.code === "prescriptions.create",
+        )!.id,
+      },
+      {
+        role: "Doctor",
+        permissionId: permissions.find((p) => p.code === "prescriptions.view")!
+          .id,
+      },
+      {
+        role: "Doctor",
+        permissionId: permissions.find((p) => p.code === "adr.submit")!.id,
+      },
       // Pharmacist permissions
-      { role: "Pharmacist", permissionId: permissions.find(p => p.code === "medicines.view")!.id },
-      { role: "Pharmacist", permissionId: permissions.find(p => p.code === "prescriptions.view")!.id },
+      {
+        role: "Pharmacist",
+        permissionId: permissions.find((p) => p.code === "medicines.view")!.id,
+      },
+      {
+        role: "Pharmacist",
+        permissionId: permissions.find((p) => p.code === "prescriptions.view")!
+          .id,
+      },
       // Patient permissions
-      { role: "Patient", permissionId: permissions.find(p => p.code === "medicines.view")!.id },
-      { role: "Patient", permissionId: permissions.find(p => p.code === "prescriptions.view")!.id },
-      { role: "Patient", permissionId: permissions.find(p => p.code === "adr.submit")!.id },
+      {
+        role: "Patient",
+        permissionId: permissions.find((p) => p.code === "medicines.view")!.id,
+      },
+      {
+        role: "Patient",
+        permissionId: permissions.find((p) => p.code === "prescriptions.view")!
+          .id,
+      },
+      {
+        role: "Patient",
+        permissionId: permissions.find((p) => p.code === "adr.submit")!.id,
+      },
     ],
   });
-  console.log(`✅ Created ${permissions.length} permissions with role assignments`);
+  console.log(
+    `✅ Created ${permissions.length} permissions with role assignments`,
+  );
 
   // ============================================
   // SECTION 20: AUDIT LOGS
@@ -3081,7 +3740,11 @@ async function main() {
         action: "CREATE_PRESCRIPTION",
         entityType: "Prescription",
         entityId: prescriptions[0].id,
-        changes: { patientId: patients[0].id, tradeNameId: tradeNames[3].id, status: "Approved" },
+        changes: {
+          patientId: patients[0].id,
+          tradeNameId: tradeNames[3].id,
+          status: "Approved",
+        },
         ipAddress: "10.0.0.5",
         userAgent: "Mozilla/5.0 (seed)",
       },
@@ -3090,7 +3753,11 @@ async function main() {
         action: "CREATE_PRESCRIPTION",
         entityType: "Prescription",
         entityId: prescriptions[1].id,
-        changes: { patientId: patients[1].id, tradeNameId: tradeNames[4].id, status: "Filled" },
+        changes: {
+          patientId: patients[1].id,
+          tradeNameId: tradeNames[4].id,
+          status: "Filled",
+        },
         ipAddress: "10.0.0.5",
         userAgent: "Mozilla/5.0 (seed)",
       },
@@ -3099,7 +3766,9 @@ async function main() {
         action: "UPDATE_ACTIVE_SUBSTANCE",
         entityType: "ActiveSubstance",
         entityId: activeSubstances[0].id,
-        changes: { pregnancyWarning: { from: null, to: "Category B - Generally safe" } },
+        changes: {
+          pregnancyWarning: { from: null, to: "Category B - Generally safe" },
+        },
         ipAddress: "192.168.1.1",
         userAgent: "Mozilla/5.0 (seed)",
       },
@@ -3108,7 +3777,10 @@ async function main() {
         action: "DELETE_TRADE_NAME",
         entityType: "TradeName",
         entityId: 999,
-        changes: { title: "Discontinued Product", reason: "Product withdrawn from market" },
+        changes: {
+          title: "Discontinued Product",
+          reason: "Product withdrawn from market",
+        },
         ipAddress: "192.168.1.2",
         userAgent: "Mozilla/5.0 (seed)",
       },
@@ -3117,7 +3789,10 @@ async function main() {
         action: "REVIEW_MEDICINE_SUGGESTION",
         entityType: "MedicineSuggestion",
         entityId: 2,
-        changes: { status: { from: "Pending", to: "Approved" }, reviewNotes: "Approved for catalog" },
+        changes: {
+          status: { from: "Pending", to: "Approved" },
+          reviewNotes: "Approved for catalog",
+        },
         ipAddress: "192.168.1.1",
         userAgent: "Mozilla/5.0 (seed)",
       },
@@ -3126,7 +3801,10 @@ async function main() {
         action: "REVIEW_MEDICINE_SUGGESTION",
         entityType: "MedicineSuggestion",
         entityId: 3,
-        changes: { status: { from: "Pending", to: "Rejected" }, reviewNotes: "Duplicate product" },
+        changes: {
+          status: { from: "Pending", to: "Rejected" },
+          reviewNotes: "Duplicate product",
+        },
         ipAddress: "192.168.1.2",
         userAgent: "Mozilla/5.0 (seed)",
       },
@@ -3142,49 +3820,106 @@ async function main() {
     data: [
       {
         standardTerm: "Hepatic Impairment",
-        alternativeTerms: ["liver disease", "hepatic disease", "liver failure", "cirrhosis", "hepatitis", "liver dysfunction"],
+        alternativeTerms: [
+          "liver disease",
+          "hepatic disease",
+          "liver failure",
+          "cirrhosis",
+          "hepatitis",
+          "liver dysfunction",
+        ],
         category: "Organ",
         warningFieldName: "hepaticWarning",
       },
       {
         standardTerm: "Renal Impairment",
-        alternativeTerms: ["kidney disease", "renal disease", "kidney failure", "CKD", "chronic kidney disease", "renal dysfunction"],
+        alternativeTerms: [
+          "kidney disease",
+          "renal disease",
+          "kidney failure",
+          "CKD",
+          "chronic kidney disease",
+          "renal dysfunction",
+        ],
         category: "Organ",
         warningFieldName: "renalWarning",
       },
       {
         standardTerm: "Pregnancy",
-        alternativeTerms: ["pregnant", "pregnancy", "gestational", "prenatal", "gravid", "expecting"],
+        alternativeTerms: [
+          "pregnant",
+          "pregnancy",
+          "gestational",
+          "prenatal",
+          "gravid",
+          "expecting",
+        ],
         category: "Population",
         warningFieldName: "pregnancyWarning",
       },
       {
         standardTerm: "Breastfeeding",
-        alternativeTerms: ["lactation", "nursing", "breastfeeding", "breast-feeding", "postnatal", "lactating"],
+        alternativeTerms: [
+          "lactation",
+          "nursing",
+          "breastfeeding",
+          "breast-feeding",
+          "postnatal",
+          "lactating",
+        ],
         category: "Population",
         warningFieldName: "lactationWarning",
       },
       {
         standardTerm: "Pediatric",
-        alternativeTerms: ["children", "child", "pediatric", "paediatric", "infant", "neonatal", "juvenile"],
+        alternativeTerms: [
+          "children",
+          "child",
+          "pediatric",
+          "paediatric",
+          "infant",
+          "neonatal",
+          "juvenile",
+        ],
         category: "Population",
         warningFieldName: "specialPopulationChildren",
       },
       {
         standardTerm: "Elderly",
-        alternativeTerms: ["geriatric", "elderly", "old age", "senior", "aged", "over 65"],
+        alternativeTerms: [
+          "geriatric",
+          "elderly",
+          "old age",
+          "senior",
+          "aged",
+          "over 65",
+        ],
         category: "Population",
         warningFieldName: "specialPopulationElderly",
       },
       {
         standardTerm: "Cardiac Disease",
-        alternativeTerms: ["heart disease", "cardiac", "heart failure", "arrhythmia", "coronary", "myocardial"],
+        alternativeTerms: [
+          "heart disease",
+          "cardiac",
+          "heart failure",
+          "arrhythmia",
+          "coronary",
+          "myocardial",
+        ],
         category: "Organ",
         warningFieldName: "cardiacWarning",
       },
       {
         standardTerm: "Respiratory Disease",
-        alternativeTerms: ["asthma", "COPD", "pulmonary", "respiratory", "lung disease", "bronchospasm"],
+        alternativeTerms: [
+          "asthma",
+          "COPD",
+          "pulmonary",
+          "respiratory",
+          "lung disease",
+          "bronchospasm",
+        ],
         category: "Condition",
         warningFieldName: "pulmonaryWarning",
       },
@@ -3201,7 +3936,7 @@ async function main() {
       // Patient 1 (Alice Cooper) — takes Panadol OTC + Glucophage prescribed + Brufen (triggers Diabetes + NSAIDs warning for dr.smith's patients/warnings)
       {
         patientId: patients[0].id,
-        tradeNameId: tradeNames[0].id,         // Panadol (in system)
+        tradeNameId: tradeNames[0].id, // Panadol (in system)
         activeSubstanceId: activeSubstances[0].id,
         medicineName: "Panadol",
         dosageAmount: 500,
@@ -3217,7 +3952,7 @@ async function main() {
       },
       {
         patientId: patients[0].id,
-        tradeNameId: tradeNames[1].id,         // Brufen (Ibuprofen) — triggers Rule 2: Diabetes + NSAIDs
+        tradeNameId: tradeNames[1].id, // Brufen (Ibuprofen) — triggers Rule 2: Diabetes + NSAIDs
         activeSubstanceId: activeSubstances[1].id,
         medicineName: "Brufen",
         dosageAmount: 400,
@@ -3226,7 +3961,8 @@ async function main() {
         frequencyUnit: "Days",
         startDate: new Date("2024-03-01"),
         isOngoing: true,
-        notes: "Self-reported for joint pain; patient has Type 2 Diabetes — warning expected",
+        notes:
+          "Self-reported for joint pain; patient has Type 2 Diabetes — warning expected",
         isVerified: true,
         verifiedBy: admin1.id,
         verifiedAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000),
@@ -3234,7 +3970,7 @@ async function main() {
       // Patient 2 (Bob Martinez) — takes Brufen self-purchased + Glucophage (triggers Hypertension + Metformin warning for dr.smith's patients/warnings)
       {
         patientId: patients[1].id,
-        tradeNameId: tradeNames[1].id,         // Brufen (in system)
+        tradeNameId: tradeNames[1].id, // Brufen (in system)
         activeSubstanceId: activeSubstances[1].id,
         medicineName: "Brufen",
         dosageAmount: 400,
@@ -3250,7 +3986,7 @@ async function main() {
       },
       {
         patientId: patients[1].id,
-        tradeNameId: tradeNames[3].id,         // Glucophage (Metformin) — triggers Rule 7: Hypertension + Metformin
+        tradeNameId: tradeNames[3].id, // Glucophage (Metformin) — triggers Rule 7: Hypertension + Metformin
         activeSubstanceId: activeSubstances[3].id,
         medicineName: "Glucophage",
         dosageAmount: 500,
@@ -3259,7 +3995,8 @@ async function main() {
         frequencyUnit: "Days",
         startDate: new Date("2024-01-15"),
         isOngoing: true,
-        notes: "Added for diabetes prevention; patient has hypertension — warning expected",
+        notes:
+          "Added for diabetes prevention; patient has hypertension — warning expected",
         isVerified: true,
         verifiedBy: admin1.id,
         verifiedAt: new Date(Date.now() - 20 * 24 * 60 * 60 * 1000),
@@ -3267,7 +4004,7 @@ async function main() {
       // Patient 3 (Carol White) — takes a vitamin supplement NOT in system + Brufen (triggers Asthma + NSAIDs warning for dr.smith's patients/warnings)
       {
         patientId: patients[2].id,
-        tradeNameId: null,                     // NOT in system
+        tradeNameId: null, // NOT in system
         medicineName: "Pregnacare Original",
         dosageAmount: 1,
         frequencyCount: 1,
@@ -3278,11 +4015,11 @@ async function main() {
         notes: "Pregnancy multivitamin — bought from pharmacy",
         imageUrl: "/uploads/patient-medicines/sample-pregnacare.jpg",
         imageFileName: "pregnacare.jpg",
-        isVerified: false,                     // Pending admin/doctor verification
+        isVerified: false, // Pending admin/doctor verification
       },
       {
         patientId: patients[2].id,
-        tradeNameId: tradeNames[1].id,         // Brufen (Ibuprofen) — triggers Rule 8: Asthma + NSAIDs
+        tradeNameId: tradeNames[1].id, // Brufen (Ibuprofen) — triggers Rule 8: Asthma + NSAIDs
         activeSubstanceId: activeSubstances[1].id,
         medicineName: "Brufen",
         dosageAmount: 200,
@@ -3291,7 +4028,8 @@ async function main() {
         frequencyUnit: "Days",
         startDate: new Date("2024-06-01"),
         isOngoing: true,
-        notes: "Occasional use for headaches; patient has asthma — warning expected",
+        notes:
+          "Occasional use for headaches; patient has asthma — warning expected",
         isVerified: true,
         verifiedBy: admin1.id,
         verifiedAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
@@ -3299,7 +4037,7 @@ async function main() {
       // Patient 4 (David Lee) — takes Losec (in system)
       {
         patientId: patients[3].id,
-        tradeNameId: tradeNames[5].id,         // Losec (in system)
+        tradeNameId: tradeNames[5].id, // Losec (in system)
         activeSubstanceId: activeSubstances[5].id,
         medicineName: "Losec",
         dosageAmount: 20,
@@ -3315,7 +4053,7 @@ async function main() {
       // Patient 5 (Emma Thompson) — takes Ventolin (in system) + unknown herbal drops NOT in system
       {
         patientId: patients[4].id,
-        tradeNameId: tradeNames[7].id,         // Ventolin (in system)
+        tradeNameId: tradeNames[7].id, // Ventolin (in system)
         activeSubstanceId: activeSubstances[7].id,
         medicineName: "Ventolin Inhaler",
         dosageAmount: 2,
@@ -3330,7 +4068,7 @@ async function main() {
       },
       {
         patientId: patients[4].id,
-        tradeNameId: null,                     // NOT in system
+        tradeNameId: null, // NOT in system
         medicineName: "Nature's Bounty Vitamin D3",
         dosageAmount: 400,
         frequencyCount: 1,
@@ -3426,7 +4164,7 @@ async function main() {
   console.log(`   - ${diseases.length} Diseases`);
   console.log(`   - ${pricingPlans.length} Pricing Plans`);
   console.log(
-    `   - 18 Users (1 SuperAdmin, 2 Admins, 5 Doctors, 7 Pharmacists, 5 Patients)`
+    `   - 18 Users (1 SuperAdmin, 2 Admins, 5 Doctors, 7 Pharmacists, 5 Patients)`,
   );
   console.log(`   - ${prescriptions.length} Prescriptions`);
   console.log(`   - Comprehensive patient data including:`);
@@ -3446,13 +4184,12 @@ async function main() {
       data: {
         diseaseId:
           diseases.find(
-            (d) => d.name.includes("Breast Cancer") || d.name.includes("Cancer")
+            (d) =>
+              d.name.includes("Breast Cancer") || d.name.includes("Cancer"),
           )?.id || diseases[0].id,
         ruleType: "BLOCK_ACTIVE_SUBSTANCE",
         targetActiveSubstanceId: activeSubstances.find(
-          (a) =>
-            a.name.includes("MMR") ||
-            a.name.includes("Vaccine")
+          (a) => a.name.includes("MMR") || a.name.includes("Vaccine"),
         )?.id,
         severity: "Critical",
         warningMessage:
@@ -3471,9 +4208,7 @@ async function main() {
           diseases[1].id,
         ruleType: "WARN_ACTIVE_SUBSTANCE",
         targetActiveSubstanceId: activeSubstances.find(
-          (a) =>
-            a.name.includes("Ibuprofen") ||
-            a.name.includes("NSAID")
+          (a) => a.name.includes("Ibuprofen") || a.name.includes("NSAID"),
         )?.id,
         severity: "High",
         warningMessage:
@@ -3504,7 +4239,7 @@ async function main() {
       data: {
         diseaseId:
           diseases.find(
-            (d) => d.name.includes("Kidney") || d.name.includes("Renal")
+            (d) => d.name.includes("Kidney") || d.name.includes("Renal"),
           )?.id ||
           diseases[3]?.id ||
           diseases[0].id,
@@ -3525,7 +4260,7 @@ async function main() {
       data: {
         diseaseId:
           diseases.find(
-            (d) => d.name.includes("Liver") || d.name.includes("Hepatic")
+            (d) => d.name.includes("Liver") || d.name.includes("Hepatic"),
           )?.id ||
           diseases[4]?.id ||
           diseases[0].id,
@@ -3680,9 +4415,13 @@ async function main() {
   console.log(`   - ${medicineSuggestions.length} Medicine Suggestions`);
   console.log(`   - ${pricingPlans.length} Pricing Plans`);
   console.log(`   - ${permissions.length} Permissions with role assignments`);
-  console.log(`   - 18 Users (1 SuperAdmin, 2 Admins, 5 Doctors, 7 Pharmacists, 5 Patients)`);
+  console.log(
+    `   - 18 Users (1 SuperAdmin, 2 Admins, 5 Doctors, 7 Pharmacists, 5 Patients)`,
+  );
   console.log(`   - ${subscriptions.length} Subscriptions + Payments`);
-  console.log(`   - ${prescriptions.length} Prescriptions with versions & interaction alerts`);
+  console.log(
+    `   - ${prescriptions.length} Prescriptions with versions & interaction alerts`,
+  );
   console.log(`   - Comprehensive patient data:`);
   console.log(`     • Medical histories, family histories, allergies`);
   console.log(`     • Lifestyle data, child profiles, patient diseases`);
@@ -3699,9 +4438,9 @@ async function main() {
 
   // App settings: default nearby doctors search radius (km)
   await prisma.appSetting.upsert({
-    where: { key: 'nearbyDoctorsRadiusKm' },
-    create: { key: 'nearbyDoctorsRadiusKm', valueText: '50' },
-    update: { valueText: '50' },
+    where: { key: "nearbyDoctorsRadiusKm" },
+    create: { key: "nearbyDoctorsRadiusKm", valueText: "50" },
+    update: { valueText: "50" },
   });
 
   console.log("\n🔑 Test Credentials (all passwords: Password@123):");

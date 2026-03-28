@@ -106,3 +106,30 @@
 [2026-03-26T18:24:52.630Z] [INFO] Health check: http://localhost:5000/api/health
 [2026-03-26T18:24:52.630Z] [INFO] POST /api/admin/side-effects/:id/trade-names is registered
 [2026-03-26T18:24:52.630Z] [INFO] Server is running on port 5000
+[2026-03-28T12:16:37.354Z] [INFO] Server is running on http://localhost:5000
+[2026-03-28T12:16:37.361Z] [INFO] Health check: http://localhost:5000/api/health
+[2026-03-28T12:16:37.367Z] [INFO] POST /api/admin/side-effects/:id/trade-names is registered
+[2026-03-28T12:16:37.369Z] [INFO] Server is running on port 5000
+[2026-03-28T12:16:39.337Z] [INFO] Default admin created: superadmin@greenrx.com
+[2026-03-28T12:18:10.985Z] [INFO] Server is running on http://localhost:5000
+[2026-03-28T12:18:11.159Z] [INFO] Health check: http://localhost:5000/api/health
+[2026-03-28T12:18:11.213Z] [INFO] POST /api/admin/side-effects/:id/trade-names is registered
+[2026-03-28T12:18:11.309Z] [INFO] Server is running on port 5000
+[2026-03-28T12:19:06.248Z] [INFO] Server is running on http://localhost:5000
+[2026-03-28T12:19:06.253Z] [INFO] Health check: http://localhost:5000/api/health
+[2026-03-28T12:19:06.257Z] [INFO] POST /api/admin/side-effects/:id/trade-names is registered
+[2026-03-28T12:19:06.258Z] [INFO] Server is running on port 5000
+[2026-03-28T12:20:56.246Z] [INFO] Server is running on http://localhost:5000
+[2026-03-28T12:20:56.270Z] [INFO] Health check: http://localhost:5000/api/health
+[2026-03-28T12:20:56.272Z] [INFO] POST /api/admin/side-effects/:id/trade-names is registered
+[2026-03-28T12:20:56.275Z] [INFO] Server is running on port 5000
+[2026-03-28T12:22:09.199Z] [INFO] Server is running on http://localhost:5000
+[2026-03-28T12:22:09.242Z] [INFO] Health check: http://localhost:5000/api/health
+[2026-03-28T12:22:09.290Z] [INFO] POST /api/admin/side-effects/:id/trade-names is registered
+[2026-03-28T12:22:09.315Z] [INFO] Server is running on port 5000
+[2026-03-28T12:29:02.373Z] [WARN] Received SIGINT. Shutting down server...
+[2026-03-28T12:29:02.385Z] [INFO] HTTP server closed
+[2026-03-28T12:29:02.397Z] [INFO] Prisma disconnected
+[2026-03-28T12:29:03.791Z] [WARN] Received SIGINT. Shutting down server...
+[2026-03-28T12:29:03.847Z] [INFO] HTTP server closed
+[2026-03-28T12:29:03.943Z] [INFO] Prisma disconnected
