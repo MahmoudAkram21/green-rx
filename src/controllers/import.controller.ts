@@ -99,7 +99,7 @@ async function readSheetByColIndex(
  */
 const ACTIVE_SUBSTANCE_COLUMNS: Record<number, { field: string; isArray: boolean }> = {
   // ── Basic Info (cols 1–9) ─────────────────────────────────────────────────
-  1:   { field: "activeSubstance",               isArray: false },
+  1:   { field: "name",                          isArray: false },
   2:   { field: "concentration",                 isArray: false },
   3:   { field: "classification",                isArray: false },
   4:   { field: "dosageForm",                    isArray: false },
@@ -340,8 +340,10 @@ class ImportController {
       }
 
       let rawData: Record<number, unknown>[];
+      console.log("filePath", filePath);
       try {
         const { sheetNames, rows } = await readSheetByColIndex(filePath);
+        console.log("sheetNames", sheetNames);
         if (!sheetNames.length || rows.length === 0) {
           return res
             .status(400)
@@ -394,7 +396,7 @@ class ImportController {
                 : String(value).trim();
             }
 
-            if (!cleanData.activeSubstance) {
+            if (!cleanData.name) {
               throw new Error("Active substance name is required");
             }
 
@@ -651,7 +653,6 @@ class ImportController {
       }
 
       if (filePath) cleanupFile(filePath);
-
       res.json({
         message: `${entityType} import completed`,
         ...results,

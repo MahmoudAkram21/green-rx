@@ -6,6 +6,7 @@ import { AddMedicineRequestStatus } from '../../generated/client/client';
 import { extractMedicineFromImage } from '../services/medicineImageExtraction.service';
 import { generateWarnings } from '../services/warningService';
 import drugInteractionService from '../services/drugInteraction.service';
+import { checkAllergyConflicts } from '../services/allergyCheck.service';
 
 const uploadsDir = path.join(__dirname, '../../uploads/patient-medicines');
 if (!fs.existsSync(uploadsDir)) {
@@ -189,6 +190,7 @@ export const addPatientMedicineByImage = async (req: Request, res: Response, nex
         if (fs.existsSync(filePath)) {
             const buffer = fs.readFileSync(filePath);
             extracted = await extractMedicineFromImage(buffer, req.file.mimetype || 'image/jpeg');
+            console.log("extracted", extracted);
         }
 
         let matchedTradeNameId: number | null = null;
@@ -234,6 +236,26 @@ export const addPatientMedicineByImage = async (req: Request, res: Response, nex
         }
 
         const bothFound = matchedTradeNameId != null && matchedActiveSubstanceId != null;
+
+        // ── Allergy Gate (block before persist) ───────────────────────────────
+        if (matchedTradeNameId != null || matchedActiveSubstanceId != null) {
+            const allergyResult = await checkAllergyConflicts({
+                patientId: pid,
+                tradeNameId: matchedTradeNameId,
+                activeSubstanceId: matchedActiveSubstanceId,
+            });
+
+            if (allergyResult.blocked) {
+                res.status(409).json({
+                    blocked: true,
+                    reason: 'allergy_conflict',
+                    conflicts: allergyResult.conflicts,
+                    warnings: allergyResult.warnings,
+                    message: 'This medicine cannot be added because of a documented allergy conflict.',
+                });
+                return;
+            }
+        }
 
         const medicine = await prisma.patientMedicine.create({
             data: {

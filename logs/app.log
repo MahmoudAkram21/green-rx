@@ -1,0 +1,108 @@
+[2026-03-26T16:42:58.094Z] [INFO] Server is running on http://localhost:5000
+[2026-03-26T16:42:58.095Z] [INFO] Health check: http://localhost:5000/api/health
+[2026-03-26T16:42:58.096Z] [INFO] POST /api/admin/side-effects/:id/trade-names is registered
+[2026-03-26T16:42:58.096Z] [INFO] Server is running on port 5000
+[2026-03-26T16:43:19.005Z] [INFO] Incoming request: POST /api/import/active-substances
+[2026-03-26T16:43:21.282Z] [INFO] POST /api/import/active-substances 200 2275.827 ms - 7183 bytes - ip=::1
+[2026-03-26T16:43:21.283Z] [INFO] Completed request: POST /api/import/active-substances -> 200 (2278ms)
+[2026-03-26T16:45:34.271Z] [INFO] Server is running on http://localhost:5000
+[2026-03-26T16:45:34.272Z] [INFO] Health check: http://localhost:5000/api/health
+[2026-03-26T16:45:34.272Z] [INFO] POST /api/admin/side-effects/:id/trade-names is registered
+[2026-03-26T16:45:34.273Z] [INFO] Server is running on port 5000
+[2026-03-26T16:45:48.585Z] [INFO] Incoming request: POST /api/import/active-substances
+[2026-03-26T16:45:51.278Z] [INFO] POST /api/import/active-substances 200 2692.388 ms - 105 bytes - ip=::1
+[2026-03-26T16:45:51.279Z] [INFO] Completed request: POST /api/import/active-substances -> 200 (2694ms)
+[2026-03-26T16:47:12.054Z] [INFO] Incoming request: GET /api/docs/
+[2026-03-26T16:47:12.057Z] [INFO] GET /api/docs/ 304 2.453 ms - - bytes - ip=::1
+[2026-03-26T16:47:12.057Z] [INFO] Completed request: GET /api/docs/ -> 304 (3ms)
+[2026-03-26T16:47:12.119Z] [INFO] Incoming request: GET /api/docs/swagger-ui.css
+[2026-03-26T16:47:12.121Z] [INFO] GET /api/docs/swagger-ui.css 304 1.481 ms - - bytes - ip=::1
+[2026-03-26T16:47:12.121Z] [INFO] Completed request: GET /api/docs/swagger-ui.css -> 304 (2ms)
+[2026-03-26T16:47:12.124Z] [INFO] Incoming request: GET /api/docs/swagger-ui-bundle.js
+[2026-03-26T16:47:12.125Z] [INFO] Incoming request: GET /api/docs/swagger-ui-standalone-preset.js
+[2026-03-26T16:47:12.126Z] [INFO] Incoming request: GET /api/docs/swagger-ui-init.js
+[2026-03-26T16:47:12.128Z] [INFO] GET /api/docs/swagger-ui-init.js 304 1.613 ms - - bytes - ip=::1
+[2026-03-26T16:47:12.128Z] [INFO] Completed request: GET /api/docs/swagger-ui-init.js -> 304 (2ms)
+[2026-03-26T16:47:12.129Z] [INFO] GET /api/docs/swagger-ui-bundle.js 304 5.482 ms - - bytes - ip=::1
+[2026-03-26T16:47:12.130Z] [INFO] Completed request: GET /api/docs/swagger-ui-bundle.js -> 304 (6ms)
+[2026-03-26T16:47:12.131Z] [INFO] GET /api/docs/swagger-ui-standalone-preset.js 304 5.627 ms - - bytes - ip=::1
+[2026-03-26T16:47:12.131Z] [INFO] Completed request: GET /api/docs/swagger-ui-standalone-preset.js -> 304 (6ms)
+[2026-03-26T16:47:13.085Z] [INFO] Incoming request: GET /api/docs/favicon-32x32.png
+[2026-03-26T16:47:13.087Z] [INFO] GET /api/docs/favicon-32x32.png 304 0.940 ms - - bytes - ip=::1
+[2026-03-26T16:47:13.087Z] [INFO] Completed request: GET /api/docs/favicon-32x32.png -> 304 (2ms)
+[2026-03-26T16:47:57.429Z] [INFO] Incoming request: POST /api/auth/login
+[2026-03-26T16:47:57.669Z] [INFO] POST /api/auth/login 200 239.669 ms - 565 bytes - ip=::1
+[2026-03-26T16:47:57.670Z] [INFO] Completed request: POST /api/auth/login -> 200 (240ms)
+[2026-03-26T16:48:42.336Z] [INFO] Incoming request: GET /api/active-substances/search?q=Rosuvastatin%20calcium
+[2026-03-26T16:48:42.533Z] [INFO] GET /api/active-substances/search?q=Rosuvastatin%20calcium 200 196.344 ms - 343446 bytes - ip=::1
+[2026-03-26T16:48:42.533Z] [INFO] Completed request: GET /api/active-substances/search?q=Rosuvastatin%20calcium -> 200 (197ms)
+[2026-03-26T16:49:46.037Z] [INFO] Incoming request: GET /api/active-substances/search?q=Atorvastatin%20calcium%20trihydrate
+[2026-03-26T16:49:46.118Z] [INFO] GET /api/active-substances/search?q=Atorvastatin%20calcium%20trihydrate 200 80.625 ms - 343446 bytes - ip=::1
+[2026-03-26T16:49:46.118Z] [INFO] Completed request: GET /api/active-substances/search?q=Atorvastatin%20calcium%20trihydrate -> 200 (81ms)
+[2026-03-26T17:08:54.479Z] [INFO] Incoming request: POST /api/auth/login
+[2026-03-26T17:08:54.639Z] [INFO] POST /api/auth/login 200 159.621 ms - 561 bytes - ip=::1
+[2026-03-26T17:08:54.639Z] [INFO] Completed request: POST /api/auth/login -> 200 (160ms)
+[2026-03-26T17:09:18.820Z] [INFO] Incoming request: POST /api/patients/21/allergies
+[2026-03-26T17:09:18.890Z] [INFO] POST /api/patients/21/allergies 201 70.223 ms - 381 bytes - ip=::1
+[2026-03-26T17:09:18.891Z] [INFO] Completed request: POST /api/patients/21/allergies -> 201 (71ms)
+[2026-03-26T17:20:52.093Z] [INFO] Incoming request: GET /api/trade-names/search?activeSubstanceId=72
+[2026-03-26T17:20:52.169Z] [INFO] GET /api/trade-names/search?activeSubstanceId=72 200 75.818 ms - 2808 bytes - ip=::1
+[2026-03-26T17:20:52.169Z] [INFO] Completed request: GET /api/trade-names/search?activeSubstanceId=72 -> 200 (76ms)
+[2026-03-26T17:21:21.471Z] [INFO] Incoming request: GET /api/allergies/check/21/232
+[2026-03-26T17:21:21.651Z] [INFO] GET /api/allergies/check/21/232 200 179.748 ms - 140 bytes - ip=::1
+[2026-03-26T17:21:21.651Z] [INFO] Completed request: GET /api/allergies/check/21/232 -> 200 (180ms)
+[2026-03-26T17:27:20.645Z] [INFO] Incoming request: POST /api/patients/21/allergies
+[2026-03-26T17:27:20.749Z] [INFO] POST /api/patients/21/allergies 201 104.189 ms - 381 bytes - ip=::1
+[2026-03-26T17:27:20.750Z] [INFO] Completed request: POST /api/patients/21/allergies -> 201 (105ms)
+[2026-03-26T18:06:42.310Z] [INFO] Incoming request: GET /api/docs/
+[2026-03-26T18:06:42.352Z] [INFO] GET /api/docs/ 200 40.562 ms - 3047 bytes - ip=::1
+[2026-03-26T18:06:42.354Z] [INFO] Completed request: GET /api/docs/ -> 200 (44ms)
+[2026-03-26T18:06:42.400Z] [INFO] Incoming request: GET /api/docs/swagger-ui.css
+[2026-03-26T18:06:42.409Z] [INFO] Incoming request: GET /api/docs/swagger-ui-bundle.js
+[2026-03-26T18:06:42.411Z] [INFO] Incoming request: GET /api/docs/swagger-ui-standalone-preset.js
+[2026-03-26T18:06:42.415Z] [INFO] Incoming request: GET /api/docs/swagger-ui-init.js
+[2026-03-26T18:06:42.427Z] [INFO] GET /api/docs/swagger-ui-init.js 200 12.074 ms - 326742 bytes - ip=::1
+[2026-03-26T18:06:42.428Z] [INFO] Completed request: GET /api/docs/swagger-ui-init.js -> 200 (13ms)
+[2026-03-26T18:06:42.502Z] [INFO] GET /api/docs/swagger-ui.css 200 97.212 ms - 177183 bytes - ip=::1
+[2026-03-26T18:06:42.503Z] [INFO] Completed request: GET /api/docs/swagger-ui.css -> 200 (103ms)
+[2026-03-26T18:06:42.506Z] [INFO] GET /api/docs/swagger-ui-standalone-preset.js 200 81.159 ms - 251697 bytes - ip=::1
+[2026-03-26T18:06:42.506Z] [INFO] Completed request: GET /api/docs/swagger-ui-standalone-preset.js -> 200 (95ms)
+[2026-03-26T18:06:42.515Z] [INFO] GET /api/docs/swagger-ui-bundle.js 200 87.479 ms - 1514087 bytes - ip=::1
+[2026-03-26T18:06:42.516Z] [INFO] Completed request: GET /api/docs/swagger-ui-bundle.js -> 200 (107ms)
+[2026-03-26T18:06:43.301Z] [INFO] Incoming request: GET /api/docs/favicon-32x32.png
+[2026-03-26T18:06:43.302Z] [INFO] GET /api/docs/favicon-32x32.png 304 1.322 ms - - bytes - ip=::1
+[2026-03-26T18:06:43.303Z] [INFO] Completed request: GET /api/docs/favicon-32x32.png -> 304 (2ms)
+[2026-03-26T18:08:39.089Z] [INFO] Incoming request: POST /api/auth/login
+[2026-03-26T18:08:39.287Z] [INFO] POST /api/auth/login 200 198.113 ms - 561 bytes - ip=::1
+[2026-03-26T18:08:39.287Z] [INFO] Completed request: POST /api/auth/login -> 200 (198ms)
+[2026-03-26T18:11:54.718Z] [INFO] Server is running on http://localhost:5000
+[2026-03-26T18:11:54.725Z] [INFO] Health check: http://localhost:5000/api/health
+[2026-03-26T18:11:54.725Z] [INFO] POST /api/admin/side-effects/:id/trade-names is registered
+[2026-03-26T18:11:54.725Z] [INFO] Server is running on port 5000
+[2026-03-26T18:12:44.264Z] [INFO] Incoming request: POST /api/patient-medicines/patient/21/upload-image
+[2026-03-26T18:12:46.860Z] [INFO] POST /api/patient-medicines/patient/21/upload-image 201 2594.551 ms - 950 bytes - ip=::1
+[2026-03-26T18:12:46.860Z] [INFO] Completed request: POST /api/patient-medicines/patient/21/upload-image -> 201 (2596ms)
+[2026-03-26T18:22:36.839Z] [INFO] Server is running on http://localhost:5000
+[2026-03-26T18:22:36.840Z] [INFO] Health check: http://localhost:5000/api/health
+[2026-03-26T18:22:36.840Z] [INFO] POST /api/admin/side-effects/:id/trade-names is registered
+[2026-03-26T18:22:36.840Z] [INFO] Server is running on port 5000
+[2026-03-26T18:23:01.805Z] [INFO] Server is running on http://localhost:5000
+[2026-03-26T18:23:01.806Z] [INFO] Health check: http://localhost:5000/api/health
+[2026-03-26T18:23:01.806Z] [INFO] POST /api/admin/side-effects/:id/trade-names is registered
+[2026-03-26T18:23:01.807Z] [INFO] Server is running on port 5000
+[2026-03-26T18:23:39.225Z] [INFO] Server is running on http://localhost:5000
+[2026-03-26T18:23:39.226Z] [INFO] Health check: http://localhost:5000/api/health
+[2026-03-26T18:23:39.226Z] [INFO] POST /api/admin/side-effects/:id/trade-names is registered
+[2026-03-26T18:23:39.226Z] [INFO] Server is running on port 5000
+[2026-03-26T18:24:15.974Z] [INFO] Server is running on http://localhost:5000
+[2026-03-26T18:24:15.975Z] [INFO] Health check: http://localhost:5000/api/health
+[2026-03-26T18:24:15.975Z] [INFO] POST /api/admin/side-effects/:id/trade-names is registered
+[2026-03-26T18:24:15.976Z] [INFO] Server is running on port 5000
+[2026-03-26T18:24:36.124Z] [INFO] Server is running on http://localhost:5000
+[2026-03-26T18:24:36.125Z] [INFO] Health check: http://localhost:5000/api/health
+[2026-03-26T18:24:36.125Z] [INFO] POST /api/admin/side-effects/:id/trade-names is registered
+[2026-03-26T18:24:36.125Z] [INFO] Server is running on port 5000
+[2026-03-26T18:24:52.629Z] [INFO] Server is running on http://localhost:5000
+[2026-03-26T18:24:52.630Z] [INFO] Health check: http://localhost:5000/api/health
+[2026-03-26T18:24:52.630Z] [INFO] POST /api/admin/side-effects/:id/trade-names is registered
+[2026-03-26T18:24:52.630Z] [INFO] Server is running on port 5000

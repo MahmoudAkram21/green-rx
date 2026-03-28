@@ -6,9 +6,8 @@
 import morgan from 'morgan';
 import { morganStream } from './logger';
 
-const isDev = process.env.NODE_ENV !== 'production';
+// Always stream through app logger to keep one logging channel.
+const format =
+  ':method :url :status :response-time ms - :res[content-length] bytes - ip=:remote-addr';
 
-const format = isDev ? 'dev' : 'combined';
-const options = isDev ? {} : { stream: morganStream };
-
-export const morganMiddleware = morgan(format, options);
+export const morganMiddleware = morgan(format, { stream: morganStream });

@@ -655,6 +655,14 @@ if (paths['/patient-medicines/patient/{patientId}/upload-image']?.post) {
     description: 'Created. Returns full detection data: extracted (tradeName, activeSubstance, concentration, dosageForm from image), matchedTradeName (id, title, activeSubstance, company, etc. when matched), matchedActiveSubstance (when only AS matched), plus medicine record, warnings, blocked.',
     content: { 'application/json': { schema: { $ref: '#/components/schemas/UploadMedicineImageResponse' } } }
   };
+  paths['/patient-medicines/patient/{patientId}/upload-image'].post.responses['409'] = {
+    description: 'Conflict — allergy gate blocked the add. The medicine was NOT saved. Patient has a documented allergy to the detected active substance, trade name, drug classification, or an excipient in this medicine.',
+    content: {
+      'application/json': {
+        schema: { $ref: '#/components/schemas/AllergyGateBlockedResponse' }
+      }
+    }
+  };
 }
 
 // POST /batch-check: optional batchNumber (body) or image (multipart) for AI extraction
@@ -1286,6 +1294,33 @@ const options: Record<string, unknown> = {
             isRecalled:   { type: 'boolean' },
             recallReason: { type: 'string', nullable: true },
             recallDate:   { type: 'string', format: 'date-time', nullable: true }
+          }
+        },
+        AllergyGateBlockedResponse: {
+          description: 'Returned with HTTP 409 when the allergy gate blocks adding a medicine. The medicine was NOT saved.',
+          type: 'object',
+          properties: {
+            blocked:  { type: 'boolean', example: true },
+            reason:   { type: 'string', example: 'allergy_conflict' },
+            message:  { type: 'string', example: 'This medicine cannot be added because of a documented allergy conflict.' },
+            conflicts: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  type:        { type: 'string', enum: ['active_substance', 'trade_name', 'classification', 'excipient', 'catalog_allergen'] },
+                  matchedId:   { type: 'integer', nullable: true },
+                  matchedName: { type: 'string' },
+                  reaction:    { type: 'string', nullable: true },
+                  reason:      { type: 'string' }
+                }
+              }
+            },
+            warnings: {
+              type: 'array',
+              items: { type: 'string' },
+              description: 'Human-readable warning messages, one per conflict.'
+            }
           }
         },
         BatchListByTradeNameResponse: {

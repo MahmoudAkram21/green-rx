@@ -10,7 +10,15 @@ export const getAllAllergens = async (req: Request, res: Response, next: NextFun
     const allergens = await prisma.allergen.findMany({
       where: categoryId !== undefined ? { allergenCategoryId: categoryId } : undefined,
       orderBy: { name: 'asc' },
-      include: { allergenCategory: { select: { id: true, name: true } } },
+      include: {
+        allergenCategory: { select: { id: true, name: true } },
+        allergenActiveSubstances: {
+          include: { activeSubstance: { select: { id: true, name: true, concentration: true } } },
+        },
+        allergenExcipients: {
+          include: { excipient: { select: { id: true, name: true, description: true } } },
+        },
+      },
     });
     res.json(allergens);
   } catch (error) {
@@ -24,7 +32,15 @@ export const getAllergenById = async (req: Request, res: Response, next: NextFun
     const id = parseInt(req.params.id);
     const allergen = await prisma.allergen.findUnique({
       where: { id },
-      include: { allergenCategory: { select: { id: true, name: true } } },
+      include: {
+        allergenCategory: { select: { id: true, name: true } },
+        allergenActiveSubstances: {
+          include: { activeSubstance: { select: { id: true, name: true, concentration: true } } },
+        },
+        allergenExcipients: {
+          include: { excipient: { select: { id: true, name: true, description: true } } },
+        },
+      },
     });
     if (!allergen) {
       res.status(404).json({ error: 'Allergen not found' });

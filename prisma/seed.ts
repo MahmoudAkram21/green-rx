@@ -1428,39 +1428,61 @@ async function main() {
   console.log("\n💊 Creating allergen catalog...");
 
   // Respiratory
-  const allergenPollen = await prisma.allergen.create({ data: { name: "Pollen Grain", allergenType: "Pollen", allergenCategoryId: catRespiratory.id } });
+  const allergenPollen = await prisma.allergen.create({ data: { name: "Pollen Grain", allergenCategoryId: catRespiratory.id } });
 
   // Food
-  await prisma.allergen.create({ data: { name: "Lactose",                   allergenType: "Food", allergenCategoryId: catFood.id } });
-  const allergenEggs           = await prisma.allergen.create({ data: { name: "Eggs",         allergenType: "Food", allergenCategoryId: catFood.id } });
-  await prisma.allergen.create({ data: { name: "Egg Yolk",                  allergenType: "Food", allergenCategoryId: catFood.id } });
-  await prisma.allergen.create({ data: { name: "Fish",                      allergenType: "Food", allergenCategoryId: catFood.id } });
-  const allergenMarineProducts = await prisma.allergen.create({ data: { name: "Marine Products", allergenType: "Food", allergenCategoryId: catFood.id } });
-  await prisma.allergen.create({ data: { name: "Nuts",                      allergenType: "Food", allergenCategoryId: catFood.id } });
-  const allergenPeanuts        = await prisma.allergen.create({ data: { name: "Peanuts",        allergenType: "Food", allergenCategoryId: catFood.id } });
-  const allergenWheat          = await prisma.allergen.create({ data: { name: "Wheat",          allergenType: "Food", allergenCategoryId: catFood.id } });
-  const allergenSoybeans       = await prisma.allergen.create({ data: { name: "Soybeans",       allergenType: "Food", allergenCategoryId: catFood.id } });
-  await prisma.allergen.create({ data: { name: "Sesame",                    allergenType: "Food", allergenCategoryId: catFood.id } });
-  await prisma.allergen.create({ data: { name: "Animals Product as Gelatin", allergenType: "Food", allergenCategoryId: catFood.id } });
+  await prisma.allergen.create({ data: { name: "Lactose",                   allergenCategoryId: catFood.id } });
+  const allergenEggs           = await prisma.allergen.create({ data: { name: "Eggs",         allergenCategoryId: catFood.id } });
+  await prisma.allergen.create({ data: { name: "Egg Yolk",                  allergenCategoryId: catFood.id } });
+  await prisma.allergen.create({ data: { name: "Fish",                      allergenCategoryId: catFood.id } });
+  const allergenMarineProducts = await prisma.allergen.create({ data: { name: "Marine Products", allergenCategoryId: catFood.id } });
+  await prisma.allergen.create({ data: { name: "Nuts",                      allergenCategoryId: catFood.id } });
+  const allergenPeanuts        = await prisma.allergen.create({ data: { name: "Peanuts",        allergenCategoryId: catFood.id } });
+  const allergenWheat          = await prisma.allergen.create({ data: { name: "Wheat",          allergenCategoryId: catFood.id } });
+  const allergenSoybeans       = await prisma.allergen.create({ data: { name: "Soybeans",       allergenCategoryId: catFood.id } });
+  await prisma.allergen.create({ data: { name: "Sesame",                    allergenCategoryId: catFood.id } });
+  await prisma.allergen.create({ data: { name: "Animals Product as Gelatin", allergenCategoryId: catFood.id } });
 
   // Skin (category created; no allergens in provided list)
 
   // Insect Stings (category created; no allergens in provided list)
 
   // Medication
-  const allergenIron          = await prisma.allergen.create({ data: { name: "Iron, Ferric Products",                                           allergenType: "Drug", allergenCategoryId: catMedication.id } });
-  await prisma.allergen.create({                                       data: { name: "Non-steroidal Anti-inflammatory Drugs (e.g. Ketoprofen, Diclofenac)", allergenType: "Drug", allergenCategoryId: catMedication.id } });
-  const allergenPenicillin    = await prisma.allergen.create({ data: { name: "Penicillin",         allergenType: "Drug", allergenCategoryId: catMedication.id } });
-  await prisma.allergen.create({                                       data: { name: "Quinolones",         allergenType: "Drug", allergenCategoryId: catMedication.id } });
-  await prisma.allergen.create({                                       data: { name: "Cephalosporines",    allergenType: "Drug", allergenCategoryId: catMedication.id } });
-  await prisma.allergen.create({                                       data: { name: "Benzodiazepines",    allergenType: "Drug", allergenCategoryId: catMedication.id } });
-  await prisma.allergen.create({                                       data: { name: "Sulfonylureas",      allergenType: "Drug", allergenCategoryId: catMedication.id } });
-  await prisma.allergen.create({                                       data: { name: "Insulin",            allergenType: "Drug", allergenCategoryId: catMedication.id } });
-  await prisma.allergen.create({                                       data: { name: "Anesthetics",        allergenType: "Drug", allergenCategoryId: catMedication.id } });
-  await prisma.allergen.create({                                       data: { name: "Food Colors",        allergenType: "Other", allergenCategoryId: catMedication.id } });
-  await prisma.allergen.create({                                       data: { name: "Hormones",           allergenType: "Drug", allergenCategoryId: catMedication.id } });
-  await prisma.allergen.create({                                       data: { name: "Preservatives Products", allergenType: "Other", allergenCategoryId: catMedication.id } });
+  const allergenIron          = await prisma.allergen.create({ data: { name: "Iron, Ferric Products",                                           allergenCategoryId: catMedication.id } });
+  await prisma.allergen.create({                                       data: { name: "Non-steroidal Anti-inflammatory Drugs (e.g. Ketoprofen, Diclofenac)", allergenCategoryId: catMedication.id } });
+  const allergenPenicillin    = await prisma.allergen.create({ data: { name: "Penicillin",         allergenCategoryId: catMedication.id } });
+  await prisma.allergen.create({                                       data: { name: "Quinolones",         allergenCategoryId: catMedication.id } });
+  await prisma.allergen.create({                                       data: { name: "Cephalosporines",    allergenCategoryId: catMedication.id } });
+  await prisma.allergen.create({                                       data: { name: "Benzodiazepines",    allergenCategoryId: catMedication.id } });
+  await prisma.allergen.create({                                       data: { name: "Sulfonylureas",      allergenCategoryId: catMedication.id } });
+  await prisma.allergen.create({                                       data: { name: "Insulin",            allergenCategoryId: catMedication.id } });
+  await prisma.allergen.create({                                       data: { name: "Anesthetics",        allergenCategoryId: catMedication.id } });
+  await prisma.allergen.create({                                       data: { name: "Food Colors",        allergenCategoryId: catMedication.id } });
+  await prisma.allergen.create({                                       data: { name: "Hormones",           allergenCategoryId: catMedication.id } });
+  await prisma.allergen.create({                                       data: { name: "Preservatives Products", allergenCategoryId: catMedication.id } });
   console.log("✅ Created allergen catalog");
+
+  // Link allergens to active substances and excipients
+  await prisma.allergenActiveSubstance.createMany({
+    data: [
+      { allergenId: allergenPenicillin.id, activeSubstanceId: activeSubstances[2].id }, // Penicillin -> Amoxicillin
+      { allergenId: allergenIron.id, activeSubstanceId: activeSubstances[3].id }, // Iron sensitivity context -> Metformin use-case cohort
+      { allergenId: allergenPollen.id, activeSubstanceId: activeSubstances[7].id }, // Pollen/allergic cohort -> Salbutamol
+      { allergenId: allergenPeanuts.id, activeSubstanceId: activeSubstances[8].id }, // Allergic cohort -> Cetirizine
+    ],
+    skipDuplicates: true,
+  });
+
+  await prisma.allergenExcipient.createMany({
+    data: [
+      { allergenId: allergenWheat.id, excipientId: excipients[0].id }, // Wheat/celiac sensitivity with lactose-containing formulations
+      { allergenId: allergenSoybeans.id, excipientId: excipients[5].id }, // Soy-related hypersensitivity context
+      { allergenId: allergenEggs.id, excipientId: excipients[3].id }, // Egg allergy context with preservative sensitivity
+      { allergenId: allergenMarineProducts.id, excipientId: excipients[4].id }, // Marine product allergy context
+    ],
+    skipDuplicates: true,
+  });
+  console.log("✅ Linked allergens to active substances and excipients");
 
   // Patient allergies (new model: PatientAllergyReport + PatientAllergy joins)
   const patientAllergySeed = [

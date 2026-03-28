@@ -53,6 +53,18 @@ const app = express();
 
 // HTTP request logging (Morgan)
 app.use(morganMiddleware);
+app.use((req: Request, res: Response, next: NextFunction) => {
+  const startedAt = Date.now();
+  logger.info(`Incoming request: ${req.method} ${req.originalUrl}`);
+
+  res.on('finish', () => {
+    const durationMs = Date.now() - startedAt;
+    const level = res.statusCode >= 500 ? 'error' : res.statusCode >= 400 ? 'warn' : 'info';
+    logger[level](`Completed request: ${req.method} ${req.originalUrl} -> ${res.statusCode} (${durationMs}ms)`);
+  });
+
+  next();
+});
 
 // Middleware
 app.use(cors());
@@ -115,48 +127,77 @@ app.use((req: Request, res: Response, next: NextFunction) => {
       });
     });
   }
+  logger.warn(`Route not found: ${req.method} ${req.originalUrl}`);
   return res.status(404).json({ error: 'Route not found' });
-});
-
-// Error handler
-app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
-  logger.error(err.stack);
-  const status = (err as any).status || 500;
-  res.status(status).json({
-    error: err.message || 'Internal server error',
-    ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
-  });
 });
 
 const PORT = process.env.PORT || 5000;
 
+// Multer/file upload errors
 app.use((err: Error, _req: Request, res: Response, next: NextFunction) => {
-    console.error("Upload Error:", err);
+  logger.error('Upload Error', err);
 
-    if (err instanceof multer.MulterError) {
-        return res.status(400).json({
-            error: err.message
-        });
-    }
+  if (err instanceof multer.MulterError) {
+    return res.status(400).json({
+      error: err.message,
+    });
+  }
 
-    if (err) {
-        return res.status(400).json({
-            error: err.message
-        });
-    }
+  if (err) {
+    return res.status(400).json({
+      error: err.message,
+    });
+  }
 
-    return next();
+  return next();
 });
-app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
-  console.log(`Health check: http://localhost:${PORT}/api/health`);
-  console.log('[RMMSY] POST /api/admin/side-effects/:id/trade-names is registered');
+
+// Global error handler
+app.use((err: Error, req: Request, res: Response, _next: NextFunction) => {
+  const status = (err as any).status || 500;
+  logger.error(`Unhandled error on ${req.method} ${req.originalUrl}`, err);
+  res.status(status).json({
+    error: err.message || 'Internal server error',
+    ...(process.env.NODE_ENV === 'development' && { stack: err.stack }),
+  });
+});
+
+const server = app.listen(PORT, () => {
+  logger.info(`Server is running on http://localhost:${PORT}`);
+  logger.info(`Health check: http://localhost:${PORT}/api/health`);
+  logger.info('POST /api/admin/side-effects/:id/trade-names is registered');
   logger.info(`Server is running on port ${PORT}`);
   startMedicineReminderJob();
   ensureDefaultAdmin().catch((err) => {
     logger.error('ensureDefaultAdmin failed (server still running)', err);
-    console.error('[RMMSY] Default admin setup failed:', err?.message ?? err);
   });
 });
+
+process.on('unhandledRejection', (reason) => {
+  logger.error('Unhandled Promise Rejection', reason);
+});
+
+process.on('uncaughtException', (error) => {
+  logger.error('Uncaught Exception', error);
+});
+
+const shutdown = (signal: string) => {
+  logger.warn(`Received ${signal}. Shutting down server...`);
+  server.close(() => {
+    logger.info('HTTP server closed');
+    prisma.$disconnect()
+      .then(() => {
+        logger.info('Prisma disconnected');
+        process.exit(0);
+      })
+      .catch((err) => {
+        logger.error('Failed to disconnect Prisma during shutdown', err);
+        process.exit(1);
+      });
+  });
+};
+
+process.on('SIGINT', () => shutdown('SIGINT'));
+process.on('SIGTERM', () => shutdown('SIGTERM'));
 
 export default app;

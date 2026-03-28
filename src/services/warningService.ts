@@ -1,5 +1,6 @@
 import { prisma } from '../lib/prisma';
 import { WarningSeverity, WarningRuleType } from '../../generated/client/client';
+import { checkAllergyConflicts } from './allergyCheck.service';
 
 export interface Warning {
   severity: WarningSeverity;
@@ -111,11 +112,22 @@ export async function generateWarnings(
   const activeSubstance = tradeName.activeSubstance;
 
   // ============================================
-  // CHECK 1: ALLERGY WARNINGS (CRITICAL)
+  // CHECK 1: ALLERGY WARNINGS (CRITICAL) — shared gate
   // ============================================
-  const allergyWarnings = checkAllergyWarnings(patient, tradeName, activeSubstance, tradeNameId);
-  warnings.push(...allergyWarnings.warnings);
-  if (allergyWarnings.blocked) {
+  const allergyGate = await checkAllergyConflicts({
+    patientId,
+    tradeNameId,
+    activeSubstanceId: activeSubstance?.id,
+  });
+  allergyGate.warnings.forEach((msg) => {
+    warnings.push({
+      severity: WarningSeverity.Critical,
+      type: 'AllergyWarning',
+      message: msg,
+      blocked: true,
+    });
+  });
+  if (allergyGate.blocked) {
     blocked = true;
   }
 
@@ -188,87 +200,6 @@ export async function generateWarnings(
 // HELPER FUNCTIONS FOR EACH WARNING TYPE
 // ============================================
 
-function checkAllergyWarnings(patient: any, tradeName: any, activeSubstance: any, tradeNameId: number) {
-  const warnings: Warning[] = [];
-  let blocked = false;
-
-  const report = (patient as any).allergyReports;
-  const patientAllergies = [
-    ...((report?.patientAllergies ?? []).map((x: any) => ({
-      allergenId: x.allergenId ?? null,
-      activeSubstanceId: null,
-      tradeNameId: null,
-      allergen: x.allergen ?? null,
-      activeSubstance: null,
-      tradeName: null,
-      reaction: report?.reaction ?? null,
-    }))),
-    ...((report?.activeSubstancePatientAllergies ?? []).map((x: any) => ({
-      allergenId: null,
-      activeSubstanceId: x.activeSubstanceId ?? null,
-      tradeNameId: null,
-      allergen: null,
-      activeSubstance: x.activeSubstance ?? null,
-      tradeName: null,
-      reaction: report?.reaction ?? null,
-    }))),
-    ...(report?.tradeName
-      ? [{
-          allergenId: null,
-          activeSubstanceId: null,
-          tradeNameId: report.tradeNameId ?? null,
-          allergen: null,
-          activeSubstance: null,
-          tradeName: report.tradeName,
-          reaction: report?.reaction ?? null,
-        }]
-      : []),
-  ];
-  const substanceLower = (activeSubstance.activeSubstance ?? '').toLowerCase();
-  const tradeNameLower = (tradeName.title ?? '').toLowerCase();
-
-  for (const pa of patientAllergies) {
-    let matched = false;
-    let allergyLabel = '';
-
-    if (pa.activeSubstanceId !== null) {
-      // Direct active substance FK match
-      if (pa.activeSubstanceId === activeSubstance.id) {
-        matched = true;
-        allergyLabel = pa.activeSubstance?.activeSubstance ?? `ActiveSubstance#${pa.activeSubstanceId}`;
-      }
-    } else if (pa.tradeNameId !== null) {
-      // Trade name FK match: same trade name OR same underlying active substance
-      if (pa.tradeNameId === tradeNameId) {
-        matched = true;
-        allergyLabel = pa.tradeName?.title ?? `TradeName#${pa.tradeNameId}`;
-      } else if (pa.tradeName?.activeSubstance?.id === activeSubstance.id) {
-        matched = true;
-        allergyLabel = `${pa.tradeName?.title ?? ''} (active substance: ${pa.tradeName?.activeSubstance?.activeSubstance ?? ''})`;
-      }
-    } else if (pa.allergen) {
-      const allergenName = pa.allergen.name ?? '';
-      const allergenLower = allergenName.toLowerCase();
-      if (allergenLower && (substanceLower.includes(allergenLower) || tradeNameLower.includes(allergenLower) || allergenLower.includes(substanceLower))) {
-        matched = true;
-        allergyLabel = allergenName;
-      }
-    }
-
-    if (matched) {
-      const severity = WarningSeverity.Critical;
-      warnings.push({
-        severity,
-        type: 'AllergyWarning',
-        message: `⚠️ ALLERGY ALERT: Patient has a documented allergy to ${allergyLabel}. ${pa.reaction || 'Severe allergic reaction possible.'}`,
-        blocked: true
-      });
-      blocked = true;
-    }
-  }
-
-  return { warnings, blocked };
-}
 
 function checkLifestyleWarnings(patient: any, activeSubstance: any): Warning[] {
   const warnings: Warning[] = [];

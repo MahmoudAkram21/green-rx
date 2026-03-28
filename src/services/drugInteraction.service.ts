@@ -3,6 +3,7 @@ import {
     ActiveSubstance,
     Patient,
 } from '../../generated/client/client';
+import { checkAllergyConflicts } from './allergyCheck.service';
 
 interface DrugInteractionCheck {
     hasDrugInteractions: boolean;
@@ -104,38 +105,18 @@ class DrugInteractionService {
         const warnings: DrugWarning[] = [];
         const alerts: DrugAlert[] = [];
 
-        // 1. Check allergy conflicts
-        const report = (patient as any).allergyReports;
-        const normalizedPatientAllergies = [
-            ...((report?.patientAllergies ?? []).map((x: any) => ({
-                reaction: report?.reaction ?? null,
-                allergenId: x.allergenId ?? null,
-                activeSubstanceId: null,
-                tradeNameId: null,
-                allergen: x.allergen ?? null,
-                activeSubstance: null,
-                tradeName: null
-            }))),
-            ...((report?.activeSubstancePatientAllergies ?? []).map((x: any) => ({
-                reaction: report?.reaction ?? null,
-                allergenId: null,
-                activeSubstanceId: x.activeSubstanceId ?? null,
-                tradeNameId: null,
-                allergen: null,
-                activeSubstance: x.activeSubstance ?? null,
-                tradeName: null
-            }))),
-            ...(report?.tradeName ? [{
-                reaction: report?.reaction ?? null,
-                allergenId: null,
-                activeSubstanceId: null,
-                tradeNameId: report.tradeNameId ?? null,
-                allergen: null,
-                activeSubstance: null,
-                tradeName: report.tradeName
-            }] : [])
-        ];
-        const allergyCheck = this.checkAllergies(normalizedPatientAllergies, newDrug, _tradeNameId);
+        // 1. Check allergy conflicts — shared gate
+        const allergyGate = await checkAllergyConflicts({
+            patientId,
+            tradeNameId: _tradeNameId,
+            activeSubstanceId,
+        });
+        const allergyCheck: DrugWarning[] = allergyGate.conflicts.map((c) => ({
+            type: 'allergy' as const,
+            severity: 'critical' as const,
+            message: c.reason + (c.reaction ? ` Reaction: ${c.reaction}` : ''),
+            affectedDrug: newDrug.name,
+        }));
         if (allergyCheck.length > 0) {
             warnings.push(...allergyCheck);
         }
@@ -194,7 +175,7 @@ class DrugInteractionService {
 
         return {
             hasDrugInteractions: interactionCheck.warnings.length > 0 || interactionCheck.alerts.length > 0,
-            hasAllergyConflicts: allergyCheck.length > 0,
+            hasAllergyConflicts: allergyGate.blocked,
             hasDiseaseWarnings: diseaseCheck.length > 0,
             hasPregnancyWarnings: (patient.pregnancyWarning || patient.lactation) &&
                 (!!newDrug.pregnancyWarning || !!newDrug.lactationWarning),
@@ -235,76 +216,6 @@ class DrugInteractionService {
         return warnings;
     }
 
-    /**
-     * Check for allergy conflicts.
-     * Handles catalog allergens (allergenId), active substance allergies (activeSubstanceId), and trade name allergies (tradeNameId).
-     */
-    private checkAllergies(
-        patientAllergies: Array<{
-            reaction: string | null;
-            allergenId: number | null;
-            activeSubstanceId: number | null;
-            tradeNameId: number | null;
-            allergen: { name: string } | null;
-            activeSubstance: { id: number; name: string } | null;
-            tradeName: { id: number; title: string; activeSubstanceId: number; activeSubstance: { id: number; name: string } | null } | null;
-        }>,
-        drug: ActiveSubstance,
-        tradeNameId?: number
-    ): DrugWarning[] {
-        const warnings: DrugWarning[] = [];
-        const drugSubstanceLower = (drug.name ?? '').toLowerCase();
-        const drugClassLower = String(drug.classificationId ?? '').toLowerCase();
-
-        for (const pa of patientAllergies) {
-            let matched = false;
-            let allergyLabel = '';
-
-            if (pa.activeSubstanceId !== null) {
-                // Direct active substance FK match
-                if (pa.activeSubstanceId === drug.id) {
-                    matched = true;
-                    allergyLabel = pa.activeSubstance?.name ?? `ActiveSubstance#${pa.activeSubstanceId}`;
-                }
-            } else if (pa.tradeNameId !== null) {
-                // Trade name FK match: match if same trade name OR same underlying active substance
-                if (pa.tradeNameId === tradeNameId) {
-                    matched = true;
-                    allergyLabel = pa.tradeName?.title ?? `TradeName#${pa.tradeNameId}`;
-                } else if (pa.tradeName?.activeSubstance?.id === drug.id) {
-                    matched = true;
-                    allergyLabel = `${pa.tradeName?.title ?? ''} (active substance: ${pa.tradeName?.activeSubstance?.name ?? ''})`;
-                }
-            } else if (pa.allergen) {
-                const allergenName = pa.allergen.name ?? '';
-                const allergenLower = allergenName.toLowerCase();
-                if (allergenLower &&
-                    (drugSubstanceLower.includes(allergenLower) || allergenLower.includes(drugSubstanceLower) || drugClassLower.includes(allergenLower))
-                ) {
-                    matched = true;
-                    allergyLabel = allergenName;
-                }
-            }
-
-            if (matched) {
-                // Check contraindications for additional context
-                const inContraindications = Array.isArray(drug.contraindications) &&
-                    drug.contraindications.some((c: any) =>
-                        typeof c === 'string' && c.toLowerCase().includes(allergyLabel.toLowerCase())
-                    );
-
-                warnings.push({
-                    type: 'allergy',
-                    severity: inContraindications ? 'critical' : 'high',
-                    message: `ALLERGY ALERT: Patient has a documented allergy to ${allergyLabel}. ` +
-                        `Reaction: ${pa.reaction || 'Not specified'}`,
-                        affectedDrug: drug.name
-                });
-            }
-        }
-
-        return warnings;
-    }
 
     /**
      * Check disease-medication warnings
