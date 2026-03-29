@@ -3,10 +3,15 @@ import { z } from 'zod';
 import { prisma } from '../lib/prisma';
 import surgicalHistoryRepository from '../repositories/surgicalHistory.reposiory';
 import { SurgicalHistoryCreateManyInput } from '../../generated/client/models';
+import { SurgeryTimeframe } from '../../generated/client/enums';
+import surgicalHistoryService from '../services/surgicalHistory.service';
+import { updateSurgicalHistorySchema } from '../zod/surgicalHistory.zod';
 const createSurgicalHistorySchema = z.object({
   
   organId: z.coerce.number().int().positive(),
+  surgeryTimeframe: z.enum(SurgeryTimeframe),
 });
+
 
 export const getSurgicalHistories = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -69,6 +74,22 @@ export const addSurgicalHistory = async (req: Request, res: Response, next: Next
     next(error);
   }
 };
+
+export const updateSurgicalHistory = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const id = parseInt(req.params.id);
+    const validated = updateSurgicalHistorySchema.parse(req.body);
+    const surgicalHistory = await surgicalHistoryService.updateSurgicalHistory(id, validated);
+    res.json({ message: 'Surgical history updated successfully', surgicalHistory });
+  } catch (error: any) {
+    if (error instanceof z.ZodError) {
+      res.status(400).json({ error: error.issues });
+      return;
+    }
+    next(error);
+  }
+};
+
 
 export const deleteSurgicalHistory = async (req: Request, res: Response, next: NextFunction) => {
   try {

@@ -10,7 +10,8 @@ import {
     acknowledgeDrugInteraction,
     getDrugInteractionAlerts
 } from '../controllers/prescription.controller';
-import { authenticate } from '../middleware/auth.middleware';
+import { authenticate, authorize } from '../middleware/auth.middleware';
+import { UserRole } from '../../generated/client/client';
 
 const router = express.Router();
 
@@ -18,16 +19,14 @@ const router = express.Router();
 router.use(authenticate);
 
 // Prescription routes
-router.post('/', createPrescription);
-router.post('/batch', createBatchPrescriptions);
-router.get('/', getPrescriptions);
-router.post('/:prescriptionId/medicines', addMedicineToPrescription);
-router.get('/:id', getPrescriptionById);
-router.put('/:id', updatePrescription);
-router.delete('/:id', deletePrescription);
-
-// Drug interaction routes
-router.get('/:prescriptionId/interactions', getDrugInteractionAlerts);
-router.put('/interactions/:alertId/acknowledge', acknowledgeDrugInteraction);
+router.post('/', authorize([UserRole.Doctor]), createPrescription);
+router.post('/batch', authorize([UserRole.Doctor]), createBatchPrescriptions);
+router.get('/', authorize([UserRole.Doctor, UserRole.Patient, UserRole.Admin]), getPrescriptions);
+router.put('/interactions/:alertId/acknowledge', authorize([UserRole.Doctor, UserRole.Patient]), acknowledgeDrugInteraction);
+router.post('/:prescriptionId/medicines', authorize([UserRole.Doctor]), addMedicineToPrescription);
+router.get('/:prescriptionId/interactions', authorize([UserRole.Doctor, UserRole.Patient, UserRole.Admin]), getDrugInteractionAlerts);
+router.get('/:id', authorize([UserRole.Doctor, UserRole.Patient, UserRole.Admin]), getPrescriptionById);
+router.put('/:id', authorize([UserRole.Doctor, UserRole.Admin]), updatePrescription);
+router.delete('/:id', authorize([UserRole.Doctor, UserRole.Admin]), deletePrescription);
 
 export default router;

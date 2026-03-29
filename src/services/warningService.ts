@@ -35,7 +35,7 @@ export async function generateWarnings(
         include: {
           patientAllergies: { include: { allergen: true } },
           activeSubstancePatientAllergies: { include: { activeSubstance: true } },
-          tradeName: { include: { activeSubstance: true } }
+          tradeName: true
         }
       },
       patientLifestyles: { include: { lifestyle: true } },

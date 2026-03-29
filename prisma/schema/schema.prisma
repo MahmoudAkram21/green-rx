@@ -208,6 +208,12 @@ enum SideEffectStatus {
   Pending
 }
 
+
+enum SurgeryTimeframe {
+  THREE_MONTHS
+  SIX_MONTHS
+  MORE_THAN_SIX_MONTHS
+}
 // ============================================
 // USER & AUTHENTICATION
 // ============================================
@@ -219,8 +225,6 @@ model User {
   phone                  String? // e.g. E.164: +201145441141
   passwordHash           String
   role                   UserRole
-  emailVerified          Boolean   @default(false)
-  emailVerificationToken String?
   passwordResetToken     String?
   passwordResetExpires   DateTime?
   isActive               Boolean   @default(true)
@@ -244,7 +248,8 @@ model User {
   reviewedSuggestions     MedicineSuggestion[] @relation("SuggestionReviewer")
   verifiedMedicines       PatientMedicine[]    @relation("MedicineVerifier")
   resolvedAddMedicineReqs AddMedicineRequest[] @relation("AddMedicineRequestResolver")
-
+  otpSessions             OtpSession[]
+  isEmailVerified         Boolean   @default(false)
   @@index([role])
   @@index([deletedAt])
   @@map("users")
@@ -412,6 +417,8 @@ model SurgicalHistory {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   organId   Int
+  surgeryTimeframe SurgeryTimeframe @default(THREE_MONTHS)
+  
   // Relations
   patient   Patient  @relation(fields: [patientId], references: [id], onDelete: Cascade)
   organ     Organ    @relation(fields: [organId], references: [id], onDelete: Restrict)
@@ -1399,4 +1406,35 @@ model PatientSideEffect {
   @@index([patientMedicineId])
   @@index([sideEffectId])
   @@map("patient_side_effects")
+}
+
+
+model EmailOtp {
+  id Int @id @default(autoincrement())
+  email String @unique
+  otp Int 
+  expiresAt DateTime
+  attempts Int @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  otpSessions OtpSession[]
+  @@index([email])
+  @@map("email_otps")
+}
+
+model OtpSession {
+  id Int @id @default(autoincrement())
+  userId Int
+  otpId Int @unique
+  token String @unique
+  otp EmailOtp @relation(fields: [otpId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  user       User     @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([otpId])
+  @@index([token])
+  @@unique([userId, otpId])
+  @@map("otp_sessions")
 }

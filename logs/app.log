@@ -133,3 +133,403 @@
 [2026-03-28T12:29:03.791Z] [WARN] Received SIGINT. Shutting down server...
 [2026-03-28T12:29:03.847Z] [INFO] HTTP server closed
 [2026-03-28T12:29:03.943Z] [INFO] Prisma disconnected
+[2026-03-29T12:06:11.192Z] [INFO] Server is running on http://localhost:5000
+[2026-03-29T12:06:11.193Z] [INFO] Health check: http://localhost:5000/api/health
+[2026-03-29T12:06:11.193Z] [INFO] POST /api/admin/side-effects/:id/trade-names is registered
+[2026-03-29T12:06:11.194Z] [INFO] Server is running on port 5000
+[2026-03-29T12:13:01.198Z] [INFO] Server is running on http://localhost:5000
+[2026-03-29T12:13:01.199Z] [INFO] Health check: http://localhost:5000/api/health
+[2026-03-29T12:13:01.200Z] [INFO] POST /api/admin/side-effects/:id/trade-names is registered
+[2026-03-29T12:13:01.200Z] [INFO] Server is running on port 5000
+[2026-03-29T12:13:01.321Z] [INFO] Incoming request: GET /api/docs/
+[2026-03-29T12:13:01.329Z] [INFO] GET /api/docs/ 304 4.761 ms - - bytes - ip=::1
+[2026-03-29T12:13:01.329Z] [INFO] Completed request: GET /api/docs/ -> 304 (8ms)
+[2026-03-29T12:13:01.357Z] [INFO] Incoming request: GET /api/docs/swagger-ui.css
+[2026-03-29T12:13:01.363Z] [INFO] GET /api/docs/swagger-ui.css 304 5.540 ms - - bytes - ip=::1
+[2026-03-29T12:13:01.363Z] [INFO] Completed request: GET /api/docs/swagger-ui.css -> 304 (6ms)
+[2026-03-29T12:13:01.364Z] [INFO] Incoming request: GET /api/docs/swagger-ui-bundle.js
+[2026-03-29T12:13:01.365Z] [INFO] Incoming request: GET /api/docs/swagger-ui-standalone-preset.js
+[2026-03-29T12:13:01.366Z] [INFO] Incoming request: GET /api/docs/swagger-ui-init.js
+[2026-03-29T12:13:01.368Z] [INFO] GET /api/docs/swagger-ui-init.js 304 1.498 ms - - bytes - ip=::1
+[2026-03-29T12:13:01.368Z] [INFO] Completed request: GET /api/docs/swagger-ui-init.js -> 304 (2ms)
+[2026-03-29T12:13:01.369Z] [INFO] GET /api/docs/swagger-ui-bundle.js 304 4.422 ms - - bytes - ip=::ffff:127.0.0.1
+[2026-03-29T12:13:01.370Z] [INFO] Completed request: GET /api/docs/swagger-ui-bundle.js -> 304 (6ms)
+[2026-03-29T12:13:01.374Z] [INFO] GET /api/docs/swagger-ui-standalone-preset.js 304 8.362 ms - - bytes - ip=::ffff:127.0.0.1
+[2026-03-29T12:13:01.376Z] [INFO] Completed request: GET /api/docs/swagger-ui-standalone-preset.js -> 304 (11ms)
+[2026-03-29T12:13:02.290Z] [INFO] Incoming request: GET /api/docs/favicon-32x32.png
+[2026-03-29T12:13:02.291Z] [INFO] GET /api/docs/favicon-32x32.png 304 0.914 ms - - bytes - ip=::ffff:127.0.0.1
+[2026-03-29T12:13:02.292Z] [INFO] Completed request: GET /api/docs/favicon-32x32.png -> 304 (2ms)
+[2026-03-29T12:14:40.452Z] [INFO] Server is running on http://localhost:5000
+[2026-03-29T12:14:40.453Z] [INFO] Health check: http://localhost:5000/api/health
+[2026-03-29T12:14:40.454Z] [INFO] POST /api/admin/side-effects/:id/trade-names is registered
+[2026-03-29T12:14:40.454Z] [INFO] Server is running on port 5000
+[2026-03-29T12:14:41.069Z] [INFO] Incoming request: GET /api/docs/
+[2026-03-29T12:14:41.073Z] [INFO] GET /api/docs/ 304 3.433 ms - - bytes - ip=::1
+[2026-03-29T12:14:41.074Z] [INFO] Completed request: GET /api/docs/ -> 304 (5ms)
+[2026-03-29T12:14:41.096Z] [INFO] Incoming request: GET /api/docs/swagger-ui.css
+[2026-03-29T12:14:41.097Z] [INFO] Incoming request: GET /api/docs/swagger-ui-bundle.js
+[2026-03-29T12:14:41.099Z] [INFO] Incoming request: GET /api/docs/swagger-ui-init.js
+[2026-03-29T12:14:41.101Z] [INFO] GET /api/docs/swagger-ui-init.js 200 1.904 ms - 329148 bytes - ip=::1
+[2026-03-29T12:14:41.102Z] [INFO] Completed request: GET /api/docs/swagger-ui-init.js -> 200 (3ms)
+[2026-03-29T12:14:41.103Z] [INFO] Incoming request: GET /api/docs/swagger-ui-standalone-preset.js
+[2026-03-29T12:14:41.105Z] [INFO] GET /api/docs/swagger-ui.css 304 9.586 ms - - bytes - ip=::1
+[2026-03-29T12:14:41.106Z] [INFO] Completed request: GET /api/docs/swagger-ui.css -> 304 (11ms)
+[2026-03-29T12:14:41.106Z] [INFO] GET /api/docs/swagger-ui-bundle.js 304 9.259 ms - - bytes - ip=::1
+[2026-03-29T12:14:41.107Z] [INFO] Completed request: GET /api/docs/swagger-ui-bundle.js -> 304 (10ms)
+[2026-03-29T12:14:41.108Z] [INFO] GET /api/docs/swagger-ui-standalone-preset.js 304 4.482 ms - - bytes - ip=::1
+[2026-03-29T12:14:41.108Z] [INFO] Completed request: GET /api/docs/swagger-ui-standalone-preset.js -> 304 (5ms)
+[2026-03-29T12:14:41.992Z] [INFO] Incoming request: GET /api/docs/favicon-32x32.png
+[2026-03-29T12:14:41.993Z] [INFO] GET /api/docs/favicon-32x32.png 304 1.189 ms - - bytes - ip=::1
+[2026-03-29T12:14:41.993Z] [INFO] Completed request: GET /api/docs/favicon-32x32.png -> 304 (1ms)
+[2026-03-29T12:40:59.414Z] [INFO] Incoming request: GET /api/docs/
+[2026-03-29T12:40:59.416Z] [INFO] GET /api/docs/ 200 1.230 ms - 3047 bytes - ip=::1
+[2026-03-29T12:40:59.416Z] [INFO] Completed request: GET /api/docs/ -> 200 (2ms)
+[2026-03-29T12:40:59.444Z] [INFO] Incoming request: GET /api/docs/swagger-ui.css
+[2026-03-29T12:40:59.446Z] [INFO] Incoming request: GET /api/docs/swagger-ui-bundle.js
+[2026-03-29T12:40:59.449Z] [INFO] Incoming request: GET /api/docs/swagger-ui-standalone-preset.js
+[2026-03-29T12:40:59.450Z] [INFO] Incoming request: GET /api/docs/swagger-ui-init.js
+[2026-03-29T12:40:59.452Z] [INFO] GET /api/docs/swagger-ui-init.js 200 1.342 ms - 329148 bytes - ip=::1
+[2026-03-29T12:40:59.452Z] [INFO] Completed request: GET /api/docs/swagger-ui-init.js -> 200 (2ms)
+[2026-03-29T12:40:59.472Z] [INFO] GET /api/docs/swagger-ui.css 200 26.308 ms - 177183 bytes - ip=::1
+[2026-03-29T12:40:59.472Z] [INFO] Completed request: GET /api/docs/swagger-ui.css -> 200 (28ms)
+[2026-03-29T12:40:59.550Z] [INFO] GET /api/docs/swagger-ui-standalone-preset.js 200 100.233 ms - 251697 bytes - ip=::1
+[2026-03-29T12:40:59.551Z] [INFO] Completed request: GET /api/docs/swagger-ui-standalone-preset.js -> 200 (102ms)
+[2026-03-29T12:40:59.655Z] [INFO] GET /api/docs/swagger-ui-bundle.js 200 206.712 ms - 1514087 bytes - ip=::1
+[2026-03-29T12:40:59.656Z] [INFO] Completed request: GET /api/docs/swagger-ui-bundle.js -> 200 (210ms)
+[2026-03-29T12:41:00.586Z] [INFO] Incoming request: GET /api/docs/favicon-32x32.png
+[2026-03-29T12:41:00.587Z] [INFO] GET /api/docs/favicon-32x32.png 304 0.982 ms - - bytes - ip=::1
+[2026-03-29T12:41:00.588Z] [INFO] Completed request: GET /api/docs/favicon-32x32.png -> 304 (2ms)
+[2026-03-29T12:44:09.401Z] [INFO] Server is running on http://localhost:5000
+[2026-03-29T12:44:09.402Z] [INFO] Health check: http://localhost:5000/api/health
+[2026-03-29T12:44:09.403Z] [INFO] POST /api/admin/side-effects/:id/trade-names is registered
+[2026-03-29T12:44:09.403Z] [INFO] Server is running on port 5000
+[2026-03-29T12:44:09.516Z] [INFO] Incoming request: GET /api/docs/
+[2026-03-29T12:44:09.521Z] [INFO] GET /api/docs/ 304 4.563 ms - - bytes - ip=::1
+[2026-03-29T12:44:09.522Z] [INFO] Completed request: GET /api/docs/ -> 304 (6ms)
+[2026-03-29T12:44:09.544Z] [INFO] Incoming request: GET /api/docs/swagger-ui.css
+[2026-03-29T12:44:09.548Z] [INFO] Incoming request: GET /api/docs/swagger-ui-bundle.js
+[2026-03-29T12:44:09.550Z] [INFO] GET /api/docs/swagger-ui.css 304 5.601 ms - - bytes - ip=::1
+[2026-03-29T12:44:09.551Z] [INFO] Completed request: GET /api/docs/swagger-ui.css -> 304 (7ms)
+[2026-03-29T12:44:09.552Z] [INFO] GET /api/docs/swagger-ui-bundle.js 304 2.839 ms - - bytes - ip=::1
+[2026-03-29T12:44:09.552Z] [INFO] Completed request: GET /api/docs/swagger-ui-bundle.js -> 304 (4ms)
+[2026-03-29T12:44:09.557Z] [INFO] Incoming request: GET /api/docs/swagger-ui-standalone-preset.js
+[2026-03-29T12:44:09.558Z] [INFO] Incoming request: GET /api/docs/swagger-ui-init.js
+[2026-03-29T12:44:09.561Z] [INFO] GET /api/docs/swagger-ui-init.js 200 2.161 ms - 329196 bytes - ip=::1
+[2026-03-29T12:44:09.562Z] [INFO] Completed request: GET /api/docs/swagger-ui-init.js -> 200 (4ms)
+[2026-03-29T12:44:09.564Z] [INFO] GET /api/docs/swagger-ui-standalone-preset.js 304 7.085 ms - - bytes - ip=::1
+[2026-03-29T12:44:09.565Z] [INFO] Completed request: GET /api/docs/swagger-ui-standalone-preset.js -> 304 (8ms)
+[2026-03-29T12:44:10.697Z] [INFO] Incoming request: GET /api/docs/favicon-32x32.png
+[2026-03-29T12:44:10.698Z] [INFO] GET /api/docs/favicon-32x32.png 304 0.976 ms - - bytes - ip=::1
+[2026-03-29T12:44:10.699Z] [INFO] Completed request: GET /api/docs/favicon-32x32.png -> 304 (2ms)
+[2026-03-29T12:44:13.101Z] [INFO] Incoming request: GET /api/docs/
+[2026-03-29T12:44:13.103Z] [INFO] GET /api/docs/ 304 1.372 ms - - bytes - ip=::1
+[2026-03-29T12:44:13.103Z] [INFO] Completed request: GET /api/docs/ -> 304 (2ms)
+[2026-03-29T12:44:13.128Z] [INFO] Incoming request: GET /api/docs/swagger-ui.css
+[2026-03-29T12:44:13.130Z] [INFO] Incoming request: GET /api/docs/swagger-ui-bundle.js
+[2026-03-29T12:44:13.131Z] [INFO] Incoming request: GET /api/docs/swagger-ui-standalone-preset.js
+[2026-03-29T12:44:13.132Z] [INFO] Incoming request: GET /api/docs/swagger-ui-init.js
+[2026-03-29T12:44:13.134Z] [INFO] GET /api/docs/swagger-ui-init.js 304 1.244 ms - - bytes - ip=::1
+[2026-03-29T12:44:13.134Z] [INFO] Completed request: GET /api/docs/swagger-ui-init.js -> 304 (2ms)
+[2026-03-29T12:44:13.136Z] [INFO] GET /api/docs/swagger-ui.css 304 6.576 ms - - bytes - ip=::1
+[2026-03-29T12:44:13.137Z] [INFO] Completed request: GET /api/docs/swagger-ui.css -> 304 (9ms)
+[2026-03-29T12:44:13.138Z] [INFO] GET /api/docs/swagger-ui-bundle.js 304 7.874 ms - - bytes - ip=::1
+[2026-03-29T12:44:13.139Z] [INFO] Completed request: GET /api/docs/swagger-ui-bundle.js -> 304 (9ms)
+[2026-03-29T12:44:13.140Z] [INFO] GET /api/docs/swagger-ui-standalone-preset.js 304 8.652 ms - - bytes - ip=::1
+[2026-03-29T12:44:13.142Z] [INFO] Completed request: GET /api/docs/swagger-ui-standalone-preset.js -> 304 (11ms)
+[2026-03-29T12:44:13.977Z] [INFO] Incoming request: GET /api/docs/favicon-32x32.png
+[2026-03-29T12:44:13.978Z] [INFO] GET /api/docs/favicon-32x32.png 304 1.433 ms - - bytes - ip=::1
+[2026-03-29T12:44:13.979Z] [INFO] Completed request: GET /api/docs/favicon-32x32.png -> 304 (2ms)
+[2026-03-29T13:04:52.100Z] [INFO] Server is running on http://localhost:5000
+[2026-03-29T13:04:52.101Z] [INFO] Health check: http://localhost:5000/api/health
+[2026-03-29T13:04:52.101Z] [INFO] POST /api/admin/side-effects/:id/trade-names is registered
+[2026-03-29T13:04:52.102Z] [INFO] Server is running on port 5000
+[2026-03-29T13:05:32.368Z] [INFO] Server is running on http://localhost:5000
+[2026-03-29T13:05:32.369Z] [INFO] Health check: http://localhost:5000/api/health
+[2026-03-29T13:05:32.369Z] [INFO] POST /api/admin/side-effects/:id/trade-names is registered
+[2026-03-29T13:05:32.370Z] [INFO] Server is running on port 5000
+[2026-03-29T13:05:57.720Z] [INFO] Server is running on http://localhost:5000
+[2026-03-29T13:05:57.721Z] [INFO] Health check: http://localhost:5000/api/health
+[2026-03-29T13:05:57.721Z] [INFO] POST /api/admin/side-effects/:id/trade-names is registered
+[2026-03-29T13:05:57.722Z] [INFO] Server is running on port 5000
+[2026-03-29T13:06:10.964Z] [INFO] Server is running on http://localhost:5000
+[2026-03-29T13:06:10.965Z] [INFO] Health check: http://localhost:5000/api/health
+[2026-03-29T13:06:10.965Z] [INFO] POST /api/admin/side-effects/:id/trade-names is registered
+[2026-03-29T13:06:10.966Z] [INFO] Server is running on port 5000
+[2026-03-29T13:06:26.498Z] [INFO] Server is running on http://localhost:5000
+[2026-03-29T13:06:26.500Z] [INFO] Health check: http://localhost:5000/api/health
+[2026-03-29T13:06:26.500Z] [INFO] POST /api/admin/side-effects/:id/trade-names is registered
+[2026-03-29T13:06:26.500Z] [INFO] Server is running on port 5000
+[2026-03-29T13:06:33.244Z] [INFO] Server is running on http://localhost:5000
+[2026-03-29T13:06:33.245Z] [INFO] Health check: http://localhost:5000/api/health
+[2026-03-29T13:06:33.245Z] [INFO] POST /api/admin/side-effects/:id/trade-names is registered
+[2026-03-29T13:06:33.246Z] [INFO] Server is running on port 5000
+[2026-03-29T13:06:43.435Z] [INFO] Server is running on http://localhost:5000
+[2026-03-29T13:06:43.436Z] [INFO] Health check: http://localhost:5000/api/health
+[2026-03-29T13:06:43.436Z] [INFO] POST /api/admin/side-effects/:id/trade-names is registered
+[2026-03-29T13:06:43.437Z] [INFO] Server is running on port 5000
+[2026-03-29T13:06:52.108Z] [INFO] Server is running on http://localhost:5000
+[2026-03-29T13:06:52.109Z] [INFO] Health check: http://localhost:5000/api/health
+[2026-03-29T13:06:52.109Z] [INFO] POST /api/admin/side-effects/:id/trade-names is registered
+[2026-03-29T13:06:52.109Z] [INFO] Server is running on port 5000
+[2026-03-29T13:07:02.735Z] [INFO] Server is running on http://localhost:5000
+[2026-03-29T13:07:02.736Z] [INFO] Health check: http://localhost:5000/api/health
+[2026-03-29T13:07:02.736Z] [INFO] POST /api/admin/side-effects/:id/trade-names is registered
+[2026-03-29T13:07:02.737Z] [INFO] Server is running on port 5000
+[2026-03-29T13:07:15.381Z] [INFO] Server is running on http://localhost:5000
+[2026-03-29T13:07:15.383Z] [INFO] Health check: http://localhost:5000/api/health
+[2026-03-29T13:07:15.383Z] [INFO] POST /api/admin/side-effects/:id/trade-names is registered
+[2026-03-29T13:07:15.383Z] [INFO] Server is running on port 5000
+[2026-03-29T13:07:51.757Z] [INFO] Server is running on http://localhost:5000
+[2026-03-29T13:07:51.758Z] [INFO] Health check: http://localhost:5000/api/health
+[2026-03-29T13:07:51.759Z] [INFO] POST /api/admin/side-effects/:id/trade-names is registered
+[2026-03-29T13:07:51.759Z] [INFO] Server is running on port 5000
+[2026-03-29T13:07:58.322Z] [INFO] Server is running on http://localhost:5000
+[2026-03-29T13:07:58.323Z] [INFO] Health check: http://localhost:5000/api/health
+[2026-03-29T13:07:58.324Z] [INFO] POST /api/admin/side-effects/:id/trade-names is registered
+[2026-03-29T13:07:58.324Z] [INFO] Server is running on port 5000
+[2026-03-29T13:08:04.957Z] [INFO] Server is running on http://localhost:5000
+[2026-03-29T13:08:04.958Z] [INFO] Health check: http://localhost:5000/api/health
+[2026-03-29T13:08:04.958Z] [INFO] POST /api/admin/side-effects/:id/trade-names is registered
+[2026-03-29T13:08:04.959Z] [INFO] Server is running on port 5000
+[2026-03-29T13:08:11.240Z] [INFO] Server is running on http://localhost:5000
+[2026-03-29T13:08:11.241Z] [INFO] Health check: http://localhost:5000/api/health
+[2026-03-29T13:08:11.241Z] [INFO] POST /api/admin/side-effects/:id/trade-names is registered
+[2026-03-29T13:08:11.242Z] [INFO] Server is running on port 5000
+[2026-03-29T13:08:16.621Z] [INFO] Server is running on http://localhost:5000
+[2026-03-29T13:08:16.622Z] [INFO] Health check: http://localhost:5000/api/health
+[2026-03-29T13:08:16.622Z] [INFO] POST /api/admin/side-effects/:id/trade-names is registered
+[2026-03-29T13:08:16.622Z] [INFO] Server is running on port 5000
+[2026-03-29T13:08:22.211Z] [INFO] Server is running on http://localhost:5000
+[2026-03-29T13:08:22.212Z] [INFO] Health check: http://localhost:5000/api/health
+[2026-03-29T13:08:22.212Z] [INFO] POST /api/admin/side-effects/:id/trade-names is registered
+[2026-03-29T13:08:22.212Z] [INFO] Server is running on port 5000
+[2026-03-29T13:08:29.119Z] [INFO] Server is running on http://localhost:5000
+[2026-03-29T13:08:29.120Z] [INFO] Health check: http://localhost:5000/api/health
+[2026-03-29T13:08:29.120Z] [INFO] POST /api/admin/side-effects/:id/trade-names is registered
+[2026-03-29T13:08:29.123Z] [INFO] Server is running on port 5000
+[2026-03-29T13:08:36.066Z] [INFO] Server is running on http://localhost:5000
+[2026-03-29T13:08:36.067Z] [INFO] Health check: http://localhost:5000/api/health
+[2026-03-29T13:08:36.067Z] [INFO] POST /api/admin/side-effects/:id/trade-names is registered
+[2026-03-29T13:08:36.068Z] [INFO] Server is running on port 5000
+[2026-03-29T13:08:46.213Z] [INFO] Server is running on http://localhost:5000
+[2026-03-29T13:08:46.214Z] [INFO] Health check: http://localhost:5000/api/health
+[2026-03-29T13:08:46.215Z] [INFO] POST /api/admin/side-effects/:id/trade-names is registered
+[2026-03-29T13:08:46.215Z] [INFO] Server is running on port 5000
+[2026-03-29T13:08:51.880Z] [INFO] Server is running on http://localhost:5000
+[2026-03-29T13:08:51.881Z] [INFO] Health check: http://localhost:5000/api/health
+[2026-03-29T13:08:51.881Z] [INFO] POST /api/admin/side-effects/:id/trade-names is registered
+[2026-03-29T13:08:51.882Z] [INFO] Server is running on port 5000
+[2026-03-29T13:17:24.183Z] [WARN] Received SIGINT. Shutting down server...
+[2026-03-29T13:17:24.185Z] [INFO] HTTP server closed
+[2026-03-29T13:17:24.187Z] [INFO] Prisma disconnected
+[2026-03-29T13:19:54.705Z] [INFO] Server is running on http://localhost:5000
+[2026-03-29T13:19:54.706Z] [INFO] Health check: http://localhost:5000/api/health
+[2026-03-29T13:19:54.707Z] [INFO] POST /api/admin/side-effects/:id/trade-names is registered
+[2026-03-29T13:19:54.707Z] [INFO] Server is running on port 5000
+[2026-03-29T13:27:25.958Z] [INFO] Server is running on http://localhost:5000
+[2026-03-29T13:27:25.959Z] [INFO] Health check: http://localhost:5000/api/health
+[2026-03-29T13:27:25.959Z] [INFO] POST /api/admin/side-effects/:id/trade-names is registered
+[2026-03-29T13:27:25.959Z] [INFO] Server is running on port 5000
+[2026-03-29T13:31:30.355Z] [INFO] Server is running on http://localhost:5000
+[2026-03-29T13:31:30.356Z] [INFO] Health check: http://localhost:5000/api/health
+[2026-03-29T13:31:30.357Z] [INFO] POST /api/admin/side-effects/:id/trade-names is registered
+[2026-03-29T13:31:30.357Z] [INFO] Server is running on port 5000
+[2026-03-29T13:31:31.227Z] [INFO] Incoming request: GET /api/docs/
+[2026-03-29T13:31:31.231Z] [INFO] GET /api/docs/ 304 3.903 ms - - bytes - ip=::ffff:127.0.0.1
+[2026-03-29T13:31:31.232Z] [INFO] Completed request: GET /api/docs/ -> 304 (5ms)
+[2026-03-29T13:31:31.252Z] [INFO] Incoming request: GET /api/docs/swagger-ui.css
+[2026-03-29T13:31:31.254Z] [INFO] Incoming request: GET /api/docs/swagger-ui-bundle.js
+[2026-03-29T13:31:31.256Z] [INFO] GET /api/docs/swagger-ui.css 304 3.575 ms - - bytes - ip=::ffff:127.0.0.1
+[2026-03-29T13:31:31.256Z] [INFO] Completed request: GET /api/docs/swagger-ui.css -> 304 (4ms)
+[2026-03-29T13:31:31.257Z] [INFO] GET /api/docs/swagger-ui-bundle.js 304 3.107 ms - - bytes - ip=::1
+[2026-03-29T13:31:31.258Z] [INFO] Completed request: GET /api/docs/swagger-ui-bundle.js -> 304 (4ms)
+[2026-03-29T13:31:31.259Z] [INFO] Incoming request: GET /api/docs/swagger-ui-standalone-preset.js
+[2026-03-29T13:31:31.260Z] [INFO] Incoming request: GET /api/docs/swagger-ui-init.js
+[2026-03-29T13:31:31.262Z] [INFO] GET /api/docs/swagger-ui-init.js 200 1.392 ms - 329511 bytes - ip=::1
+[2026-03-29T13:31:31.263Z] [INFO] Completed request: GET /api/docs/swagger-ui-init.js -> 200 (3ms)
+[2026-03-29T13:31:31.263Z] [INFO] GET /api/docs/swagger-ui-standalone-preset.js 304 3.710 ms - - bytes - ip=::1
+[2026-03-29T13:31:31.264Z] [INFO] Completed request: GET /api/docs/swagger-ui-standalone-preset.js -> 304 (5ms)
+[2026-03-29T13:31:32.113Z] [INFO] Incoming request: GET /api/docs/favicon-32x32.png
+[2026-03-29T13:31:32.115Z] [INFO] GET /api/docs/favicon-32x32.png 304 1.049 ms - - bytes - ip=::1
+[2026-03-29T13:31:32.115Z] [INFO] Completed request: GET /api/docs/favicon-32x32.png -> 304 (2ms)
+[2026-03-29T13:32:24.326Z] [INFO] Incoming request: POST /api/auth/login
+[2026-03-29T13:32:24.613Z] [INFO] POST /api/auth/login 200 286.717 ms - 564 bytes - ip=::1
+[2026-03-29T13:32:24.613Z] [INFO] Completed request: POST /api/auth/login -> 200 (287ms)
+[2026-03-29T13:33:02.011Z] [INFO] Incoming request: GET /api/operations
+[2026-03-29T13:33:02.061Z] [INFO] GET /api/operations 200 49.168 ms - 1404 bytes - ip=::1
+[2026-03-29T13:33:02.061Z] [INFO] Completed request: GET /api/operations -> 200 (50ms)
+[2026-03-29T13:33:13.590Z] [INFO] Incoming request: POST /api/patients/26/surgeries
+[2026-03-29T13:33:13.683Z] [INFO] POST /api/patients/26/surgeries 400 92.377 ms - 114 bytes - ip=::1
+[2026-03-29T13:33:13.684Z] [WARN] Completed request: POST /api/patients/26/surgeries -> 400 (94ms)
+[2026-03-29T13:33:24.874Z] [INFO] Incoming request: POST /api/patients/26/surgeries
+[2026-03-29T13:33:24.918Z] [INFO] POST /api/patients/26/surgeries 201 44.211 ms - 91 bytes - ip=::1
+[2026-03-29T13:33:24.919Z] [INFO] Completed request: POST /api/patients/26/surgeries -> 201 (45ms)
+[2026-03-29T13:33:53.267Z] [INFO] Incoming request: GET /api/patients/26/surgeries
+[2026-03-29T13:33:53.303Z] [INFO] GET /api/patients/26/surgeries 200 36.303 ms - 947 bytes - ip=::1
+[2026-03-29T13:33:53.304Z] [INFO] Completed request: GET /api/patients/26/surgeries -> 200 (37ms)
+[2026-03-29T13:34:33.154Z] [INFO] Incoming request: POST /api/patients/26/surgeries
+[2026-03-29T13:34:33.296Z] [INFO] POST /api/patients/26/surgeries 400 142.430 ms - 114 bytes - ip=::1
+[2026-03-29T13:34:33.296Z] [WARN] Completed request: POST /api/patients/26/surgeries -> 400 (142ms)
+[2026-03-29T13:36:53.999Z] [INFO] Server is running on http://localhost:5000
+[2026-03-29T13:36:54.000Z] [INFO] Health check: http://localhost:5000/api/health
+[2026-03-29T13:36:54.000Z] [INFO] POST /api/admin/side-effects/:id/trade-names is registered
+[2026-03-29T13:36:54.000Z] [INFO] Server is running on port 5000
+[2026-03-29T13:37:09.408Z] [INFO] Server is running on http://localhost:5000
+[2026-03-29T13:37:09.409Z] [INFO] Health check: http://localhost:5000/api/health
+[2026-03-29T13:37:09.409Z] [INFO] POST /api/admin/side-effects/:id/trade-names is registered
+[2026-03-29T13:37:09.410Z] [INFO] Server is running on port 5000
+[2026-03-29T13:37:39.239Z] [INFO] Server is running on http://localhost:5000
+[2026-03-29T13:37:39.240Z] [INFO] Health check: http://localhost:5000/api/health
+[2026-03-29T13:37:39.240Z] [INFO] POST /api/admin/side-effects/:id/trade-names is registered
+[2026-03-29T13:37:39.240Z] [INFO] Server is running on port 5000
+[2026-03-29T13:38:16.714Z] [INFO] Server is running on http://localhost:5000
+[2026-03-29T13:38:16.715Z] [INFO] Health check: http://localhost:5000/api/health
+[2026-03-29T13:38:16.715Z] [INFO] POST /api/admin/side-effects/:id/trade-names is registered
+[2026-03-29T13:38:16.716Z] [INFO] Server is running on port 5000
+[2026-03-29T13:43:55.352Z] [INFO] Server is running on http://localhost:5000
+[2026-03-29T13:43:55.353Z] [INFO] Health check: http://localhost:5000/api/health
+[2026-03-29T13:43:55.354Z] [INFO] POST /api/admin/side-effects/:id/trade-names is registered
+[2026-03-29T13:43:55.354Z] [INFO] Server is running on port 5000
+[2026-03-29T13:44:07.292Z] [INFO] Server is running on http://localhost:5000
+[2026-03-29T13:44:07.293Z] [INFO] Health check: http://localhost:5000/api/health
+[2026-03-29T13:44:07.294Z] [INFO] POST /api/admin/side-effects/:id/trade-names is registered
+[2026-03-29T13:44:07.294Z] [INFO] Server is running on port 5000
+[2026-03-29T13:44:42.937Z] [INFO] Server is running on http://localhost:5000
+[2026-03-29T13:44:42.938Z] [INFO] Health check: http://localhost:5000/api/health
+[2026-03-29T13:44:42.938Z] [INFO] POST /api/admin/side-effects/:id/trade-names is registered
+[2026-03-29T13:44:42.939Z] [INFO] Server is running on port 5000
+[2026-03-29T13:45:24.307Z] [INFO] Server is running on http://localhost:5000
+[2026-03-29T13:45:24.308Z] [INFO] Health check: http://localhost:5000/api/health
+[2026-03-29T13:45:24.308Z] [INFO] POST /api/admin/side-effects/:id/trade-names is registered
+[2026-03-29T13:45:24.308Z] [INFO] Server is running on port 5000
+[2026-03-29T13:47:01.972Z] [INFO] Server is running on http://localhost:5000
+[2026-03-29T13:47:01.973Z] [INFO] Health check: http://localhost:5000/api/health
+[2026-03-29T13:47:01.973Z] [INFO] POST /api/admin/side-effects/:id/trade-names is registered
+[2026-03-29T13:47:01.973Z] [INFO] Server is running on port 5000
+[2026-03-29T13:47:15.442Z] [INFO] Server is running on http://localhost:5000
+[2026-03-29T13:47:15.443Z] [INFO] Health check: http://localhost:5000/api/health
+[2026-03-29T13:47:15.443Z] [INFO] POST /api/admin/side-effects/:id/trade-names is registered
+[2026-03-29T13:47:15.443Z] [INFO] Server is running on port 5000
+[2026-03-29T13:47:28.390Z] [INFO] Server is running on http://localhost:5000
+[2026-03-29T13:47:28.391Z] [INFO] Health check: http://localhost:5000/api/health
+[2026-03-29T13:47:28.391Z] [INFO] POST /api/admin/side-effects/:id/trade-names is registered
+[2026-03-29T13:47:28.392Z] [INFO] Server is running on port 5000
+[2026-03-29T13:50:08.791Z] [INFO] Server is running on http://localhost:5000
+[2026-03-29T13:50:08.792Z] [INFO] Health check: http://localhost:5000/api/health
+[2026-03-29T13:50:08.793Z] [INFO] POST /api/admin/side-effects/:id/trade-names is registered
+[2026-03-29T13:50:08.793Z] [INFO] Server is running on port 5000
+[2026-03-29T13:50:18.489Z] [INFO] Server is running on http://localhost:5000
+[2026-03-29T13:50:18.490Z] [INFO] Health check: http://localhost:5000/api/health
+[2026-03-29T13:50:18.490Z] [INFO] POST /api/admin/side-effects/:id/trade-names is registered
+[2026-03-29T13:50:18.490Z] [INFO] Server is running on port 5000
+[2026-03-29T13:51:12.267Z] [INFO] Server is running on http://localhost:5000
+[2026-03-29T13:51:12.268Z] [INFO] Health check: http://localhost:5000/api/health
+[2026-03-29T13:51:12.268Z] [INFO] POST /api/admin/side-effects/:id/trade-names is registered
+[2026-03-29T13:51:12.269Z] [INFO] Server is running on port 5000
+[2026-03-29T13:53:15.211Z] [INFO] Server is running on http://localhost:5000
+[2026-03-29T13:53:15.212Z] [INFO] Health check: http://localhost:5000/api/health
+[2026-03-29T13:53:15.212Z] [INFO] POST /api/admin/side-effects/:id/trade-names is registered
+[2026-03-29T13:53:15.212Z] [INFO] Server is running on port 5000
+[2026-03-29T13:53:15.537Z] [INFO] Incoming request: GET /api/docs/
+[2026-03-29T13:53:15.544Z] [INFO] GET /api/docs/ 200 4.685 ms - 3047 bytes - ip=::1
+[2026-03-29T13:53:15.544Z] [INFO] Completed request: GET /api/docs/ -> 200 (7ms)
+[2026-03-29T13:53:15.575Z] [INFO] Incoming request: GET /api/docs/swagger-ui.css
+[2026-03-29T13:53:15.577Z] [INFO] Incoming request: GET /api/docs/swagger-ui-bundle.js
+[2026-03-29T13:53:15.579Z] [INFO] Incoming request: GET /api/docs/swagger-ui-standalone-preset.js
+[2026-03-29T13:53:15.580Z] [INFO] Incoming request: GET /api/docs/swagger-ui-init.js
+[2026-03-29T13:53:15.583Z] [INFO] GET /api/docs/swagger-ui-init.js 200 1.883 ms - 331403 bytes - ip=::1
+[2026-03-29T13:53:15.583Z] [INFO] Completed request: GET /api/docs/swagger-ui-init.js -> 200 (3ms)
+[2026-03-29T13:53:15.588Z] [INFO] GET /api/docs/swagger-ui.css 200 10.563 ms - 177183 bytes - ip=::1
+[2026-03-29T13:53:15.589Z] [INFO] Completed request: GET /api/docs/swagger-ui.css -> 200 (14ms)
+[2026-03-29T13:53:15.592Z] [INFO] GET /api/docs/swagger-ui-standalone-preset.js 200 6.378 ms - 251697 bytes - ip=::1
+[2026-03-29T13:53:15.593Z] [INFO] Completed request: GET /api/docs/swagger-ui-standalone-preset.js -> 200 (14ms)
+[2026-03-29T13:53:15.598Z] [INFO] GET /api/docs/swagger-ui-bundle.js 200 8.817 ms - 1514087 bytes - ip=::1
+[2026-03-29T13:53:15.598Z] [INFO] Completed request: GET /api/docs/swagger-ui-bundle.js -> 200 (21ms)
+[2026-03-29T13:53:16.424Z] [INFO] Incoming request: GET /api/docs/favicon-32x32.png
+[2026-03-29T13:53:16.425Z] [INFO] GET /api/docs/favicon-32x32.png 304 1.107 ms - - bytes - ip=::1
+[2026-03-29T13:53:16.426Z] [INFO] Completed request: GET /api/docs/favicon-32x32.png -> 304 (2ms)
+[2026-03-29T13:54:20.577Z] [INFO] Incoming request: POST /api/auth/login
+[2026-03-29T13:54:20.755Z] [INFO] POST /api/auth/login 200 177.574 ms - 564 bytes - ip=::1
+[2026-03-29T13:54:20.755Z] [INFO] Completed request: POST /api/auth/login -> 200 (178ms)
+[2026-03-29T13:54:40.488Z] [INFO] Incoming request: GET /api/patients/26/surgeries
+[2026-03-29T13:54:40.552Z] [INFO] GET /api/patients/26/surgeries 304 63.385 ms - - bytes - ip=::1
+[2026-03-29T13:54:40.552Z] [INFO] Completed request: GET /api/patients/26/surgeries -> 304 (64ms)
+[2026-03-29T13:55:09.098Z] [INFO] Incoming request: PUT /api/patients/26/surgeries/46
+[2026-03-29T13:55:09.141Z] [INFO] PUT /api/patients/26/surgeries/46 400 42.043 ms - 147 bytes - ip=::1
+[2026-03-29T13:55:09.142Z] [WARN] Completed request: PUT /api/patients/26/surgeries/46 -> 400 (44ms)
+[2026-03-29T13:55:19.069Z] [INFO] Incoming request: PUT /api/patients/26/surgeries/46
+[2026-03-29T13:55:19.072Z] [INFO] PUT /api/patients/26/surgeries/46 400 3.450 ms - 148 bytes - ip=::1
+[2026-03-29T13:55:19.073Z] [WARN] Completed request: PUT /api/patients/26/surgeries/46 -> 400 (3ms)
+[2026-03-29T13:55:22.761Z] [INFO] Incoming request: PUT /api/patients/26/surgeries/46
+[2026-03-29T13:55:22.764Z] [INFO] PUT /api/patients/26/surgeries/46 400 3.043 ms - 148 bytes - ip=::1
+[2026-03-29T13:55:22.764Z] [WARN] Completed request: PUT /api/patients/26/surgeries/46 -> 400 (3ms)
+[2026-03-29T13:55:52.656Z] [INFO] Incoming request: PUT /api/patients/26/surgeries/56
+[2026-03-29T13:55:52.693Z] [INFO] PUT /api/patients/26/surgeries/56 400 36.468 ms - 148 bytes - ip=::1
+[2026-03-29T13:55:52.693Z] [WARN] Completed request: PUT /api/patients/26/surgeries/56 -> 400 (37ms)
+[2026-03-29T13:56:23.379Z] [INFO] Server is running on http://localhost:5000
+[2026-03-29T13:56:23.380Z] [INFO] Health check: http://localhost:5000/api/health
+[2026-03-29T13:56:23.380Z] [INFO] POST /api/admin/side-effects/:id/trade-names is registered
+[2026-03-29T13:56:23.380Z] [INFO] Server is running on port 5000
+[2026-03-29T13:56:25.556Z] [INFO] Incoming request: PUT /api/patients/26/surgeries/56
+[2026-03-29T13:56:25.593Z] [INFO] PUT /api/patients/26/surgeries/56 200 36.169 ms - 217 bytes - ip=::1
+[2026-03-29T13:56:25.594Z] [INFO] Completed request: PUT /api/patients/26/surgeries/56 -> 200 (38ms)
+[2026-03-29T13:56:59.437Z] [INFO] Incoming request: PUT /api/patients/26/surgeries/47
+[2026-03-29T13:56:59.484Z] [INFO] PUT /api/patients/26/surgeries/47 200 45.850 ms - 217 bytes - ip=::1
+[2026-03-29T13:56:59.484Z] [INFO] Completed request: PUT /api/patients/26/surgeries/47 -> 200 (47ms)
+[2026-03-29T13:57:04.068Z] [INFO] Incoming request: GET /api/patients/26/surgeries
+[2026-03-29T13:57:04.081Z] [INFO] GET /api/patients/26/surgeries 200 13.136 ms - 943 bytes - ip=::1
+[2026-03-29T13:57:04.082Z] [INFO] Completed request: GET /api/patients/26/surgeries -> 200 (14ms)
+[2026-03-29T13:57:25.276Z] [INFO] Incoming request: GET /api/operations
+[2026-03-29T13:57:25.326Z] [INFO] GET /api/operations 304 50.372 ms - - bytes - ip=::1
+[2026-03-29T13:57:25.327Z] [INFO] Completed request: GET /api/operations -> 304 (51ms)
+[2026-03-29T13:57:55.381Z] [INFO] Incoming request: PUT /api/patients/26/surgeries/47
+[2026-03-29T13:57:55.422Z] [INFO] PUT /api/patients/26/surgeries/47 200 40.558 ms - 217 bytes - ip=::1
+[2026-03-29T13:57:55.422Z] [INFO] Completed request: PUT /api/patients/26/surgeries/47 -> 200 (41ms)
+[2026-03-29T13:58:00.794Z] [INFO] Incoming request: GET /api/patients/26/surgeries
+[2026-03-29T13:58:00.798Z] [INFO] GET /api/patients/26/surgeries 200 3.716 ms - 946 bytes - ip=::1
+[2026-03-29T13:58:00.798Z] [INFO] Completed request: GET /api/patients/26/surgeries -> 200 (4ms)
+[2026-03-29T14:01:18.435Z] [INFO] Incoming request: GET /api/trade-names/search
+[2026-03-29T14:01:18.626Z] [INFO] GET /api/trade-names/search 200 190.052 ms - 3945 bytes - ip=::1
+[2026-03-29T14:01:18.626Z] [INFO] Completed request: GET /api/trade-names/search -> 200 (191ms)
+[2026-03-29T14:28:28.232Z] [INFO] Server is running on http://localhost:5000
+[2026-03-29T14:28:28.233Z] [INFO] Health check: http://localhost:5000/api/health
+[2026-03-29T14:28:28.234Z] [INFO] POST /api/admin/side-effects/:id/trade-names is registered
+[2026-03-29T14:28:28.234Z] [INFO] Server is running on port 5000
+[2026-03-29T14:28:46.487Z] [INFO] Server is running on http://localhost:5000
+[2026-03-29T14:28:46.488Z] [INFO] Health check: http://localhost:5000/api/health
+[2026-03-29T14:28:46.488Z] [INFO] POST /api/admin/side-effects/:id/trade-names is registered
+[2026-03-29T14:28:46.489Z] [INFO] Server is running on port 5000
+[2026-03-29T14:31:05.205Z] [INFO] Server is running on http://localhost:5000
+[2026-03-29T14:31:05.206Z] [INFO] Health check: http://localhost:5000/api/health
+[2026-03-29T14:31:05.206Z] [INFO] POST /api/admin/side-effects/:id/trade-names is registered
+[2026-03-29T14:31:05.206Z] [INFO] Server is running on port 5000
+[2026-03-29T14:31:17.545Z] [INFO] Server is running on http://localhost:5000
+[2026-03-29T14:31:17.547Z] [INFO] Health check: http://localhost:5000/api/health
+[2026-03-29T14:31:17.547Z] [INFO] POST /api/admin/side-effects/:id/trade-names is registered
+[2026-03-29T14:31:17.547Z] [INFO] Server is running on port 5000
+[2026-03-29T14:31:23.509Z] [INFO] Server is running on http://localhost:5000
+[2026-03-29T14:31:23.510Z] [INFO] Health check: http://localhost:5000/api/health
+[2026-03-29T14:31:23.510Z] [INFO] POST /api/admin/side-effects/:id/trade-names is registered
+[2026-03-29T14:31:23.510Z] [INFO] Server is running on port 5000
+[2026-03-29T14:31:34.708Z] [INFO] Server is running on http://localhost:5000
+[2026-03-29T14:31:34.709Z] [INFO] Health check: http://localhost:5000/api/health
+[2026-03-29T14:31:34.709Z] [INFO] POST /api/admin/side-effects/:id/trade-names is registered
+[2026-03-29T14:31:34.710Z] [INFO] Server is running on port 5000
+[2026-03-29T14:31:41.296Z] [INFO] Server is running on http://localhost:5000
+[2026-03-29T14:31:41.297Z] [INFO] Health check: http://localhost:5000/api/health
+[2026-03-29T14:31:41.297Z] [INFO] POST /api/admin/side-effects/:id/trade-names is registered
+[2026-03-29T14:31:41.298Z] [INFO] Server is running on port 5000
+[2026-03-29T14:32:14.745Z] [WARN] Received SIGINT. Shutting down server...
+[2026-03-29T14:32:14.746Z] [INFO] HTTP server closed
+[2026-03-29T14:32:14.747Z] [INFO] Prisma disconnected
+[2026-03-29T14:32:20.361Z] [INFO] Server is running on http://localhost:5000
+[2026-03-29T14:32:20.362Z] [INFO] Health check: http://localhost:5000/api/health
+[2026-03-29T14:32:20.363Z] [INFO] POST /api/admin/side-effects/:id/trade-names is registered
+[2026-03-29T14:32:20.363Z] [INFO] Server is running on port 5000
+[2026-03-29T14:51:39.999Z] [WARN] Received SIGINT. Shutting down server...
+[2026-03-29T14:51:40.000Z] [INFO] HTTP server closed
+[2026-03-29T14:51:40.002Z] [INFO] Prisma disconnected
+[2026-03-29T14:52:38.366Z] [INFO] Server is running on http://localhost:5000
+[2026-03-29T14:52:38.367Z] [INFO] Health check: http://localhost:5000/api/health
+[2026-03-29T14:52:38.367Z] [INFO] POST /api/admin/side-effects/:id/trade-names is registered
+[2026-03-29T14:52:38.367Z] [INFO] Server is running on port 5000

@@ -1,4 +1,4 @@
-import { z } from "zod";
+import {  z } from "zod";
 import { UserRole } from "../../generated/client/client";
 
 export const registerSchema = z
@@ -48,3 +48,8 @@ export const loginSchema = z.object({
 export const refreshTokenSchema = z.object({
   refreshToken: z.string(),
 });
+export const verifyEmailSchema = z.object({
+  otp :z.number().min(10000).max(99999).int()
+})
+
+

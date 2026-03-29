@@ -7,7 +7,8 @@ import {
     updatePatientDoctor,
     endRelationship
 } from '../controllers/patientDoctor.controller';
-import { authenticate } from '../middleware/auth.middleware';
+import { authenticate, authorize } from '../middleware/auth.middleware';
+import { UserRole } from '../../generated/client/client';
 
 const router = express.Router();
 
@@ -15,11 +16,11 @@ const router = express.Router();
 router.use(authenticate);
 
 // Patient-Doctor relationship routes
-router.post('/', createPatientDoctor);
-router.get('/patient/:patientId', getRelationshipsByPatient);
-router.get('/doctor/:doctorId', getRelationshipsByDoctor);
-router.get('/:id', getRelationshipById);
-router.put('/:id', updatePatientDoctor);
-router.post('/:id/end', endRelationship);
+router.post('/',                     authorize([UserRole.Doctor, UserRole.Admin]),                            createPatientDoctor);
+router.get('/patient/:patientId',    authorize([UserRole.Doctor, UserRole.Patient, UserRole.Admin]),           getRelationshipsByPatient);
+router.get('/doctor/:doctorId',      authorize([UserRole.Doctor, UserRole.Admin]),                            getRelationshipsByDoctor);
+router.get('/:id',                   authorize([UserRole.Doctor, UserRole.Patient, UserRole.Admin]),           getRelationshipById);
+router.put('/:id',                   authorize([UserRole.Doctor, UserRole.Admin]),                            updatePatientDoctor);
+router.post('/:id/end',              authorize([UserRole.Doctor, UserRole.Admin]),                            endRelationship);
 
 export default router;

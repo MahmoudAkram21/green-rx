@@ -190,29 +190,30 @@ export async function checkAllergyConflicts(input: AllergyCheckInput): Promise<A
 
 
     // Direct trade name match
-    if (report.tradeName === resolvedTradeNameId) {
-      conflicts.push({
-        type: 'trade_name',
-        matchedId: report.tradeNameId,
-        matchedName: report.tradeName?.title ?? `TN#${report.tradeNameId}`,
-        reaction: report.reaction,
-        reason: `Patient has a documented allergy to trade name "${report.tradeName?.title}".`,
-      });
-    }
+    report.tradeName.forEach(tn => {
+      if (tn.id  === resolvedTradeNameId) {
+        conflicts.push({
+          type: 'trade_name',
+          matchedId: tn.id,
+          matchedName: tn.tradeName.title ?? `TN#${tn.id}`,
+          reaction: report.reaction,
+          reason: `Patient has a documented allergy to trade name "${tn.tradeName.title}".`,
+        });
+      }else if (
+        activeSubstance &&
+        tn.tradeName.activeSubstance?.id === activeSubstance.id
+      ) {
+        conflicts.push({
+          type: 'trade_name',
+          matchedId: tn.id,
+          matchedName: tn.tradeName.title ?? `TN#${report.tradeNameId}`,
+          reaction: report.reaction,
+          reason: `Patient has a documented allergy to "${tn.tradeName.title}" which contains the same active substance.`,
+        });
+      }
+    })
+  }2
     // Same active substance via a different recorded trade name
-    else if (
-      activeSubstance &&
-      report.tradeName?.activeSubstance?.id === activeSubstance.id
-    ) {
-      conflicts.push({
-        type: 'trade_name',
-        matchedId: report.tradeNameId,
-        matchedName: report.tradeName?.title ?? `TN#${report.tradeNameId}`,
-        reaction: report.reaction,
-        reason: `Patient has a documented allergy to "${report.tradeName?.title}" which contains the same active substance.`,
-      });
-    }
-  }
 
   // ── 3. Classification match ──────────────────────────────────────────────────
   if (activeSubstance?.classificationId) {

@@ -152,6 +152,7 @@ s('/family-relations', 'get', [PATIENT_TAGS.FAMILY_HISTORY, ADMIN_TAG], 'List fa
 // PATIENTS — Surgical History
 s('/patients/{patientId}/surgeries', 'get', PATIENT_TAGS.SURGERIES, 'Get previous surgeries (patientId can be "me" for logged-in patient)', true, [p('patientId')]);
 s('/patients/{patientId}/surgeries', 'post', PATIENT_TAGS.SURGERIES, 'Add surgical history (patientId can be "me"; body: organId from GET /operations)', true, [p('patientId')], { schemaRef: 'BatchSurgicalHistoryRequest' });
+s('/patients/{patientId}/surgeries/{id}', 'put', PATIENT_TAGS.SURGERIES, 'Update a surgical history entry', true, [p('patientId'), p('id')], { schemaRef: 'UpdateSurgicalHistoryRequest' });
 s('/patients/surgeries/{id}', 'delete', PATIENT_TAGS.SURGERIES, 'Delete a surgical history entry', true, [p('id')]);
 
 // PATIENTS — Lifestyle (catalog: GET /lifestyles; patient answers below)
@@ -280,15 +281,15 @@ s('/add-medicine-requests/{id}', 'get', ADMIN_TAG, 'Get add medicine request by 
 s('/add-medicine-requests/{id}/resolve', 'patch', ADMIN_TAG, 'Resolve request: link trade name/active substance and mark PatientMedicine verified', true, [p('id')], { schemaRef: 'ResolveAddMedicineRequestRequest' });
 
 // PRESCRIPTIONS
-s('/prescriptions', 'get', [PATIENT_TAGS.PRESCRIPTIONS, DOCTOR_TAGS.PRESCRIPTIONS, DOCTOR_PATIENTS_SECTION], 'List prescriptions (filtered by role). Response includes prescriptionMedicines with patientMedicine (tradeName, activeSubstance).', true, [q('patientId'), q('doctorId')]);
-s('/prescriptions', 'post', [DOCTOR_TAGS.PRESCRIPTIONS, DOCTOR_PATIENTS_SECTION, DOCTOR_ADD_DRUG_SECTION], 'Create prescription (First Visit: conditionDiagnosis, initialCheckUp, medicationPlan/items, testResultsOrScans, followUpAppointmentDate). Required: items or medicationPlan; each item: medicineName (required), tradeNameId? or manual, activeSubstanceId?, dosageAmount?, frequencyCount?, durationValue?, etc. Runs drug-safety check.', true, [], { schemaRef: 'CreatePrescriptionRequest' });
-s('/prescriptions/batch', 'post', [DOCTOR_TAGS.PRESCRIPTIONS, DOCTOR_PATIENTS_SECTION], 'Batch-create prescriptions: one Prescription per medicine, each with one PatientMedicine + PrescriptionMedicine. Runs drug-safety and batch-interaction checks.', true, [], { schemaRef: 'BatchPrescriptionsRequest' });
-s('/prescriptions/{prescriptionId}/medicines', 'post', [DOCTOR_TAGS.PRESCRIPTIONS, DOCTOR_PATIENTS_SECTION, DOCTOR_ADD_DRUG_SECTION], 'Add one medicine to an existing prescription (draft). Body: AddMedicineToPrescriptionRequest (medicineName required, tradeNameId?, activeSubstanceId?, dosageAmount?, frequencyCount?, durationValue?, etc.). Returns prescription with prescriptionMedicines and patientMedicine.', true, [p('prescriptionId')], { schemaRef: 'AddMedicineToPrescriptionRequest' });
-s('/prescriptions/{id}', 'get', [PATIENT_TAGS.PRESCRIPTIONS, DOCTOR_TAGS.PRESCRIPTIONS, DOCTOR_PATIENTS_SECTION], 'Get prescription by ID. Response includes prescriptionMedicines (sortOrder) with nested patientMedicine (tradeName, activeSubstance, dosageAmount, frequencyCount, durationValue, notes).', true, [p('id')]);
-s('/prescriptions/{id}', 'put', [DOCTOR_TAGS.PRESCRIPTIONS, DOCTOR_PATIENTS_SECTION], 'Update a prescription', true, [p('id')], { schemaRef: 'UpdatePrescriptionRequest' });
-s('/prescriptions/{id}', 'delete', [PATIENT_TAGS.PRESCRIPTIONS, DOCTOR_TAGS.PRESCRIPTIONS, DOCTOR_PATIENTS_SECTION], 'Delete a prescription', true, [p('id')]);
-s('/prescriptions/{prescriptionId}/interactions', 'get', [PATIENT_TAGS.PRESCRIPTIONS, PATIENT_TAGS.DRUG_SAFETY, DOCTOR_TAGS.DRUG_SAFETY, DOCTOR_PATIENTS_SECTION], 'Get drug interaction alerts for prescription', true, [p('prescriptionId')]);
-s('/prescriptions/interactions/{alertId}/acknowledge', 'put', [PATIENT_TAGS.PRESCRIPTIONS, PATIENT_TAGS.DRUG_SAFETY, DOCTOR_TAGS.DRUG_SAFETY, DOCTOR_PATIENTS_SECTION], 'Acknowledge a drug interaction alert', true, [p('alertId')]);
+s('/prescriptions', 'get', [PATIENT_TAGS.PRESCRIPTIONS, DOCTOR_TAGS.PRESCRIPTIONS, DOCTOR_PATIENTS_SECTION], 'List prescriptions scoped by role: Doctor sees only their own, Patient sees only theirs, Admin can filter freely via patientId/doctorId query params. Requires Doctor, Patient, or Admin role.', true, [q('patientId', 'Admin only — filter by patient ID'), q('doctorId', 'Admin only — filter by doctor ID')]);
+s('/prescriptions', 'post', [DOCTOR_TAGS.PRESCRIPTIONS, DOCTOR_PATIENTS_SECTION, DOCTOR_ADD_DRUG_SECTION], 'Create prescription. Doctor only. doctorId is resolved automatically from the JWT token (do NOT pass doctorId in body when calling as Doctor). Required: patientId, items or medicationPlan; each item: medicineName (required), tradeNameId?, activeSubstanceId?, dosageAmount?, frequencyCount?, durationValue?, etc. Runs drug-safety check. First Visit fields: conditionDiagnosis, initialCheckUp, testResultsOrScans, followUpAppointmentDate.', true, [], { schemaRef: 'CreatePrescriptionRequest' });
+s('/prescriptions/batch', 'post', [DOCTOR_TAGS.PRESCRIPTIONS, DOCTOR_PATIENTS_SECTION], 'Batch-create prescriptions: one Prescription per medicine, each with one PatientMedicine + PrescriptionMedicine. Runs drug-safety and batch-interaction checks. Doctor only. doctorId is resolved from JWT token — do NOT pass it in body.', true, [], { schemaRef: 'BatchPrescriptionsRequest' });
+s('/prescriptions/interactions/{alertId}/acknowledge', 'put', [PATIENT_TAGS.PRESCRIPTIONS, PATIENT_TAGS.DRUG_SAFETY, DOCTOR_TAGS.DRUG_SAFETY, DOCTOR_PATIENTS_SECTION], 'Acknowledge a drug interaction alert. The acknowledgedBy field (doctor or patient) is derived automatically from the caller\'s role — no need to pass it in the request body. Requires Doctor or Patient role.', true, [p('alertId')]);
+s('/prescriptions/{prescriptionId}/medicines', 'post', [DOCTOR_TAGS.PRESCRIPTIONS, DOCTOR_PATIENTS_SECTION, DOCTOR_ADD_DRUG_SECTION], 'Add one medicine to an existing prescription (draft). Doctor must own the prescription. Body: AddMedicineToPrescriptionRequest (medicineName required, tradeNameId?, activeSubstanceId?, dosageAmount?, frequencyCount?, durationValue?, etc.). Returns prescription with prescriptionMedicines and patientMedicine.', true, [p('prescriptionId')], { schemaRef: 'AddMedicineToPrescriptionRequest' });
+s('/prescriptions/{prescriptionId}/interactions', 'get', [PATIENT_TAGS.PRESCRIPTIONS, PATIENT_TAGS.DRUG_SAFETY, DOCTOR_TAGS.DRUG_SAFETY, DOCTOR_PATIENTS_SECTION], 'Get drug interaction alerts for a prescription. Requires Doctor (own prescriptions), Patient (own prescriptions), or Admin role.', true, [p('prescriptionId')]);
+s('/prescriptions/{id}', 'get', [PATIENT_TAGS.PRESCRIPTIONS, DOCTOR_TAGS.PRESCRIPTIONS, DOCTOR_PATIENTS_SECTION], 'Get prescription by ID. Ownership enforced: Doctor must own it, Patient must be the subject. Response includes prescriptionMedicines (sortOrder) with nested patientMedicine (tradeName, activeSubstance, dosageAmount, frequencyCount, durationValue, notes).', true, [p('id')]);
+s('/prescriptions/{id}', 'put', [DOCTOR_TAGS.PRESCRIPTIONS, DOCTOR_PATIENTS_SECTION], 'Update a prescription. Doctor must own the prescription. Requires Doctor or Admin role.', true, [p('id')], { schemaRef: 'UpdatePrescriptionRequest' });
+s('/prescriptions/{id}', 'delete', [DOCTOR_TAGS.PRESCRIPTIONS, DOCTOR_PATIENTS_SECTION], 'Soft-delete a prescription (sets status to Cancelled). Doctor must own the prescription. Requires Doctor or Admin role.', true, [p('id')]);
 
 // PRESCRIPTION VERSIONS
 s('/prescription-versions/prescription/{prescriptionId}', 'get', [PATIENT_TAGS.PRESCRIPTIONS, DOCTOR_TAGS.PRESCRIPTIONS, DOCTOR_PATIENTS_SECTION], 'Get all versions of a prescription', true, [p('prescriptionId')]);
@@ -296,16 +297,16 @@ s('/prescription-versions/prescription/{prescriptionId}', 'post', [DOCTOR_TAGS.P
 s('/prescription-versions/prescription/{prescriptionId}/compare', 'get', [PATIENT_TAGS.PRESCRIPTIONS, DOCTOR_TAGS.PRESCRIPTIONS, DOCTOR_PATIENTS_SECTION], 'Compare two prescription versions', true, [p('prescriptionId'), q('version1'), q('version2')]);
 s('/prescription-versions/{id}', 'get', [PATIENT_TAGS.PRESCRIPTIONS, DOCTOR_TAGS.PRESCRIPTIONS, DOCTOR_PATIENTS_SECTION], 'Get a specific prescription version', true, [p('id')]);
 
-// APPOINTMENTS (not in core patient-doctor flow; tag for Admin / future use)
-s('/appointments', 'post', ADMIN_TAG, 'Create an appointment', true, [], { schemaRef: 'CreateAppointmentRequest' });
-s('/appointments/{id}', 'get', ADMIN_TAG, 'Get appointment by ID', true, [p('id')]);
-s('/appointments/{id}', 'put', ADMIN_TAG, 'Update an appointment', true, [p('id')], { schemaRef: 'UpdateAppointmentRequest' });
-s('/appointments/{id}/cancel', 'post', ADMIN_TAG, 'Cancel an appointment', true, [p('id')]);
-s('/appointments/{id}/confirm', 'post', ADMIN_TAG, 'Confirm an appointment (doctor)', true, [p('id')]);
-s('/appointments/{id}/complete', 'post', ADMIN_TAG, 'Mark appointment as completed (doctor)', true, [p('id')]);
-s('/appointments/patient/{patientId}', 'get', ADMIN_TAG, 'Get all appointments for a patient', true, [p('patientId')]);
-s('/appointments/doctor/{doctorId}', 'get', [ADMIN_TAG, DOCTOR_PATIENTS_SECTION], 'Get all appointments for a doctor', true, [p('doctorId')]);
-s('/appointments/doctor/{doctorId}/today', 'get', [ADMIN_TAG, DOCTOR_PATIENTS_SECTION], "Get today's appointments for a doctor", true, [p('doctorId')]);
+// APPOINTMENTS
+s('/appointments', 'post', [PATIENT_TAGS.CONSULTATIONS_VISITS, DOCTOR_TAGS.CONSULTATIONS_VISITS, DOCTOR_PATIENTS_SECTION], 'Create an appointment. Requires Doctor or Patient role.', true, [], { schemaRef: 'CreateAppointmentRequest' });
+s('/appointments/patient/{patientId}', 'get', [PATIENT_TAGS.CONSULTATIONS_VISITS, DOCTOR_PATIENTS_SECTION], 'Get all appointments for a patient. Requires Doctor, Patient, or Admin role.', true, [p('patientId')]);
+s('/appointments/doctor/{doctorId}/today', 'get', [DOCTOR_TAGS.CONSULTATIONS_VISITS, DOCTOR_PATIENTS_SECTION], "Get today's appointments for a doctor. Requires Doctor or Admin role.", true, [p('doctorId')]);
+s('/appointments/doctor/{doctorId}', 'get', [DOCTOR_TAGS.CONSULTATIONS_VISITS, DOCTOR_PATIENTS_SECTION], 'Get all appointments for a doctor. Requires Doctor or Admin role.', true, [p('doctorId')]);
+s('/appointments/{id}', 'get', [PATIENT_TAGS.CONSULTATIONS_VISITS, DOCTOR_TAGS.CONSULTATIONS_VISITS, DOCTOR_PATIENTS_SECTION], 'Get appointment by ID. Requires Doctor, Patient, or Admin role.', true, [p('id')]);
+s('/appointments/{id}', 'put', [PATIENT_TAGS.CONSULTATIONS_VISITS, DOCTOR_TAGS.CONSULTATIONS_VISITS, DOCTOR_PATIENTS_SECTION], 'Update an appointment. Requires Doctor, Patient, or Admin role.', true, [p('id')], { schemaRef: 'UpdateAppointmentRequest' });
+s('/appointments/{id}/cancel', 'post', [PATIENT_TAGS.CONSULTATIONS_VISITS, DOCTOR_TAGS.CONSULTATIONS_VISITS, DOCTOR_PATIENTS_SECTION], 'Cancel an appointment. Requires Doctor, Patient, or Admin role.', true, [p('id')]);
+s('/appointments/{id}/confirm', 'post', [DOCTOR_TAGS.CONSULTATIONS_VISITS, DOCTOR_PATIENTS_SECTION], 'Confirm an appointment. Doctor only.', true, [p('id')]);
+s('/appointments/{id}/complete', 'post', [DOCTOR_TAGS.CONSULTATIONS_VISITS, DOCTOR_PATIENTS_SECTION], 'Mark appointment as completed. Doctor only.', true, [p('id')]);
 
 // CONSULTATIONS
 s('/consultations', 'post', [PATIENT_TAGS.CONSULTATIONS_VISITS, DOCTOR_TAGS.CONSULTATIONS_VISITS, DOCTOR_PATIENTS_SECTION], 'Create a consultation', true, [], { schemaRef: 'CreateConsultationRequest' });
@@ -348,7 +349,7 @@ s('/ratings/patient/{patientId}', 'get', PATIENT_TAGS.RATINGS, 'Get ratings subm
 s('/ratings/{id}', 'delete', PATIENT_TAGS.RATINGS, 'Delete a rating', true, [p('id')]);
 
 // NOTIFICATIONS
-s('/notifications', 'post', [PATIENT_TAGS.NOTIFICATIONS, DOCTOR_TAGS.NOTIFICATIONS, PHARMACIST_TAGS.NOTIFICATIONS], 'Create a notification', true, [], { schemaRef: 'CreateNotificationRequest' });
+s('/notifications', 'post', ADMIN_TAG, 'Create a notification. Admin/SuperAdmin only.', true, [], { schemaRef: 'CreateNotificationRequest' });
 s('/notifications/user/{userId}', 'get', [PATIENT_TAGS.NOTIFICATIONS, DOCTOR_TAGS.NOTIFICATIONS, PHARMACIST_TAGS.NOTIFICATIONS], 'Get all notifications for a user', true, [p('userId')]);
 s('/notifications/user/{userId}/read-all', 'patch', [PATIENT_TAGS.NOTIFICATIONS, DOCTOR_TAGS.NOTIFICATIONS, PHARMACIST_TAGS.NOTIFICATIONS], 'Mark all notifications as read', true, [p('userId')]);
 s('/notifications/{id}/read', 'patch', [PATIENT_TAGS.NOTIFICATIONS, DOCTOR_TAGS.NOTIFICATIONS, PHARMACIST_TAGS.NOTIFICATIONS], 'Mark a single notification as read', true, [p('id')]);
@@ -356,8 +357,8 @@ s('/notifications/{id}', 'delete', [PATIENT_TAGS.NOTIFICATIONS, DOCTOR_TAGS.NOTI
 s('/notifications/appointment-reminders', 'post', ADMIN_TAG, 'Trigger appointment reminder notifications');
 
 // BATCH NUMBER CHECK (trade name can have many batch numbers in BatchHistory)
-s('/batch-check/trade-name/{tradeNameId}', 'get', [PATIENT_TAGS.MEDICATIONS, PATIENT_TAGS.DRUG_SAFETY, ADMIN_TAG], 'List all batch numbers for a trade name. A trade name can have many batches (e.g. last 3 months from contracted companies). Returns tradeNameId, count, and batches array.', false, [p('tradeNameId')]);
-s('/batch-check', 'post', [PATIENT_TAGS.MEDICATIONS, PATIENT_TAGS.DRUG_SAFETY], 'Check if a batch number is approved (in our database). Send batchNumber in body or upload image of batch section for AI extraction. Returns status: approved | recalled | not_in_database. No auth required. Batch numbers are stored per trade name (one trade name has many batch numbers).', false, []);
+s('/batch-check/trade-name/{tradeNameId}', 'get', [PATIENT_TAGS.MEDICATIONS, PATIENT_TAGS.DRUG_SAFETY, ADMIN_TAG], 'List all batch numbers for a trade name. A trade name can have many batches (e.g. last 3 months from contracted companies). Returns tradeNameId, count, and batches array. Requires authentication.', true, [p('tradeNameId')]);
+s('/batch-check', 'post', [PATIENT_TAGS.MEDICATIONS, PATIENT_TAGS.DRUG_SAFETY], 'Check if a batch number is approved (in our database). Send batchNumber in body or upload image of batch section for AI extraction. Returns status: approved | recalled | not_in_database. Requires authentication. Batch numbers are stored per trade name (one trade name has many batch numbers).', true, []);
 
 // DRUG INTERACTIONS
 s('/drug-interactions/check-by-trade-name', 'post', [DOCTOR_TAGS.DRUG_SAFETY, PATIENT_TAGS.DRUG_SAFETY, DOCTOR_PATIENTS_SECTION], 'Run full warning check for a drug by trade name ID. Returns blocked flag and all warnings (allergy, disease, lifestyle, pregnancy, lactation, age, organ, drug-drug). Doctor: any patient; Patient: own patientId only.', true, [], { schemaRef: 'CheckByTradeNameRequest' });
@@ -923,9 +924,10 @@ const options: Record<string, unknown> = {
         SurgicalHistoryRequest: {
           description: 'One surgical history entry. Required: organId (from GET /operations). Use "me" as patientId for the logged-in patient.',
           type: 'object',
-          required: ['organId'],
+          required: ['organId', 'surgeryTimeframe'],
           properties: {
-            organId:  { type: 'integer', description: 'Required. ID from GET /operations.' }
+            organId:  { type: 'integer', description: 'Required. ID from GET /operations.' },
+            surgeryTimeframe:  { type: 'string', enum: ['THREE_MONTHS', 'SIX_MONTHS', 'MORE_THAN_SIX_MONTHS'], description: 'Required. Surgery timeframe.' }
           }
         },
         BatchSurgicalHistoryRequest: {
@@ -933,6 +935,15 @@ const options: Record<string, unknown> = {
           type: 'array',
           minItems: 1,
           items: { $ref: '#/components/schemas/SurgicalHistoryRequest' }
+        },
+        UpdateSurgicalHistoryRequest: {
+          description: 'Update a surgical history entry. Required: organId from GET /operations, surgeryTimeframe.',
+          type: 'object',
+          required: ['organId', 'surgeryTimeframe'],
+          properties: {
+            organId: { type: 'integer', description: 'Required. ID from GET /operations.' },
+            surgeryTimeframe: { type: 'string', enum: ['THREE_MONTHS', 'SIX_MONTHS', 'MORE_THAN_SIX_MONTHS'], description: 'Required. Surgery timeframe.' }
+          }
         },
         CreateLifestyleRequest: {
           description: 'Create lifestyle question (catalog). activeSubstanceField must be one of the ActiveSubstance field names used for warnings (e.g. interactionAlcohol, interactionXanthines). See backend enum ACTIVE_SUBSTANCE_LIFESTYLE_FIELDS.',
@@ -1141,7 +1152,8 @@ const options: Record<string, unknown> = {
           description: 'Create/replace a patient allergy report. Provide any combination of tradeNameId, allergenIds, activeSubstanceIds, excipientIds, classificationIds. At least one source must be provided.',
           type: 'object',
           properties: {
-            tradeNameId:       { type: 'integer', description: 'Optional trade name ID from GET /trade-names/search.' },
+            // tradeNameId:       { type: 'integer', description: 'Optional trade name ID from GET /trade-names/search.' },
+            tradeNameIds:      { type: 'array', items: { type: 'integer' }, description: 'Optional trade name IDs from GET /trade-names/search.' },
             allergenIds:       { type: 'array', items: { type: 'integer' }, description: 'Optional catalog allergen IDs from GET /allergens.' },
             activeSubstanceIds:{ type: 'array', items: { type: 'integer' }, description: 'Optional active substance IDs from GET /active-substances/search.' },
             excipientIds:      { type: 'array', items: { type: 'integer' }, description: 'Optional excipient IDs.' },
@@ -1150,7 +1162,7 @@ const options: Record<string, unknown> = {
             notes:             { type: 'string', nullable: true }
           },
           example: {
-            tradeNameId: 17,
+            tradeNameId: [17 , 18],
             allergenIds: [2, 5],
             activeSubstanceIds: [12],
             excipientIds: [4],

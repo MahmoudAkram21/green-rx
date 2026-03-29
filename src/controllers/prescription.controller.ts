@@ -1,8 +1,19 @@
 import { Request, Response } from 'express';
 import { prisma } from '../lib/prisma';
-import { PrescriptionStatus } from '../../generated/client/client';
+import { PrescriptionStatus, UserRole } from '../../generated/client/client';
 import { generateWarnings } from '../services/warningService';
 import drugInteractionService from '../services/drugInteraction.service';
+
+async function resolveProfileIds(req: Request) {
+    const { userId, role } = req.user!;
+    const doctor = role === UserRole.Doctor
+        ? await prisma.doctor.findUnique({ where: { userId }, select: { id: true } })
+        : null;
+    const patient = role === UserRole.Patient
+        ? await prisma.patient.findUnique({ where: { userId }, select: { id: true } })
+        : null;
+    return { role, doctorId: doctor?.id ?? null, patientId: patient?.id ?? null };
+}
 
 const defaultValidFrom = () => new Date();
 const defaultValidUntil = () => new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
@@ -72,7 +83,7 @@ function normalizeMedicationItems(body: Record<string, unknown>): MedicationPlan
 export const createPrescription = async (req: Request, res: Response) => {
     try {
         const {
-            doctorId,
+            doctorId: bodyDoctorId,
             patientId,
             validFrom,
             validUntil,
@@ -87,6 +98,12 @@ export const createPrescription = async (req: Request, res: Response) => {
 
         const bodyItems = normalizeMedicationItems(req.body);
         const hasItems = bodyItems != null && bodyItems.length > 0;
+
+        const { role, doctorId: tokenDoctorId } = await resolveProfileIds(req);
+        if (role === UserRole.Doctor && !tokenDoctorId) {
+            return res.status(403).json({ message: 'Doctor profile not found' });
+        }
+        const doctorId = role === UserRole.Doctor ? tokenDoctorId! : Number(bodyDoctorId);
 
         if (!doctorId || !patientId) {
             return res.status(400).json({ message: 'Doctor ID and Patient ID are required' });
@@ -221,13 +238,19 @@ export const createPrescription = async (req: Request, res: Response) => {
 export const createBatchPrescriptions = async (req: Request, res: Response) => {
     try {
         const {
-            doctorId,
+            doctorId: bodyDoctorId,
             patientId,
             medicines, // Array of {tradeNameId, dosage, frequency, duration, instructions, notes}
             validFrom,
             validUntil,
             maxRefills
         } = req.body;
+
+        const { role, doctorId: tokenDoctorId } = await resolveProfileIds(req);
+        if (role === UserRole.Doctor && !tokenDoctorId) {
+            return res.status(403).json({ message: 'Doctor profile not found' });
+        }
+        const doctorId = role === UserRole.Doctor ? tokenDoctorId! : Number(bodyDoctorId);
 
         // Validate required fields
         if (!doctorId || !patientId || !Array.isArray(medicines) || medicines.length === 0) {
@@ -354,9 +377,18 @@ export const getPrescriptions = async (req: Request, res: Response) => {
         const { patientId, doctorId, status, page = 1, limit = 20 } = req.query;
 
         const where: any = {};
-        if (patientId) where.patientId = parseInt(patientId as string);
-        if (doctorId) where.doctorId = parseInt(doctorId as string);
         if (status) where.status = status as PrescriptionStatus;
+
+        const { role, doctorId: tokenDoctorId, patientId: tokenPatientId } = await resolveProfileIds(req);
+        if (role === UserRole.Doctor) {
+            where.doctorId = tokenDoctorId!;
+        } else if (role === UserRole.Patient) {
+            where.patientId = tokenPatientId!;
+        } else {
+            // Admin / SuperAdmin: honour optional query params
+            if (patientId) where.patientId = parseInt(patientId as string);
+            if (doctorId) where.doctorId = parseInt(doctorId as string);
+        }
 
         const skip = (parseInt(page as string) - 1) * parseInt(limit as string);
 
@@ -437,6 +469,14 @@ export const getPrescriptionById = async (req: Request, res: Response) => {
             return res.status(404).json({ message: 'Prescription not found' });
         }
 
+        const { role, doctorId, patientId } = await resolveProfileIds(req);
+        if (role === UserRole.Doctor && prescription.doctorId !== doctorId) {
+            return res.status(403).json({ message: 'Forbidden' });
+        }
+        if (role === UserRole.Patient && prescription.patientId !== patientId) {
+            return res.status(403).json({ message: 'Forbidden' });
+        }
+
         return res.json(prescription);
     } catch (error) {
         console.error('Error fetching prescription:', error);
@@ -456,6 +496,11 @@ export const updatePrescription = async (req: Request, res: Response) => {
 
         if (!existingPrescription) {
             return res.status(404).json({ message: 'Prescription not found' });
+        }
+
+        const { role: callerRole, doctorId: callerDoctorId } = await resolveProfileIds(req);
+        if (callerRole === UserRole.Doctor && existingPrescription.doctorId !== callerDoctorId) {
+            return res.status(403).json({ message: 'Forbidden' });
         }
 
         // Track version if significant changes
@@ -533,10 +578,14 @@ export const addMedicineToPrescription = async (req: Request, res: Response) => 
         }
         const prescription = await prisma.prescription.findUnique({
             where: { id: prescId },
-            select: { id: true, patientId: true }
+            select: { id: true, patientId: true, doctorId: true }
         });
         if (!prescription) {
             return res.status(404).json({ message: 'Prescription not found' });
+        }
+        const { doctorId: callerDoctorId } = await resolveProfileIds(req);
+        if (prescription.doctorId !== callerDoctorId) {
+            return res.status(403).json({ message: 'Forbidden' });
         }
         if (item.activeSubstanceId == null && item.tradeNameId != null) {
             const tn = await prisma.tradeName.findUnique({
@@ -596,6 +645,15 @@ export const deletePrescription = async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
 
+        const existing = await prisma.prescription.findUnique({ where: { id: parseInt(id) }, select: { doctorId: true } });
+        if (!existing) {
+            return res.status(404).json({ message: 'Prescription not found' });
+        }
+        const { role: callerRole, doctorId: callerDoctorId } = await resolveProfileIds(req);
+        if (callerRole === UserRole.Doctor && existing.doctorId !== callerDoctorId) {
+            return res.status(403).json({ message: 'Forbidden' });
+        }
+
         const prescription = await prisma.prescription.update({
             where: { id: parseInt(id) },
             data: {
@@ -615,7 +673,10 @@ export const deletePrescription = async (req: Request, res: Response) => {
 export const acknowledgeDrugInteraction = async (req: Request, res: Response) => {
     try {
         const { alertId } = req.params;
-        const { acknowledgedBy } = req.body; // 'doctor' or 'patient'
+
+        const acknowledgedBy = req.user!.role === UserRole.Doctor ? 'doctor'
+                             : req.user!.role === UserRole.Patient ? 'patient'
+                             : null;
 
         const updateData: any = { acknowledgedAt: new Date() };
         if (acknowledgedBy === 'doctor') {
