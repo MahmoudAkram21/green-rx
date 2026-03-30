@@ -622,3 +622,7 @@
 [2026-03-30T13:18:49.439Z] [INFO] Incoming request: GET /api/docs/favicon-32x32.png
 [2026-03-30T13:18:49.447Z] [INFO] GET /api/docs/favicon-32x32.png 200 8.062 ms - 628 bytes - ip=::1
 [2026-03-30T13:18:49.448Z] [INFO] Completed request: GET /api/docs/favicon-32x32.png -> 200 (8ms)
+[2026-03-30T14:02:38.678Z] [INFO] Server is running on http://localhost:5000
+[2026-03-30T14:02:38.679Z] [INFO] Health check: http://localhost:5000/api/health
+[2026-03-30T14:02:38.679Z] [INFO] POST /api/admin/side-effects/:id/trade-names is registered
+[2026-03-30T14:02:38.679Z] [INFO] Server is running on port 5000
