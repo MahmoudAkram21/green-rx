@@ -580,7 +580,7 @@ async function main() {
       email: "superadmin@greenrx.com",
       passwordHash: hashedPassword,
       role: "SuperAdmin",
-      emailVerified: true,
+      isEmailVerified: true,
       isActive: true,
     },
   });
@@ -592,7 +592,7 @@ async function main() {
       email: "admin1@greenrx.com",
       passwordHash: hashedPassword,
       role: "Admin",
-      emailVerified: true,
+      isEmailVerified: true,
       isActive: true,
     },
   });
@@ -602,7 +602,7 @@ async function main() {
       email: "admin2@greenrx.com",
       passwordHash: hashedPassword,
       role: "Admin",
-      emailVerified: true,
+      isEmailVerified: true,
       isActive: true,
     },
   });
@@ -614,7 +614,7 @@ async function main() {
       email: "dr.smith@greenrx.com",
       passwordHash: hashedPassword,
       role: "Doctor",
-      emailVerified: true,
+      isEmailVerified: true,
       isActive: true,
       doctor: {
         create: {
@@ -637,7 +637,7 @@ async function main() {
       email: "dr.johnson@greenrx.com",
       passwordHash: hashedPassword,
       role: "Doctor",
-      emailVerified: true,
+      isEmailVerified: true,
       isActive: true,
       doctor: {
         create: {
@@ -660,7 +660,7 @@ async function main() {
       email: "dr.williams@greenrx.com",
       passwordHash: hashedPassword,
       role: "Doctor",
-      emailVerified: true,
+      isEmailVerified: true,
       isActive: true,
       doctor: {
         create: {
@@ -684,7 +684,7 @@ async function main() {
       email: "dr.pending1@greenrx.com",
       passwordHash: hashedPassword,
       role: "Doctor",
-      emailVerified: true,
+      isEmailVerified: true,
       isActive: true,
       doctor: {
         create: {
@@ -706,7 +706,7 @@ async function main() {
       email: "dr.pending2@greenrx.com",
       passwordHash: hashedPassword,
       role: "Doctor",
-      emailVerified: true,
+      isEmailVerified: true,
       isActive: true,
       doctor: {
         create: {
@@ -730,7 +730,7 @@ async function main() {
       email: "pharmacist1@greenrx.com",
       passwordHash: hashedPassword,
       role: "Pharmacist",
-      emailVerified: true,
+      isEmailVerified: true,
       isActive: true,
       pharmacist: {
         create: {
@@ -752,7 +752,7 @@ async function main() {
       email: "pharmacist2@greenrx.com",
       passwordHash: hashedPassword,
       role: "Pharmacist",
-      emailVerified: true,
+      isEmailVerified: true,
       isActive: true,
       pharmacist: {
         create: {
@@ -776,7 +776,7 @@ async function main() {
       name: "Sarah Wilson",
       passwordHash: hashedPassword,
       role: "Pharmacist",
-      emailVerified: false,
+      isEmailVerified: false,
       isActive: true,
       pharmacist: {
         create: {
@@ -798,7 +798,7 @@ async function main() {
       name: "Ahmed Hassan",
       passwordHash: hashedPassword,
       role: "Pharmacist",
-      emailVerified: false,
+      isEmailVerified: false,
       isActive: true,
       pharmacist: {
         create: {
@@ -820,7 +820,7 @@ async function main() {
       name: "Maria Garcia",
       passwordHash: hashedPassword,
       role: "Pharmacist",
-      emailVerified: false,
+      isEmailVerified: false,
       isActive: true,
       pharmacist: {
         create: {
@@ -842,7 +842,7 @@ async function main() {
       name: "Omar Khalil",
       passwordHash: hashedPassword,
       role: "Pharmacist",
-      emailVerified: false,
+      isEmailVerified: false,
       isActive: true,
       pharmacist: {
         create: {
@@ -864,7 +864,7 @@ async function main() {
       name: "Jennifer Lee",
       passwordHash: hashedPassword,
       role: "Pharmacist",
-      emailVerified: false,
+      isEmailVerified: false,
       isActive: true,
       pharmacist: {
         create: {
@@ -889,7 +889,7 @@ async function main() {
       name: "Alice Cooper",
       passwordHash: hashedPassword,
       role: "Patient",
-      emailVerified: true,
+      isEmailVerified: true,
       isActive: true,
       patient: {
         create: {
@@ -913,7 +913,7 @@ async function main() {
       name: "Bob Martinez",
       passwordHash: hashedPassword,
       role: "Patient",
-      emailVerified: true,
+      isEmailVerified: true,
       isActive: true,
       patient: {
         create: {
@@ -937,7 +937,7 @@ async function main() {
       name: "Carol White",
       passwordHash: hashedPassword,
       role: "Patient",
-      emailVerified: true,
+      isEmailVerified: true,
       isActive: true,
       patient: {
         create: {
@@ -963,7 +963,7 @@ async function main() {
       name: "David Lee",
       passwordHash: hashedPassword,
       role: "Patient",
-      emailVerified: true,
+      isEmailVerified: true,
       isActive: true,
       patient: {
         create: {
@@ -987,7 +987,7 @@ async function main() {
       name: "Emma Thompson",
       passwordHash: hashedPassword,
       role: "Patient",
-      emailVerified: true,
+      isEmailVerified: true,
       isActive: true,
       patient: {
         create: {

@@ -537,3 +537,6 @@
 [2026-03-30T11:18:16.401Z] [INFO] Health check: http://localhost:5000/api/health
 [2026-03-30T11:18:16.402Z] [INFO] POST /api/admin/side-effects/:id/trade-names is registered
 [2026-03-30T11:18:16.402Z] [INFO] Server is running on port 5000
+[2026-03-30T11:20:22.009Z] [WARN] Received SIGINT. Shutting down server...
+[2026-03-30T11:20:22.010Z] [INFO] HTTP server closed
+[2026-03-30T11:20:22.011Z] [INFO] Prisma disconnected
