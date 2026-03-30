@@ -80,10 +80,15 @@ const s = (
   secure = true,
   params: any[] = [],
   body?: { schemaRef: string; required?: boolean },
-  responses?: Record<string, string>
+  responses?: Record<string, string>,
+  responseRef?: string
 ) => {
   const tagList = Array.isArray(tagOrTags) ? tagOrTags : [tagOrTags];
-  const defaultResponses: Record<string, { description: string }> = { '200': { description: 'Success' } };
+  const defaultResponses: Record<string, any> = {
+    '200': responseRef
+      ? { description: 'Success', content: { 'application/json': { schema: { $ref: `#/components/schemas/${responseRef}` } } } }
+      : { description: 'Success' }
+  };
   if (responses) {
     for (const [code, desc] of Object.entries(responses)) {
       defaultResponses[code] = { description: desc };
@@ -113,18 +118,18 @@ s('/health', 'get', ADMIN_TAG, 'Health check', false);
 // ═══════════════════════════════════════════════════
 // AUTH  →  /api/auth/*
 // ═══════════════════════════════════════════════════
-s('/auth/register', 'post', AUTH_TAGS, 'Register a new user', false, [], { schemaRef: 'RegisterRequest' });
-s('/auth/login', 'post', AUTH_TAGS, 'Login and receive tokens', false, [], { schemaRef: 'LoginRequest' });
-s('/auth/refresh', 'post', AUTH_TAGS, 'Refresh access token', false, [], { schemaRef: 'RefreshTokenRequest' });
-s('/auth/logout', 'post', AUTH_TAGS, 'Logout (invalidate token)');
-s('/auth/me', 'get', AUTH_TAGS, 'Get current authenticated user. When role is Patient, response includes full patient data (same as GET /patients/:id): user, medicalHistories, familyHistories, patientLifestyles, patientAllergies, childrenProfiles, patientDiseases, bodyMassIndex.');
+s('/auth/register', 'post', AUTH_TAGS, 'Register a new user', false, [], { schemaRef: 'RegisterRequest' }, { '201': 'User created — OTP sent to email' }, 'RegisterResponse');
+s('/auth/login', 'post', AUTH_TAGS, 'Login and receive tokens', false, [], { schemaRef: 'LoginRequest' }, {}, 'LoginResponse');
+s('/auth/refresh', 'post', AUTH_TAGS, 'Refresh access token', false, [], { schemaRef: 'RefreshTokenRequest' }, {}, 'RefreshTokenResponse');
+s('/auth/logout', 'post', AUTH_TAGS, 'Logout (invalidate token)', true, [], undefined, {}, 'MessageResponse');
+s('/auth/me', 'get', AUTH_TAGS, 'Get current authenticated user. When role is Patient, response includes full patient data (same as GET /patients/:id): user, medicalHistories, familyHistories, patientLifestyles, patientAllergies, childrenProfiles, patientDiseases, bodyMassIndex.', true, [], undefined, {}, 'AuthMeResponse');
 s('/auth/dev-reset-superadmin-password', 'post', ADMIN_TAG, '[Dev] Reset superadmin password', false);
 
 // ═══════════════════════════════════════════════════
 // OTP  →  /api/otp/*
 // ═══════════════════════════════════════════════════
-s('/otp/verify', 'post', AUTH_TAGS, 'Verify the 6-digit OTP sent to email after registration. Requires the otpToken returned from /auth/register as Bearer token. On success activates the account (Patient only) and returns accessToken + refreshToken.', true, [], { schemaRef: 'VerifyOtpRequest' }, { '200': 'OTP verified — account activated, tokens returned', '401': 'Invalid or expired OTP', '429': 'Too many failed attempts — request a new OTP' });
-s('/otp/resend', 'post', AUTH_TAGS, 'Resend a new OTP to the registered email (invalidates the previous code and resets the expiry timer). Requires the otpToken returned from /auth/register as Bearer token.', true, [], undefined, { '200': 'New OTP sent successfully' });
+s('/otp/verify', 'post', AUTH_TAGS, 'Verify the 6-digit OTP sent to email after registration. Requires the otpToken returned from /auth/register as Bearer token. On success activates the account (Patient only) and returns accessToken + refreshToken.', true, [], { schemaRef: 'VerifyOtpRequest' }, { '401': 'Invalid or expired OTP', '429': 'Too many failed attempts — request a new OTP' }, 'VerifyOtpResponse');
+s('/otp/resend', 'post', AUTH_TAGS, 'Resend a new OTP to the registered email (invalidates the previous code and resets the expiry timer). Requires the otpToken returned from /auth/register as Bearer token.', true, [], undefined, {}, 'ResendOtpResponse');
 
 // ═══════════════════════════════════════════════════
 // USERS  →  /api/users/*
@@ -792,6 +797,39 @@ const options: Record<string, unknown> = {
         bearerAuth: { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' }
       },
       schemas: {
+        // ── Auth response bodies
+        RegisterResponse: {
+          description: 'Returned after successful registration. Use otpToken as Bearer token when calling POST /otp/verify. The otp field is only present outside production (dev/staging helper for mobile testing).',
+          type: 'object',
+          properties: {
+            message:  { type: 'string', example: 'User registered successfully and OTP sent to email' },
+            otpToken: { type: 'string', description: 'Short-lived JWT. Use as Bearer token when calling POST /otp/verify and POST /otp/resend.', example: 'eyJhbGci...' },
+            otp:      { type: 'integer', description: 'Dev/staging only — the actual OTP for quick testing. Not present in production.', example: 482910 }
+          }
+        },
+        RefreshTokenResponse: {
+          description: 'Returns a new access token. Use it to replace the expired one in subsequent requests.',
+          type: 'object',
+          properties: {
+            accessToken: { type: 'string', example: 'eyJhbGci...' }
+          }
+        },
+        ResendOtpResponse: {
+          description: 'Returned after successfully resending the OTP. Use the new otpToken as Bearer token for the next POST /otp/verify call.',
+          type: 'object',
+          properties: {
+            message:  { type: 'string', example: 'OTP resent successfully' },
+            otpToken: { type: 'string', description: 'New short-lived JWT replacing the previous one.', example: 'eyJhbGci...' }
+          }
+        },
+        MessageResponse: {
+          description: 'Simple message response (e.g. logout).',
+          type: 'object',
+          properties: {
+            message: { type: 'string', example: 'Logged out successfully' }
+          }
+        },
+
         // ── Auth request bodies
         RegisterRequest: {
           description: 'Create a new user account. Send as multipart/form-data when role=Doctor or Pharmacist. Required: email, password. Optional: role (default Patient), name, phone. When role=Patient, a patient profile is auto-created and the response includes user.patientId. When role=Doctor: name, licenseNumber, specialization, and licenseImage (file) are required; license image is stored under uploads/doctor-licenses/ and the URL is saved as licenseImageUrl on the Doctor profile. When role=Pharmacist: name, licenseNumber, and licenseImage (file) are required; license image is stored under uploads/pharmacist-licenses/ and the URL is saved as licenseImageUrl on the Pharmacist profile. Response includes user.doctorId or user.pharmacistId when applicable.',
