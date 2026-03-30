@@ -540,3 +540,29 @@
 [2026-03-30T11:20:22.009Z] [WARN] Received SIGINT. Shutting down server...
 [2026-03-30T11:20:22.010Z] [INFO] HTTP server closed
 [2026-03-30T11:20:22.011Z] [INFO] Prisma disconnected
+[2026-03-30T11:36:47.348Z] [INFO] Server is running on http://localhost:5000
+[2026-03-30T11:36:47.349Z] [INFO] Health check: http://localhost:5000/api/health
+[2026-03-30T11:36:47.350Z] [INFO] POST /api/admin/side-effects/:id/trade-names is registered
+[2026-03-30T11:36:47.350Z] [INFO] Server is running on port 5000
+[2026-03-30T11:37:04.042Z] [INFO] Incoming request: GET /api/health
+[2026-03-30T11:37:04.047Z] [INFO] GET /api/health 304 3.471 ms - - bytes - ip=::1
+[2026-03-30T11:37:04.048Z] [INFO] Completed request: GET /api/health -> 304 (6ms)
+[2026-03-30T11:37:04.854Z] [INFO] Incoming request: GET /favicon.ico
+[2026-03-30T11:37:04.855Z] [WARN] Route not found: GET /favicon.ico
+[2026-03-30T11:37:04.856Z] [INFO] GET /favicon.ico 404 2.314 ms - 27 bytes - ip=::1
+[2026-03-30T11:37:04.857Z] [WARN] Completed request: GET /favicon.ico -> 404 (3ms)
+[2026-03-30T11:37:08.070Z] [INFO] Incoming request: GET /api/docs/
+[2026-03-30T11:37:08.072Z] [INFO] GET /api/docs/ 200 1.976 ms - 3047 bytes - ip=::1
+[2026-03-30T11:37:08.072Z] [INFO] Completed request: GET /api/docs/ -> 200 (2ms)
+[2026-03-30T11:37:08.078Z] [INFO] Incoming request: GET /api/docs/swagger-ui.css
+[2026-03-30T11:37:08.081Z] [INFO] Incoming request: GET /api/docs/swagger-ui-bundle.js
+[2026-03-30T11:37:08.082Z] [INFO] Incoming request: GET /api/docs/swagger-ui-standalone-preset.js
+[2026-03-30T11:37:08.099Z] [INFO] GET /api/docs/swagger-ui.css 200 19.537 ms - 177183 bytes - ip=::1
+[2026-03-30T11:37:08.099Z] [INFO] Completed request: GET /api/docs/swagger-ui.css -> 200 (21ms)
+[2026-03-30T11:37:08.144Z] [INFO] Incoming request: GET /api/docs/swagger-ui-init.js
+[2026-03-30T11:37:08.146Z] [INFO] GET /api/docs/swagger-ui-init.js 200 1.715 ms - 337339 bytes - ip=::1
+[2026-03-30T11:37:08.146Z] [INFO] Completed request: GET /api/docs/swagger-ui-init.js -> 200 (2ms)
+[2026-03-30T11:37:08.176Z] [INFO] GET /api/docs/swagger-ui-standalone-preset.js 200 93.324 ms - 251697 bytes - ip=::1
+[2026-03-30T11:37:08.177Z] [INFO] Completed request: GET /api/docs/swagger-ui-standalone-preset.js -> 200 (95ms)
+[2026-03-30T11:37:08.266Z] [INFO] GET /api/docs/swagger-ui-bundle.js 200 180.733 ms - 1514087 bytes - ip=::1
+[2026-03-30T11:37:08.267Z] [INFO] Completed request: GET /api/docs/swagger-ui-bundle.js -> 200 (186ms)

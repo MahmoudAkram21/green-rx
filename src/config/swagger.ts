@@ -121,6 +121,12 @@ s('/auth/me', 'get', AUTH_TAGS, 'Get current authenticated user. When role is Pa
 s('/auth/dev-reset-superadmin-password', 'post', ADMIN_TAG, '[Dev] Reset superadmin password', false);
 
 // ═══════════════════════════════════════════════════
+// OTP  →  /api/otp/*
+// ═══════════════════════════════════════════════════
+s('/otp/verify', 'post', AUTH_TAGS, 'Verify the 6-digit OTP sent to email after registration. Requires the otpToken returned from /auth/register as Bearer token. On success activates the account (Patient only) and returns accessToken + refreshToken.', true, [], { schemaRef: 'VerifyOtpRequest' }, { '200': 'OTP verified — account activated, tokens returned', '401': 'Invalid or expired OTP', '429': 'Too many failed attempts — request a new OTP' });
+s('/otp/resend', 'post', AUTH_TAGS, 'Resend a new OTP to the registered email (invalidates the previous code and resets the expiry timer). Requires the otpToken returned from /auth/register as Bearer token.', true, [], undefined, { '200': 'New OTP sent successfully' });
+
+// ═══════════════════════════════════════════════════
 // USERS  →  /api/users/*
 // ═══════════════════════════════════════════════════
 s('/users', 'get', ADMIN_TAG, 'Get all users');
@@ -838,6 +844,35 @@ const options: Record<string, unknown> = {
           required: ['refreshToken'],
           properties: {
             refreshToken: { type: 'string', example: 'eyJhbGci...', description: 'Required.' }
+          }
+        },
+        VerifyOtpRequest: {
+          description: 'Submit the 6-digit OTP received by email. Send the otpToken returned from POST /auth/register as a Bearer token in the Authorization header. On success the account is activated and a full session (accessToken + refreshToken) is returned.',
+          type: 'object',
+          required: ['otp'],
+          properties: {
+            otp: { type: 'integer', example: 482910, description: 'The 6-digit numeric OTP sent to the registered email.' }
+          }
+        },
+        VerifyOtpResponse: {
+          description: 'Successful OTP verification. Returns a full auth session identical to the login response.',
+          type: 'object',
+          properties: {
+            message:      { type: 'string', example: 'OTP verified successfully' },
+            accessToken:  { type: 'string' },
+            refreshToken: { type: 'string' },
+            user: {
+              type: 'object',
+              properties: {
+                id:           { type: 'integer' },
+                email:        { type: 'string' },
+                role:         { type: 'string', example: 'Patient' },
+                patientId:    { type: 'integer', description: 'Present when role is Patient.' },
+                doctorId:     { type: 'integer', description: 'Present when role is Doctor.' },
+                pharmacistId: { type: 'integer', description: 'Present when role is Pharmacist.' },
+                isVerified:   { type: 'boolean', description: 'Present when role is Doctor or Pharmacist.' }
+              }
+            }
           }
         },
         AuthMeResponse: {

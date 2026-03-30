@@ -79,7 +79,7 @@ export async function sendBulk(
 }
 
 
-export async function sendOtpEmail(email: string, accessToken: string, userId: number) {
+export async function sendOtpEmail(email: string, accessToken: string, userId: number): Promise<number> {
 
   const expiresAt = new Date(Date.now() + 1000 * 60 * 5);
   const newOtp = crypto.randomInt(100000, 999999);
@@ -102,10 +102,11 @@ export async function sendOtpEmail(email: string, accessToken: string, userId: n
     }
   })
 
-  
   await sendMail({
     to: email,
     subject: 'Your OTP for verification',
     html: `<p>Your OTP is ${newOtp}</p>`
   })
+
+  return newOtp;
 }

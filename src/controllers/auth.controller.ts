@@ -202,11 +202,12 @@ export const register = async (
     const expiresAt = new Date();
     expiresAt.setDate(expiresAt.getDate() + 7); // 7 days
 
-    await sendOtpEmail(result.email, otpToken, result.id);
+    const otp = await sendOtpEmail(result.email, otpToken, result.id);
 
     res.status(201).json({
       message: "User registered successfully and OTP sent to email",
       otpToken,
+      ...(process.env.NODE_ENV !== "production" ? { otp } : {}),
     });
   } catch (error: any) {
     if (req.file?.path) {
