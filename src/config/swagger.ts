@@ -889,7 +889,7 @@ const options: Record<string, unknown> = {
           type: 'object',
           required: ['otp'],
           properties: {
-            otp: { type: 'integer', example: 482910, description: 'The 6-digit numeric OTP sent to the registered email.' }
+            otp: { type: 'integer', minimum: 100000, maximum: 999999, example: 482910, description: 'The 6-digit numeric OTP sent to the registered email.' }
           }
         },
         VerifyOtpResponse: {

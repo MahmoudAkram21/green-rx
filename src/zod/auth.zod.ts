@@ -49,7 +49,7 @@ export const refreshTokenSchema = z.object({
   refreshToken: z.string(),
 });
 export const verifyEmailSchema = z.object({
-  otp :z.number().min(10000).max(99999).int()
+  otp: z.number().min(100000).max(999999).int()
 })
 
 
