@@ -24,8 +24,9 @@ import { computeBmi } from "../utils/bmi.util";
 import { sendOtpEmail } from "../services/mail.service";
 import emailOtpRepository from "../repositories/mail.repository";
 // Register
-const MAX_ATTEMPTS = process.env.MAX_ATTEMPTS ? parseInt(process.env.MAX_ATTEMPTS) : 3;
-
+const MAX_ATTEMPTS = process.env.MAX_ATTEMPTS
+  ? parseInt(process.env.MAX_ATTEMPTS)
+  : 3;
 
 export const register = async (
   req: Request,
@@ -268,17 +269,23 @@ export const verifyOtp = async (
     }
 
     if (otpSession.otp.attempts >= MAX_ATTEMPTS) {
-      res.status(429).json({ error: "Too many attempts. Please request a new OTP." });
+      res
+        .status(429)
+        .json({ error: "Too many attempts. Please request a new OTP." });
       return;
     }
 
     if (otpSession.otp.expiresAt < new Date()) {
-      res.status(401).json({ error: "OTP has expired. Please request a new one." });
+      res
+        .status(401)
+        .json({ error: "OTP has expired. Please request a new one." });
       return;
     }
 
     if (otpSession.otp.otp !== otp) {
-      await emailOtpRepository.updateOtp(otpSession.otpId, { attempts: otpSession.otp.attempts + 1 });
+      await emailOtpRepository.updateOtp(otpSession.otpId, {
+        attempts: otpSession.otp.attempts + 1,
+      });
       res.status(401).json({ error: "Invalid OTP" });
       return;
     }
@@ -300,114 +307,119 @@ export const verifyOtp = async (
       },
     });
 
-
-    
     const tokenPayload = {
-        userId: updatedUser.id,
-        email: updatedUser.email,
-        role: updatedUser.role,
-      };
-      const accessToken = generateAccessToken(tokenPayload);
-      const refreshToken = generateRefreshToken(tokenPayload);
-  
-      // Create Session
-      const expiresAt = new Date();
-      expiresAt.setDate(expiresAt.getDate() + 7); // 7 days
-  
-      await prisma.session.create({
-        data: {
-          userId: updatedUser.id,
-          token: accessToken,
-          refreshToken,
-          expiresAt,
-          ipAddress: req.ip,
-          userAgent: req.headers["user-agent"],
-        },
-      });
-  
-      const userPayload: {
-        id: number;
-        email: string;
-        role: string;
-        patientId?: number;
-        doctorId?: number;
-        pharmacistId?: number;
-        isVerified?: boolean;
-      } = {
-        id: updatedUser.id,
-        email: updatedUser.email,
-        role: updatedUser.role,
-      };
-      if (updatedUser.role === UserRole.Patient) {
-        const patient = await prisma.patient.findUnique({
-          where: { userId: updatedUser.id },
-          select: { id: true },
-        });
-        if (patient) userPayload.patientId = patient.id;
-      }
-      if (updatedUser.role === UserRole.Doctor) {
-        const doctor = await prisma.doctor.findUnique({
-          where: { userId: updatedUser.id },
-          select: { id: true, isVerified: true },
-        });
-        if (doctor) {
-          userPayload.doctorId = doctor.id;
-          userPayload.isVerified = doctor.isVerified;
-        }
-      }
-      if (updatedUser.role === UserRole.Pharmacist) {
-        const pharmacist = await prisma.pharmacist.findUnique({
-          where: { userId: updatedUser.id },
-          select: { id: true, isVerified: true },
-        });
-        if (pharmacist) {
-          userPayload.pharmacistId = pharmacist.id;
-          userPayload.isVerified = pharmacist.isVerified;
-        }
-      }
+      userId: updatedUser.id,
+      email: updatedUser.email,
+      role: updatedUser.role,
+    };
+    const accessToken = generateAccessToken(tokenPayload);
+    const refreshToken = generateRefreshToken(tokenPayload);
 
-    res.status(200).json({ message: "OTP verified successfully", user: {
+    // Create Session
+    const expiresAt = new Date();
+    expiresAt.setDate(expiresAt.getDate() + 7); // 7 days
+
+    await prisma.session.create({
+      data: {
+        userId: updatedUser.id,
+        token: accessToken,
+        refreshToken,
+        expiresAt,
+        ipAddress: req.ip,
+        userAgent: req.headers["user-agent"],
+      },
+    });
+
+    const userPayload: {
+      id: number;
+      email: string;
+      role: string;
+      patientId?: number;
+      doctorId?: number;
+      pharmacistId?: number;
+      isVerified?: boolean;
+    } = {
       id: updatedUser.id,
       email: updatedUser.email,
       role: updatedUser.role,
-    },
-    accessToken,
-    refreshToken,
-  });
+    };
+    if (updatedUser.role === UserRole.Patient) {
+      const patient = await prisma.patient.findUnique({
+        where: { userId: updatedUser.id },
+        select: { id: true },
+      });
+      if (patient) userPayload.patientId = patient.id;
+    }
+    if (updatedUser.role === UserRole.Doctor) {
+      const doctor = await prisma.doctor.findUnique({
+        where: { userId: updatedUser.id },
+        select: { id: true, isVerified: true },
+      });
+      if (doctor) {
+        userPayload.doctorId = doctor.id;
+        userPayload.isVerified = doctor.isVerified;
+      }
+    }
+    if (updatedUser.role === UserRole.Pharmacist) {
+      const pharmacist = await prisma.pharmacist.findUnique({
+        where: { userId: updatedUser.id },
+        select: { id: true, isVerified: true },
+      });
+      if (pharmacist) {
+        userPayload.pharmacistId = pharmacist.id;
+        userPayload.isVerified = pharmacist.isVerified;
+      }
+    }
 
+    res.status(200).json({
+      message: "OTP verified successfully",
+      user: {
+        id: updatedUser.id,
+        email: updatedUser.email,
+        role: updatedUser.role,
+      },
+      accessToken,
+      refreshToken,
+    });
   } catch (error: any) {
     next(error);
   }
 };
 
-export const resendOtp  = async (
-    req: Request,
-    res: Response,
-    next: NextFunction,
-)=>{
-    try {
-        const token = req.headers.authorization?.split(" ")[1];
-        if (!token) {
-            res.status(401).json({ error: "Unauthorized" });
-            return;
-        }
-        const decoded = verifyAccessToken(token);
-        if (!decoded.email) {
-            res.status(401).json({ error: "Unauthorized" });
-            return;
-        }
-        const newOtpToken = generateAccessToken({
-            userId: decoded.userId,
-            email: decoded.email,
-            role: decoded.role,
-        });
-        
-        await sendOtpEmail(decoded.email, newOtpToken, decoded.userId);
-        res.status(200).json({ message: "OTP resent successfully", otpToken: newOtpToken });
-    }catch(error: any){
-        next(error);
+export const resendOtp = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const token = req.headers.authorization?.split(" ")[1];
+    if (!token) {
+      res.status(401).json({ error: "Unauthorized" });
+      return;
     }
-}
+    const decoded = verifyAccessToken(token);
+    if (!decoded.email) {
+      res.status(401).json({ error: "Unauthorized" });
+      return;
+    }
+    const newOtpToken = generateAccessToken({
+      userId: decoded.userId,
+      email: decoded.email,
+      role: decoded.role,
+    });
+
+    const otp = await sendOtpEmail(decoded.email, newOtpToken, decoded.userId);
+    res
+      .status(200)
+      .json({
+        message: "OTP resent successfully",
+        otpToken: newOtpToken,
+        otp,
+      });
+  } catch (error: any) {
+    next(error);
+  }
+};
 
 // Login
 export const login = async (

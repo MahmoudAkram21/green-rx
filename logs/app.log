@@ -604,3 +604,21 @@
 [2026-03-30T13:12:44.650Z] [INFO] Health check: http://localhost:5000/api/health
 [2026-03-30T13:12:44.650Z] [INFO] POST /api/admin/side-effects/:id/trade-names is registered
 [2026-03-30T13:12:44.650Z] [INFO] Server is running on port 5000
+[2026-03-30T13:18:48.666Z] [INFO] Incoming request: GET /api/docs/
+[2026-03-30T13:18:48.674Z] [INFO] GET /api/docs/ 200 3.593 ms - 3047 bytes - ip=::1
+[2026-03-30T13:18:48.675Z] [INFO] Completed request: GET /api/docs/ -> 200 (9ms)
+[2026-03-30T13:18:48.698Z] [INFO] Incoming request: GET /api/docs/swagger-ui.css
+[2026-03-30T13:18:48.704Z] [INFO] Incoming request: GET /api/docs/swagger-ui-standalone-preset.js
+[2026-03-30T13:18:48.705Z] [INFO] Incoming request: GET /api/docs/swagger-ui-bundle.js
+[2026-03-30T13:18:48.707Z] [INFO] Incoming request: GET /api/docs/swagger-ui-init.js
+[2026-03-30T13:18:48.709Z] [INFO] GET /api/docs/swagger-ui-init.js 200 1.577 ms - 340815 bytes - ip=::1
+[2026-03-30T13:18:48.709Z] [INFO] Completed request: GET /api/docs/swagger-ui-init.js -> 200 (2ms)
+[2026-03-30T13:18:48.712Z] [INFO] GET /api/docs/swagger-ui.css 200 12.159 ms - 177183 bytes - ip=::1
+[2026-03-30T13:18:48.713Z] [INFO] Completed request: GET /api/docs/swagger-ui.css -> 200 (15ms)
+[2026-03-30T13:18:48.715Z] [INFO] GET /api/docs/swagger-ui-standalone-preset.js 200 7.414 ms - 251697 bytes - ip=::1
+[2026-03-30T13:18:48.715Z] [INFO] Completed request: GET /api/docs/swagger-ui-standalone-preset.js -> 200 (11ms)
+[2026-03-30T13:18:48.721Z] [INFO] GET /api/docs/swagger-ui-bundle.js 200 6.186 ms - 1514087 bytes - ip=::1
+[2026-03-30T13:18:48.722Z] [INFO] Completed request: GET /api/docs/swagger-ui-bundle.js -> 200 (17ms)
+[2026-03-30T13:18:49.439Z] [INFO] Incoming request: GET /api/docs/favicon-32x32.png
+[2026-03-30T13:18:49.447Z] [INFO] GET /api/docs/favicon-32x32.png 200 8.062 ms - 628 bytes - ip=::1
+[2026-03-30T13:18:49.448Z] [INFO] Completed request: GET /api/docs/favicon-32x32.png -> 200 (8ms)
