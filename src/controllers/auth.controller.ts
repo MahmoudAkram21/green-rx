@@ -266,24 +266,29 @@ export const verifyOtp = async (
       return;
     }
 
-    if (otpSession.otp.otp !== otp) {
-        emailOtpRepository.updateOtp(otpSession.otpId, { attempts: otpSession.otp.attempts + 1 });
-        if (otpSession.otp.attempts >= MAX_ATTEMPTS) {
-            res.status(401).json({ error: "Too many attempts" });
-            return;
-        }
-      res.status(401).json({ error: "Invalid OTP or OTP expired" });
+    if (otpSession.otp.attempts >= MAX_ATTEMPTS) {
+      res.status(429).json({ error: "Too many attempts. Please request a new OTP." });
       return;
     }
 
     if (otpSession.otp.expiresAt < new Date()) {
-      res.status(401).json({ error: "Invalid OTP or OTP expired" });
+      res.status(401).json({ error: "OTP has expired. Please request a new one." });
+      return;
+    }
+
+    if (otpSession.otp.otp !== otp) {
+      await emailOtpRepository.updateOtp(otpSession.otpId, { attempts: otpSession.otp.attempts + 1 });
+      res.status(401).json({ error: "Invalid OTP" });
       return;
     }
 
     const updatedUser = await prisma.user.update({
       where: { id: decoded.userId },
-      data: { isEmailVerified: true, lastLoginAt: new Date() },
+      data: {
+        isEmailVerified: true,
+        lastLoginAt: new Date(),
+        ...(decoded.role === UserRole.Patient ? { isActive: true } : {}),
+      },
     });
     await prisma.otpSession.delete({
       where: {

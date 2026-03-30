@@ -55,9 +55,9 @@ class MailRepository {
     async createOrUpdateOtp(email: string, otp: number, expiresAt: Date) {
         const existingOtp = await this.getOtpByEmail(email);
         if (existingOtp) {
-            return this.updateOtp(existingOtp.id, { otp });
+            return await this.updateOtp(existingOtp.id, { otp, expiresAt, attempts: 0 });
         }
-        return this.createOtp({ email, otp, expiresAt });
+        return await this.createOtp({ email, otp, expiresAt });
     }
 
     async deleteOtp(id: number) {
