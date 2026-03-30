@@ -28,7 +28,7 @@ async function ensureDefaultAdmin(): Promise<void> {
         email: DEFAULT_ADMIN_EMAIL,
         passwordHash,
         role: 'SuperAdmin',
-        emailVerified: true,
+        isEmailVerified: true,
         isActive: true,
       },
     });
