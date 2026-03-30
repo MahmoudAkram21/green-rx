@@ -49,7 +49,9 @@ export const refreshTokenSchema = z.object({
   refreshToken: z.string(),
 });
 export const verifyEmailSchema = z.object({
-  otp: z.number().min(100000).max(999999).int()
+  otp: z.number().int().refine(n => n >= 100000 && n <= 999999, {
+    message: 'OTP must be exactly 6 digits'
+  })
 })
 
 
