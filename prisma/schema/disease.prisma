@@ -1,0 +1,100 @@
+
+enum DiseaseSeverity {
+  None
+  Mild
+  Moderate
+  Severe
+}
+
+enum DiseaseStatus {
+  Active
+  Resolved
+  Chronic
+}
+
+
+model Disease {
+  id          Int             @id @default(autoincrement())
+  name        String          @unique
+  severity    DiseaseSeverity
+  description String?
+  isActive    Boolean         @default(true)
+
+  // Warning Configuration Fields
+  requiresSpecialHandling Boolean @default(false)
+  warningMessage          String?
+  warningConfig           Json?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  diseaseActiveSubstanceWarnings DiseaseActiveSubstanceWarning[]
+  diseaseWarningRules            DiseaseWarningRule[]
+  patientDiseases                PatientDisease[]
+  medicalHistories               MedicalHistory[]
+  familyHistories                FamilyHistory[]
+
+  @@index([severity])
+  @@map("diseases")
+}
+model PatientDisease {
+  id            Int             @id @default(autoincrement())
+  patientId     Int
+  diseaseId     Int
+  diagnosisDate DateTime
+  severity      DiseaseSeverity
+  notes         String?
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+
+  // Relations
+  patient Patient @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  disease Disease @relation(fields: [diseaseId], references: [id], onDelete: Cascade)
+
+  @@index([patientId, diseaseId])
+  @@map("patient_diseases")
+}
+model DiseaseWarningRule {
+  id                      Int             @id @default(autoincrement())
+  diseaseId               Int
+  ruleType                WarningRuleType
+  targetActiveSubstanceId Int?
+  targetDrugClass         String?
+  severity                WarningSeverity
+  warningMessage          String
+  autoBlock               Boolean         @default(false)
+  requiresOverride        Boolean         @default(false)
+  requiredMonitoring      String?
+  createdBy               Int
+  createdAt               DateTime        @default(now())
+  updatedAt               DateTime        @updatedAt
+
+  // Relations
+  disease         Disease          @relation(fields: [diseaseId], references: [id], onDelete: Cascade)
+  activeSubstance ActiveSubstance? @relation(fields: [targetActiveSubstanceId], references: [id])
+  creator         User             @relation(fields: [createdBy], references: [id])
+
+  @@index([diseaseId])
+  @@index([ruleType])
+  @@index([severity])
+  @@map("disease_warning_rules")
+}
+model DiseaseActiveSubstanceWarning {
+  id                Int             @id @default(autoincrement())
+  diseaseId         Int
+  activeSubstanceId Int
+  warningFieldName  String // which ActiveSubstance field to check
+  warningMessage    String // custom warning message
+  severity          WarningSeverity
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+
+  // Relations
+  disease         Disease         @relation(fields: [diseaseId], references: [id], onDelete: Cascade)
+  activeSubstance ActiveSubstance @relation(fields: [activeSubstanceId], references: [id], onDelete: Cascade)
+
+  @@unique([diseaseId, activeSubstanceId])
+  @@index([warningFieldName])
+  @@map("disease_active_substance_warnings")
+}

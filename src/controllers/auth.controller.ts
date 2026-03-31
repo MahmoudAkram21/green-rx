@@ -297,6 +297,11 @@ export const verifyOtp = async (
         lastLoginAt: new Date(),
         ...(decoded.role === UserRole.Patient ? { isActive: true } : {}),
       },
+      include: {
+        patient: true,
+        doctor: true,
+        pharmacist: true,
+      },
     });
     await prisma.otpSession.delete({
       where: {
@@ -377,6 +382,9 @@ export const verifyOtp = async (
         id: updatedUser.id,
         email: updatedUser.email,
         role: updatedUser.role,
+        ...(updatedUser.role === UserRole.Patient ? { patientId: updatedUser.patient?.id } : {}),
+        ...(updatedUser.role === UserRole.Doctor ? { doctorId: updatedUser.doctor?.id, isVerified: updatedUser.doctor?.isVerified } : {}),
+        ...(updatedUser.role === UserRole.Pharmacist ? { pharmacistId: updatedUser.pharmacist?.id, isVerified: updatedUser.pharmacist?.isVerified } : {}),
       },
       accessToken,
       refreshToken,
