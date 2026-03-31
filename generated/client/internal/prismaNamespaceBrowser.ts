@@ -59,7 +59,10 @@ export const ModelName = {
   MedicalHistory: 'MedicalHistory',
   FamilyHistory: 'FamilyHistory',
   Lifestyle: 'Lifestyle',
+  PatientLifestyle: 'PatientLifestyle',
   Allergy: 'Allergy',
+  Operation: 'Operation',
+  PatientSurgery: 'PatientSurgery',
   Doctor: 'Doctor',
   PatientDoctor: 'PatientDoctor',
   Consultation: 'Consultation',
@@ -83,6 +86,8 @@ export const ModelName = {
   RolePermission: 'RolePermission',
   AppSetting: 'AppSetting',
   Session: 'Session',
+  SideEffect: 'SideEffect',
+  TradeNameSideEffect: 'TradeNameSideEffect',
   Pharmacist: 'Pharmacist',
   MedicalReport: 'MedicalReport',
   PatientShareLink: 'PatientShareLink',
@@ -94,7 +99,9 @@ export const ModelName = {
   BatchHistory: 'BatchHistory',
   ImportHistory: 'ImportHistory',
   MedicineSuggestion: 'MedicineSuggestion',
-  ExportHistory: 'ExportHistory'
+  ExportHistory: 'ExportHistory',
+  PatientMedicine: 'PatientMedicine',
+  AddMedicineRequest: 'AddMedicineRequest'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -236,20 +243,25 @@ export type FamilyHistoryScalarFieldEnum = (typeof FamilyHistoryScalarFieldEnum)
 
 export const LifestyleScalarFieldEnum = {
   id: 'id',
-  patientId: 'patientId',
-  noGlasses: 'noGlasses',
-  alcoholAbuse: 'alcoholAbuse',
-  excessCaffeine: 'excessCaffeine',
-  waterDaily: 'waterDaily',
-  travellerAbroad: 'travellerAbroad',
-  annualVaccination: 'annualVaccination',
-  surgeriesLast3Months: 'surgeriesLast3Months',
-  surgeriesDetails: 'surgeriesDetails',
+  question: 'question',
+  activeSubstanceField: 'activeSubstanceField',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
 
 export type LifestyleScalarFieldEnum = (typeof LifestyleScalarFieldEnum)[keyof typeof LifestyleScalarFieldEnum]
+
+
+export const PatientLifestyleScalarFieldEnum = {
+  id: 'id',
+  patientId: 'patientId',
+  lifestyleId: 'lifestyleId',
+  value: 'value',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PatientLifestyleScalarFieldEnum = (typeof PatientLifestyleScalarFieldEnum)[keyof typeof PatientLifestyleScalarFieldEnum]
 
 
 export const AllergyScalarFieldEnum = {
@@ -265,6 +277,29 @@ export const AllergyScalarFieldEnum = {
 } as const
 
 export type AllergyScalarFieldEnum = (typeof AllergyScalarFieldEnum)[keyof typeof AllergyScalarFieldEnum]
+
+
+export const OperationScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type OperationScalarFieldEnum = (typeof OperationScalarFieldEnum)[keyof typeof OperationScalarFieldEnum]
+
+
+export const PatientSurgeryScalarFieldEnum = {
+  id: 'id',
+  patientId: 'patientId',
+  operationId: 'operationId',
+  surgeryDate: 'surgeryDate',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PatientSurgeryScalarFieldEnum = (typeof PatientSurgeryScalarFieldEnum)[keyof typeof PatientSurgeryScalarFieldEnum]
 
 
 export const DoctorScalarFieldEnum = {
@@ -806,6 +841,28 @@ export const SessionScalarFieldEnum = {
 export type SessionScalarFieldEnum = (typeof SessionScalarFieldEnum)[keyof typeof SessionScalarFieldEnum]
 
 
+export const SideEffectScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  nameAr: 'nameAr',
+  createdBy: 'createdBy',
+  status: 'status',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  createdByUserId: 'createdByUserId'
+} as const
+
+export type SideEffectScalarFieldEnum = (typeof SideEffectScalarFieldEnum)[keyof typeof SideEffectScalarFieldEnum]
+
+
+export const TradeNameSideEffectScalarFieldEnum = {
+  sideEffectId: 'sideEffectId',
+  tradeNameId: 'tradeNameId'
+} as const
+
+export type TradeNameSideEffectScalarFieldEnum = (typeof TradeNameSideEffectScalarFieldEnum)[keyof typeof TradeNameSideEffectScalarFieldEnum]
+
+
 export const PharmacistScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
@@ -1012,6 +1069,54 @@ export const ExportHistoryScalarFieldEnum = {
 } as const
 
 export type ExportHistoryScalarFieldEnum = (typeof ExportHistoryScalarFieldEnum)[keyof typeof ExportHistoryScalarFieldEnum]
+
+
+export const PatientMedicineScalarFieldEnum = {
+  id: 'id',
+  patientId: 'patientId',
+  tradeNameId: 'tradeNameId',
+  medicineName: 'medicineName',
+  dosageAmount: 'dosageAmount',
+  frequencyCount: 'frequencyCount',
+  frequencyPeriod: 'frequencyPeriod',
+  frequencyUnit: 'frequencyUnit',
+  durationValue: 'durationValue',
+  durationUnit: 'durationUnit',
+  startDate: 'startDate',
+  endDate: 'endDate',
+  isOngoing: 'isOngoing',
+  notes: 'notes',
+  reminderEnabled: 'reminderEnabled',
+  reminderTimes: 'reminderTimes',
+  imageUrl: 'imageUrl',
+  isVerified: 'isVerified',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PatientMedicineScalarFieldEnum = (typeof PatientMedicineScalarFieldEnum)[keyof typeof PatientMedicineScalarFieldEnum]
+
+
+export const AddMedicineRequestScalarFieldEnum = {
+  id: 'id',
+  patientId: 'patientId',
+  patientMedicineId: 'patientMedicineId',
+  imageUrl: 'imageUrl',
+  extractedTradeName: 'extractedTradeName',
+  extractedActiveSubstance: 'extractedActiveSubstance',
+  extractedConcentration: 'extractedConcentration',
+  extractedDosageForm: 'extractedDosageForm',
+  matchedTradeNameId: 'matchedTradeNameId',
+  matchedActiveSubstanceId: 'matchedActiveSubstanceId',
+  status: 'status',
+  resolvedByUserId: 'resolvedByUserId',
+  resolvedAt: 'resolvedAt',
+  resolutionNotes: 'resolutionNotes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type AddMedicineRequestScalarFieldEnum = (typeof AddMedicineRequestScalarFieldEnum)[keyof typeof AddMedicineRequestScalarFieldEnum]
 
 
 export const SortOrder = {

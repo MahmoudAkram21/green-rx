@@ -19,6 +19,9 @@ export declare const createPatientSchema: z.ZodObject<{
     }>;
     weight: z.ZodOptional<z.ZodNumber>;
     height: z.ZodOptional<z.ZodNumber>;
+    dateOfBirth: z.ZodOptional<z.ZodString>;
+    pregnancyStatus: z.ZodOptional<z.ZodBoolean>;
+    trimester: z.ZodOptional<z.ZodNumber>;
     smoking: z.ZodOptional<z.ZodBoolean>;
     pregnancyWarning: z.ZodOptional<z.ZodBoolean>;
     lactation: z.ZodOptional<z.ZodBoolean>;
@@ -53,16 +56,9 @@ export declare const familyHistorySchema: z.ZodObject<{
     }>;
     notes: z.ZodOptional<z.ZodString>;
 }, z.core.$strip>;
-export declare const lifestyleSchema: z.ZodObject<{
-    noGlasses: z.ZodOptional<z.ZodBoolean>;
-    alcoholAbuse: z.ZodOptional<z.ZodBoolean>;
-    excessCaffeine: z.ZodOptional<z.ZodBoolean>;
-    waterDaily: z.ZodOptional<z.ZodNumber>;
-    travellerAbroad: z.ZodOptional<z.ZodBoolean>;
-    annualVaccination: z.ZodOptional<z.ZodBoolean>;
-    noiseExposure: z.ZodOptional<z.ZodBoolean>;
-    chemicalExposure: z.ZodOptional<z.ZodBoolean>;
-    radiationExposure: z.ZodOptional<z.ZodBoolean>;
+export declare const patientLifestyleSchema: z.ZodObject<{
+    lifestyleId: z.ZodNumber;
+    value: z.ZodBoolean;
 }, z.core.$strip>;
 export declare const allergySchema: z.ZodObject<{
     allergen: z.ZodString;

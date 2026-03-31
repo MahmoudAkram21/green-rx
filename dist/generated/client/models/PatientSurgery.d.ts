@@ -1,0 +1,1361 @@
+import type * as runtime from "@prisma/client/runtime/client";
+import type * as Prisma from "../internal/prismaNamespace";
+/**
+ * Model PatientSurgery
+ *
+ */
+export type PatientSurgeryModel = runtime.Types.Result.DefaultSelection<Prisma.$PatientSurgeryPayload>;
+export type AggregatePatientSurgery = {
+    _count: PatientSurgeryCountAggregateOutputType | null;
+    _avg: PatientSurgeryAvgAggregateOutputType | null;
+    _sum: PatientSurgerySumAggregateOutputType | null;
+    _min: PatientSurgeryMinAggregateOutputType | null;
+    _max: PatientSurgeryMaxAggregateOutputType | null;
+};
+export type PatientSurgeryAvgAggregateOutputType = {
+    id: number | null;
+    patientId: number | null;
+    operationId: number | null;
+};
+export type PatientSurgerySumAggregateOutputType = {
+    id: number | null;
+    patientId: number | null;
+    operationId: number | null;
+};
+export type PatientSurgeryMinAggregateOutputType = {
+    id: number | null;
+    patientId: number | null;
+    operationId: number | null;
+    surgeryDate: Date | null;
+    createdAt: Date | null;
+    updatedAt: Date | null;
+};
+export type PatientSurgeryMaxAggregateOutputType = {
+    id: number | null;
+    patientId: number | null;
+    operationId: number | null;
+    surgeryDate: Date | null;
+    createdAt: Date | null;
+    updatedAt: Date | null;
+};
+export type PatientSurgeryCountAggregateOutputType = {
+    id: number;
+    patientId: number;
+    operationId: number;
+    surgeryDate: number;
+    createdAt: number;
+    updatedAt: number;
+    _all: number;
+};
+export type PatientSurgeryAvgAggregateInputType = {
+    id?: true;
+    patientId?: true;
+    operationId?: true;
+};
+export type PatientSurgerySumAggregateInputType = {
+    id?: true;
+    patientId?: true;
+    operationId?: true;
+};
+export type PatientSurgeryMinAggregateInputType = {
+    id?: true;
+    patientId?: true;
+    operationId?: true;
+    surgeryDate?: true;
+    createdAt?: true;
+    updatedAt?: true;
+};
+export type PatientSurgeryMaxAggregateInputType = {
+    id?: true;
+    patientId?: true;
+    operationId?: true;
+    surgeryDate?: true;
+    createdAt?: true;
+    updatedAt?: true;
+};
+export type PatientSurgeryCountAggregateInputType = {
+    id?: true;
+    patientId?: true;
+    operationId?: true;
+    surgeryDate?: true;
+    createdAt?: true;
+    updatedAt?: true;
+    _all?: true;
+};
+export type PatientSurgeryAggregateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Filter which PatientSurgery to aggregate.
+     */
+    where?: Prisma.PatientSurgeryWhereInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of PatientSurgeries to fetch.
+     */
+    orderBy?: Prisma.PatientSurgeryOrderByWithRelationInput | Prisma.PatientSurgeryOrderByWithRelationInput[];
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the start position
+     */
+    cursor?: Prisma.PatientSurgeryWhereUniqueInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` PatientSurgeries from the position of the cursor.
+     */
+    take?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` PatientSurgeries.
+     */
+    skip?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Count returned PatientSurgeries
+    **/
+    _count?: true | PatientSurgeryCountAggregateInputType;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Select which fields to average
+    **/
+    _avg?: PatientSurgeryAvgAggregateInputType;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Select which fields to sum
+    **/
+    _sum?: PatientSurgerySumAggregateInputType;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Select which fields to find the minimum value
+    **/
+    _min?: PatientSurgeryMinAggregateInputType;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Select which fields to find the maximum value
+    **/
+    _max?: PatientSurgeryMaxAggregateInputType;
+};
+export type GetPatientSurgeryAggregateType<T extends PatientSurgeryAggregateArgs> = {
+    [P in keyof T & keyof AggregatePatientSurgery]: P extends '_count' | 'count' ? T[P] extends true ? number : Prisma.GetScalarType<T[P], AggregatePatientSurgery[P]> : Prisma.GetScalarType<T[P], AggregatePatientSurgery[P]>;
+};
+export type PatientSurgeryGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    where?: Prisma.PatientSurgeryWhereInput;
+    orderBy?: Prisma.PatientSurgeryOrderByWithAggregationInput | Prisma.PatientSurgeryOrderByWithAggregationInput[];
+    by: Prisma.PatientSurgeryScalarFieldEnum[] | Prisma.PatientSurgeryScalarFieldEnum;
+    having?: Prisma.PatientSurgeryScalarWhereWithAggregatesInput;
+    take?: number;
+    skip?: number;
+    _count?: PatientSurgeryCountAggregateInputType | true;
+    _avg?: PatientSurgeryAvgAggregateInputType;
+    _sum?: PatientSurgerySumAggregateInputType;
+    _min?: PatientSurgeryMinAggregateInputType;
+    _max?: PatientSurgeryMaxAggregateInputType;
+};
+export type PatientSurgeryGroupByOutputType = {
+    id: number;
+    patientId: number;
+    operationId: number;
+    surgeryDate: Date;
+    createdAt: Date;
+    updatedAt: Date;
+    _count: PatientSurgeryCountAggregateOutputType | null;
+    _avg: PatientSurgeryAvgAggregateOutputType | null;
+    _sum: PatientSurgerySumAggregateOutputType | null;
+    _min: PatientSurgeryMinAggregateOutputType | null;
+    _max: PatientSurgeryMaxAggregateOutputType | null;
+};
+type GetPatientSurgeryGroupByPayload<T extends PatientSurgeryGroupByArgs> = Prisma.PrismaPromise<Array<Prisma.PickEnumerable<PatientSurgeryGroupByOutputType, T['by']> & {
+    [P in ((keyof T) & (keyof PatientSurgeryGroupByOutputType))]: P extends '_count' ? T[P] extends boolean ? number : Prisma.GetScalarType<T[P], PatientSurgeryGroupByOutputType[P]> : Prisma.GetScalarType<T[P], PatientSurgeryGroupByOutputType[P]>;
+}>>;
+export type PatientSurgeryWhereInput = {
+    AND?: Prisma.PatientSurgeryWhereInput | Prisma.PatientSurgeryWhereInput[];
+    OR?: Prisma.PatientSurgeryWhereInput[];
+    NOT?: Prisma.PatientSurgeryWhereInput | Prisma.PatientSurgeryWhereInput[];
+    id?: Prisma.IntFilter<"PatientSurgery"> | number;
+    patientId?: Prisma.IntFilter<"PatientSurgery"> | number;
+    operationId?: Prisma.IntFilter<"PatientSurgery"> | number;
+    surgeryDate?: Prisma.DateTimeFilter<"PatientSurgery"> | Date | string;
+    createdAt?: Prisma.DateTimeFilter<"PatientSurgery"> | Date | string;
+    updatedAt?: Prisma.DateTimeFilter<"PatientSurgery"> | Date | string;
+    patient?: Prisma.XOR<Prisma.PatientScalarRelationFilter, Prisma.PatientWhereInput>;
+    operation?: Prisma.XOR<Prisma.OperationScalarRelationFilter, Prisma.OperationWhereInput>;
+};
+export type PatientSurgeryOrderByWithRelationInput = {
+    id?: Prisma.SortOrder;
+    patientId?: Prisma.SortOrder;
+    operationId?: Prisma.SortOrder;
+    surgeryDate?: Prisma.SortOrder;
+    createdAt?: Prisma.SortOrder;
+    updatedAt?: Prisma.SortOrder;
+    patient?: Prisma.PatientOrderByWithRelationInput;
+    operation?: Prisma.OperationOrderByWithRelationInput;
+};
+export type PatientSurgeryWhereUniqueInput = Prisma.AtLeast<{
+    id?: number;
+    AND?: Prisma.PatientSurgeryWhereInput | Prisma.PatientSurgeryWhereInput[];
+    OR?: Prisma.PatientSurgeryWhereInput[];
+    NOT?: Prisma.PatientSurgeryWhereInput | Prisma.PatientSurgeryWhereInput[];
+    patientId?: Prisma.IntFilter<"PatientSurgery"> | number;
+    operationId?: Prisma.IntFilter<"PatientSurgery"> | number;
+    surgeryDate?: Prisma.DateTimeFilter<"PatientSurgery"> | Date | string;
+    createdAt?: Prisma.DateTimeFilter<"PatientSurgery"> | Date | string;
+    updatedAt?: Prisma.DateTimeFilter<"PatientSurgery"> | Date | string;
+    patient?: Prisma.XOR<Prisma.PatientScalarRelationFilter, Prisma.PatientWhereInput>;
+    operation?: Prisma.XOR<Prisma.OperationScalarRelationFilter, Prisma.OperationWhereInput>;
+}, "id">;
+export type PatientSurgeryOrderByWithAggregationInput = {
+    id?: Prisma.SortOrder;
+    patientId?: Prisma.SortOrder;
+    operationId?: Prisma.SortOrder;
+    surgeryDate?: Prisma.SortOrder;
+    createdAt?: Prisma.SortOrder;
+    updatedAt?: Prisma.SortOrder;
+    _count?: Prisma.PatientSurgeryCountOrderByAggregateInput;
+    _avg?: Prisma.PatientSurgeryAvgOrderByAggregateInput;
+    _max?: Prisma.PatientSurgeryMaxOrderByAggregateInput;
+    _min?: Prisma.PatientSurgeryMinOrderByAggregateInput;
+    _sum?: Prisma.PatientSurgerySumOrderByAggregateInput;
+};
+export type PatientSurgeryScalarWhereWithAggregatesInput = {
+    AND?: Prisma.PatientSurgeryScalarWhereWithAggregatesInput | Prisma.PatientSurgeryScalarWhereWithAggregatesInput[];
+    OR?: Prisma.PatientSurgeryScalarWhereWithAggregatesInput[];
+    NOT?: Prisma.PatientSurgeryScalarWhereWithAggregatesInput | Prisma.PatientSurgeryScalarWhereWithAggregatesInput[];
+    id?: Prisma.IntWithAggregatesFilter<"PatientSurgery"> | number;
+    patientId?: Prisma.IntWithAggregatesFilter<"PatientSurgery"> | number;
+    operationId?: Prisma.IntWithAggregatesFilter<"PatientSurgery"> | number;
+    surgeryDate?: Prisma.DateTimeWithAggregatesFilter<"PatientSurgery"> | Date | string;
+    createdAt?: Prisma.DateTimeWithAggregatesFilter<"PatientSurgery"> | Date | string;
+    updatedAt?: Prisma.DateTimeWithAggregatesFilter<"PatientSurgery"> | Date | string;
+};
+export type PatientSurgeryCreateInput = {
+    surgeryDate: Date | string;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+    patient: Prisma.PatientCreateNestedOneWithoutPatientSurgeriesInput;
+    operation: Prisma.OperationCreateNestedOneWithoutPatientSurgeriesInput;
+};
+export type PatientSurgeryUncheckedCreateInput = {
+    id?: number;
+    patientId: number;
+    operationId: number;
+    surgeryDate: Date | string;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+};
+export type PatientSurgeryUpdateInput = {
+    surgeryDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    patient?: Prisma.PatientUpdateOneRequiredWithoutPatientSurgeriesNestedInput;
+    operation?: Prisma.OperationUpdateOneRequiredWithoutPatientSurgeriesNestedInput;
+};
+export type PatientSurgeryUncheckedUpdateInput = {
+    id?: Prisma.IntFieldUpdateOperationsInput | number;
+    patientId?: Prisma.IntFieldUpdateOperationsInput | number;
+    operationId?: Prisma.IntFieldUpdateOperationsInput | number;
+    surgeryDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+};
+export type PatientSurgeryCreateManyInput = {
+    id?: number;
+    patientId: number;
+    operationId: number;
+    surgeryDate: Date | string;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+};
+export type PatientSurgeryUpdateManyMutationInput = {
+    surgeryDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+};
+export type PatientSurgeryUncheckedUpdateManyInput = {
+    id?: Prisma.IntFieldUpdateOperationsInput | number;
+    patientId?: Prisma.IntFieldUpdateOperationsInput | number;
+    operationId?: Prisma.IntFieldUpdateOperationsInput | number;
+    surgeryDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+};
+export type PatientSurgeryListRelationFilter = {
+    every?: Prisma.PatientSurgeryWhereInput;
+    some?: Prisma.PatientSurgeryWhereInput;
+    none?: Prisma.PatientSurgeryWhereInput;
+};
+export type PatientSurgeryOrderByRelationAggregateInput = {
+    _count?: Prisma.SortOrder;
+};
+export type PatientSurgeryCountOrderByAggregateInput = {
+    id?: Prisma.SortOrder;
+    patientId?: Prisma.SortOrder;
+    operationId?: Prisma.SortOrder;
+    surgeryDate?: Prisma.SortOrder;
+    createdAt?: Prisma.SortOrder;
+    updatedAt?: Prisma.SortOrder;
+};
+export type PatientSurgeryAvgOrderByAggregateInput = {
+    id?: Prisma.SortOrder;
+    patientId?: Prisma.SortOrder;
+    operationId?: Prisma.SortOrder;
+};
+export type PatientSurgeryMaxOrderByAggregateInput = {
+    id?: Prisma.SortOrder;
+    patientId?: Prisma.SortOrder;
+    operationId?: Prisma.SortOrder;
+    surgeryDate?: Prisma.SortOrder;
+    createdAt?: Prisma.SortOrder;
+    updatedAt?: Prisma.SortOrder;
+};
+export type PatientSurgeryMinOrderByAggregateInput = {
+    id?: Prisma.SortOrder;
+    patientId?: Prisma.SortOrder;
+    operationId?: Prisma.SortOrder;
+    surgeryDate?: Prisma.SortOrder;
+    createdAt?: Prisma.SortOrder;
+    updatedAt?: Prisma.SortOrder;
+};
+export type PatientSurgerySumOrderByAggregateInput = {
+    id?: Prisma.SortOrder;
+    patientId?: Prisma.SortOrder;
+    operationId?: Prisma.SortOrder;
+};
+export type PatientSurgeryCreateNestedManyWithoutPatientInput = {
+    create?: Prisma.XOR<Prisma.PatientSurgeryCreateWithoutPatientInput, Prisma.PatientSurgeryUncheckedCreateWithoutPatientInput> | Prisma.PatientSurgeryCreateWithoutPatientInput[] | Prisma.PatientSurgeryUncheckedCreateWithoutPatientInput[];
+    connectOrCreate?: Prisma.PatientSurgeryCreateOrConnectWithoutPatientInput | Prisma.PatientSurgeryCreateOrConnectWithoutPatientInput[];
+    createMany?: Prisma.PatientSurgeryCreateManyPatientInputEnvelope;
+    connect?: Prisma.PatientSurgeryWhereUniqueInput | Prisma.PatientSurgeryWhereUniqueInput[];
+};
+export type PatientSurgeryUncheckedCreateNestedManyWithoutPatientInput = {
+    create?: Prisma.XOR<Prisma.PatientSurgeryCreateWithoutPatientInput, Prisma.PatientSurgeryUncheckedCreateWithoutPatientInput> | Prisma.PatientSurgeryCreateWithoutPatientInput[] | Prisma.PatientSurgeryUncheckedCreateWithoutPatientInput[];
+    connectOrCreate?: Prisma.PatientSurgeryCreateOrConnectWithoutPatientInput | Prisma.PatientSurgeryCreateOrConnectWithoutPatientInput[];
+    createMany?: Prisma.PatientSurgeryCreateManyPatientInputEnvelope;
+    connect?: Prisma.PatientSurgeryWhereUniqueInput | Prisma.PatientSurgeryWhereUniqueInput[];
+};
+export type PatientSurgeryUpdateManyWithoutPatientNestedInput = {
+    create?: Prisma.XOR<Prisma.PatientSurgeryCreateWithoutPatientInput, Prisma.PatientSurgeryUncheckedCreateWithoutPatientInput> | Prisma.PatientSurgeryCreateWithoutPatientInput[] | Prisma.PatientSurgeryUncheckedCreateWithoutPatientInput[];
+    connectOrCreate?: Prisma.PatientSurgeryCreateOrConnectWithoutPatientInput | Prisma.PatientSurgeryCreateOrConnectWithoutPatientInput[];
+    upsert?: Prisma.PatientSurgeryUpsertWithWhereUniqueWithoutPatientInput | Prisma.PatientSurgeryUpsertWithWhereUniqueWithoutPatientInput[];
+    createMany?: Prisma.PatientSurgeryCreateManyPatientInputEnvelope;
+    set?: Prisma.PatientSurgeryWhereUniqueInput | Prisma.PatientSurgeryWhereUniqueInput[];
+    disconnect?: Prisma.PatientSurgeryWhereUniqueInput | Prisma.PatientSurgeryWhereUniqueInput[];
+    delete?: Prisma.PatientSurgeryWhereUniqueInput | Prisma.PatientSurgeryWhereUniqueInput[];
+    connect?: Prisma.PatientSurgeryWhereUniqueInput | Prisma.PatientSurgeryWhereUniqueInput[];
+    update?: Prisma.PatientSurgeryUpdateWithWhereUniqueWithoutPatientInput | Prisma.PatientSurgeryUpdateWithWhereUniqueWithoutPatientInput[];
+    updateMany?: Prisma.PatientSurgeryUpdateManyWithWhereWithoutPatientInput | Prisma.PatientSurgeryUpdateManyWithWhereWithoutPatientInput[];
+    deleteMany?: Prisma.PatientSurgeryScalarWhereInput | Prisma.PatientSurgeryScalarWhereInput[];
+};
+export type PatientSurgeryUncheckedUpdateManyWithoutPatientNestedInput = {
+    create?: Prisma.XOR<Prisma.PatientSurgeryCreateWithoutPatientInput, Prisma.PatientSurgeryUncheckedCreateWithoutPatientInput> | Prisma.PatientSurgeryCreateWithoutPatientInput[] | Prisma.PatientSurgeryUncheckedCreateWithoutPatientInput[];
+    connectOrCreate?: Prisma.PatientSurgeryCreateOrConnectWithoutPatientInput | Prisma.PatientSurgeryCreateOrConnectWithoutPatientInput[];
+    upsert?: Prisma.PatientSurgeryUpsertWithWhereUniqueWithoutPatientInput | Prisma.PatientSurgeryUpsertWithWhereUniqueWithoutPatientInput[];
+    createMany?: Prisma.PatientSurgeryCreateManyPatientInputEnvelope;
+    set?: Prisma.PatientSurgeryWhereUniqueInput | Prisma.PatientSurgeryWhereUniqueInput[];
+    disconnect?: Prisma.PatientSurgeryWhereUniqueInput | Prisma.PatientSurgeryWhereUniqueInput[];
+    delete?: Prisma.PatientSurgeryWhereUniqueInput | Prisma.PatientSurgeryWhereUniqueInput[];
+    connect?: Prisma.PatientSurgeryWhereUniqueInput | Prisma.PatientSurgeryWhereUniqueInput[];
+    update?: Prisma.PatientSurgeryUpdateWithWhereUniqueWithoutPatientInput | Prisma.PatientSurgeryUpdateWithWhereUniqueWithoutPatientInput[];
+    updateMany?: Prisma.PatientSurgeryUpdateManyWithWhereWithoutPatientInput | Prisma.PatientSurgeryUpdateManyWithWhereWithoutPatientInput[];
+    deleteMany?: Prisma.PatientSurgeryScalarWhereInput | Prisma.PatientSurgeryScalarWhereInput[];
+};
+export type PatientSurgeryCreateNestedManyWithoutOperationInput = {
+    create?: Prisma.XOR<Prisma.PatientSurgeryCreateWithoutOperationInput, Prisma.PatientSurgeryUncheckedCreateWithoutOperationInput> | Prisma.PatientSurgeryCreateWithoutOperationInput[] | Prisma.PatientSurgeryUncheckedCreateWithoutOperationInput[];
+    connectOrCreate?: Prisma.PatientSurgeryCreateOrConnectWithoutOperationInput | Prisma.PatientSurgeryCreateOrConnectWithoutOperationInput[];
+    createMany?: Prisma.PatientSurgeryCreateManyOperationInputEnvelope;
+    connect?: Prisma.PatientSurgeryWhereUniqueInput | Prisma.PatientSurgeryWhereUniqueInput[];
+};
+export type PatientSurgeryUncheckedCreateNestedManyWithoutOperationInput = {
+    create?: Prisma.XOR<Prisma.PatientSurgeryCreateWithoutOperationInput, Prisma.PatientSurgeryUncheckedCreateWithoutOperationInput> | Prisma.PatientSurgeryCreateWithoutOperationInput[] | Prisma.PatientSurgeryUncheckedCreateWithoutOperationInput[];
+    connectOrCreate?: Prisma.PatientSurgeryCreateOrConnectWithoutOperationInput | Prisma.PatientSurgeryCreateOrConnectWithoutOperationInput[];
+    createMany?: Prisma.PatientSurgeryCreateManyOperationInputEnvelope;
+    connect?: Prisma.PatientSurgeryWhereUniqueInput | Prisma.PatientSurgeryWhereUniqueInput[];
+};
+export type PatientSurgeryUpdateManyWithoutOperationNestedInput = {
+    create?: Prisma.XOR<Prisma.PatientSurgeryCreateWithoutOperationInput, Prisma.PatientSurgeryUncheckedCreateWithoutOperationInput> | Prisma.PatientSurgeryCreateWithoutOperationInput[] | Prisma.PatientSurgeryUncheckedCreateWithoutOperationInput[];
+    connectOrCreate?: Prisma.PatientSurgeryCreateOrConnectWithoutOperationInput | Prisma.PatientSurgeryCreateOrConnectWithoutOperationInput[];
+    upsert?: Prisma.PatientSurgeryUpsertWithWhereUniqueWithoutOperationInput | Prisma.PatientSurgeryUpsertWithWhereUniqueWithoutOperationInput[];
+    createMany?: Prisma.PatientSurgeryCreateManyOperationInputEnvelope;
+    set?: Prisma.PatientSurgeryWhereUniqueInput | Prisma.PatientSurgeryWhereUniqueInput[];
+    disconnect?: Prisma.PatientSurgeryWhereUniqueInput | Prisma.PatientSurgeryWhereUniqueInput[];
+    delete?: Prisma.PatientSurgeryWhereUniqueInput | Prisma.PatientSurgeryWhereUniqueInput[];
+    connect?: Prisma.PatientSurgeryWhereUniqueInput | Prisma.PatientSurgeryWhereUniqueInput[];
+    update?: Prisma.PatientSurgeryUpdateWithWhereUniqueWithoutOperationInput | Prisma.PatientSurgeryUpdateWithWhereUniqueWithoutOperationInput[];
+    updateMany?: Prisma.PatientSurgeryUpdateManyWithWhereWithoutOperationInput | Prisma.PatientSurgeryUpdateManyWithWhereWithoutOperationInput[];
+    deleteMany?: Prisma.PatientSurgeryScalarWhereInput | Prisma.PatientSurgeryScalarWhereInput[];
+};
+export type PatientSurgeryUncheckedUpdateManyWithoutOperationNestedInput = {
+    create?: Prisma.XOR<Prisma.PatientSurgeryCreateWithoutOperationInput, Prisma.PatientSurgeryUncheckedCreateWithoutOperationInput> | Prisma.PatientSurgeryCreateWithoutOperationInput[] | Prisma.PatientSurgeryUncheckedCreateWithoutOperationInput[];
+    connectOrCreate?: Prisma.PatientSurgeryCreateOrConnectWithoutOperationInput | Prisma.PatientSurgeryCreateOrConnectWithoutOperationInput[];
+    upsert?: Prisma.PatientSurgeryUpsertWithWhereUniqueWithoutOperationInput | Prisma.PatientSurgeryUpsertWithWhereUniqueWithoutOperationInput[];
+    createMany?: Prisma.PatientSurgeryCreateManyOperationInputEnvelope;
+    set?: Prisma.PatientSurgeryWhereUniqueInput | Prisma.PatientSurgeryWhereUniqueInput[];
+    disconnect?: Prisma.PatientSurgeryWhereUniqueInput | Prisma.PatientSurgeryWhereUniqueInput[];
+    delete?: Prisma.PatientSurgeryWhereUniqueInput | Prisma.PatientSurgeryWhereUniqueInput[];
+    connect?: Prisma.PatientSurgeryWhereUniqueInput | Prisma.PatientSurgeryWhereUniqueInput[];
+    update?: Prisma.PatientSurgeryUpdateWithWhereUniqueWithoutOperationInput | Prisma.PatientSurgeryUpdateWithWhereUniqueWithoutOperationInput[];
+    updateMany?: Prisma.PatientSurgeryUpdateManyWithWhereWithoutOperationInput | Prisma.PatientSurgeryUpdateManyWithWhereWithoutOperationInput[];
+    deleteMany?: Prisma.PatientSurgeryScalarWhereInput | Prisma.PatientSurgeryScalarWhereInput[];
+};
+export type PatientSurgeryCreateWithoutPatientInput = {
+    surgeryDate: Date | string;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+    operation: Prisma.OperationCreateNestedOneWithoutPatientSurgeriesInput;
+};
+export type PatientSurgeryUncheckedCreateWithoutPatientInput = {
+    id?: number;
+    operationId: number;
+    surgeryDate: Date | string;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+};
+export type PatientSurgeryCreateOrConnectWithoutPatientInput = {
+    where: Prisma.PatientSurgeryWhereUniqueInput;
+    create: Prisma.XOR<Prisma.PatientSurgeryCreateWithoutPatientInput, Prisma.PatientSurgeryUncheckedCreateWithoutPatientInput>;
+};
+export type PatientSurgeryCreateManyPatientInputEnvelope = {
+    data: Prisma.PatientSurgeryCreateManyPatientInput | Prisma.PatientSurgeryCreateManyPatientInput[];
+    skipDuplicates?: boolean;
+};
+export type PatientSurgeryUpsertWithWhereUniqueWithoutPatientInput = {
+    where: Prisma.PatientSurgeryWhereUniqueInput;
+    update: Prisma.XOR<Prisma.PatientSurgeryUpdateWithoutPatientInput, Prisma.PatientSurgeryUncheckedUpdateWithoutPatientInput>;
+    create: Prisma.XOR<Prisma.PatientSurgeryCreateWithoutPatientInput, Prisma.PatientSurgeryUncheckedCreateWithoutPatientInput>;
+};
+export type PatientSurgeryUpdateWithWhereUniqueWithoutPatientInput = {
+    where: Prisma.PatientSurgeryWhereUniqueInput;
+    data: Prisma.XOR<Prisma.PatientSurgeryUpdateWithoutPatientInput, Prisma.PatientSurgeryUncheckedUpdateWithoutPatientInput>;
+};
+export type PatientSurgeryUpdateManyWithWhereWithoutPatientInput = {
+    where: Prisma.PatientSurgeryScalarWhereInput;
+    data: Prisma.XOR<Prisma.PatientSurgeryUpdateManyMutationInput, Prisma.PatientSurgeryUncheckedUpdateManyWithoutPatientInput>;
+};
+export type PatientSurgeryScalarWhereInput = {
+    AND?: Prisma.PatientSurgeryScalarWhereInput | Prisma.PatientSurgeryScalarWhereInput[];
+    OR?: Prisma.PatientSurgeryScalarWhereInput[];
+    NOT?: Prisma.PatientSurgeryScalarWhereInput | Prisma.PatientSurgeryScalarWhereInput[];
+    id?: Prisma.IntFilter<"PatientSurgery"> | number;
+    patientId?: Prisma.IntFilter<"PatientSurgery"> | number;
+    operationId?: Prisma.IntFilter<"PatientSurgery"> | number;
+    surgeryDate?: Prisma.DateTimeFilter<"PatientSurgery"> | Date | string;
+    createdAt?: Prisma.DateTimeFilter<"PatientSurgery"> | Date | string;
+    updatedAt?: Prisma.DateTimeFilter<"PatientSurgery"> | Date | string;
+};
+export type PatientSurgeryCreateWithoutOperationInput = {
+    surgeryDate: Date | string;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+    patient: Prisma.PatientCreateNestedOneWithoutPatientSurgeriesInput;
+};
+export type PatientSurgeryUncheckedCreateWithoutOperationInput = {
+    id?: number;
+    patientId: number;
+    surgeryDate: Date | string;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+};
+export type PatientSurgeryCreateOrConnectWithoutOperationInput = {
+    where: Prisma.PatientSurgeryWhereUniqueInput;
+    create: Prisma.XOR<Prisma.PatientSurgeryCreateWithoutOperationInput, Prisma.PatientSurgeryUncheckedCreateWithoutOperationInput>;
+};
+export type PatientSurgeryCreateManyOperationInputEnvelope = {
+    data: Prisma.PatientSurgeryCreateManyOperationInput | Prisma.PatientSurgeryCreateManyOperationInput[];
+    skipDuplicates?: boolean;
+};
+export type PatientSurgeryUpsertWithWhereUniqueWithoutOperationInput = {
+    where: Prisma.PatientSurgeryWhereUniqueInput;
+    update: Prisma.XOR<Prisma.PatientSurgeryUpdateWithoutOperationInput, Prisma.PatientSurgeryUncheckedUpdateWithoutOperationInput>;
+    create: Prisma.XOR<Prisma.PatientSurgeryCreateWithoutOperationInput, Prisma.PatientSurgeryUncheckedCreateWithoutOperationInput>;
+};
+export type PatientSurgeryUpdateWithWhereUniqueWithoutOperationInput = {
+    where: Prisma.PatientSurgeryWhereUniqueInput;
+    data: Prisma.XOR<Prisma.PatientSurgeryUpdateWithoutOperationInput, Prisma.PatientSurgeryUncheckedUpdateWithoutOperationInput>;
+};
+export type PatientSurgeryUpdateManyWithWhereWithoutOperationInput = {
+    where: Prisma.PatientSurgeryScalarWhereInput;
+    data: Prisma.XOR<Prisma.PatientSurgeryUpdateManyMutationInput, Prisma.PatientSurgeryUncheckedUpdateManyWithoutOperationInput>;
+};
+export type PatientSurgeryCreateManyPatientInput = {
+    id?: number;
+    operationId: number;
+    surgeryDate: Date | string;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+};
+export type PatientSurgeryUpdateWithoutPatientInput = {
+    surgeryDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    operation?: Prisma.OperationUpdateOneRequiredWithoutPatientSurgeriesNestedInput;
+};
+export type PatientSurgeryUncheckedUpdateWithoutPatientInput = {
+    id?: Prisma.IntFieldUpdateOperationsInput | number;
+    operationId?: Prisma.IntFieldUpdateOperationsInput | number;
+    surgeryDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+};
+export type PatientSurgeryUncheckedUpdateManyWithoutPatientInput = {
+    id?: Prisma.IntFieldUpdateOperationsInput | number;
+    operationId?: Prisma.IntFieldUpdateOperationsInput | number;
+    surgeryDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+};
+export type PatientSurgeryCreateManyOperationInput = {
+    id?: number;
+    patientId: number;
+    surgeryDate: Date | string;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+};
+export type PatientSurgeryUpdateWithoutOperationInput = {
+    surgeryDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    patient?: Prisma.PatientUpdateOneRequiredWithoutPatientSurgeriesNestedInput;
+};
+export type PatientSurgeryUncheckedUpdateWithoutOperationInput = {
+    id?: Prisma.IntFieldUpdateOperationsInput | number;
+    patientId?: Prisma.IntFieldUpdateOperationsInput | number;
+    surgeryDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+};
+export type PatientSurgeryUncheckedUpdateManyWithoutOperationInput = {
+    id?: Prisma.IntFieldUpdateOperationsInput | number;
+    patientId?: Prisma.IntFieldUpdateOperationsInput | number;
+    surgeryDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+};
+export type PatientSurgerySelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+    id?: boolean;
+    patientId?: boolean;
+    operationId?: boolean;
+    surgeryDate?: boolean;
+    createdAt?: boolean;
+    updatedAt?: boolean;
+    patient?: boolean | Prisma.PatientDefaultArgs<ExtArgs>;
+    operation?: boolean | Prisma.OperationDefaultArgs<ExtArgs>;
+}, ExtArgs["result"]["patientSurgery"]>;
+export type PatientSurgerySelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+    id?: boolean;
+    patientId?: boolean;
+    operationId?: boolean;
+    surgeryDate?: boolean;
+    createdAt?: boolean;
+    updatedAt?: boolean;
+    patient?: boolean | Prisma.PatientDefaultArgs<ExtArgs>;
+    operation?: boolean | Prisma.OperationDefaultArgs<ExtArgs>;
+}, ExtArgs["result"]["patientSurgery"]>;
+export type PatientSurgerySelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+    id?: boolean;
+    patientId?: boolean;
+    operationId?: boolean;
+    surgeryDate?: boolean;
+    createdAt?: boolean;
+    updatedAt?: boolean;
+    patient?: boolean | Prisma.PatientDefaultArgs<ExtArgs>;
+    operation?: boolean | Prisma.OperationDefaultArgs<ExtArgs>;
+}, ExtArgs["result"]["patientSurgery"]>;
+export type PatientSurgerySelectScalar = {
+    id?: boolean;
+    patientId?: boolean;
+    operationId?: boolean;
+    surgeryDate?: boolean;
+    createdAt?: boolean;
+    updatedAt?: boolean;
+};
+export type PatientSurgeryOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "patientId" | "operationId" | "surgeryDate" | "createdAt" | "updatedAt", ExtArgs["result"]["patientSurgery"]>;
+export type PatientSurgeryInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    patient?: boolean | Prisma.PatientDefaultArgs<ExtArgs>;
+    operation?: boolean | Prisma.OperationDefaultArgs<ExtArgs>;
+};
+export type PatientSurgeryIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    patient?: boolean | Prisma.PatientDefaultArgs<ExtArgs>;
+    operation?: boolean | Prisma.OperationDefaultArgs<ExtArgs>;
+};
+export type PatientSurgeryIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    patient?: boolean | Prisma.PatientDefaultArgs<ExtArgs>;
+    operation?: boolean | Prisma.OperationDefaultArgs<ExtArgs>;
+};
+export type $PatientSurgeryPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    name: "PatientSurgery";
+    objects: {
+        patient: Prisma.$PatientPayload<ExtArgs>;
+        operation: Prisma.$OperationPayload<ExtArgs>;
+    };
+    scalars: runtime.Types.Extensions.GetPayloadResult<{
+        id: number;
+        patientId: number;
+        operationId: number;
+        surgeryDate: Date;
+        createdAt: Date;
+        updatedAt: Date;
+    }, ExtArgs["result"]["patientSurgery"]>;
+    composites: {};
+};
+export type PatientSurgeryGetPayload<S extends boolean | null | undefined | PatientSurgeryDefaultArgs> = runtime.Types.Result.GetResult<Prisma.$PatientSurgeryPayload, S>;
+export type PatientSurgeryCountArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = Omit<PatientSurgeryFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+    select?: PatientSurgeryCountAggregateInputType | true;
+};
+export interface PatientSurgeryDelegate<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: {
+        types: Prisma.TypeMap<ExtArgs>['model']['PatientSurgery'];
+        meta: {
+            name: 'PatientSurgery';
+        };
+    };
+    /**
+     * Find zero or one PatientSurgery that matches the filter.
+     * @param {PatientSurgeryFindUniqueArgs} args - Arguments to find a PatientSurgery
+     * @example
+     * // Get one PatientSurgery
+     * const patientSurgery = await prisma.patientSurgery.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends PatientSurgeryFindUniqueArgs>(args: Prisma.SelectSubset<T, PatientSurgeryFindUniqueArgs<ExtArgs>>): Prisma.Prisma__PatientSurgeryClient<runtime.Types.Result.GetResult<Prisma.$PatientSurgeryPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>;
+    /**
+     * Find one PatientSurgery that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {PatientSurgeryFindUniqueOrThrowArgs} args - Arguments to find a PatientSurgery
+     * @example
+     * // Get one PatientSurgery
+     * const patientSurgery = await prisma.patientSurgery.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends PatientSurgeryFindUniqueOrThrowArgs>(args: Prisma.SelectSubset<T, PatientSurgeryFindUniqueOrThrowArgs<ExtArgs>>): Prisma.Prisma__PatientSurgeryClient<runtime.Types.Result.GetResult<Prisma.$PatientSurgeryPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
+    /**
+     * Find the first PatientSurgery that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PatientSurgeryFindFirstArgs} args - Arguments to find a PatientSurgery
+     * @example
+     * // Get one PatientSurgery
+     * const patientSurgery = await prisma.patientSurgery.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends PatientSurgeryFindFirstArgs>(args?: Prisma.SelectSubset<T, PatientSurgeryFindFirstArgs<ExtArgs>>): Prisma.Prisma__PatientSurgeryClient<runtime.Types.Result.GetResult<Prisma.$PatientSurgeryPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>;
+    /**
+     * Find the first PatientSurgery that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PatientSurgeryFindFirstOrThrowArgs} args - Arguments to find a PatientSurgery
+     * @example
+     * // Get one PatientSurgery
+     * const patientSurgery = await prisma.patientSurgery.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends PatientSurgeryFindFirstOrThrowArgs>(args?: Prisma.SelectSubset<T, PatientSurgeryFindFirstOrThrowArgs<ExtArgs>>): Prisma.Prisma__PatientSurgeryClient<runtime.Types.Result.GetResult<Prisma.$PatientSurgeryPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
+    /**
+     * Find zero or more PatientSurgeries that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PatientSurgeryFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all PatientSurgeries
+     * const patientSurgeries = await prisma.patientSurgery.findMany()
+     *
+     * // Get first 10 PatientSurgeries
+     * const patientSurgeries = await prisma.patientSurgery.findMany({ take: 10 })
+     *
+     * // Only select the `id`
+     * const patientSurgeryWithIdOnly = await prisma.patientSurgery.findMany({ select: { id: true } })
+     *
+     */
+    findMany<T extends PatientSurgeryFindManyArgs>(args?: Prisma.SelectSubset<T, PatientSurgeryFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PatientSurgeryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>;
+    /**
+     * Create a PatientSurgery.
+     * @param {PatientSurgeryCreateArgs} args - Arguments to create a PatientSurgery.
+     * @example
+     * // Create one PatientSurgery
+     * const PatientSurgery = await prisma.patientSurgery.create({
+     *   data: {
+     *     // ... data to create a PatientSurgery
+     *   }
+     * })
+     *
+     */
+    create<T extends PatientSurgeryCreateArgs>(args: Prisma.SelectSubset<T, PatientSurgeryCreateArgs<ExtArgs>>): Prisma.Prisma__PatientSurgeryClient<runtime.Types.Result.GetResult<Prisma.$PatientSurgeryPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
+    /**
+     * Create many PatientSurgeries.
+     * @param {PatientSurgeryCreateManyArgs} args - Arguments to create many PatientSurgeries.
+     * @example
+     * // Create many PatientSurgeries
+     * const patientSurgery = await prisma.patientSurgery.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *
+     */
+    createMany<T extends PatientSurgeryCreateManyArgs>(args?: Prisma.SelectSubset<T, PatientSurgeryCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>;
+    /**
+     * Create many PatientSurgeries and returns the data saved in the database.
+     * @param {PatientSurgeryCreateManyAndReturnArgs} args - Arguments to create many PatientSurgeries.
+     * @example
+     * // Create many PatientSurgeries
+     * const patientSurgery = await prisma.patientSurgery.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *
+     * // Create many PatientSurgeries and only return the `id`
+     * const patientSurgeryWithIdOnly = await prisma.patientSurgery.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     *
+     */
+    createManyAndReturn<T extends PatientSurgeryCreateManyAndReturnArgs>(args?: Prisma.SelectSubset<T, PatientSurgeryCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PatientSurgeryPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>;
+    /**
+     * Delete a PatientSurgery.
+     * @param {PatientSurgeryDeleteArgs} args - Arguments to delete one PatientSurgery.
+     * @example
+     * // Delete one PatientSurgery
+     * const PatientSurgery = await prisma.patientSurgery.delete({
+     *   where: {
+     *     // ... filter to delete one PatientSurgery
+     *   }
+     * })
+     *
+     */
+    delete<T extends PatientSurgeryDeleteArgs>(args: Prisma.SelectSubset<T, PatientSurgeryDeleteArgs<ExtArgs>>): Prisma.Prisma__PatientSurgeryClient<runtime.Types.Result.GetResult<Prisma.$PatientSurgeryPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
+    /**
+     * Update one PatientSurgery.
+     * @param {PatientSurgeryUpdateArgs} args - Arguments to update one PatientSurgery.
+     * @example
+     * // Update one PatientSurgery
+     * const patientSurgery = await prisma.patientSurgery.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     *
+     */
+    update<T extends PatientSurgeryUpdateArgs>(args: Prisma.SelectSubset<T, PatientSurgeryUpdateArgs<ExtArgs>>): Prisma.Prisma__PatientSurgeryClient<runtime.Types.Result.GetResult<Prisma.$PatientSurgeryPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
+    /**
+     * Delete zero or more PatientSurgeries.
+     * @param {PatientSurgeryDeleteManyArgs} args - Arguments to filter PatientSurgeries to delete.
+     * @example
+     * // Delete a few PatientSurgeries
+     * const { count } = await prisma.patientSurgery.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     *
+     */
+    deleteMany<T extends PatientSurgeryDeleteManyArgs>(args?: Prisma.SelectSubset<T, PatientSurgeryDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>;
+    /**
+     * Update zero or more PatientSurgeries.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PatientSurgeryUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many PatientSurgeries
+     * const patientSurgery = await prisma.patientSurgery.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     *
+     */
+    updateMany<T extends PatientSurgeryUpdateManyArgs>(args: Prisma.SelectSubset<T, PatientSurgeryUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>;
+    /**
+     * Update zero or more PatientSurgeries and returns the data updated in the database.
+     * @param {PatientSurgeryUpdateManyAndReturnArgs} args - Arguments to update many PatientSurgeries.
+     * @example
+     * // Update many PatientSurgeries
+     * const patientSurgery = await prisma.patientSurgery.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *
+     * // Update zero or more PatientSurgeries and only return the `id`
+     * const patientSurgeryWithIdOnly = await prisma.patientSurgery.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     *
+     */
+    updateManyAndReturn<T extends PatientSurgeryUpdateManyAndReturnArgs>(args: Prisma.SelectSubset<T, PatientSurgeryUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PatientSurgeryPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>;
+    /**
+     * Create or update one PatientSurgery.
+     * @param {PatientSurgeryUpsertArgs} args - Arguments to update or create a PatientSurgery.
+     * @example
+     * // Update or create a PatientSurgery
+     * const patientSurgery = await prisma.patientSurgery.upsert({
+     *   create: {
+     *     // ... data to create a PatientSurgery
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the PatientSurgery we want to update
+     *   }
+     * })
+     */
+    upsert<T extends PatientSurgeryUpsertArgs>(args: Prisma.SelectSubset<T, PatientSurgeryUpsertArgs<ExtArgs>>): Prisma.Prisma__PatientSurgeryClient<runtime.Types.Result.GetResult<Prisma.$PatientSurgeryPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
+    /**
+     * Count the number of PatientSurgeries.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PatientSurgeryCountArgs} args - Arguments to filter PatientSurgeries to count.
+     * @example
+     * // Count the number of PatientSurgeries
+     * const count = await prisma.patientSurgery.count({
+     *   where: {
+     *     // ... the filter for the PatientSurgeries we want to count
+     *   }
+     * })
+    **/
+    count<T extends PatientSurgeryCountArgs>(args?: Prisma.Subset<T, PatientSurgeryCountArgs>): Prisma.PrismaPromise<T extends runtime.Types.Utils.Record<'select', any> ? T['select'] extends true ? number : Prisma.GetScalarType<T['select'], PatientSurgeryCountAggregateOutputType> : number>;
+    /**
+     * Allows you to perform aggregations operations on a PatientSurgery.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PatientSurgeryAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends PatientSurgeryAggregateArgs>(args: Prisma.Subset<T, PatientSurgeryAggregateArgs>): Prisma.PrismaPromise<GetPatientSurgeryAggregateType<T>>;
+    /**
+     * Group by PatientSurgery.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PatientSurgeryGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     *
+    **/
+    groupBy<T extends PatientSurgeryGroupByArgs, HasSelectOrTake extends Prisma.Or<Prisma.Extends<'skip', Prisma.Keys<T>>, Prisma.Extends<'take', Prisma.Keys<T>>>, OrderByArg extends Prisma.True extends HasSelectOrTake ? {
+        orderBy: PatientSurgeryGroupByArgs['orderBy'];
+    } : {
+        orderBy?: PatientSurgeryGroupByArgs['orderBy'];
+    }, OrderFields extends Prisma.ExcludeUnderscoreKeys<Prisma.Keys<Prisma.MaybeTupleToUnion<T['orderBy']>>>, ByFields extends Prisma.MaybeTupleToUnion<T['by']>, ByValid extends Prisma.Has<ByFields, OrderFields>, HavingFields extends Prisma.GetHavingFields<T['having']>, HavingValid extends Prisma.Has<ByFields, HavingFields>, ByEmpty extends T['by'] extends never[] ? Prisma.True : Prisma.False, InputErrors extends ByEmpty extends Prisma.True ? `Error: "by" must not be empty.` : HavingValid extends Prisma.False ? {
+        [P in HavingFields]: P extends ByFields ? never : P extends string ? `Error: Field "${P}" used in "having" needs to be provided in "by".` : [
+            Error,
+            'Field ',
+            P,
+            ` in "having" needs to be provided in "by"`
+        ];
+    }[HavingFields] : 'take' extends Prisma.Keys<T> ? 'orderBy' extends Prisma.Keys<T> ? ByValid extends Prisma.True ? {} : {
+        [P in OrderFields]: P extends ByFields ? never : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+    }[OrderFields] : 'Error: If you provide "take", you also need to provide "orderBy"' : 'skip' extends Prisma.Keys<T> ? 'orderBy' extends Prisma.Keys<T> ? ByValid extends Prisma.True ? {} : {
+        [P in OrderFields]: P extends ByFields ? never : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+    }[OrderFields] : 'Error: If you provide "skip", you also need to provide "orderBy"' : ByValid extends Prisma.True ? {} : {
+        [P in OrderFields]: P extends ByFields ? never : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+    }[OrderFields]>(args: Prisma.SubsetIntersection<T, PatientSurgeryGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetPatientSurgeryGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>;
+    /**
+     * Fields of the PatientSurgery model
+     */
+    readonly fields: PatientSurgeryFieldRefs;
+}
+/**
+ * The delegate class that acts as a "Promise-like" for PatientSurgery.
+ * Why is this prefixed with `Prisma__`?
+ * Because we want to prevent naming conflicts as mentioned in
+ * https://github.com/prisma/prisma-client-js/issues/707
+ */
+export interface Prisma__PatientSurgeryClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise";
+    patient<T extends Prisma.PatientDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PatientDefaultArgs<ExtArgs>>): Prisma.Prisma__PatientClient<runtime.Types.Result.GetResult<Prisma.$PatientPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>;
+    operation<T extends Prisma.OperationDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.OperationDefaultArgs<ExtArgs>>): Prisma.Prisma__OperationClient<runtime.Types.Result.GetResult<Prisma.$OperationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>;
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): runtime.Types.Utils.JsPromise<TResult1 | TResult2>;
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): runtime.Types.Utils.JsPromise<T | TResult>;
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): runtime.Types.Utils.JsPromise<T>;
+}
+/**
+ * Fields of the PatientSurgery model
+ */
+export interface PatientSurgeryFieldRefs {
+    readonly id: Prisma.FieldRef<"PatientSurgery", 'Int'>;
+    readonly patientId: Prisma.FieldRef<"PatientSurgery", 'Int'>;
+    readonly operationId: Prisma.FieldRef<"PatientSurgery", 'Int'>;
+    readonly surgeryDate: Prisma.FieldRef<"PatientSurgery", 'DateTime'>;
+    readonly createdAt: Prisma.FieldRef<"PatientSurgery", 'DateTime'>;
+    readonly updatedAt: Prisma.FieldRef<"PatientSurgery", 'DateTime'>;
+}
+/**
+ * PatientSurgery findUnique
+ */
+export type PatientSurgeryFindUniqueArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PatientSurgery
+     */
+    select?: Prisma.PatientSurgerySelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the PatientSurgery
+     */
+    omit?: Prisma.PatientSurgeryOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: Prisma.PatientSurgeryInclude<ExtArgs> | null;
+    /**
+     * Filter, which PatientSurgery to fetch.
+     */
+    where: Prisma.PatientSurgeryWhereUniqueInput;
+};
+/**
+ * PatientSurgery findUniqueOrThrow
+ */
+export type PatientSurgeryFindUniqueOrThrowArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PatientSurgery
+     */
+    select?: Prisma.PatientSurgerySelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the PatientSurgery
+     */
+    omit?: Prisma.PatientSurgeryOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: Prisma.PatientSurgeryInclude<ExtArgs> | null;
+    /**
+     * Filter, which PatientSurgery to fetch.
+     */
+    where: Prisma.PatientSurgeryWhereUniqueInput;
+};
+/**
+ * PatientSurgery findFirst
+ */
+export type PatientSurgeryFindFirstArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PatientSurgery
+     */
+    select?: Prisma.PatientSurgerySelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the PatientSurgery
+     */
+    omit?: Prisma.PatientSurgeryOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: Prisma.PatientSurgeryInclude<ExtArgs> | null;
+    /**
+     * Filter, which PatientSurgery to fetch.
+     */
+    where?: Prisma.PatientSurgeryWhereInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of PatientSurgeries to fetch.
+     */
+    orderBy?: Prisma.PatientSurgeryOrderByWithRelationInput | Prisma.PatientSurgeryOrderByWithRelationInput[];
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the position for searching for PatientSurgeries.
+     */
+    cursor?: Prisma.PatientSurgeryWhereUniqueInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` PatientSurgeries from the position of the cursor.
+     */
+    take?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` PatientSurgeries.
+     */
+    skip?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     *
+     * Filter by unique combinations of PatientSurgeries.
+     */
+    distinct?: Prisma.PatientSurgeryScalarFieldEnum | Prisma.PatientSurgeryScalarFieldEnum[];
+};
+/**
+ * PatientSurgery findFirstOrThrow
+ */
+export type PatientSurgeryFindFirstOrThrowArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PatientSurgery
+     */
+    select?: Prisma.PatientSurgerySelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the PatientSurgery
+     */
+    omit?: Prisma.PatientSurgeryOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: Prisma.PatientSurgeryInclude<ExtArgs> | null;
+    /**
+     * Filter, which PatientSurgery to fetch.
+     */
+    where?: Prisma.PatientSurgeryWhereInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of PatientSurgeries to fetch.
+     */
+    orderBy?: Prisma.PatientSurgeryOrderByWithRelationInput | Prisma.PatientSurgeryOrderByWithRelationInput[];
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the position for searching for PatientSurgeries.
+     */
+    cursor?: Prisma.PatientSurgeryWhereUniqueInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` PatientSurgeries from the position of the cursor.
+     */
+    take?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` PatientSurgeries.
+     */
+    skip?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     *
+     * Filter by unique combinations of PatientSurgeries.
+     */
+    distinct?: Prisma.PatientSurgeryScalarFieldEnum | Prisma.PatientSurgeryScalarFieldEnum[];
+};
+/**
+ * PatientSurgery findMany
+ */
+export type PatientSurgeryFindManyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PatientSurgery
+     */
+    select?: Prisma.PatientSurgerySelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the PatientSurgery
+     */
+    omit?: Prisma.PatientSurgeryOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: Prisma.PatientSurgeryInclude<ExtArgs> | null;
+    /**
+     * Filter, which PatientSurgeries to fetch.
+     */
+    where?: Prisma.PatientSurgeryWhereInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of PatientSurgeries to fetch.
+     */
+    orderBy?: Prisma.PatientSurgeryOrderByWithRelationInput | Prisma.PatientSurgeryOrderByWithRelationInput[];
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the position for listing PatientSurgeries.
+     */
+    cursor?: Prisma.PatientSurgeryWhereUniqueInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` PatientSurgeries from the position of the cursor.
+     */
+    take?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` PatientSurgeries.
+     */
+    skip?: number;
+    distinct?: Prisma.PatientSurgeryScalarFieldEnum | Prisma.PatientSurgeryScalarFieldEnum[];
+};
+/**
+ * PatientSurgery create
+ */
+export type PatientSurgeryCreateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PatientSurgery
+     */
+    select?: Prisma.PatientSurgerySelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the PatientSurgery
+     */
+    omit?: Prisma.PatientSurgeryOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: Prisma.PatientSurgeryInclude<ExtArgs> | null;
+    /**
+     * The data needed to create a PatientSurgery.
+     */
+    data: Prisma.XOR<Prisma.PatientSurgeryCreateInput, Prisma.PatientSurgeryUncheckedCreateInput>;
+};
+/**
+ * PatientSurgery createMany
+ */
+export type PatientSurgeryCreateManyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many PatientSurgeries.
+     */
+    data: Prisma.PatientSurgeryCreateManyInput | Prisma.PatientSurgeryCreateManyInput[];
+    skipDuplicates?: boolean;
+};
+/**
+ * PatientSurgery createManyAndReturn
+ */
+export type PatientSurgeryCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PatientSurgery
+     */
+    select?: Prisma.PatientSurgerySelectCreateManyAndReturn<ExtArgs> | null;
+    /**
+     * Omit specific fields from the PatientSurgery
+     */
+    omit?: Prisma.PatientSurgeryOmit<ExtArgs> | null;
+    /**
+     * The data used to create many PatientSurgeries.
+     */
+    data: Prisma.PatientSurgeryCreateManyInput | Prisma.PatientSurgeryCreateManyInput[];
+    skipDuplicates?: boolean;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: Prisma.PatientSurgeryIncludeCreateManyAndReturn<ExtArgs> | null;
+};
+/**
+ * PatientSurgery update
+ */
+export type PatientSurgeryUpdateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PatientSurgery
+     */
+    select?: Prisma.PatientSurgerySelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the PatientSurgery
+     */
+    omit?: Prisma.PatientSurgeryOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: Prisma.PatientSurgeryInclude<ExtArgs> | null;
+    /**
+     * The data needed to update a PatientSurgery.
+     */
+    data: Prisma.XOR<Prisma.PatientSurgeryUpdateInput, Prisma.PatientSurgeryUncheckedUpdateInput>;
+    /**
+     * Choose, which PatientSurgery to update.
+     */
+    where: Prisma.PatientSurgeryWhereUniqueInput;
+};
+/**
+ * PatientSurgery updateMany
+ */
+export type PatientSurgeryUpdateManyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * The data used to update PatientSurgeries.
+     */
+    data: Prisma.XOR<Prisma.PatientSurgeryUpdateManyMutationInput, Prisma.PatientSurgeryUncheckedUpdateManyInput>;
+    /**
+     * Filter which PatientSurgeries to update
+     */
+    where?: Prisma.PatientSurgeryWhereInput;
+    /**
+     * Limit how many PatientSurgeries to update.
+     */
+    limit?: number;
+};
+/**
+ * PatientSurgery updateManyAndReturn
+ */
+export type PatientSurgeryUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PatientSurgery
+     */
+    select?: Prisma.PatientSurgerySelectUpdateManyAndReturn<ExtArgs> | null;
+    /**
+     * Omit specific fields from the PatientSurgery
+     */
+    omit?: Prisma.PatientSurgeryOmit<ExtArgs> | null;
+    /**
+     * The data used to update PatientSurgeries.
+     */
+    data: Prisma.XOR<Prisma.PatientSurgeryUpdateManyMutationInput, Prisma.PatientSurgeryUncheckedUpdateManyInput>;
+    /**
+     * Filter which PatientSurgeries to update
+     */
+    where?: Prisma.PatientSurgeryWhereInput;
+    /**
+     * Limit how many PatientSurgeries to update.
+     */
+    limit?: number;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: Prisma.PatientSurgeryIncludeUpdateManyAndReturn<ExtArgs> | null;
+};
+/**
+ * PatientSurgery upsert
+ */
+export type PatientSurgeryUpsertArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PatientSurgery
+     */
+    select?: Prisma.PatientSurgerySelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the PatientSurgery
+     */
+    omit?: Prisma.PatientSurgeryOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: Prisma.PatientSurgeryInclude<ExtArgs> | null;
+    /**
+     * The filter to search for the PatientSurgery to update in case it exists.
+     */
+    where: Prisma.PatientSurgeryWhereUniqueInput;
+    /**
+     * In case the PatientSurgery found by the `where` argument doesn't exist, create a new PatientSurgery with this data.
+     */
+    create: Prisma.XOR<Prisma.PatientSurgeryCreateInput, Prisma.PatientSurgeryUncheckedCreateInput>;
+    /**
+     * In case the PatientSurgery was found with the provided `where` argument, update it with this data.
+     */
+    update: Prisma.XOR<Prisma.PatientSurgeryUpdateInput, Prisma.PatientSurgeryUncheckedUpdateInput>;
+};
+/**
+ * PatientSurgery delete
+ */
+export type PatientSurgeryDeleteArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PatientSurgery
+     */
+    select?: Prisma.PatientSurgerySelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the PatientSurgery
+     */
+    omit?: Prisma.PatientSurgeryOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: Prisma.PatientSurgeryInclude<ExtArgs> | null;
+    /**
+     * Filter which PatientSurgery to delete.
+     */
+    where: Prisma.PatientSurgeryWhereUniqueInput;
+};
+/**
+ * PatientSurgery deleteMany
+ */
+export type PatientSurgeryDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Filter which PatientSurgeries to delete
+     */
+    where?: Prisma.PatientSurgeryWhereInput;
+    /**
+     * Limit how many PatientSurgeries to delete.
+     */
+    limit?: number;
+};
+/**
+ * PatientSurgery without action
+ */
+export type PatientSurgeryDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PatientSurgery
+     */
+    select?: Prisma.PatientSurgerySelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the PatientSurgery
+     */
+    omit?: Prisma.PatientSurgeryOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: Prisma.PatientSurgeryInclude<ExtArgs> | null;
+};
+export {};
+//# sourceMappingURL=PatientSurgery.d.ts.map

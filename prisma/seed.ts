@@ -16,6 +16,10 @@ async function main() {
   console.log("\n🧹 Cleaning up existing data...");
 
   // Delete all dependent data first
+  await prisma.addMedicineRequest.deleteMany();
+  await prisma.patientMedicine.deleteMany();
+  await prisma.tradeNameSideEffect.deleteMany();
+  await prisma.sideEffect.deleteMany();
   await prisma.drugInteractionAlert.deleteMany();
   await prisma.prescriptionVersion.deleteMany();
   await prisma.prescription.deleteMany();
@@ -1348,56 +1352,16 @@ async function main() {
   await prisma.lifestyle.createMany({
     data: [
       {
-        patientId: patients[0].id,
-        noGlasses: false,
-        alcoholAbuse: false,
-        excessCaffeine: true,
-        waterDaily: 2.5,
-        travellerAbroad: true,
-        annualVaccination: true,
-        surgeriesLast3Months: false,
-        surgeriesDetails: null,
+        question: "Alcohol use",
+        activeSubstanceField: "interactionAlcohol",
       },
       {
-        patientId: patients[1].id,
-        noGlasses: false,
-        alcoholAbuse: false,
-        excessCaffeine: false,
-        waterDaily: 2.0,
-        travellerAbroad: false,
-        annualVaccination: true,
-        surgeriesLast3Months: false,
+        question: "Caffeine consumption",
+        activeSubstanceField: "interactionXanthines",
       },
       {
-        patientId: patients[2].id,
-        noGlasses: true,
-        alcoholAbuse: false,
-        excessCaffeine: false,
-        waterDaily: 2.8,
-        travellerAbroad: false,
-        annualVaccination: true,
-        surgeriesLast3Months: false,
-      },
-      {
-        patientId: patients[3].id,
-        noGlasses: false,
-        alcoholAbuse: false,
-        excessCaffeine: true,
-        waterDaily: 3.0,
-        travellerAbroad: true,
-        annualVaccination: true,
-        surgeriesLast3Months: true,
-        surgeriesDetails: "Appendectomy in June 2024",
-      },
-      {
-        patientId: patients[4].id,
-        noGlasses: true,
-        alcoholAbuse: false,
-        excessCaffeine: false,
-        waterDaily: 1.5,
-        travellerAbroad: false,
-        annualVaccination: true,
-        surgeriesLast3Months: false,
+        question: "Nicotine / Smoking",
+        activeSubstanceField: "interactionNicotine",
       },
     ],
   });
@@ -2152,6 +2116,313 @@ async function main() {
   console.log(`✅ Created ${medicineSuggestions.length} Medicine Suggestions`);
 
   // ============================================
+  // PAYMENTS
+  // ============================================
+  console.log("\n💳 Creating payments...");
+  await prisma.payment.createMany({
+    data: [
+      {
+        subscriptionId: subscriptions[0].id,
+        amount: 79.99,
+        currency: "USD",
+        paymentMethod: "Credit Card",
+        status: "Completed",
+        transactionId: "TXN-001-STRIPE",
+        paidAt: new Date(Date.now() - 25 * 24 * 60 * 60 * 1000),
+      },
+      {
+        subscriptionId: subscriptions[1].id,
+        amount: 299.99,
+        currency: "USD",
+        paymentMethod: "Credit Card",
+        status: "Completed",
+        transactionId: "TXN-002-STRIPE",
+        paidAt: new Date(Date.now() - 20 * 24 * 60 * 60 * 1000),
+      },
+      {
+        subscriptionId: subscriptions[0].id,
+        amount: 79.99,
+        currency: "USD",
+        paymentMethod: "PayPal",
+        status: "Pending",
+        transactionId: "TXN-003-PAYPAL",
+      },
+      {
+        subscriptionId: subscriptions[1].id,
+        amount: 299.99,
+        currency: "USD",
+        paymentMethod: "Credit Card",
+        status: "Refunded",
+        transactionId: "TXN-004-STRIPE",
+        paidAt: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000),
+      },
+    ],
+  });
+  console.log("✅ Created payments");
+
+  // ============================================
+  // AUDIT LOGS
+  // ============================================
+  console.log("\n📝 Creating audit logs...");
+  await prisma.auditLog.createMany({
+    data: [
+      {
+        userId: superAdmin.id,
+        action: "USER_LOGIN",
+        entityType: "User",
+        entityId: superAdmin.id,
+        changes: { ip: "192.168.1.1", userAgent: "Chrome/120" },
+      },
+      {
+        userId: admin1.id,
+        action: "DOCTOR_VERIFIED",
+        entityType: "Doctor",
+        entityId: doctors[0].id,
+        changes: { doctorName: "Dr. John Smith", licenseNumber: "MD-12345" },
+      },
+      {
+        userId: admin1.id,
+        action: "MEDICINE_CREATED",
+        entityType: "TradeName",
+        entityId: tradeNames[0].id,
+        changes: { tradeName: "Panadol", activeSubstance: "Paracetamol" },
+      },
+      {
+        userId: superAdmin.id,
+        action: "PRICING_PLAN_UPDATED",
+        entityType: "PricingPlan",
+        entityId: pricingPlans[1].id,
+        changes: { planName: "Professional", oldPrice: 99.99, newPrice: 79.99 },
+      },
+      {
+        userId: doctorUser1.id,
+        action: "PRESCRIPTION_CREATED",
+        entityType: "Prescription",
+        entityId: prescriptions[0].id,
+        changes: { patientName: "Alice Cooper", medicine: "Glucophage" },
+      },
+      {
+        userId: admin1.id,
+        action: "USER_DEACTIVATED",
+        entityType: "User",
+        entityId: patientUser2.id,
+        changes: { reason: "Account review", email: "patient2@greenrx.com" },
+      },
+      {
+        userId: superAdmin.id,
+        action: "DISEASE_WARNING_RULE_CREATED",
+        entityType: "DiseaseWarningRule",
+        entityId: warningRules[0].id,
+        changes: { severity: "Critical", ruleType: "BLOCK_ACTIVE_SUBSTANCE" },
+      },
+      {
+        userId: admin1.id,
+        action: "SUBSTANCE_IMPORTED",
+        entityType: "ActiveSubstance",
+        entityId: activeSubstances[0].id,
+        changes: { importedCount: 10, source: "CSV Upload" },
+      },
+    ],
+  });
+  console.log("✅ Created audit logs");
+
+  // ============================================
+  // SIDE EFFECTS
+  // ============================================
+  console.log("\n💊 Creating side effects...");
+  const sideEffects = await Promise.all([
+    prisma.sideEffect.create({
+      data: {
+        name: "Headache",
+        nameAr: "صداع",
+        status: "Approved",
+        createdBy: "Admin",
+        createdByUserId: admin1.id,
+      },
+    }),
+    prisma.sideEffect.create({
+      data: {
+        name: "Nausea",
+        nameAr: "غثيان",
+        status: "Approved",
+        createdBy: "Admin",
+        createdByUserId: admin1.id,
+      },
+    }),
+    prisma.sideEffect.create({
+      data: {
+        name: "Dizziness",
+        nameAr: "دوخة",
+        status: "Approved",
+        createdBy: "Admin",
+        createdByUserId: admin1.id,
+      },
+    }),
+    prisma.sideEffect.create({
+      data: {
+        name: "Drowsiness",
+        nameAr: "نعاس",
+        status: "Approved",
+        createdBy: "Admin",
+        createdByUserId: admin1.id,
+      },
+    }),
+    prisma.sideEffect.create({
+      data: {
+        name: "Stomach Upset",
+        nameAr: "اضطراب المعدة",
+        status: "Pending",
+        createdBy: "Patient",
+        createdByUserId: patientUser1.id,
+      },
+    }),
+    prisma.sideEffect.create({
+      data: {
+        name: "Dry Mouth",
+        nameAr: "جفاف الفم",
+        status: "Pending",
+        createdBy: "Patient",
+        createdByUserId: patientUser2.id,
+      },
+    }),
+  ]);
+
+  // Link side effects to trade names
+  await prisma.tradeNameSideEffect.createMany({
+    data: [
+      { tradeNameId: tradeNames[0].id, sideEffectId: sideEffects[0].id }, // Panadol - Headache
+      { tradeNameId: tradeNames[0].id, sideEffectId: sideEffects[1].id }, // Panadol - Nausea
+      { tradeNameId: tradeNames[1].id, sideEffectId: sideEffects[1].id }, // Brufen - Nausea
+      { tradeNameId: tradeNames[1].id, sideEffectId: sideEffects[4].id }, // Brufen - Stomach Upset
+      { tradeNameId: tradeNames[8].id, sideEffectId: sideEffects[3].id }, // Zyrtec - Drowsiness
+      { tradeNameId: tradeNames[8].id, sideEffectId: sideEffects[5].id }, // Zyrtec - Dry Mouth
+      { tradeNameId: tradeNames[4].id, sideEffectId: sideEffects[2].id }, // Norvasc - Dizziness
+      { tradeNameId: tradeNames[6].id, sideEffectId: sideEffects[0].id }, // Lipitor - Headache
+    ],
+  });
+  console.log(`✅ Created ${sideEffects.length} side effects with trade name links`);
+
+  // ============================================
+  // PATIENT MEDICINES & ADD MEDICINE REQUESTS
+  // ============================================
+  console.log("\n💊 Creating patient medicines & add medicine requests...");
+
+  // Verified patient medicines (matched to catalog)
+  const pm1 = await prisma.patientMedicine.create({
+    data: {
+      patientId: patients[0].id,
+      tradeNameId: tradeNames[3].id, // Glucophage
+      medicineName: "Glucophage",
+      dosageAmount: 500,
+      frequencyCount: 2,
+      frequencyPeriod: 1,
+      frequencyUnit: "Days",
+      isOngoing: true,
+      isVerified: true,
+      notes: "Taking for diabetes management",
+    },
+  });
+
+  const pm2 = await prisma.patientMedicine.create({
+    data: {
+      patientId: patients[1].id,
+      tradeNameId: tradeNames[4].id, // Norvasc
+      medicineName: "Norvasc",
+      dosageAmount: 5,
+      frequencyCount: 1,
+      frequencyPeriod: 1,
+      frequencyUnit: "Days",
+      isOngoing: true,
+      isVerified: true,
+    },
+  });
+
+  // Unverified patient medicines (need admin resolution)
+  const pm3 = await prisma.patientMedicine.create({
+    data: {
+      patientId: patients[0].id,
+      medicineName: "Aspocid",
+      dosageAmount: 75,
+      frequencyCount: 1,
+      frequencyPeriod: 1,
+      frequencyUnit: "Days",
+      isOngoing: true,
+      imageUrl: "/uploads/patient-medicines/aspocid.jpg",
+      isVerified: false,
+    },
+  });
+
+  const pm4 = await prisma.patientMedicine.create({
+    data: {
+      patientId: patients[1].id,
+      medicineName: "Concor",
+      dosageAmount: 5,
+      frequencyCount: 1,
+      frequencyPeriod: 1,
+      frequencyUnit: "Days",
+      isOngoing: true,
+      imageUrl: "/uploads/patient-medicines/concor.jpg",
+      isVerified: false,
+    },
+  });
+
+  const pm5 = await prisma.patientMedicine.create({
+    data: {
+      patientId: patients[2].id,
+      medicineName: "Telfast",
+      dosageAmount: 180,
+      frequencyCount: 1,
+      frequencyPeriod: 1,
+      frequencyUnit: "Days",
+      isOngoing: false,
+      durationValue: 14,
+      durationUnit: "Days",
+      imageUrl: "/uploads/patient-medicines/telfast.jpg",
+      isVerified: false,
+    },
+  });
+
+  // Add Medicine Requests (Pending & Resolved)
+  await prisma.addMedicineRequest.createMany({
+    data: [
+      {
+        patientId: patients[0].id,
+        patientMedicineId: pm3.id,
+        imageUrl: "/uploads/patient-medicines/aspocid.jpg",
+        extractedTradeName: "Aspocid",
+        extractedActiveSubstance: "Acetylsalicylic Acid",
+        extractedConcentration: "75mg",
+        extractedDosageForm: "Tablet",
+        status: "Pending",
+      },
+      {
+        patientId: patients[1].id,
+        patientMedicineId: pm4.id,
+        imageUrl: "/uploads/patient-medicines/concor.jpg",
+        extractedTradeName: "Concor",
+        extractedActiveSubstance: "Bisoprolol",
+        extractedConcentration: "5mg",
+        extractedDosageForm: "Tablet",
+        status: "Pending",
+      },
+      {
+        patientId: patients[2].id,
+        patientMedicineId: pm5.id,
+        imageUrl: "/uploads/patient-medicines/telfast.jpg",
+        extractedTradeName: "Telfast",
+        extractedActiveSubstance: "Fexofenadine",
+        extractedConcentration: "180mg",
+        extractedDosageForm: "Tablet",
+        status: "Resolved",
+        resolvedByUserId: admin1.id,
+        resolvedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
+        resolutionNotes: "Matched to existing catalog entry. Patient medicine verified.",
+      },
+    ],
+  });
+  console.log("✅ Created patient medicines & add medicine requests");
+
+  // ============================================
   // FINAL SUMMARY
   // ============================================
   console.log("\n✨ Database seeded successfully!");
@@ -2159,13 +2430,17 @@ async function main() {
   console.log(`   - ${activeSubstances.length} Active Substances`);
   console.log(`   - ${tradeNames.length} Trade Names`);
   console.log(`   - ${diseases.length} Diseases`);
-  console.log(`   - ${warningRules.length} Disease Warning Rules (P0)`);
-  console.log(`   - ${medicineSuggestions.length} Medicine Suggestions (P0)`);
+  console.log(`   - ${warningRules.length} Disease Warning Rules`);
+  console.log(`   - ${medicineSuggestions.length} Medicine Suggestions`);
   console.log(`   - ${pricingPlans.length} Pricing Plans`);
   console.log(
     `   - 13 Users (1 SuperAdmin, 2 Admins, 3 Doctors, 2 Pharmacists, 5 Patients)`
   );
   console.log(`   - ${prescriptions.length} Prescriptions`);
+  console.log(`   - ${sideEffects.length} Side Effects`);
+  console.log(`   - 5 Patient Medicines (2 verified, 3 unverified)`);
+  console.log(`   - 3 Add Medicine Requests (2 pending, 1 resolved)`);
+  console.log(`   - 4 Payments, 8 Audit Logs`);
   console.log(`   - Comprehensive patient data including:`);
   console.log(`     • Medical histories, family histories, allergies`);
   console.log(`     • Lifestyle data, child profiles`);

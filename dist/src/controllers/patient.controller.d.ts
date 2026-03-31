@@ -6,10 +6,15 @@ export declare const getPatientByUserId: (req: Request, res: Response, next: Nex
 export declare const addMedicalHistory: (req: Request, res: Response, next: NextFunction) => Promise<void>;
 export declare const getMedicalHistories: (req: Request, res: Response, next: NextFunction) => Promise<void>;
 export declare const addFamilyHistory: (req: Request, res: Response, next: NextFunction) => Promise<void>;
-export declare const updateLifestyle: (req: Request, res: Response, next: NextFunction) => Promise<void>;
+export declare const addOrUpdatePatientLifestyles: (req: Request, res: Response, next: NextFunction) => Promise<void>;
+export declare const getPatientLifestyles: (req: Request, res: Response, next: NextFunction) => Promise<void>;
+export declare const deletePatientLifestyle: (req: Request, res: Response, next: NextFunction) => Promise<void>;
 export declare const addAllergy: (req: Request, res: Response, next: NextFunction) => Promise<void>;
 export declare const deleteAllergy: (req: Request, res: Response, next: NextFunction) => Promise<void>;
 export declare const addChildProfile: (req: Request, res: Response, next: NextFunction) => Promise<void>;
 export declare const getChildProfiles: (req: Request, res: Response, next: NextFunction) => Promise<void>;
 export declare const deleteChildProfile: (req: Request, res: Response, next: NextFunction) => Promise<void>;
+export declare const addSurgeries: (req: Request, res: Response, next: NextFunction) => Promise<void>;
+export declare const getSurgeries: (req: Request, res: Response, next: NextFunction) => Promise<void>;
+export declare const deleteSurgery: (req: Request, res: Response, next: NextFunction) => Promise<void>;
 //# sourceMappingURL=patient.controller.d.ts.map

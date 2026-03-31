@@ -200,6 +200,17 @@ export interface PrismaClient<in LogOpts extends Prisma.LogLevel = never, in out
         omit: OmitOpts;
     }>;
     /**
+     * `prisma.patientLifestyle`: Exposes CRUD operations for the **PatientLifestyle** model.
+      * Example usage:
+      * ```ts
+      * // Fetch zero or more PatientLifestyles
+      * const patientLifestyles = await prisma.patientLifestyle.findMany()
+      * ```
+      */
+    get patientLifestyle(): Prisma.PatientLifestyleDelegate<ExtArgs, {
+        omit: OmitOpts;
+    }>;
+    /**
      * `prisma.allergy`: Exposes CRUD operations for the **Allergy** model.
       * Example usage:
       * ```ts
@@ -208,6 +219,28 @@ export interface PrismaClient<in LogOpts extends Prisma.LogLevel = never, in out
       * ```
       */
     get allergy(): Prisma.AllergyDelegate<ExtArgs, {
+        omit: OmitOpts;
+    }>;
+    /**
+     * `prisma.operation`: Exposes CRUD operations for the **Operation** model.
+      * Example usage:
+      * ```ts
+      * // Fetch zero or more Operations
+      * const operations = await prisma.operation.findMany()
+      * ```
+      */
+    get operation(): Prisma.OperationDelegate<ExtArgs, {
+        omit: OmitOpts;
+    }>;
+    /**
+     * `prisma.patientSurgery`: Exposes CRUD operations for the **PatientSurgery** model.
+      * Example usage:
+      * ```ts
+      * // Fetch zero or more PatientSurgeries
+      * const patientSurgeries = await prisma.patientSurgery.findMany()
+      * ```
+      */
+    get patientSurgery(): Prisma.PatientSurgeryDelegate<ExtArgs, {
         omit: OmitOpts;
     }>;
     /**
@@ -442,6 +475,17 @@ export interface PrismaClient<in LogOpts extends Prisma.LogLevel = never, in out
         omit: OmitOpts;
     }>;
     /**
+     * `prisma.appSetting`: Exposes CRUD operations for the **AppSetting** model.
+      * Example usage:
+      * ```ts
+      * // Fetch zero or more AppSettings
+      * const appSettings = await prisma.appSetting.findMany()
+      * ```
+      */
+    get appSetting(): Prisma.AppSettingDelegate<ExtArgs, {
+        omit: OmitOpts;
+    }>;
+    /**
      * `prisma.session`: Exposes CRUD operations for the **Session** model.
       * Example usage:
       * ```ts
@@ -450,6 +494,28 @@ export interface PrismaClient<in LogOpts extends Prisma.LogLevel = never, in out
       * ```
       */
     get session(): Prisma.SessionDelegate<ExtArgs, {
+        omit: OmitOpts;
+    }>;
+    /**
+     * `prisma.sideEffect`: Exposes CRUD operations for the **SideEffect** model.
+      * Example usage:
+      * ```ts
+      * // Fetch zero or more SideEffects
+      * const sideEffects = await prisma.sideEffect.findMany()
+      * ```
+      */
+    get sideEffect(): Prisma.SideEffectDelegate<ExtArgs, {
+        omit: OmitOpts;
+    }>;
+    /**
+     * `prisma.tradeNameSideEffect`: Exposes CRUD operations for the **TradeNameSideEffect** model.
+      * Example usage:
+      * ```ts
+      * // Fetch zero or more TradeNameSideEffects
+      * const tradeNameSideEffects = await prisma.tradeNameSideEffect.findMany()
+      * ```
+      */
+    get tradeNameSideEffect(): Prisma.TradeNameSideEffectDelegate<ExtArgs, {
         omit: OmitOpts;
     }>;
     /**
@@ -582,6 +648,28 @@ export interface PrismaClient<in LogOpts extends Prisma.LogLevel = never, in out
       * ```
       */
     get exportHistory(): Prisma.ExportHistoryDelegate<ExtArgs, {
+        omit: OmitOpts;
+    }>;
+    /**
+     * `prisma.patientMedicine`: Exposes CRUD operations for the **PatientMedicine** model.
+      * Example usage:
+      * ```ts
+      * // Fetch zero or more PatientMedicines
+      * const patientMedicines = await prisma.patientMedicine.findMany()
+      * ```
+      */
+    get patientMedicine(): Prisma.PatientMedicineDelegate<ExtArgs, {
+        omit: OmitOpts;
+    }>;
+    /**
+     * `prisma.addMedicineRequest`: Exposes CRUD operations for the **AddMedicineRequest** model.
+      * Example usage:
+      * ```ts
+      * // Fetch zero or more AddMedicineRequests
+      * const addMedicineRequests = await prisma.addMedicineRequest.findMany()
+      * ```
+      */
+    get addMedicineRequest(): Prisma.AddMedicineRequestDelegate<ExtArgs, {
         omit: OmitOpts;
     }>;
 }

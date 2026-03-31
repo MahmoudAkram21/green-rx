@@ -1,6 +1,7 @@
 import express from 'express';
 import adminController from '../controllers/admin.controller';
 import * as permissionController from '../controllers/permission.controller';
+import * as adminSideEffectsController from '../controllers/admin.sideEffects.controller';
 import { authenticate, authorize } from '../middleware/auth.middleware';
 import { UserRole } from '../../generated/client/client';
 
@@ -31,5 +32,14 @@ router.get('/statistics', adminController.getStatistics);
 
 // Audit logs
 router.get('/audit-logs', adminController.getAuditLogs);
+
+// Side Effects Management
+router.get('/side-effects', adminSideEffectsController.getAllSideEffects);
+router.get('/side-effects/pending', adminSideEffectsController.getPendingSideEffects);
+router.post('/side-effects', adminSideEffectsController.createSideEffect);
+router.put('/side-effects/:id', adminSideEffectsController.updateSideEffect);
+router.post('/side-effects/:id/trade-names', adminSideEffectsController.attachTradeNames);
+router.delete('/side-effects/:id/trade-names/:tradeNameId', adminSideEffectsController.removeTradeName);
+router.patch('/side-effects/:id/approve', adminSideEffectsController.approveSideEffect);
 
 export default router;

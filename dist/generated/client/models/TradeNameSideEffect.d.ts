@@ -1,0 +1,1202 @@
+import type * as runtime from "@prisma/client/runtime/client";
+import type * as Prisma from "../internal/prismaNamespace";
+/**
+ * Model TradeNameSideEffect
+ *
+ */
+export type TradeNameSideEffectModel = runtime.Types.Result.DefaultSelection<Prisma.$TradeNameSideEffectPayload>;
+export type AggregateTradeNameSideEffect = {
+    _count: TradeNameSideEffectCountAggregateOutputType | null;
+    _avg: TradeNameSideEffectAvgAggregateOutputType | null;
+    _sum: TradeNameSideEffectSumAggregateOutputType | null;
+    _min: TradeNameSideEffectMinAggregateOutputType | null;
+    _max: TradeNameSideEffectMaxAggregateOutputType | null;
+};
+export type TradeNameSideEffectAvgAggregateOutputType = {
+    sideEffectId: number | null;
+    tradeNameId: number | null;
+};
+export type TradeNameSideEffectSumAggregateOutputType = {
+    sideEffectId: number | null;
+    tradeNameId: number | null;
+};
+export type TradeNameSideEffectMinAggregateOutputType = {
+    sideEffectId: number | null;
+    tradeNameId: number | null;
+};
+export type TradeNameSideEffectMaxAggregateOutputType = {
+    sideEffectId: number | null;
+    tradeNameId: number | null;
+};
+export type TradeNameSideEffectCountAggregateOutputType = {
+    sideEffectId: number;
+    tradeNameId: number;
+    _all: number;
+};
+export type TradeNameSideEffectAvgAggregateInputType = {
+    sideEffectId?: true;
+    tradeNameId?: true;
+};
+export type TradeNameSideEffectSumAggregateInputType = {
+    sideEffectId?: true;
+    tradeNameId?: true;
+};
+export type TradeNameSideEffectMinAggregateInputType = {
+    sideEffectId?: true;
+    tradeNameId?: true;
+};
+export type TradeNameSideEffectMaxAggregateInputType = {
+    sideEffectId?: true;
+    tradeNameId?: true;
+};
+export type TradeNameSideEffectCountAggregateInputType = {
+    sideEffectId?: true;
+    tradeNameId?: true;
+    _all?: true;
+};
+export type TradeNameSideEffectAggregateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Filter which TradeNameSideEffect to aggregate.
+     */
+    where?: Prisma.TradeNameSideEffectWhereInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of TradeNameSideEffects to fetch.
+     */
+    orderBy?: Prisma.TradeNameSideEffectOrderByWithRelationInput | Prisma.TradeNameSideEffectOrderByWithRelationInput[];
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the start position
+     */
+    cursor?: Prisma.TradeNameSideEffectWhereUniqueInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` TradeNameSideEffects from the position of the cursor.
+     */
+    take?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` TradeNameSideEffects.
+     */
+    skip?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Count returned TradeNameSideEffects
+    **/
+    _count?: true | TradeNameSideEffectCountAggregateInputType;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Select which fields to average
+    **/
+    _avg?: TradeNameSideEffectAvgAggregateInputType;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Select which fields to sum
+    **/
+    _sum?: TradeNameSideEffectSumAggregateInputType;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Select which fields to find the minimum value
+    **/
+    _min?: TradeNameSideEffectMinAggregateInputType;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Select which fields to find the maximum value
+    **/
+    _max?: TradeNameSideEffectMaxAggregateInputType;
+};
+export type GetTradeNameSideEffectAggregateType<T extends TradeNameSideEffectAggregateArgs> = {
+    [P in keyof T & keyof AggregateTradeNameSideEffect]: P extends '_count' | 'count' ? T[P] extends true ? number : Prisma.GetScalarType<T[P], AggregateTradeNameSideEffect[P]> : Prisma.GetScalarType<T[P], AggregateTradeNameSideEffect[P]>;
+};
+export type TradeNameSideEffectGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    where?: Prisma.TradeNameSideEffectWhereInput;
+    orderBy?: Prisma.TradeNameSideEffectOrderByWithAggregationInput | Prisma.TradeNameSideEffectOrderByWithAggregationInput[];
+    by: Prisma.TradeNameSideEffectScalarFieldEnum[] | Prisma.TradeNameSideEffectScalarFieldEnum;
+    having?: Prisma.TradeNameSideEffectScalarWhereWithAggregatesInput;
+    take?: number;
+    skip?: number;
+    _count?: TradeNameSideEffectCountAggregateInputType | true;
+    _avg?: TradeNameSideEffectAvgAggregateInputType;
+    _sum?: TradeNameSideEffectSumAggregateInputType;
+    _min?: TradeNameSideEffectMinAggregateInputType;
+    _max?: TradeNameSideEffectMaxAggregateInputType;
+};
+export type TradeNameSideEffectGroupByOutputType = {
+    sideEffectId: number;
+    tradeNameId: number;
+    _count: TradeNameSideEffectCountAggregateOutputType | null;
+    _avg: TradeNameSideEffectAvgAggregateOutputType | null;
+    _sum: TradeNameSideEffectSumAggregateOutputType | null;
+    _min: TradeNameSideEffectMinAggregateOutputType | null;
+    _max: TradeNameSideEffectMaxAggregateOutputType | null;
+};
+type GetTradeNameSideEffectGroupByPayload<T extends TradeNameSideEffectGroupByArgs> = Prisma.PrismaPromise<Array<Prisma.PickEnumerable<TradeNameSideEffectGroupByOutputType, T['by']> & {
+    [P in ((keyof T) & (keyof TradeNameSideEffectGroupByOutputType))]: P extends '_count' ? T[P] extends boolean ? number : Prisma.GetScalarType<T[P], TradeNameSideEffectGroupByOutputType[P]> : Prisma.GetScalarType<T[P], TradeNameSideEffectGroupByOutputType[P]>;
+}>>;
+export type TradeNameSideEffectWhereInput = {
+    AND?: Prisma.TradeNameSideEffectWhereInput | Prisma.TradeNameSideEffectWhereInput[];
+    OR?: Prisma.TradeNameSideEffectWhereInput[];
+    NOT?: Prisma.TradeNameSideEffectWhereInput | Prisma.TradeNameSideEffectWhereInput[];
+    sideEffectId?: Prisma.IntFilter<"TradeNameSideEffect"> | number;
+    tradeNameId?: Prisma.IntFilter<"TradeNameSideEffect"> | number;
+    sideEffect?: Prisma.XOR<Prisma.SideEffectScalarRelationFilter, Prisma.SideEffectWhereInput>;
+    tradeName?: Prisma.XOR<Prisma.TradeNameScalarRelationFilter, Prisma.TradeNameWhereInput>;
+};
+export type TradeNameSideEffectOrderByWithRelationInput = {
+    sideEffectId?: Prisma.SortOrder;
+    tradeNameId?: Prisma.SortOrder;
+    sideEffect?: Prisma.SideEffectOrderByWithRelationInput;
+    tradeName?: Prisma.TradeNameOrderByWithRelationInput;
+};
+export type TradeNameSideEffectWhereUniqueInput = Prisma.AtLeast<{
+    sideEffectId_tradeNameId?: Prisma.TradeNameSideEffectSideEffectIdTradeNameIdCompoundUniqueInput;
+    AND?: Prisma.TradeNameSideEffectWhereInput | Prisma.TradeNameSideEffectWhereInput[];
+    OR?: Prisma.TradeNameSideEffectWhereInput[];
+    NOT?: Prisma.TradeNameSideEffectWhereInput | Prisma.TradeNameSideEffectWhereInput[];
+    sideEffectId?: Prisma.IntFilter<"TradeNameSideEffect"> | number;
+    tradeNameId?: Prisma.IntFilter<"TradeNameSideEffect"> | number;
+    sideEffect?: Prisma.XOR<Prisma.SideEffectScalarRelationFilter, Prisma.SideEffectWhereInput>;
+    tradeName?: Prisma.XOR<Prisma.TradeNameScalarRelationFilter, Prisma.TradeNameWhereInput>;
+}, "sideEffectId_tradeNameId">;
+export type TradeNameSideEffectOrderByWithAggregationInput = {
+    sideEffectId?: Prisma.SortOrder;
+    tradeNameId?: Prisma.SortOrder;
+    _count?: Prisma.TradeNameSideEffectCountOrderByAggregateInput;
+    _avg?: Prisma.TradeNameSideEffectAvgOrderByAggregateInput;
+    _max?: Prisma.TradeNameSideEffectMaxOrderByAggregateInput;
+    _min?: Prisma.TradeNameSideEffectMinOrderByAggregateInput;
+    _sum?: Prisma.TradeNameSideEffectSumOrderByAggregateInput;
+};
+export type TradeNameSideEffectScalarWhereWithAggregatesInput = {
+    AND?: Prisma.TradeNameSideEffectScalarWhereWithAggregatesInput | Prisma.TradeNameSideEffectScalarWhereWithAggregatesInput[];
+    OR?: Prisma.TradeNameSideEffectScalarWhereWithAggregatesInput[];
+    NOT?: Prisma.TradeNameSideEffectScalarWhereWithAggregatesInput | Prisma.TradeNameSideEffectScalarWhereWithAggregatesInput[];
+    sideEffectId?: Prisma.IntWithAggregatesFilter<"TradeNameSideEffect"> | number;
+    tradeNameId?: Prisma.IntWithAggregatesFilter<"TradeNameSideEffect"> | number;
+};
+export type TradeNameSideEffectCreateInput = {
+    sideEffect: Prisma.SideEffectCreateNestedOneWithoutTradeNamesInput;
+    tradeName: Prisma.TradeNameCreateNestedOneWithoutSideEffectsInput;
+};
+export type TradeNameSideEffectUncheckedCreateInput = {
+    sideEffectId: number;
+    tradeNameId: number;
+};
+export type TradeNameSideEffectUpdateInput = {
+    sideEffect?: Prisma.SideEffectUpdateOneRequiredWithoutTradeNamesNestedInput;
+    tradeName?: Prisma.TradeNameUpdateOneRequiredWithoutSideEffectsNestedInput;
+};
+export type TradeNameSideEffectUncheckedUpdateInput = {
+    sideEffectId?: Prisma.IntFieldUpdateOperationsInput | number;
+    tradeNameId?: Prisma.IntFieldUpdateOperationsInput | number;
+};
+export type TradeNameSideEffectCreateManyInput = {
+    sideEffectId: number;
+    tradeNameId: number;
+};
+export type TradeNameSideEffectUpdateManyMutationInput = {};
+export type TradeNameSideEffectUncheckedUpdateManyInput = {
+    sideEffectId?: Prisma.IntFieldUpdateOperationsInput | number;
+    tradeNameId?: Prisma.IntFieldUpdateOperationsInput | number;
+};
+export type TradeNameSideEffectListRelationFilter = {
+    every?: Prisma.TradeNameSideEffectWhereInput;
+    some?: Prisma.TradeNameSideEffectWhereInput;
+    none?: Prisma.TradeNameSideEffectWhereInput;
+};
+export type TradeNameSideEffectOrderByRelationAggregateInput = {
+    _count?: Prisma.SortOrder;
+};
+export type TradeNameSideEffectSideEffectIdTradeNameIdCompoundUniqueInput = {
+    sideEffectId: number;
+    tradeNameId: number;
+};
+export type TradeNameSideEffectCountOrderByAggregateInput = {
+    sideEffectId?: Prisma.SortOrder;
+    tradeNameId?: Prisma.SortOrder;
+};
+export type TradeNameSideEffectAvgOrderByAggregateInput = {
+    sideEffectId?: Prisma.SortOrder;
+    tradeNameId?: Prisma.SortOrder;
+};
+export type TradeNameSideEffectMaxOrderByAggregateInput = {
+    sideEffectId?: Prisma.SortOrder;
+    tradeNameId?: Prisma.SortOrder;
+};
+export type TradeNameSideEffectMinOrderByAggregateInput = {
+    sideEffectId?: Prisma.SortOrder;
+    tradeNameId?: Prisma.SortOrder;
+};
+export type TradeNameSideEffectSumOrderByAggregateInput = {
+    sideEffectId?: Prisma.SortOrder;
+    tradeNameId?: Prisma.SortOrder;
+};
+export type TradeNameSideEffectCreateNestedManyWithoutTradeNameInput = {
+    create?: Prisma.XOR<Prisma.TradeNameSideEffectCreateWithoutTradeNameInput, Prisma.TradeNameSideEffectUncheckedCreateWithoutTradeNameInput> | Prisma.TradeNameSideEffectCreateWithoutTradeNameInput[] | Prisma.TradeNameSideEffectUncheckedCreateWithoutTradeNameInput[];
+    connectOrCreate?: Prisma.TradeNameSideEffectCreateOrConnectWithoutTradeNameInput | Prisma.TradeNameSideEffectCreateOrConnectWithoutTradeNameInput[];
+    createMany?: Prisma.TradeNameSideEffectCreateManyTradeNameInputEnvelope;
+    connect?: Prisma.TradeNameSideEffectWhereUniqueInput | Prisma.TradeNameSideEffectWhereUniqueInput[];
+};
+export type TradeNameSideEffectUncheckedCreateNestedManyWithoutTradeNameInput = {
+    create?: Prisma.XOR<Prisma.TradeNameSideEffectCreateWithoutTradeNameInput, Prisma.TradeNameSideEffectUncheckedCreateWithoutTradeNameInput> | Prisma.TradeNameSideEffectCreateWithoutTradeNameInput[] | Prisma.TradeNameSideEffectUncheckedCreateWithoutTradeNameInput[];
+    connectOrCreate?: Prisma.TradeNameSideEffectCreateOrConnectWithoutTradeNameInput | Prisma.TradeNameSideEffectCreateOrConnectWithoutTradeNameInput[];
+    createMany?: Prisma.TradeNameSideEffectCreateManyTradeNameInputEnvelope;
+    connect?: Prisma.TradeNameSideEffectWhereUniqueInput | Prisma.TradeNameSideEffectWhereUniqueInput[];
+};
+export type TradeNameSideEffectUpdateManyWithoutTradeNameNestedInput = {
+    create?: Prisma.XOR<Prisma.TradeNameSideEffectCreateWithoutTradeNameInput, Prisma.TradeNameSideEffectUncheckedCreateWithoutTradeNameInput> | Prisma.TradeNameSideEffectCreateWithoutTradeNameInput[] | Prisma.TradeNameSideEffectUncheckedCreateWithoutTradeNameInput[];
+    connectOrCreate?: Prisma.TradeNameSideEffectCreateOrConnectWithoutTradeNameInput | Prisma.TradeNameSideEffectCreateOrConnectWithoutTradeNameInput[];
+    upsert?: Prisma.TradeNameSideEffectUpsertWithWhereUniqueWithoutTradeNameInput | Prisma.TradeNameSideEffectUpsertWithWhereUniqueWithoutTradeNameInput[];
+    createMany?: Prisma.TradeNameSideEffectCreateManyTradeNameInputEnvelope;
+    set?: Prisma.TradeNameSideEffectWhereUniqueInput | Prisma.TradeNameSideEffectWhereUniqueInput[];
+    disconnect?: Prisma.TradeNameSideEffectWhereUniqueInput | Prisma.TradeNameSideEffectWhereUniqueInput[];
+    delete?: Prisma.TradeNameSideEffectWhereUniqueInput | Prisma.TradeNameSideEffectWhereUniqueInput[];
+    connect?: Prisma.TradeNameSideEffectWhereUniqueInput | Prisma.TradeNameSideEffectWhereUniqueInput[];
+    update?: Prisma.TradeNameSideEffectUpdateWithWhereUniqueWithoutTradeNameInput | Prisma.TradeNameSideEffectUpdateWithWhereUniqueWithoutTradeNameInput[];
+    updateMany?: Prisma.TradeNameSideEffectUpdateManyWithWhereWithoutTradeNameInput | Prisma.TradeNameSideEffectUpdateManyWithWhereWithoutTradeNameInput[];
+    deleteMany?: Prisma.TradeNameSideEffectScalarWhereInput | Prisma.TradeNameSideEffectScalarWhereInput[];
+};
+export type TradeNameSideEffectUncheckedUpdateManyWithoutTradeNameNestedInput = {
+    create?: Prisma.XOR<Prisma.TradeNameSideEffectCreateWithoutTradeNameInput, Prisma.TradeNameSideEffectUncheckedCreateWithoutTradeNameInput> | Prisma.TradeNameSideEffectCreateWithoutTradeNameInput[] | Prisma.TradeNameSideEffectUncheckedCreateWithoutTradeNameInput[];
+    connectOrCreate?: Prisma.TradeNameSideEffectCreateOrConnectWithoutTradeNameInput | Prisma.TradeNameSideEffectCreateOrConnectWithoutTradeNameInput[];
+    upsert?: Prisma.TradeNameSideEffectUpsertWithWhereUniqueWithoutTradeNameInput | Prisma.TradeNameSideEffectUpsertWithWhereUniqueWithoutTradeNameInput[];
+    createMany?: Prisma.TradeNameSideEffectCreateManyTradeNameInputEnvelope;
+    set?: Prisma.TradeNameSideEffectWhereUniqueInput | Prisma.TradeNameSideEffectWhereUniqueInput[];
+    disconnect?: Prisma.TradeNameSideEffectWhereUniqueInput | Prisma.TradeNameSideEffectWhereUniqueInput[];
+    delete?: Prisma.TradeNameSideEffectWhereUniqueInput | Prisma.TradeNameSideEffectWhereUniqueInput[];
+    connect?: Prisma.TradeNameSideEffectWhereUniqueInput | Prisma.TradeNameSideEffectWhereUniqueInput[];
+    update?: Prisma.TradeNameSideEffectUpdateWithWhereUniqueWithoutTradeNameInput | Prisma.TradeNameSideEffectUpdateWithWhereUniqueWithoutTradeNameInput[];
+    updateMany?: Prisma.TradeNameSideEffectUpdateManyWithWhereWithoutTradeNameInput | Prisma.TradeNameSideEffectUpdateManyWithWhereWithoutTradeNameInput[];
+    deleteMany?: Prisma.TradeNameSideEffectScalarWhereInput | Prisma.TradeNameSideEffectScalarWhereInput[];
+};
+export type TradeNameSideEffectCreateNestedManyWithoutSideEffectInput = {
+    create?: Prisma.XOR<Prisma.TradeNameSideEffectCreateWithoutSideEffectInput, Prisma.TradeNameSideEffectUncheckedCreateWithoutSideEffectInput> | Prisma.TradeNameSideEffectCreateWithoutSideEffectInput[] | Prisma.TradeNameSideEffectUncheckedCreateWithoutSideEffectInput[];
+    connectOrCreate?: Prisma.TradeNameSideEffectCreateOrConnectWithoutSideEffectInput | Prisma.TradeNameSideEffectCreateOrConnectWithoutSideEffectInput[];
+    createMany?: Prisma.TradeNameSideEffectCreateManySideEffectInputEnvelope;
+    connect?: Prisma.TradeNameSideEffectWhereUniqueInput | Prisma.TradeNameSideEffectWhereUniqueInput[];
+};
+export type TradeNameSideEffectUncheckedCreateNestedManyWithoutSideEffectInput = {
+    create?: Prisma.XOR<Prisma.TradeNameSideEffectCreateWithoutSideEffectInput, Prisma.TradeNameSideEffectUncheckedCreateWithoutSideEffectInput> | Prisma.TradeNameSideEffectCreateWithoutSideEffectInput[] | Prisma.TradeNameSideEffectUncheckedCreateWithoutSideEffectInput[];
+    connectOrCreate?: Prisma.TradeNameSideEffectCreateOrConnectWithoutSideEffectInput | Prisma.TradeNameSideEffectCreateOrConnectWithoutSideEffectInput[];
+    createMany?: Prisma.TradeNameSideEffectCreateManySideEffectInputEnvelope;
+    connect?: Prisma.TradeNameSideEffectWhereUniqueInput | Prisma.TradeNameSideEffectWhereUniqueInput[];
+};
+export type TradeNameSideEffectUpdateManyWithoutSideEffectNestedInput = {
+    create?: Prisma.XOR<Prisma.TradeNameSideEffectCreateWithoutSideEffectInput, Prisma.TradeNameSideEffectUncheckedCreateWithoutSideEffectInput> | Prisma.TradeNameSideEffectCreateWithoutSideEffectInput[] | Prisma.TradeNameSideEffectUncheckedCreateWithoutSideEffectInput[];
+    connectOrCreate?: Prisma.TradeNameSideEffectCreateOrConnectWithoutSideEffectInput | Prisma.TradeNameSideEffectCreateOrConnectWithoutSideEffectInput[];
+    upsert?: Prisma.TradeNameSideEffectUpsertWithWhereUniqueWithoutSideEffectInput | Prisma.TradeNameSideEffectUpsertWithWhereUniqueWithoutSideEffectInput[];
+    createMany?: Prisma.TradeNameSideEffectCreateManySideEffectInputEnvelope;
+    set?: Prisma.TradeNameSideEffectWhereUniqueInput | Prisma.TradeNameSideEffectWhereUniqueInput[];
+    disconnect?: Prisma.TradeNameSideEffectWhereUniqueInput | Prisma.TradeNameSideEffectWhereUniqueInput[];
+    delete?: Prisma.TradeNameSideEffectWhereUniqueInput | Prisma.TradeNameSideEffectWhereUniqueInput[];
+    connect?: Prisma.TradeNameSideEffectWhereUniqueInput | Prisma.TradeNameSideEffectWhereUniqueInput[];
+    update?: Prisma.TradeNameSideEffectUpdateWithWhereUniqueWithoutSideEffectInput | Prisma.TradeNameSideEffectUpdateWithWhereUniqueWithoutSideEffectInput[];
+    updateMany?: Prisma.TradeNameSideEffectUpdateManyWithWhereWithoutSideEffectInput | Prisma.TradeNameSideEffectUpdateManyWithWhereWithoutSideEffectInput[];
+    deleteMany?: Prisma.TradeNameSideEffectScalarWhereInput | Prisma.TradeNameSideEffectScalarWhereInput[];
+};
+export type TradeNameSideEffectUncheckedUpdateManyWithoutSideEffectNestedInput = {
+    create?: Prisma.XOR<Prisma.TradeNameSideEffectCreateWithoutSideEffectInput, Prisma.TradeNameSideEffectUncheckedCreateWithoutSideEffectInput> | Prisma.TradeNameSideEffectCreateWithoutSideEffectInput[] | Prisma.TradeNameSideEffectUncheckedCreateWithoutSideEffectInput[];
+    connectOrCreate?: Prisma.TradeNameSideEffectCreateOrConnectWithoutSideEffectInput | Prisma.TradeNameSideEffectCreateOrConnectWithoutSideEffectInput[];
+    upsert?: Prisma.TradeNameSideEffectUpsertWithWhereUniqueWithoutSideEffectInput | Prisma.TradeNameSideEffectUpsertWithWhereUniqueWithoutSideEffectInput[];
+    createMany?: Prisma.TradeNameSideEffectCreateManySideEffectInputEnvelope;
+    set?: Prisma.TradeNameSideEffectWhereUniqueInput | Prisma.TradeNameSideEffectWhereUniqueInput[];
+    disconnect?: Prisma.TradeNameSideEffectWhereUniqueInput | Prisma.TradeNameSideEffectWhereUniqueInput[];
+    delete?: Prisma.TradeNameSideEffectWhereUniqueInput | Prisma.TradeNameSideEffectWhereUniqueInput[];
+    connect?: Prisma.TradeNameSideEffectWhereUniqueInput | Prisma.TradeNameSideEffectWhereUniqueInput[];
+    update?: Prisma.TradeNameSideEffectUpdateWithWhereUniqueWithoutSideEffectInput | Prisma.TradeNameSideEffectUpdateWithWhereUniqueWithoutSideEffectInput[];
+    updateMany?: Prisma.TradeNameSideEffectUpdateManyWithWhereWithoutSideEffectInput | Prisma.TradeNameSideEffectUpdateManyWithWhereWithoutSideEffectInput[];
+    deleteMany?: Prisma.TradeNameSideEffectScalarWhereInput | Prisma.TradeNameSideEffectScalarWhereInput[];
+};
+export type TradeNameSideEffectCreateWithoutTradeNameInput = {
+    sideEffect: Prisma.SideEffectCreateNestedOneWithoutTradeNamesInput;
+};
+export type TradeNameSideEffectUncheckedCreateWithoutTradeNameInput = {
+    sideEffectId: number;
+};
+export type TradeNameSideEffectCreateOrConnectWithoutTradeNameInput = {
+    where: Prisma.TradeNameSideEffectWhereUniqueInput;
+    create: Prisma.XOR<Prisma.TradeNameSideEffectCreateWithoutTradeNameInput, Prisma.TradeNameSideEffectUncheckedCreateWithoutTradeNameInput>;
+};
+export type TradeNameSideEffectCreateManyTradeNameInputEnvelope = {
+    data: Prisma.TradeNameSideEffectCreateManyTradeNameInput | Prisma.TradeNameSideEffectCreateManyTradeNameInput[];
+    skipDuplicates?: boolean;
+};
+export type TradeNameSideEffectUpsertWithWhereUniqueWithoutTradeNameInput = {
+    where: Prisma.TradeNameSideEffectWhereUniqueInput;
+    update: Prisma.XOR<Prisma.TradeNameSideEffectUpdateWithoutTradeNameInput, Prisma.TradeNameSideEffectUncheckedUpdateWithoutTradeNameInput>;
+    create: Prisma.XOR<Prisma.TradeNameSideEffectCreateWithoutTradeNameInput, Prisma.TradeNameSideEffectUncheckedCreateWithoutTradeNameInput>;
+};
+export type TradeNameSideEffectUpdateWithWhereUniqueWithoutTradeNameInput = {
+    where: Prisma.TradeNameSideEffectWhereUniqueInput;
+    data: Prisma.XOR<Prisma.TradeNameSideEffectUpdateWithoutTradeNameInput, Prisma.TradeNameSideEffectUncheckedUpdateWithoutTradeNameInput>;
+};
+export type TradeNameSideEffectUpdateManyWithWhereWithoutTradeNameInput = {
+    where: Prisma.TradeNameSideEffectScalarWhereInput;
+    data: Prisma.XOR<Prisma.TradeNameSideEffectUpdateManyMutationInput, Prisma.TradeNameSideEffectUncheckedUpdateManyWithoutTradeNameInput>;
+};
+export type TradeNameSideEffectScalarWhereInput = {
+    AND?: Prisma.TradeNameSideEffectScalarWhereInput | Prisma.TradeNameSideEffectScalarWhereInput[];
+    OR?: Prisma.TradeNameSideEffectScalarWhereInput[];
+    NOT?: Prisma.TradeNameSideEffectScalarWhereInput | Prisma.TradeNameSideEffectScalarWhereInput[];
+    sideEffectId?: Prisma.IntFilter<"TradeNameSideEffect"> | number;
+    tradeNameId?: Prisma.IntFilter<"TradeNameSideEffect"> | number;
+};
+export type TradeNameSideEffectCreateWithoutSideEffectInput = {
+    tradeName: Prisma.TradeNameCreateNestedOneWithoutSideEffectsInput;
+};
+export type TradeNameSideEffectUncheckedCreateWithoutSideEffectInput = {
+    tradeNameId: number;
+};
+export type TradeNameSideEffectCreateOrConnectWithoutSideEffectInput = {
+    where: Prisma.TradeNameSideEffectWhereUniqueInput;
+    create: Prisma.XOR<Prisma.TradeNameSideEffectCreateWithoutSideEffectInput, Prisma.TradeNameSideEffectUncheckedCreateWithoutSideEffectInput>;
+};
+export type TradeNameSideEffectCreateManySideEffectInputEnvelope = {
+    data: Prisma.TradeNameSideEffectCreateManySideEffectInput | Prisma.TradeNameSideEffectCreateManySideEffectInput[];
+    skipDuplicates?: boolean;
+};
+export type TradeNameSideEffectUpsertWithWhereUniqueWithoutSideEffectInput = {
+    where: Prisma.TradeNameSideEffectWhereUniqueInput;
+    update: Prisma.XOR<Prisma.TradeNameSideEffectUpdateWithoutSideEffectInput, Prisma.TradeNameSideEffectUncheckedUpdateWithoutSideEffectInput>;
+    create: Prisma.XOR<Prisma.TradeNameSideEffectCreateWithoutSideEffectInput, Prisma.TradeNameSideEffectUncheckedCreateWithoutSideEffectInput>;
+};
+export type TradeNameSideEffectUpdateWithWhereUniqueWithoutSideEffectInput = {
+    where: Prisma.TradeNameSideEffectWhereUniqueInput;
+    data: Prisma.XOR<Prisma.TradeNameSideEffectUpdateWithoutSideEffectInput, Prisma.TradeNameSideEffectUncheckedUpdateWithoutSideEffectInput>;
+};
+export type TradeNameSideEffectUpdateManyWithWhereWithoutSideEffectInput = {
+    where: Prisma.TradeNameSideEffectScalarWhereInput;
+    data: Prisma.XOR<Prisma.TradeNameSideEffectUpdateManyMutationInput, Prisma.TradeNameSideEffectUncheckedUpdateManyWithoutSideEffectInput>;
+};
+export type TradeNameSideEffectCreateManyTradeNameInput = {
+    sideEffectId: number;
+};
+export type TradeNameSideEffectUpdateWithoutTradeNameInput = {
+    sideEffect?: Prisma.SideEffectUpdateOneRequiredWithoutTradeNamesNestedInput;
+};
+export type TradeNameSideEffectUncheckedUpdateWithoutTradeNameInput = {
+    sideEffectId?: Prisma.IntFieldUpdateOperationsInput | number;
+};
+export type TradeNameSideEffectUncheckedUpdateManyWithoutTradeNameInput = {
+    sideEffectId?: Prisma.IntFieldUpdateOperationsInput | number;
+};
+export type TradeNameSideEffectCreateManySideEffectInput = {
+    tradeNameId: number;
+};
+export type TradeNameSideEffectUpdateWithoutSideEffectInput = {
+    tradeName?: Prisma.TradeNameUpdateOneRequiredWithoutSideEffectsNestedInput;
+};
+export type TradeNameSideEffectUncheckedUpdateWithoutSideEffectInput = {
+    tradeNameId?: Prisma.IntFieldUpdateOperationsInput | number;
+};
+export type TradeNameSideEffectUncheckedUpdateManyWithoutSideEffectInput = {
+    tradeNameId?: Prisma.IntFieldUpdateOperationsInput | number;
+};
+export type TradeNameSideEffectSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+    sideEffectId?: boolean;
+    tradeNameId?: boolean;
+    sideEffect?: boolean | Prisma.SideEffectDefaultArgs<ExtArgs>;
+    tradeName?: boolean | Prisma.TradeNameDefaultArgs<ExtArgs>;
+}, ExtArgs["result"]["tradeNameSideEffect"]>;
+export type TradeNameSideEffectSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+    sideEffectId?: boolean;
+    tradeNameId?: boolean;
+    sideEffect?: boolean | Prisma.SideEffectDefaultArgs<ExtArgs>;
+    tradeName?: boolean | Prisma.TradeNameDefaultArgs<ExtArgs>;
+}, ExtArgs["result"]["tradeNameSideEffect"]>;
+export type TradeNameSideEffectSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+    sideEffectId?: boolean;
+    tradeNameId?: boolean;
+    sideEffect?: boolean | Prisma.SideEffectDefaultArgs<ExtArgs>;
+    tradeName?: boolean | Prisma.TradeNameDefaultArgs<ExtArgs>;
+}, ExtArgs["result"]["tradeNameSideEffect"]>;
+export type TradeNameSideEffectSelectScalar = {
+    sideEffectId?: boolean;
+    tradeNameId?: boolean;
+};
+export type TradeNameSideEffectOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"sideEffectId" | "tradeNameId", ExtArgs["result"]["tradeNameSideEffect"]>;
+export type TradeNameSideEffectInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    sideEffect?: boolean | Prisma.SideEffectDefaultArgs<ExtArgs>;
+    tradeName?: boolean | Prisma.TradeNameDefaultArgs<ExtArgs>;
+};
+export type TradeNameSideEffectIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    sideEffect?: boolean | Prisma.SideEffectDefaultArgs<ExtArgs>;
+    tradeName?: boolean | Prisma.TradeNameDefaultArgs<ExtArgs>;
+};
+export type TradeNameSideEffectIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    sideEffect?: boolean | Prisma.SideEffectDefaultArgs<ExtArgs>;
+    tradeName?: boolean | Prisma.TradeNameDefaultArgs<ExtArgs>;
+};
+export type $TradeNameSideEffectPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    name: "TradeNameSideEffect";
+    objects: {
+        sideEffect: Prisma.$SideEffectPayload<ExtArgs>;
+        tradeName: Prisma.$TradeNamePayload<ExtArgs>;
+    };
+    scalars: runtime.Types.Extensions.GetPayloadResult<{
+        sideEffectId: number;
+        tradeNameId: number;
+    }, ExtArgs["result"]["tradeNameSideEffect"]>;
+    composites: {};
+};
+export type TradeNameSideEffectGetPayload<S extends boolean | null | undefined | TradeNameSideEffectDefaultArgs> = runtime.Types.Result.GetResult<Prisma.$TradeNameSideEffectPayload, S>;
+export type TradeNameSideEffectCountArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = Omit<TradeNameSideEffectFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+    select?: TradeNameSideEffectCountAggregateInputType | true;
+};
+export interface TradeNameSideEffectDelegate<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: {
+        types: Prisma.TypeMap<ExtArgs>['model']['TradeNameSideEffect'];
+        meta: {
+            name: 'TradeNameSideEffect';
+        };
+    };
+    /**
+     * Find zero or one TradeNameSideEffect that matches the filter.
+     * @param {TradeNameSideEffectFindUniqueArgs} args - Arguments to find a TradeNameSideEffect
+     * @example
+     * // Get one TradeNameSideEffect
+     * const tradeNameSideEffect = await prisma.tradeNameSideEffect.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends TradeNameSideEffectFindUniqueArgs>(args: Prisma.SelectSubset<T, TradeNameSideEffectFindUniqueArgs<ExtArgs>>): Prisma.Prisma__TradeNameSideEffectClient<runtime.Types.Result.GetResult<Prisma.$TradeNameSideEffectPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>;
+    /**
+     * Find one TradeNameSideEffect that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {TradeNameSideEffectFindUniqueOrThrowArgs} args - Arguments to find a TradeNameSideEffect
+     * @example
+     * // Get one TradeNameSideEffect
+     * const tradeNameSideEffect = await prisma.tradeNameSideEffect.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends TradeNameSideEffectFindUniqueOrThrowArgs>(args: Prisma.SelectSubset<T, TradeNameSideEffectFindUniqueOrThrowArgs<ExtArgs>>): Prisma.Prisma__TradeNameSideEffectClient<runtime.Types.Result.GetResult<Prisma.$TradeNameSideEffectPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
+    /**
+     * Find the first TradeNameSideEffect that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TradeNameSideEffectFindFirstArgs} args - Arguments to find a TradeNameSideEffect
+     * @example
+     * // Get one TradeNameSideEffect
+     * const tradeNameSideEffect = await prisma.tradeNameSideEffect.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends TradeNameSideEffectFindFirstArgs>(args?: Prisma.SelectSubset<T, TradeNameSideEffectFindFirstArgs<ExtArgs>>): Prisma.Prisma__TradeNameSideEffectClient<runtime.Types.Result.GetResult<Prisma.$TradeNameSideEffectPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>;
+    /**
+     * Find the first TradeNameSideEffect that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TradeNameSideEffectFindFirstOrThrowArgs} args - Arguments to find a TradeNameSideEffect
+     * @example
+     * // Get one TradeNameSideEffect
+     * const tradeNameSideEffect = await prisma.tradeNameSideEffect.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends TradeNameSideEffectFindFirstOrThrowArgs>(args?: Prisma.SelectSubset<T, TradeNameSideEffectFindFirstOrThrowArgs<ExtArgs>>): Prisma.Prisma__TradeNameSideEffectClient<runtime.Types.Result.GetResult<Prisma.$TradeNameSideEffectPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
+    /**
+     * Find zero or more TradeNameSideEffects that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TradeNameSideEffectFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all TradeNameSideEffects
+     * const tradeNameSideEffects = await prisma.tradeNameSideEffect.findMany()
+     *
+     * // Get first 10 TradeNameSideEffects
+     * const tradeNameSideEffects = await prisma.tradeNameSideEffect.findMany({ take: 10 })
+     *
+     * // Only select the `sideEffectId`
+     * const tradeNameSideEffectWithSideEffectIdOnly = await prisma.tradeNameSideEffect.findMany({ select: { sideEffectId: true } })
+     *
+     */
+    findMany<T extends TradeNameSideEffectFindManyArgs>(args?: Prisma.SelectSubset<T, TradeNameSideEffectFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TradeNameSideEffectPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>;
+    /**
+     * Create a TradeNameSideEffect.
+     * @param {TradeNameSideEffectCreateArgs} args - Arguments to create a TradeNameSideEffect.
+     * @example
+     * // Create one TradeNameSideEffect
+     * const TradeNameSideEffect = await prisma.tradeNameSideEffect.create({
+     *   data: {
+     *     // ... data to create a TradeNameSideEffect
+     *   }
+     * })
+     *
+     */
+    create<T extends TradeNameSideEffectCreateArgs>(args: Prisma.SelectSubset<T, TradeNameSideEffectCreateArgs<ExtArgs>>): Prisma.Prisma__TradeNameSideEffectClient<runtime.Types.Result.GetResult<Prisma.$TradeNameSideEffectPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
+    /**
+     * Create many TradeNameSideEffects.
+     * @param {TradeNameSideEffectCreateManyArgs} args - Arguments to create many TradeNameSideEffects.
+     * @example
+     * // Create many TradeNameSideEffects
+     * const tradeNameSideEffect = await prisma.tradeNameSideEffect.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *
+     */
+    createMany<T extends TradeNameSideEffectCreateManyArgs>(args?: Prisma.SelectSubset<T, TradeNameSideEffectCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>;
+    /**
+     * Create many TradeNameSideEffects and returns the data saved in the database.
+     * @param {TradeNameSideEffectCreateManyAndReturnArgs} args - Arguments to create many TradeNameSideEffects.
+     * @example
+     * // Create many TradeNameSideEffects
+     * const tradeNameSideEffect = await prisma.tradeNameSideEffect.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *
+     * // Create many TradeNameSideEffects and only return the `sideEffectId`
+     * const tradeNameSideEffectWithSideEffectIdOnly = await prisma.tradeNameSideEffect.createManyAndReturn({
+     *   select: { sideEffectId: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     *
+     */
+    createManyAndReturn<T extends TradeNameSideEffectCreateManyAndReturnArgs>(args?: Prisma.SelectSubset<T, TradeNameSideEffectCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TradeNameSideEffectPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>;
+    /**
+     * Delete a TradeNameSideEffect.
+     * @param {TradeNameSideEffectDeleteArgs} args - Arguments to delete one TradeNameSideEffect.
+     * @example
+     * // Delete one TradeNameSideEffect
+     * const TradeNameSideEffect = await prisma.tradeNameSideEffect.delete({
+     *   where: {
+     *     // ... filter to delete one TradeNameSideEffect
+     *   }
+     * })
+     *
+     */
+    delete<T extends TradeNameSideEffectDeleteArgs>(args: Prisma.SelectSubset<T, TradeNameSideEffectDeleteArgs<ExtArgs>>): Prisma.Prisma__TradeNameSideEffectClient<runtime.Types.Result.GetResult<Prisma.$TradeNameSideEffectPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
+    /**
+     * Update one TradeNameSideEffect.
+     * @param {TradeNameSideEffectUpdateArgs} args - Arguments to update one TradeNameSideEffect.
+     * @example
+     * // Update one TradeNameSideEffect
+     * const tradeNameSideEffect = await prisma.tradeNameSideEffect.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     *
+     */
+    update<T extends TradeNameSideEffectUpdateArgs>(args: Prisma.SelectSubset<T, TradeNameSideEffectUpdateArgs<ExtArgs>>): Prisma.Prisma__TradeNameSideEffectClient<runtime.Types.Result.GetResult<Prisma.$TradeNameSideEffectPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
+    /**
+     * Delete zero or more TradeNameSideEffects.
+     * @param {TradeNameSideEffectDeleteManyArgs} args - Arguments to filter TradeNameSideEffects to delete.
+     * @example
+     * // Delete a few TradeNameSideEffects
+     * const { count } = await prisma.tradeNameSideEffect.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     *
+     */
+    deleteMany<T extends TradeNameSideEffectDeleteManyArgs>(args?: Prisma.SelectSubset<T, TradeNameSideEffectDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>;
+    /**
+     * Update zero or more TradeNameSideEffects.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TradeNameSideEffectUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many TradeNameSideEffects
+     * const tradeNameSideEffect = await prisma.tradeNameSideEffect.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     *
+     */
+    updateMany<T extends TradeNameSideEffectUpdateManyArgs>(args: Prisma.SelectSubset<T, TradeNameSideEffectUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>;
+    /**
+     * Update zero or more TradeNameSideEffects and returns the data updated in the database.
+     * @param {TradeNameSideEffectUpdateManyAndReturnArgs} args - Arguments to update many TradeNameSideEffects.
+     * @example
+     * // Update many TradeNameSideEffects
+     * const tradeNameSideEffect = await prisma.tradeNameSideEffect.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *
+     * // Update zero or more TradeNameSideEffects and only return the `sideEffectId`
+     * const tradeNameSideEffectWithSideEffectIdOnly = await prisma.tradeNameSideEffect.updateManyAndReturn({
+     *   select: { sideEffectId: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     *
+     */
+    updateManyAndReturn<T extends TradeNameSideEffectUpdateManyAndReturnArgs>(args: Prisma.SelectSubset<T, TradeNameSideEffectUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TradeNameSideEffectPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>;
+    /**
+     * Create or update one TradeNameSideEffect.
+     * @param {TradeNameSideEffectUpsertArgs} args - Arguments to update or create a TradeNameSideEffect.
+     * @example
+     * // Update or create a TradeNameSideEffect
+     * const tradeNameSideEffect = await prisma.tradeNameSideEffect.upsert({
+     *   create: {
+     *     // ... data to create a TradeNameSideEffect
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the TradeNameSideEffect we want to update
+     *   }
+     * })
+     */
+    upsert<T extends TradeNameSideEffectUpsertArgs>(args: Prisma.SelectSubset<T, TradeNameSideEffectUpsertArgs<ExtArgs>>): Prisma.Prisma__TradeNameSideEffectClient<runtime.Types.Result.GetResult<Prisma.$TradeNameSideEffectPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
+    /**
+     * Count the number of TradeNameSideEffects.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TradeNameSideEffectCountArgs} args - Arguments to filter TradeNameSideEffects to count.
+     * @example
+     * // Count the number of TradeNameSideEffects
+     * const count = await prisma.tradeNameSideEffect.count({
+     *   where: {
+     *     // ... the filter for the TradeNameSideEffects we want to count
+     *   }
+     * })
+    **/
+    count<T extends TradeNameSideEffectCountArgs>(args?: Prisma.Subset<T, TradeNameSideEffectCountArgs>): Prisma.PrismaPromise<T extends runtime.Types.Utils.Record<'select', any> ? T['select'] extends true ? number : Prisma.GetScalarType<T['select'], TradeNameSideEffectCountAggregateOutputType> : number>;
+    /**
+     * Allows you to perform aggregations operations on a TradeNameSideEffect.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TradeNameSideEffectAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends TradeNameSideEffectAggregateArgs>(args: Prisma.Subset<T, TradeNameSideEffectAggregateArgs>): Prisma.PrismaPromise<GetTradeNameSideEffectAggregateType<T>>;
+    /**
+     * Group by TradeNameSideEffect.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TradeNameSideEffectGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     *
+    **/
+    groupBy<T extends TradeNameSideEffectGroupByArgs, HasSelectOrTake extends Prisma.Or<Prisma.Extends<'skip', Prisma.Keys<T>>, Prisma.Extends<'take', Prisma.Keys<T>>>, OrderByArg extends Prisma.True extends HasSelectOrTake ? {
+        orderBy: TradeNameSideEffectGroupByArgs['orderBy'];
+    } : {
+        orderBy?: TradeNameSideEffectGroupByArgs['orderBy'];
+    }, OrderFields extends Prisma.ExcludeUnderscoreKeys<Prisma.Keys<Prisma.MaybeTupleToUnion<T['orderBy']>>>, ByFields extends Prisma.MaybeTupleToUnion<T['by']>, ByValid extends Prisma.Has<ByFields, OrderFields>, HavingFields extends Prisma.GetHavingFields<T['having']>, HavingValid extends Prisma.Has<ByFields, HavingFields>, ByEmpty extends T['by'] extends never[] ? Prisma.True : Prisma.False, InputErrors extends ByEmpty extends Prisma.True ? `Error: "by" must not be empty.` : HavingValid extends Prisma.False ? {
+        [P in HavingFields]: P extends ByFields ? never : P extends string ? `Error: Field "${P}" used in "having" needs to be provided in "by".` : [
+            Error,
+            'Field ',
+            P,
+            ` in "having" needs to be provided in "by"`
+        ];
+    }[HavingFields] : 'take' extends Prisma.Keys<T> ? 'orderBy' extends Prisma.Keys<T> ? ByValid extends Prisma.True ? {} : {
+        [P in OrderFields]: P extends ByFields ? never : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+    }[OrderFields] : 'Error: If you provide "take", you also need to provide "orderBy"' : 'skip' extends Prisma.Keys<T> ? 'orderBy' extends Prisma.Keys<T> ? ByValid extends Prisma.True ? {} : {
+        [P in OrderFields]: P extends ByFields ? never : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+    }[OrderFields] : 'Error: If you provide "skip", you also need to provide "orderBy"' : ByValid extends Prisma.True ? {} : {
+        [P in OrderFields]: P extends ByFields ? never : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+    }[OrderFields]>(args: Prisma.SubsetIntersection<T, TradeNameSideEffectGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetTradeNameSideEffectGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>;
+    /**
+     * Fields of the TradeNameSideEffect model
+     */
+    readonly fields: TradeNameSideEffectFieldRefs;
+}
+/**
+ * The delegate class that acts as a "Promise-like" for TradeNameSideEffect.
+ * Why is this prefixed with `Prisma__`?
+ * Because we want to prevent naming conflicts as mentioned in
+ * https://github.com/prisma/prisma-client-js/issues/707
+ */
+export interface Prisma__TradeNameSideEffectClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise";
+    sideEffect<T extends Prisma.SideEffectDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.SideEffectDefaultArgs<ExtArgs>>): Prisma.Prisma__SideEffectClient<runtime.Types.Result.GetResult<Prisma.$SideEffectPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>;
+    tradeName<T extends Prisma.TradeNameDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TradeNameDefaultArgs<ExtArgs>>): Prisma.Prisma__TradeNameClient<runtime.Types.Result.GetResult<Prisma.$TradeNamePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>;
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): runtime.Types.Utils.JsPromise<TResult1 | TResult2>;
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): runtime.Types.Utils.JsPromise<T | TResult>;
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): runtime.Types.Utils.JsPromise<T>;
+}
+/**
+ * Fields of the TradeNameSideEffect model
+ */
+export interface TradeNameSideEffectFieldRefs {
+    readonly sideEffectId: Prisma.FieldRef<"TradeNameSideEffect", 'Int'>;
+    readonly tradeNameId: Prisma.FieldRef<"TradeNameSideEffect", 'Int'>;
+}
+/**
+ * TradeNameSideEffect findUnique
+ */
+export type TradeNameSideEffectFindUniqueArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TradeNameSideEffect
+     */
+    select?: Prisma.TradeNameSideEffectSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the TradeNameSideEffect
+     */
+    omit?: Prisma.TradeNameSideEffectOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: Prisma.TradeNameSideEffectInclude<ExtArgs> | null;
+    /**
+     * Filter, which TradeNameSideEffect to fetch.
+     */
+    where: Prisma.TradeNameSideEffectWhereUniqueInput;
+};
+/**
+ * TradeNameSideEffect findUniqueOrThrow
+ */
+export type TradeNameSideEffectFindUniqueOrThrowArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TradeNameSideEffect
+     */
+    select?: Prisma.TradeNameSideEffectSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the TradeNameSideEffect
+     */
+    omit?: Prisma.TradeNameSideEffectOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: Prisma.TradeNameSideEffectInclude<ExtArgs> | null;
+    /**
+     * Filter, which TradeNameSideEffect to fetch.
+     */
+    where: Prisma.TradeNameSideEffectWhereUniqueInput;
+};
+/**
+ * TradeNameSideEffect findFirst
+ */
+export type TradeNameSideEffectFindFirstArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TradeNameSideEffect
+     */
+    select?: Prisma.TradeNameSideEffectSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the TradeNameSideEffect
+     */
+    omit?: Prisma.TradeNameSideEffectOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: Prisma.TradeNameSideEffectInclude<ExtArgs> | null;
+    /**
+     * Filter, which TradeNameSideEffect to fetch.
+     */
+    where?: Prisma.TradeNameSideEffectWhereInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of TradeNameSideEffects to fetch.
+     */
+    orderBy?: Prisma.TradeNameSideEffectOrderByWithRelationInput | Prisma.TradeNameSideEffectOrderByWithRelationInput[];
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the position for searching for TradeNameSideEffects.
+     */
+    cursor?: Prisma.TradeNameSideEffectWhereUniqueInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` TradeNameSideEffects from the position of the cursor.
+     */
+    take?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` TradeNameSideEffects.
+     */
+    skip?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     *
+     * Filter by unique combinations of TradeNameSideEffects.
+     */
+    distinct?: Prisma.TradeNameSideEffectScalarFieldEnum | Prisma.TradeNameSideEffectScalarFieldEnum[];
+};
+/**
+ * TradeNameSideEffect findFirstOrThrow
+ */
+export type TradeNameSideEffectFindFirstOrThrowArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TradeNameSideEffect
+     */
+    select?: Prisma.TradeNameSideEffectSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the TradeNameSideEffect
+     */
+    omit?: Prisma.TradeNameSideEffectOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: Prisma.TradeNameSideEffectInclude<ExtArgs> | null;
+    /**
+     * Filter, which TradeNameSideEffect to fetch.
+     */
+    where?: Prisma.TradeNameSideEffectWhereInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of TradeNameSideEffects to fetch.
+     */
+    orderBy?: Prisma.TradeNameSideEffectOrderByWithRelationInput | Prisma.TradeNameSideEffectOrderByWithRelationInput[];
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the position for searching for TradeNameSideEffects.
+     */
+    cursor?: Prisma.TradeNameSideEffectWhereUniqueInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` TradeNameSideEffects from the position of the cursor.
+     */
+    take?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` TradeNameSideEffects.
+     */
+    skip?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     *
+     * Filter by unique combinations of TradeNameSideEffects.
+     */
+    distinct?: Prisma.TradeNameSideEffectScalarFieldEnum | Prisma.TradeNameSideEffectScalarFieldEnum[];
+};
+/**
+ * TradeNameSideEffect findMany
+ */
+export type TradeNameSideEffectFindManyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TradeNameSideEffect
+     */
+    select?: Prisma.TradeNameSideEffectSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the TradeNameSideEffect
+     */
+    omit?: Prisma.TradeNameSideEffectOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: Prisma.TradeNameSideEffectInclude<ExtArgs> | null;
+    /**
+     * Filter, which TradeNameSideEffects to fetch.
+     */
+    where?: Prisma.TradeNameSideEffectWhereInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of TradeNameSideEffects to fetch.
+     */
+    orderBy?: Prisma.TradeNameSideEffectOrderByWithRelationInput | Prisma.TradeNameSideEffectOrderByWithRelationInput[];
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the position for listing TradeNameSideEffects.
+     */
+    cursor?: Prisma.TradeNameSideEffectWhereUniqueInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` TradeNameSideEffects from the position of the cursor.
+     */
+    take?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` TradeNameSideEffects.
+     */
+    skip?: number;
+    distinct?: Prisma.TradeNameSideEffectScalarFieldEnum | Prisma.TradeNameSideEffectScalarFieldEnum[];
+};
+/**
+ * TradeNameSideEffect create
+ */
+export type TradeNameSideEffectCreateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TradeNameSideEffect
+     */
+    select?: Prisma.TradeNameSideEffectSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the TradeNameSideEffect
+     */
+    omit?: Prisma.TradeNameSideEffectOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: Prisma.TradeNameSideEffectInclude<ExtArgs> | null;
+    /**
+     * The data needed to create a TradeNameSideEffect.
+     */
+    data: Prisma.XOR<Prisma.TradeNameSideEffectCreateInput, Prisma.TradeNameSideEffectUncheckedCreateInput>;
+};
+/**
+ * TradeNameSideEffect createMany
+ */
+export type TradeNameSideEffectCreateManyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many TradeNameSideEffects.
+     */
+    data: Prisma.TradeNameSideEffectCreateManyInput | Prisma.TradeNameSideEffectCreateManyInput[];
+    skipDuplicates?: boolean;
+};
+/**
+ * TradeNameSideEffect createManyAndReturn
+ */
+export type TradeNameSideEffectCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TradeNameSideEffect
+     */
+    select?: Prisma.TradeNameSideEffectSelectCreateManyAndReturn<ExtArgs> | null;
+    /**
+     * Omit specific fields from the TradeNameSideEffect
+     */
+    omit?: Prisma.TradeNameSideEffectOmit<ExtArgs> | null;
+    /**
+     * The data used to create many TradeNameSideEffects.
+     */
+    data: Prisma.TradeNameSideEffectCreateManyInput | Prisma.TradeNameSideEffectCreateManyInput[];
+    skipDuplicates?: boolean;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: Prisma.TradeNameSideEffectIncludeCreateManyAndReturn<ExtArgs> | null;
+};
+/**
+ * TradeNameSideEffect update
+ */
+export type TradeNameSideEffectUpdateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TradeNameSideEffect
+     */
+    select?: Prisma.TradeNameSideEffectSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the TradeNameSideEffect
+     */
+    omit?: Prisma.TradeNameSideEffectOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: Prisma.TradeNameSideEffectInclude<ExtArgs> | null;
+    /**
+     * The data needed to update a TradeNameSideEffect.
+     */
+    data: Prisma.XOR<Prisma.TradeNameSideEffectUpdateInput, Prisma.TradeNameSideEffectUncheckedUpdateInput>;
+    /**
+     * Choose, which TradeNameSideEffect to update.
+     */
+    where: Prisma.TradeNameSideEffectWhereUniqueInput;
+};
+/**
+ * TradeNameSideEffect updateMany
+ */
+export type TradeNameSideEffectUpdateManyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * The data used to update TradeNameSideEffects.
+     */
+    data: Prisma.XOR<Prisma.TradeNameSideEffectUpdateManyMutationInput, Prisma.TradeNameSideEffectUncheckedUpdateManyInput>;
+    /**
+     * Filter which TradeNameSideEffects to update
+     */
+    where?: Prisma.TradeNameSideEffectWhereInput;
+    /**
+     * Limit how many TradeNameSideEffects to update.
+     */
+    limit?: number;
+};
+/**
+ * TradeNameSideEffect updateManyAndReturn
+ */
+export type TradeNameSideEffectUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TradeNameSideEffect
+     */
+    select?: Prisma.TradeNameSideEffectSelectUpdateManyAndReturn<ExtArgs> | null;
+    /**
+     * Omit specific fields from the TradeNameSideEffect
+     */
+    omit?: Prisma.TradeNameSideEffectOmit<ExtArgs> | null;
+    /**
+     * The data used to update TradeNameSideEffects.
+     */
+    data: Prisma.XOR<Prisma.TradeNameSideEffectUpdateManyMutationInput, Prisma.TradeNameSideEffectUncheckedUpdateManyInput>;
+    /**
+     * Filter which TradeNameSideEffects to update
+     */
+    where?: Prisma.TradeNameSideEffectWhereInput;
+    /**
+     * Limit how many TradeNameSideEffects to update.
+     */
+    limit?: number;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: Prisma.TradeNameSideEffectIncludeUpdateManyAndReturn<ExtArgs> | null;
+};
+/**
+ * TradeNameSideEffect upsert
+ */
+export type TradeNameSideEffectUpsertArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TradeNameSideEffect
+     */
+    select?: Prisma.TradeNameSideEffectSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the TradeNameSideEffect
+     */
+    omit?: Prisma.TradeNameSideEffectOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: Prisma.TradeNameSideEffectInclude<ExtArgs> | null;
+    /**
+     * The filter to search for the TradeNameSideEffect to update in case it exists.
+     */
+    where: Prisma.TradeNameSideEffectWhereUniqueInput;
+    /**
+     * In case the TradeNameSideEffect found by the `where` argument doesn't exist, create a new TradeNameSideEffect with this data.
+     */
+    create: Prisma.XOR<Prisma.TradeNameSideEffectCreateInput, Prisma.TradeNameSideEffectUncheckedCreateInput>;
+    /**
+     * In case the TradeNameSideEffect was found with the provided `where` argument, update it with this data.
+     */
+    update: Prisma.XOR<Prisma.TradeNameSideEffectUpdateInput, Prisma.TradeNameSideEffectUncheckedUpdateInput>;
+};
+/**
+ * TradeNameSideEffect delete
+ */
+export type TradeNameSideEffectDeleteArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TradeNameSideEffect
+     */
+    select?: Prisma.TradeNameSideEffectSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the TradeNameSideEffect
+     */
+    omit?: Prisma.TradeNameSideEffectOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: Prisma.TradeNameSideEffectInclude<ExtArgs> | null;
+    /**
+     * Filter which TradeNameSideEffect to delete.
+     */
+    where: Prisma.TradeNameSideEffectWhereUniqueInput;
+};
+/**
+ * TradeNameSideEffect deleteMany
+ */
+export type TradeNameSideEffectDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Filter which TradeNameSideEffects to delete
+     */
+    where?: Prisma.TradeNameSideEffectWhereInput;
+    /**
+     * Limit how many TradeNameSideEffects to delete.
+     */
+    limit?: number;
+};
+/**
+ * TradeNameSideEffect without action
+ */
+export type TradeNameSideEffectDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TradeNameSideEffect
+     */
+    select?: Prisma.TradeNameSideEffectSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the TradeNameSideEffect
+     */
+    omit?: Prisma.TradeNameSideEffectOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: Prisma.TradeNameSideEffectInclude<ExtArgs> | null;
+};
+export {};
+//# sourceMappingURL=TradeNameSideEffect.d.ts.map

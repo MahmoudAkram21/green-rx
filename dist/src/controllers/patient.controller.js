@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteChildProfile = exports.getChildProfiles = exports.addChildProfile = exports.deleteAllergy = exports.addAllergy = exports.updateLifestyle = exports.addFamilyHistory = exports.getMedicalHistories = exports.addMedicalHistory = exports.getPatientByUserId = exports.getPatientById = exports.getAllPatients = exports.createOrUpdatePatient = void 0;
+exports.deleteSurgery = exports.getSurgeries = exports.addSurgeries = exports.deleteChildProfile = exports.getChildProfiles = exports.addChildProfile = exports.deleteAllergy = exports.addAllergy = exports.deletePatientLifestyle = exports.getPatientLifestyles = exports.addOrUpdatePatientLifestyles = exports.addFamilyHistory = exports.getMedicalHistories = exports.addMedicalHistory = exports.getPatientByUserId = exports.getPatientById = exports.getAllPatients = exports.createOrUpdatePatient = void 0;
 const zod_1 = require("zod");
 const prisma_1 = require("../lib/prisma");
 const patient_zod_1 = require("../zod/patient.zod");
@@ -103,9 +103,9 @@ const getPatientById = async (req, res, next) => {
                 user: {
                     select: { email: true, role: true, isActive: true }
                 },
-                medicalHistories: true,
-                familyHistories: true,
-                lifestyle: true,
+                medicalHistories: { include: { disease: true } },
+                familyHistories: { include: { disease: true } },
+                patientLifestyles: { include: { lifestyle: true } },
                 allergies: true,
                 childrenProfiles: true,
                 patientDiseases: {
@@ -138,7 +138,7 @@ const getPatientByUserId = async (req, res, next) => {
                 },
                 medicalHistories: true,
                 familyHistories: true,
-                lifestyle: true,
+                patientLifestyles: { include: { lifestyle: true } },
                 allergies: true,
                 childrenProfiles: true
             }
@@ -254,12 +254,13 @@ const addFamilyHistory = async (req, res, next) => {
     }
 };
 exports.addFamilyHistory = addFamilyHistory;
-// Update or Create Lifestyle
-const updateLifestyle = async (req, res, next) => {
+// Add or Update Patient Lifestyles (receives array of boolean values for specific lifestyles)
+const addOrUpdatePatientLifestyles = async (req, res, next) => {
     try {
         const { patientId } = req.params;
-        const validatedData = patient_zod_1.lifestyleSchema.parse(req.body);
-        // Check if patient exists
+        const raw = req.body;
+        const items = Array.isArray(raw) ? raw : [raw];
+        const validatedItems = zod_1.z.array(patient_zod_1.patientLifestyleSchema).parse(items);
         const patient = await prisma_1.prisma.patient.findUnique({
             where: { id: parseInt(patientId) }
         });
@@ -267,28 +268,24 @@ const updateLifestyle = async (req, res, next) => {
             res.status(404).json({ error: 'Patient not found' });
             return;
         }
-        // Check if lifestyle exists
-        const existingLifestyle = await prisma_1.prisma.lifestyle.findUnique({
-            where: { patientId: parseInt(patientId) }
-        });
-        let lifestyle;
-        if (existingLifestyle) {
-            lifestyle = await prisma_1.prisma.lifestyle.update({
-                where: { patientId: parseInt(patientId) },
-                data: validatedData
-            });
-        }
-        else {
-            lifestyle = await prisma_1.prisma.lifestyle.create({
-                data: {
+        // Upsert all the validated items
+        const results = await Promise.all(validatedItems.map((item) => prisma_1.prisma.patientLifestyle.upsert({
+            where: {
+                patientId_lifestyleId: {
                     patientId: parseInt(patientId),
-                    ...validatedData
+                    lifestyleId: item.lifestyleId
                 }
-            });
-        }
+            },
+            update: { value: item.value },
+            create: {
+                patientId: parseInt(patientId),
+                lifestyleId: item.lifestyleId,
+                value: item.value
+            }
+        })));
         res.json({
-            message: 'Lifestyle updated successfully',
-            lifestyle
+            message: 'Patient lifestyles updated successfully',
+            patientLifestyles: results
         });
     }
     catch (error) {
@@ -299,7 +296,40 @@ const updateLifestyle = async (req, res, next) => {
         next(error);
     }
 };
-exports.updateLifestyle = updateLifestyle;
+exports.addOrUpdatePatientLifestyles = addOrUpdatePatientLifestyles;
+// Get Patient Lifestyles
+const getPatientLifestyles = async (req, res, next) => {
+    try {
+        const { patientId } = req.params;
+        const patientLifestyles = await prisma_1.prisma.patientLifestyle.findMany({
+            where: { patientId: parseInt(patientId) },
+            include: { lifestyle: true }
+        });
+        res.json(patientLifestyles);
+    }
+    catch (error) {
+        next(error);
+    }
+};
+exports.getPatientLifestyles = getPatientLifestyles;
+// Delete a specific Patient Lifestyle
+const deletePatientLifestyle = async (req, res, next) => {
+    try {
+        const { patientLifestyleId } = req.params;
+        await prisma_1.prisma.patientLifestyle.delete({
+            where: { id: parseInt(patientLifestyleId) }
+        });
+        res.json({ message: 'Patient lifestyle deleted successfully' });
+    }
+    catch (error) {
+        if (error.code === 'P2025') {
+            res.status(404).json({ error: 'Patient lifestyle not found' });
+            return;
+        }
+        next(error);
+    }
+};
+exports.deletePatientLifestyle = deletePatientLifestyle;
 // Add Allergy
 const addAllergy = async (req, res, next) => {
     try {
@@ -313,10 +343,12 @@ const addAllergy = async (req, res, next) => {
             res.status(404).json({ error: 'Patient not found' });
             return;
         }
+        const { reaction, ...rest } = validatedData;
         const allergy = await prisma_1.prisma.allergy.create({
             data: {
                 patientId: parseInt(patientId),
-                ...validatedData
+                ...rest,
+                reactionType: reaction ?? null
             }
         });
         res.status(201).json({
@@ -429,4 +461,75 @@ const deleteChildProfile = async (req, res, next) => {
     }
 };
 exports.deleteChildProfile = deleteChildProfile;
+// Add Surgeries (accepts single object or array of objects)
+const addSurgeries = async (req, res, next) => {
+    try {
+        const { patientId } = req.params;
+        const raw = req.body;
+        const items = Array.isArray(raw) ? raw : [raw];
+        const patient = await prisma_1.prisma.patient.findUnique({
+            where: { id: parseInt(patientId) }
+        });
+        if (!patient) {
+            res.status(404).json({ error: 'Patient not found' });
+            return;
+        }
+        if (items.length === 0) {
+            res.status(400).json({ error: 'At least one surgery entry is required' });
+            return;
+        }
+        const data = items.map((v) => ({
+            patientId: parseInt(patientId),
+            operationId: v.operationId,
+            surgeryDate: new Date(v.surgeryDate)
+        }));
+        const surgeries = await prisma_1.prisma.patientSurgery.createManyAndReturn({
+            data,
+            include: { operation: true }
+        });
+        res.status(201).json({
+            message: surgeries.length === 1 ? 'Surgery added successfully' : `${surgeries.length} surgeries added successfully`,
+            count: surgeries.length,
+            surgeries
+        });
+    }
+    catch (error) {
+        next(error);
+    }
+};
+exports.addSurgeries = addSurgeries;
+// Get All Surgeries for a Patient
+const getSurgeries = async (req, res, next) => {
+    try {
+        const { patientId } = req.params;
+        const surgeries = await prisma_1.prisma.patientSurgery.findMany({
+            where: { patientId: parseInt(patientId) },
+            include: { operation: true },
+            orderBy: { surgeryDate: 'desc' }
+        });
+        res.json(surgeries);
+    }
+    catch (error) {
+        next(error);
+    }
+};
+exports.getSurgeries = getSurgeries;
+// Delete Surgery
+const deleteSurgery = async (req, res, next) => {
+    try {
+        const { surgeryId } = req.params;
+        await prisma_1.prisma.patientSurgery.delete({
+            where: { id: parseInt(surgeryId) }
+        });
+        res.json({ message: 'Surgery deleted successfully' });
+    }
+    catch (error) {
+        if (error.code === 'P2025') {
+            res.status(404).json({ error: 'Surgery not found' });
+            return;
+        }
+        next(error);
+    }
+};
+exports.deleteSurgery = deleteSurgery;
 //# sourceMappingURL=patient.controller.js.map

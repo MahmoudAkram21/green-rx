@@ -7,12 +7,17 @@ import {
     addMedicalHistory,
     getMedicalHistories,
     addFamilyHistory,
-    updateLifestyle,
+    addOrUpdatePatientLifestyles,
+    getPatientLifestyles,
+    deletePatientLifestyle,
     addAllergy,
     deleteAllergy,
     addChildProfile,
     getChildProfiles,
-    deleteChildProfile
+    deleteChildProfile,
+    getSurgeries,
+    addSurgeries,
+    deleteSurgery
 } from '../controllers/patient.controller';
 import { authenticate, authorize } from '../middleware/auth.middleware';
 import { UserRole } from '../../generated/client/client';
@@ -36,7 +41,9 @@ router.get('/:patientId/medical-history', getMedicalHistories);
 router.post('/:patientId/family-history', authorize([UserRole.Patient, UserRole.Doctor, UserRole.Admin, UserRole.SuperAdmin]), addFamilyHistory);
 
 // Lifestyle
-router.put('/:patientId/lifestyle', authorize([UserRole.Patient, UserRole.Doctor, UserRole.Admin, UserRole.SuperAdmin]), updateLifestyle);
+router.get('/:patientId/lifestyle', getPatientLifestyles);
+router.post('/:patientId/lifestyle', authorize([UserRole.Patient, UserRole.Doctor, UserRole.Admin, UserRole.SuperAdmin]), addOrUpdatePatientLifestyles);
+router.delete('/lifestyle/:patientLifestyleId', authorize([UserRole.Patient, UserRole.Doctor, UserRole.Admin, UserRole.SuperAdmin]), deletePatientLifestyle);
 
 // Allergies
 router.post('/:patientId/allergies', authorize([UserRole.Patient, UserRole.Doctor, UserRole.Admin, UserRole.SuperAdmin]), addAllergy);
@@ -46,5 +53,10 @@ router.delete('/allergies/:allergyId', authorize([UserRole.Patient, UserRole.Doc
 router.get('/:patientId/children', getChildProfiles);
 router.post('/:patientId/children', authorize([UserRole.Patient, UserRole.Admin, UserRole.SuperAdmin]), addChildProfile);
 router.delete('/children/:childId', authorize([UserRole.Patient, UserRole.Admin, UserRole.SuperAdmin]), deleteChildProfile);
+
+// Surgeries
+router.get('/:patientId/surgeries', getSurgeries);
+router.post('/:patientId/surgeries', authorize([UserRole.Patient, UserRole.Doctor, UserRole.Admin, UserRole.SuperAdmin]), addSurgeries);
+router.delete('/surgeries/:surgeryId', authorize([UserRole.Patient, UserRole.Doctor, UserRole.Admin, UserRole.SuperAdmin]), deleteSurgery);
 
 export default router;

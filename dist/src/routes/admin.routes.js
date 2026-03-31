@@ -39,6 +39,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const admin_controller_1 = __importDefault(require("../controllers/admin.controller"));
 const permissionController = __importStar(require("../controllers/permission.controller"));
+const adminSideEffectsController = __importStar(require("../controllers/admin.sideEffects.controller"));
 const auth_middleware_1 = require("../middleware/auth.middleware");
 const client_1 = require("../../generated/client/client");
 const router = express_1.default.Router();
@@ -63,5 +64,13 @@ router.patch('/pharmacists/:id/reject', admin_controller_1.default.rejectPharmac
 router.get('/statistics', admin_controller_1.default.getStatistics);
 // Audit logs
 router.get('/audit-logs', admin_controller_1.default.getAuditLogs);
+// Side Effects Management
+router.get('/side-effects', adminSideEffectsController.getAllSideEffects);
+router.get('/side-effects/pending', adminSideEffectsController.getPendingSideEffects);
+router.post('/side-effects', adminSideEffectsController.createSideEffect);
+router.put('/side-effects/:id', adminSideEffectsController.updateSideEffect);
+router.post('/side-effects/:id/trade-names', adminSideEffectsController.attachTradeNames);
+router.delete('/side-effects/:id/trade-names/:tradeNameId', adminSideEffectsController.removeTradeName);
+router.patch('/side-effects/:id/approve', adminSideEffectsController.approveSideEffect);
 exports.default = router;
 //# sourceMappingURL=admin.routes.js.map

@@ -25,6 +25,7 @@ export type AllergyMinAggregateOutputType = {
     id: number | null;
     patientId: number | null;
     allergen: string | null;
+    allergenType: string | null;
     severity: $Enums.AllergySeverity | null;
     reactionType: string | null;
     notes: string | null;
@@ -35,6 +36,7 @@ export type AllergyMaxAggregateOutputType = {
     id: number | null;
     patientId: number | null;
     allergen: string | null;
+    allergenType: string | null;
     severity: $Enums.AllergySeverity | null;
     reactionType: string | null;
     notes: string | null;
@@ -45,6 +47,7 @@ export type AllergyCountAggregateOutputType = {
     id: number;
     patientId: number;
     allergen: number;
+    allergenType: number;
     severity: number;
     reactionType: number;
     notes: number;
@@ -64,6 +67,7 @@ export type AllergyMinAggregateInputType = {
     id?: true;
     patientId?: true;
     allergen?: true;
+    allergenType?: true;
     severity?: true;
     reactionType?: true;
     notes?: true;
@@ -74,6 +78,7 @@ export type AllergyMaxAggregateInputType = {
     id?: true;
     patientId?: true;
     allergen?: true;
+    allergenType?: true;
     severity?: true;
     reactionType?: true;
     notes?: true;
@@ -84,6 +89,7 @@ export type AllergyCountAggregateInputType = {
     id?: true;
     patientId?: true;
     allergen?: true;
+    allergenType?: true;
     severity?: true;
     reactionType?: true;
     notes?: true;
@@ -171,6 +177,7 @@ export type AllergyGroupByOutputType = {
     id: number;
     patientId: number;
     allergen: string;
+    allergenType: string | null;
     severity: $Enums.AllergySeverity;
     reactionType: string | null;
     notes: string | null;
@@ -192,6 +199,7 @@ export type AllergyWhereInput = {
     id?: Prisma.IntFilter<"Allergy"> | number;
     patientId?: Prisma.IntFilter<"Allergy"> | number;
     allergen?: Prisma.StringFilter<"Allergy"> | string;
+    allergenType?: Prisma.StringNullableFilter<"Allergy"> | string | null;
     severity?: Prisma.EnumAllergySeverityFilter<"Allergy"> | $Enums.AllergySeverity;
     reactionType?: Prisma.StringNullableFilter<"Allergy"> | string | null;
     notes?: Prisma.StringNullableFilter<"Allergy"> | string | null;
@@ -203,6 +211,7 @@ export type AllergyOrderByWithRelationInput = {
     id?: Prisma.SortOrder;
     patientId?: Prisma.SortOrder;
     allergen?: Prisma.SortOrder;
+    allergenType?: Prisma.SortOrderInput | Prisma.SortOrder;
     severity?: Prisma.SortOrder;
     reactionType?: Prisma.SortOrderInput | Prisma.SortOrder;
     notes?: Prisma.SortOrderInput | Prisma.SortOrder;
@@ -217,6 +226,7 @@ export type AllergyWhereUniqueInput = Prisma.AtLeast<{
     NOT?: Prisma.AllergyWhereInput | Prisma.AllergyWhereInput[];
     patientId?: Prisma.IntFilter<"Allergy"> | number;
     allergen?: Prisma.StringFilter<"Allergy"> | string;
+    allergenType?: Prisma.StringNullableFilter<"Allergy"> | string | null;
     severity?: Prisma.EnumAllergySeverityFilter<"Allergy"> | $Enums.AllergySeverity;
     reactionType?: Prisma.StringNullableFilter<"Allergy"> | string | null;
     notes?: Prisma.StringNullableFilter<"Allergy"> | string | null;
@@ -228,6 +238,7 @@ export type AllergyOrderByWithAggregationInput = {
     id?: Prisma.SortOrder;
     patientId?: Prisma.SortOrder;
     allergen?: Prisma.SortOrder;
+    allergenType?: Prisma.SortOrderInput | Prisma.SortOrder;
     severity?: Prisma.SortOrder;
     reactionType?: Prisma.SortOrderInput | Prisma.SortOrder;
     notes?: Prisma.SortOrderInput | Prisma.SortOrder;
@@ -246,6 +257,7 @@ export type AllergyScalarWhereWithAggregatesInput = {
     id?: Prisma.IntWithAggregatesFilter<"Allergy"> | number;
     patientId?: Prisma.IntWithAggregatesFilter<"Allergy"> | number;
     allergen?: Prisma.StringWithAggregatesFilter<"Allergy"> | string;
+    allergenType?: Prisma.StringNullableWithAggregatesFilter<"Allergy"> | string | null;
     severity?: Prisma.EnumAllergySeverityWithAggregatesFilter<"Allergy"> | $Enums.AllergySeverity;
     reactionType?: Prisma.StringNullableWithAggregatesFilter<"Allergy"> | string | null;
     notes?: Prisma.StringNullableWithAggregatesFilter<"Allergy"> | string | null;
@@ -254,6 +266,7 @@ export type AllergyScalarWhereWithAggregatesInput = {
 };
 export type AllergyCreateInput = {
     allergen: string;
+    allergenType?: string | null;
     severity: $Enums.AllergySeverity;
     reactionType?: string | null;
     notes?: string | null;
@@ -265,6 +278,7 @@ export type AllergyUncheckedCreateInput = {
     id?: number;
     patientId: number;
     allergen: string;
+    allergenType?: string | null;
     severity: $Enums.AllergySeverity;
     reactionType?: string | null;
     notes?: string | null;
@@ -273,6 +287,7 @@ export type AllergyUncheckedCreateInput = {
 };
 export type AllergyUpdateInput = {
     allergen?: Prisma.StringFieldUpdateOperationsInput | string;
+    allergenType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     severity?: Prisma.EnumAllergySeverityFieldUpdateOperationsInput | $Enums.AllergySeverity;
     reactionType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
@@ -284,6 +299,7 @@ export type AllergyUncheckedUpdateInput = {
     id?: Prisma.IntFieldUpdateOperationsInput | number;
     patientId?: Prisma.IntFieldUpdateOperationsInput | number;
     allergen?: Prisma.StringFieldUpdateOperationsInput | string;
+    allergenType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     severity?: Prisma.EnumAllergySeverityFieldUpdateOperationsInput | $Enums.AllergySeverity;
     reactionType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
@@ -294,6 +310,7 @@ export type AllergyCreateManyInput = {
     id?: number;
     patientId: number;
     allergen: string;
+    allergenType?: string | null;
     severity: $Enums.AllergySeverity;
     reactionType?: string | null;
     notes?: string | null;
@@ -302,6 +319,7 @@ export type AllergyCreateManyInput = {
 };
 export type AllergyUpdateManyMutationInput = {
     allergen?: Prisma.StringFieldUpdateOperationsInput | string;
+    allergenType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     severity?: Prisma.EnumAllergySeverityFieldUpdateOperationsInput | $Enums.AllergySeverity;
     reactionType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
@@ -312,6 +330,7 @@ export type AllergyUncheckedUpdateManyInput = {
     id?: Prisma.IntFieldUpdateOperationsInput | number;
     patientId?: Prisma.IntFieldUpdateOperationsInput | number;
     allergen?: Prisma.StringFieldUpdateOperationsInput | string;
+    allergenType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     severity?: Prisma.EnumAllergySeverityFieldUpdateOperationsInput | $Enums.AllergySeverity;
     reactionType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
@@ -330,6 +349,7 @@ export type AllergyCountOrderByAggregateInput = {
     id?: Prisma.SortOrder;
     patientId?: Prisma.SortOrder;
     allergen?: Prisma.SortOrder;
+    allergenType?: Prisma.SortOrder;
     severity?: Prisma.SortOrder;
     reactionType?: Prisma.SortOrder;
     notes?: Prisma.SortOrder;
@@ -344,6 +364,7 @@ export type AllergyMaxOrderByAggregateInput = {
     id?: Prisma.SortOrder;
     patientId?: Prisma.SortOrder;
     allergen?: Prisma.SortOrder;
+    allergenType?: Prisma.SortOrder;
     severity?: Prisma.SortOrder;
     reactionType?: Prisma.SortOrder;
     notes?: Prisma.SortOrder;
@@ -354,6 +375,7 @@ export type AllergyMinOrderByAggregateInput = {
     id?: Prisma.SortOrder;
     patientId?: Prisma.SortOrder;
     allergen?: Prisma.SortOrder;
+    allergenType?: Prisma.SortOrder;
     severity?: Prisma.SortOrder;
     reactionType?: Prisma.SortOrder;
     notes?: Prisma.SortOrder;
@@ -407,6 +429,7 @@ export type EnumAllergySeverityFieldUpdateOperationsInput = {
 };
 export type AllergyCreateWithoutPatientInput = {
     allergen: string;
+    allergenType?: string | null;
     severity: $Enums.AllergySeverity;
     reactionType?: string | null;
     notes?: string | null;
@@ -416,6 +439,7 @@ export type AllergyCreateWithoutPatientInput = {
 export type AllergyUncheckedCreateWithoutPatientInput = {
     id?: number;
     allergen: string;
+    allergenType?: string | null;
     severity: $Enums.AllergySeverity;
     reactionType?: string | null;
     notes?: string | null;
@@ -450,6 +474,7 @@ export type AllergyScalarWhereInput = {
     id?: Prisma.IntFilter<"Allergy"> | number;
     patientId?: Prisma.IntFilter<"Allergy"> | number;
     allergen?: Prisma.StringFilter<"Allergy"> | string;
+    allergenType?: Prisma.StringNullableFilter<"Allergy"> | string | null;
     severity?: Prisma.EnumAllergySeverityFilter<"Allergy"> | $Enums.AllergySeverity;
     reactionType?: Prisma.StringNullableFilter<"Allergy"> | string | null;
     notes?: Prisma.StringNullableFilter<"Allergy"> | string | null;
@@ -459,6 +484,7 @@ export type AllergyScalarWhereInput = {
 export type AllergyCreateManyPatientInput = {
     id?: number;
     allergen: string;
+    allergenType?: string | null;
     severity: $Enums.AllergySeverity;
     reactionType?: string | null;
     notes?: string | null;
@@ -467,6 +493,7 @@ export type AllergyCreateManyPatientInput = {
 };
 export type AllergyUpdateWithoutPatientInput = {
     allergen?: Prisma.StringFieldUpdateOperationsInput | string;
+    allergenType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     severity?: Prisma.EnumAllergySeverityFieldUpdateOperationsInput | $Enums.AllergySeverity;
     reactionType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
@@ -476,6 +503,7 @@ export type AllergyUpdateWithoutPatientInput = {
 export type AllergyUncheckedUpdateWithoutPatientInput = {
     id?: Prisma.IntFieldUpdateOperationsInput | number;
     allergen?: Prisma.StringFieldUpdateOperationsInput | string;
+    allergenType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     severity?: Prisma.EnumAllergySeverityFieldUpdateOperationsInput | $Enums.AllergySeverity;
     reactionType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
@@ -485,6 +513,7 @@ export type AllergyUncheckedUpdateWithoutPatientInput = {
 export type AllergyUncheckedUpdateManyWithoutPatientInput = {
     id?: Prisma.IntFieldUpdateOperationsInput | number;
     allergen?: Prisma.StringFieldUpdateOperationsInput | string;
+    allergenType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     severity?: Prisma.EnumAllergySeverityFieldUpdateOperationsInput | $Enums.AllergySeverity;
     reactionType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
@@ -495,6 +524,7 @@ export type AllergySelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     id?: boolean;
     patientId?: boolean;
     allergen?: boolean;
+    allergenType?: boolean;
     severity?: boolean;
     reactionType?: boolean;
     notes?: boolean;
@@ -506,6 +536,7 @@ export type AllergySelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
     id?: boolean;
     patientId?: boolean;
     allergen?: boolean;
+    allergenType?: boolean;
     severity?: boolean;
     reactionType?: boolean;
     notes?: boolean;
@@ -517,6 +548,7 @@ export type AllergySelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
     id?: boolean;
     patientId?: boolean;
     allergen?: boolean;
+    allergenType?: boolean;
     severity?: boolean;
     reactionType?: boolean;
     notes?: boolean;
@@ -528,13 +560,14 @@ export type AllergySelectScalar = {
     id?: boolean;
     patientId?: boolean;
     allergen?: boolean;
+    allergenType?: boolean;
     severity?: boolean;
     reactionType?: boolean;
     notes?: boolean;
     createdAt?: boolean;
     updatedAt?: boolean;
 };
-export type AllergyOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "patientId" | "allergen" | "severity" | "reactionType" | "notes" | "createdAt" | "updatedAt", ExtArgs["result"]["allergy"]>;
+export type AllergyOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "patientId" | "allergen" | "allergenType" | "severity" | "reactionType" | "notes" | "createdAt" | "updatedAt", ExtArgs["result"]["allergy"]>;
 export type AllergyInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     patient?: boolean | Prisma.PatientDefaultArgs<ExtArgs>;
 };
@@ -553,6 +586,7 @@ export type $AllergyPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
         id: number;
         patientId: number;
         allergen: string;
+        allergenType: string | null;
         severity: $Enums.AllergySeverity;
         reactionType: string | null;
         notes: string | null;
@@ -916,6 +950,7 @@ export interface AllergyFieldRefs {
     readonly id: Prisma.FieldRef<"Allergy", 'Int'>;
     readonly patientId: Prisma.FieldRef<"Allergy", 'Int'>;
     readonly allergen: Prisma.FieldRef<"Allergy", 'String'>;
+    readonly allergenType: Prisma.FieldRef<"Allergy", 'String'>;
     readonly severity: Prisma.FieldRef<"Allergy", 'AllergySeverity'>;
     readonly reactionType: Prisma.FieldRef<"Allergy", 'String'>;
     readonly notes: Prisma.FieldRef<"Allergy", 'String'>;

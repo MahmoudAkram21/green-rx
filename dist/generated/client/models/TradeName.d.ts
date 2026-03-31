@@ -260,6 +260,9 @@ export type TradeNameWhereInput = {
     drugInteractionAlerts?: Prisma.DrugInteractionAlertListRelationFilter;
     batchHistories?: Prisma.BatchHistoryListRelationFilter;
     adverseReactions?: Prisma.AdverseDrugReactionListRelationFilter;
+    sideEffects?: Prisma.TradeNameSideEffectListRelationFilter;
+    patientMedicines?: Prisma.PatientMedicineListRelationFilter;
+    matchedRequests?: Prisma.AddMedicineRequestListRelationFilter;
 };
 export type TradeNameOrderByWithRelationInput = {
     id?: Prisma.SortOrder;
@@ -283,6 +286,9 @@ export type TradeNameOrderByWithRelationInput = {
     drugInteractionAlerts?: Prisma.DrugInteractionAlertOrderByRelationAggregateInput;
     batchHistories?: Prisma.BatchHistoryOrderByRelationAggregateInput;
     adverseReactions?: Prisma.AdverseDrugReactionOrderByRelationAggregateInput;
+    sideEffects?: Prisma.TradeNameSideEffectOrderByRelationAggregateInput;
+    patientMedicines?: Prisma.PatientMedicineOrderByRelationAggregateInput;
+    matchedRequests?: Prisma.AddMedicineRequestOrderByRelationAggregateInput;
 };
 export type TradeNameWhereUniqueInput = Prisma.AtLeast<{
     id?: number;
@@ -309,6 +315,9 @@ export type TradeNameWhereUniqueInput = Prisma.AtLeast<{
     drugInteractionAlerts?: Prisma.DrugInteractionAlertListRelationFilter;
     batchHistories?: Prisma.BatchHistoryListRelationFilter;
     adverseReactions?: Prisma.AdverseDrugReactionListRelationFilter;
+    sideEffects?: Prisma.TradeNameSideEffectListRelationFilter;
+    patientMedicines?: Prisma.PatientMedicineListRelationFilter;
+    matchedRequests?: Prisma.AddMedicineRequestListRelationFilter;
 }, "id">;
 export type TradeNameOrderByWithAggregationInput = {
     id?: Prisma.SortOrder;
@@ -369,6 +378,9 @@ export type TradeNameCreateInput = {
     drugInteractionAlerts?: Prisma.DrugInteractionAlertCreateNestedManyWithoutInteractingMedicineInput;
     batchHistories?: Prisma.BatchHistoryCreateNestedManyWithoutTradeNameInput;
     adverseReactions?: Prisma.AdverseDrugReactionCreateNestedManyWithoutTradeNameInput;
+    sideEffects?: Prisma.TradeNameSideEffectCreateNestedManyWithoutTradeNameInput;
+    patientMedicines?: Prisma.PatientMedicineCreateNestedManyWithoutTradeNameInput;
+    matchedRequests?: Prisma.AddMedicineRequestCreateNestedManyWithoutMatchedTradeNameInput;
 };
 export type TradeNameUncheckedCreateInput = {
     id?: number;
@@ -390,6 +402,9 @@ export type TradeNameUncheckedCreateInput = {
     drugInteractionAlerts?: Prisma.DrugInteractionAlertUncheckedCreateNestedManyWithoutInteractingMedicineInput;
     batchHistories?: Prisma.BatchHistoryUncheckedCreateNestedManyWithoutTradeNameInput;
     adverseReactions?: Prisma.AdverseDrugReactionUncheckedCreateNestedManyWithoutTradeNameInput;
+    sideEffects?: Prisma.TradeNameSideEffectUncheckedCreateNestedManyWithoutTradeNameInput;
+    patientMedicines?: Prisma.PatientMedicineUncheckedCreateNestedManyWithoutTradeNameInput;
+    matchedRequests?: Prisma.AddMedicineRequestUncheckedCreateNestedManyWithoutMatchedTradeNameInput;
 };
 export type TradeNameUpdateInput = {
     title?: Prisma.StringFieldUpdateOperationsInput | string;
@@ -410,6 +425,9 @@ export type TradeNameUpdateInput = {
     drugInteractionAlerts?: Prisma.DrugInteractionAlertUpdateManyWithoutInteractingMedicineNestedInput;
     batchHistories?: Prisma.BatchHistoryUpdateManyWithoutTradeNameNestedInput;
     adverseReactions?: Prisma.AdverseDrugReactionUpdateManyWithoutTradeNameNestedInput;
+    sideEffects?: Prisma.TradeNameSideEffectUpdateManyWithoutTradeNameNestedInput;
+    patientMedicines?: Prisma.PatientMedicineUpdateManyWithoutTradeNameNestedInput;
+    matchedRequests?: Prisma.AddMedicineRequestUpdateManyWithoutMatchedTradeNameNestedInput;
 };
 export type TradeNameUncheckedUpdateInput = {
     id?: Prisma.IntFieldUpdateOperationsInput | number;
@@ -431,6 +449,9 @@ export type TradeNameUncheckedUpdateInput = {
     drugInteractionAlerts?: Prisma.DrugInteractionAlertUncheckedUpdateManyWithoutInteractingMedicineNestedInput;
     batchHistories?: Prisma.BatchHistoryUncheckedUpdateManyWithoutTradeNameNestedInput;
     adverseReactions?: Prisma.AdverseDrugReactionUncheckedUpdateManyWithoutTradeNameNestedInput;
+    sideEffects?: Prisma.TradeNameSideEffectUncheckedUpdateManyWithoutTradeNameNestedInput;
+    patientMedicines?: Prisma.PatientMedicineUncheckedUpdateManyWithoutTradeNameNestedInput;
+    matchedRequests?: Prisma.AddMedicineRequestUncheckedUpdateManyWithoutMatchedTradeNameNestedInput;
 };
 export type TradeNameCreateManyInput = {
     id?: number;
@@ -549,6 +570,10 @@ export type TradeNameScalarRelationFilter = {
     is?: Prisma.TradeNameWhereInput;
     isNot?: Prisma.TradeNameWhereInput;
 };
+export type TradeNameNullableScalarRelationFilter = {
+    is?: Prisma.TradeNameWhereInput | null;
+    isNot?: Prisma.TradeNameWhereInput | null;
+};
 export type TradeNameCreateNestedManyWithoutActiveSubstanceInput = {
     create?: Prisma.XOR<Prisma.TradeNameCreateWithoutActiveSubstanceInput, Prisma.TradeNameUncheckedCreateWithoutActiveSubstanceInput> | Prisma.TradeNameCreateWithoutActiveSubstanceInput[] | Prisma.TradeNameUncheckedCreateWithoutActiveSubstanceInput[];
     connectOrCreate?: Prisma.TradeNameCreateOrConnectWithoutActiveSubstanceInput | Prisma.TradeNameCreateOrConnectWithoutActiveSubstanceInput[];
@@ -664,6 +689,18 @@ export type TradeNameUpdateOneRequiredWithoutDrugInteractionAlertsNestedInput = 
     connect?: Prisma.TradeNameWhereUniqueInput;
     update?: Prisma.XOR<Prisma.XOR<Prisma.TradeNameUpdateToOneWithWhereWithoutDrugInteractionAlertsInput, Prisma.TradeNameUpdateWithoutDrugInteractionAlertsInput>, Prisma.TradeNameUncheckedUpdateWithoutDrugInteractionAlertsInput>;
 };
+export type TradeNameCreateNestedOneWithoutSideEffectsInput = {
+    create?: Prisma.XOR<Prisma.TradeNameCreateWithoutSideEffectsInput, Prisma.TradeNameUncheckedCreateWithoutSideEffectsInput>;
+    connectOrCreate?: Prisma.TradeNameCreateOrConnectWithoutSideEffectsInput;
+    connect?: Prisma.TradeNameWhereUniqueInput;
+};
+export type TradeNameUpdateOneRequiredWithoutSideEffectsNestedInput = {
+    create?: Prisma.XOR<Prisma.TradeNameCreateWithoutSideEffectsInput, Prisma.TradeNameUncheckedCreateWithoutSideEffectsInput>;
+    connectOrCreate?: Prisma.TradeNameCreateOrConnectWithoutSideEffectsInput;
+    upsert?: Prisma.TradeNameUpsertWithoutSideEffectsInput;
+    connect?: Prisma.TradeNameWhereUniqueInput;
+    update?: Prisma.XOR<Prisma.XOR<Prisma.TradeNameUpdateToOneWithWhereWithoutSideEffectsInput, Prisma.TradeNameUpdateWithoutSideEffectsInput>, Prisma.TradeNameUncheckedUpdateWithoutSideEffectsInput>;
+};
 export type TradeNameCreateNestedOneWithoutAdverseReactionsInput = {
     create?: Prisma.XOR<Prisma.TradeNameCreateWithoutAdverseReactionsInput, Prisma.TradeNameUncheckedCreateWithoutAdverseReactionsInput>;
     connectOrCreate?: Prisma.TradeNameCreateOrConnectWithoutAdverseReactionsInput;
@@ -688,6 +725,34 @@ export type TradeNameUpdateOneRequiredWithoutBatchHistoriesNestedInput = {
     connect?: Prisma.TradeNameWhereUniqueInput;
     update?: Prisma.XOR<Prisma.XOR<Prisma.TradeNameUpdateToOneWithWhereWithoutBatchHistoriesInput, Prisma.TradeNameUpdateWithoutBatchHistoriesInput>, Prisma.TradeNameUncheckedUpdateWithoutBatchHistoriesInput>;
 };
+export type TradeNameCreateNestedOneWithoutPatientMedicinesInput = {
+    create?: Prisma.XOR<Prisma.TradeNameCreateWithoutPatientMedicinesInput, Prisma.TradeNameUncheckedCreateWithoutPatientMedicinesInput>;
+    connectOrCreate?: Prisma.TradeNameCreateOrConnectWithoutPatientMedicinesInput;
+    connect?: Prisma.TradeNameWhereUniqueInput;
+};
+export type TradeNameUpdateOneWithoutPatientMedicinesNestedInput = {
+    create?: Prisma.XOR<Prisma.TradeNameCreateWithoutPatientMedicinesInput, Prisma.TradeNameUncheckedCreateWithoutPatientMedicinesInput>;
+    connectOrCreate?: Prisma.TradeNameCreateOrConnectWithoutPatientMedicinesInput;
+    upsert?: Prisma.TradeNameUpsertWithoutPatientMedicinesInput;
+    disconnect?: Prisma.TradeNameWhereInput | boolean;
+    delete?: Prisma.TradeNameWhereInput | boolean;
+    connect?: Prisma.TradeNameWhereUniqueInput;
+    update?: Prisma.XOR<Prisma.XOR<Prisma.TradeNameUpdateToOneWithWhereWithoutPatientMedicinesInput, Prisma.TradeNameUpdateWithoutPatientMedicinesInput>, Prisma.TradeNameUncheckedUpdateWithoutPatientMedicinesInput>;
+};
+export type TradeNameCreateNestedOneWithoutMatchedRequestsInput = {
+    create?: Prisma.XOR<Prisma.TradeNameCreateWithoutMatchedRequestsInput, Prisma.TradeNameUncheckedCreateWithoutMatchedRequestsInput>;
+    connectOrCreate?: Prisma.TradeNameCreateOrConnectWithoutMatchedRequestsInput;
+    connect?: Prisma.TradeNameWhereUniqueInput;
+};
+export type TradeNameUpdateOneWithoutMatchedRequestsNestedInput = {
+    create?: Prisma.XOR<Prisma.TradeNameCreateWithoutMatchedRequestsInput, Prisma.TradeNameUncheckedCreateWithoutMatchedRequestsInput>;
+    connectOrCreate?: Prisma.TradeNameCreateOrConnectWithoutMatchedRequestsInput;
+    upsert?: Prisma.TradeNameUpsertWithoutMatchedRequestsInput;
+    disconnect?: Prisma.TradeNameWhereInput | boolean;
+    delete?: Prisma.TradeNameWhereInput | boolean;
+    connect?: Prisma.TradeNameWhereUniqueInput;
+    update?: Prisma.XOR<Prisma.XOR<Prisma.TradeNameUpdateToOneWithWhereWithoutMatchedRequestsInput, Prisma.TradeNameUpdateWithoutMatchedRequestsInput>, Prisma.TradeNameUncheckedUpdateWithoutMatchedRequestsInput>;
+};
 export type TradeNameCreateWithoutActiveSubstanceInput = {
     title: string;
     warningNotification?: string | null;
@@ -706,6 +771,9 @@ export type TradeNameCreateWithoutActiveSubstanceInput = {
     drugInteractionAlerts?: Prisma.DrugInteractionAlertCreateNestedManyWithoutInteractingMedicineInput;
     batchHistories?: Prisma.BatchHistoryCreateNestedManyWithoutTradeNameInput;
     adverseReactions?: Prisma.AdverseDrugReactionCreateNestedManyWithoutTradeNameInput;
+    sideEffects?: Prisma.TradeNameSideEffectCreateNestedManyWithoutTradeNameInput;
+    patientMedicines?: Prisma.PatientMedicineCreateNestedManyWithoutTradeNameInput;
+    matchedRequests?: Prisma.AddMedicineRequestCreateNestedManyWithoutMatchedTradeNameInput;
 };
 export type TradeNameUncheckedCreateWithoutActiveSubstanceInput = {
     id?: number;
@@ -726,6 +794,9 @@ export type TradeNameUncheckedCreateWithoutActiveSubstanceInput = {
     drugInteractionAlerts?: Prisma.DrugInteractionAlertUncheckedCreateNestedManyWithoutInteractingMedicineInput;
     batchHistories?: Prisma.BatchHistoryUncheckedCreateNestedManyWithoutTradeNameInput;
     adverseReactions?: Prisma.AdverseDrugReactionUncheckedCreateNestedManyWithoutTradeNameInput;
+    sideEffects?: Prisma.TradeNameSideEffectUncheckedCreateNestedManyWithoutTradeNameInput;
+    patientMedicines?: Prisma.PatientMedicineUncheckedCreateNestedManyWithoutTradeNameInput;
+    matchedRequests?: Prisma.AddMedicineRequestUncheckedCreateNestedManyWithoutMatchedTradeNameInput;
 };
 export type TradeNameCreateOrConnectWithoutActiveSubstanceInput = {
     where: Prisma.TradeNameWhereUniqueInput;
@@ -785,6 +856,9 @@ export type TradeNameCreateWithoutCompanyInput = {
     drugInteractionAlerts?: Prisma.DrugInteractionAlertCreateNestedManyWithoutInteractingMedicineInput;
     batchHistories?: Prisma.BatchHistoryCreateNestedManyWithoutTradeNameInput;
     adverseReactions?: Prisma.AdverseDrugReactionCreateNestedManyWithoutTradeNameInput;
+    sideEffects?: Prisma.TradeNameSideEffectCreateNestedManyWithoutTradeNameInput;
+    patientMedicines?: Prisma.PatientMedicineCreateNestedManyWithoutTradeNameInput;
+    matchedRequests?: Prisma.AddMedicineRequestCreateNestedManyWithoutMatchedTradeNameInput;
 };
 export type TradeNameUncheckedCreateWithoutCompanyInput = {
     id?: number;
@@ -805,6 +879,9 @@ export type TradeNameUncheckedCreateWithoutCompanyInput = {
     drugInteractionAlerts?: Prisma.DrugInteractionAlertUncheckedCreateNestedManyWithoutInteractingMedicineInput;
     batchHistories?: Prisma.BatchHistoryUncheckedCreateNestedManyWithoutTradeNameInput;
     adverseReactions?: Prisma.AdverseDrugReactionUncheckedCreateNestedManyWithoutTradeNameInput;
+    sideEffects?: Prisma.TradeNameSideEffectUncheckedCreateNestedManyWithoutTradeNameInput;
+    patientMedicines?: Prisma.PatientMedicineUncheckedCreateNestedManyWithoutTradeNameInput;
+    matchedRequests?: Prisma.AddMedicineRequestUncheckedCreateNestedManyWithoutMatchedTradeNameInput;
 };
 export type TradeNameCreateOrConnectWithoutCompanyInput = {
     where: Prisma.TradeNameWhereUniqueInput;
@@ -845,6 +922,9 @@ export type TradeNameCreateWithoutContractingCompanyTradeNamesInput = {
     drugInteractionAlerts?: Prisma.DrugInteractionAlertCreateNestedManyWithoutInteractingMedicineInput;
     batchHistories?: Prisma.BatchHistoryCreateNestedManyWithoutTradeNameInput;
     adverseReactions?: Prisma.AdverseDrugReactionCreateNestedManyWithoutTradeNameInput;
+    sideEffects?: Prisma.TradeNameSideEffectCreateNestedManyWithoutTradeNameInput;
+    patientMedicines?: Prisma.PatientMedicineCreateNestedManyWithoutTradeNameInput;
+    matchedRequests?: Prisma.AddMedicineRequestCreateNestedManyWithoutMatchedTradeNameInput;
 };
 export type TradeNameUncheckedCreateWithoutContractingCompanyTradeNamesInput = {
     id?: number;
@@ -865,6 +945,9 @@ export type TradeNameUncheckedCreateWithoutContractingCompanyTradeNamesInput = {
     drugInteractionAlerts?: Prisma.DrugInteractionAlertUncheckedCreateNestedManyWithoutInteractingMedicineInput;
     batchHistories?: Prisma.BatchHistoryUncheckedCreateNestedManyWithoutTradeNameInput;
     adverseReactions?: Prisma.AdverseDrugReactionUncheckedCreateNestedManyWithoutTradeNameInput;
+    sideEffects?: Prisma.TradeNameSideEffectUncheckedCreateNestedManyWithoutTradeNameInput;
+    patientMedicines?: Prisma.PatientMedicineUncheckedCreateNestedManyWithoutTradeNameInput;
+    matchedRequests?: Prisma.AddMedicineRequestUncheckedCreateNestedManyWithoutMatchedTradeNameInput;
 };
 export type TradeNameCreateOrConnectWithoutContractingCompanyTradeNamesInput = {
     where: Prisma.TradeNameWhereUniqueInput;
@@ -897,6 +980,9 @@ export type TradeNameUpdateWithoutContractingCompanyTradeNamesInput = {
     drugInteractionAlerts?: Prisma.DrugInteractionAlertUpdateManyWithoutInteractingMedicineNestedInput;
     batchHistories?: Prisma.BatchHistoryUpdateManyWithoutTradeNameNestedInput;
     adverseReactions?: Prisma.AdverseDrugReactionUpdateManyWithoutTradeNameNestedInput;
+    sideEffects?: Prisma.TradeNameSideEffectUpdateManyWithoutTradeNameNestedInput;
+    patientMedicines?: Prisma.PatientMedicineUpdateManyWithoutTradeNameNestedInput;
+    matchedRequests?: Prisma.AddMedicineRequestUpdateManyWithoutMatchedTradeNameNestedInput;
 };
 export type TradeNameUncheckedUpdateWithoutContractingCompanyTradeNamesInput = {
     id?: Prisma.IntFieldUpdateOperationsInput | number;
@@ -917,6 +1003,9 @@ export type TradeNameUncheckedUpdateWithoutContractingCompanyTradeNamesInput = {
     drugInteractionAlerts?: Prisma.DrugInteractionAlertUncheckedUpdateManyWithoutInteractingMedicineNestedInput;
     batchHistories?: Prisma.BatchHistoryUncheckedUpdateManyWithoutTradeNameNestedInput;
     adverseReactions?: Prisma.AdverseDrugReactionUncheckedUpdateManyWithoutTradeNameNestedInput;
+    sideEffects?: Prisma.TradeNameSideEffectUncheckedUpdateManyWithoutTradeNameNestedInput;
+    patientMedicines?: Prisma.PatientMedicineUncheckedUpdateManyWithoutTradeNameNestedInput;
+    matchedRequests?: Prisma.AddMedicineRequestUncheckedUpdateManyWithoutMatchedTradeNameNestedInput;
 };
 export type TradeNameCreateWithoutPrescriptionsInput = {
     title: string;
@@ -936,6 +1025,9 @@ export type TradeNameCreateWithoutPrescriptionsInput = {
     drugInteractionAlerts?: Prisma.DrugInteractionAlertCreateNestedManyWithoutInteractingMedicineInput;
     batchHistories?: Prisma.BatchHistoryCreateNestedManyWithoutTradeNameInput;
     adverseReactions?: Prisma.AdverseDrugReactionCreateNestedManyWithoutTradeNameInput;
+    sideEffects?: Prisma.TradeNameSideEffectCreateNestedManyWithoutTradeNameInput;
+    patientMedicines?: Prisma.PatientMedicineCreateNestedManyWithoutTradeNameInput;
+    matchedRequests?: Prisma.AddMedicineRequestCreateNestedManyWithoutMatchedTradeNameInput;
 };
 export type TradeNameUncheckedCreateWithoutPrescriptionsInput = {
     id?: number;
@@ -956,6 +1048,9 @@ export type TradeNameUncheckedCreateWithoutPrescriptionsInput = {
     drugInteractionAlerts?: Prisma.DrugInteractionAlertUncheckedCreateNestedManyWithoutInteractingMedicineInput;
     batchHistories?: Prisma.BatchHistoryUncheckedCreateNestedManyWithoutTradeNameInput;
     adverseReactions?: Prisma.AdverseDrugReactionUncheckedCreateNestedManyWithoutTradeNameInput;
+    sideEffects?: Prisma.TradeNameSideEffectUncheckedCreateNestedManyWithoutTradeNameInput;
+    patientMedicines?: Prisma.PatientMedicineUncheckedCreateNestedManyWithoutTradeNameInput;
+    matchedRequests?: Prisma.AddMedicineRequestUncheckedCreateNestedManyWithoutMatchedTradeNameInput;
 };
 export type TradeNameCreateOrConnectWithoutPrescriptionsInput = {
     where: Prisma.TradeNameWhereUniqueInput;
@@ -988,6 +1083,9 @@ export type TradeNameUpdateWithoutPrescriptionsInput = {
     drugInteractionAlerts?: Prisma.DrugInteractionAlertUpdateManyWithoutInteractingMedicineNestedInput;
     batchHistories?: Prisma.BatchHistoryUpdateManyWithoutTradeNameNestedInput;
     adverseReactions?: Prisma.AdverseDrugReactionUpdateManyWithoutTradeNameNestedInput;
+    sideEffects?: Prisma.TradeNameSideEffectUpdateManyWithoutTradeNameNestedInput;
+    patientMedicines?: Prisma.PatientMedicineUpdateManyWithoutTradeNameNestedInput;
+    matchedRequests?: Prisma.AddMedicineRequestUpdateManyWithoutMatchedTradeNameNestedInput;
 };
 export type TradeNameUncheckedUpdateWithoutPrescriptionsInput = {
     id?: Prisma.IntFieldUpdateOperationsInput | number;
@@ -1008,6 +1106,9 @@ export type TradeNameUncheckedUpdateWithoutPrescriptionsInput = {
     drugInteractionAlerts?: Prisma.DrugInteractionAlertUncheckedUpdateManyWithoutInteractingMedicineNestedInput;
     batchHistories?: Prisma.BatchHistoryUncheckedUpdateManyWithoutTradeNameNestedInput;
     adverseReactions?: Prisma.AdverseDrugReactionUncheckedUpdateManyWithoutTradeNameNestedInput;
+    sideEffects?: Prisma.TradeNameSideEffectUncheckedUpdateManyWithoutTradeNameNestedInput;
+    patientMedicines?: Prisma.PatientMedicineUncheckedUpdateManyWithoutTradeNameNestedInput;
+    matchedRequests?: Prisma.AddMedicineRequestUncheckedUpdateManyWithoutMatchedTradeNameNestedInput;
 };
 export type TradeNameCreateWithoutDrugInteractionAlertsInput = {
     title: string;
@@ -1027,6 +1128,9 @@ export type TradeNameCreateWithoutDrugInteractionAlertsInput = {
     contractingCompanyTradeNames?: Prisma.ContractingCompanyTradeNameCreateNestedManyWithoutTradeNameInput;
     batchHistories?: Prisma.BatchHistoryCreateNestedManyWithoutTradeNameInput;
     adverseReactions?: Prisma.AdverseDrugReactionCreateNestedManyWithoutTradeNameInput;
+    sideEffects?: Prisma.TradeNameSideEffectCreateNestedManyWithoutTradeNameInput;
+    patientMedicines?: Prisma.PatientMedicineCreateNestedManyWithoutTradeNameInput;
+    matchedRequests?: Prisma.AddMedicineRequestCreateNestedManyWithoutMatchedTradeNameInput;
 };
 export type TradeNameUncheckedCreateWithoutDrugInteractionAlertsInput = {
     id?: number;
@@ -1047,6 +1151,9 @@ export type TradeNameUncheckedCreateWithoutDrugInteractionAlertsInput = {
     contractingCompanyTradeNames?: Prisma.ContractingCompanyTradeNameUncheckedCreateNestedManyWithoutTradeNameInput;
     batchHistories?: Prisma.BatchHistoryUncheckedCreateNestedManyWithoutTradeNameInput;
     adverseReactions?: Prisma.AdverseDrugReactionUncheckedCreateNestedManyWithoutTradeNameInput;
+    sideEffects?: Prisma.TradeNameSideEffectUncheckedCreateNestedManyWithoutTradeNameInput;
+    patientMedicines?: Prisma.PatientMedicineUncheckedCreateNestedManyWithoutTradeNameInput;
+    matchedRequests?: Prisma.AddMedicineRequestUncheckedCreateNestedManyWithoutMatchedTradeNameInput;
 };
 export type TradeNameCreateOrConnectWithoutDrugInteractionAlertsInput = {
     where: Prisma.TradeNameWhereUniqueInput;
@@ -1079,6 +1186,9 @@ export type TradeNameUpdateWithoutDrugInteractionAlertsInput = {
     contractingCompanyTradeNames?: Prisma.ContractingCompanyTradeNameUpdateManyWithoutTradeNameNestedInput;
     batchHistories?: Prisma.BatchHistoryUpdateManyWithoutTradeNameNestedInput;
     adverseReactions?: Prisma.AdverseDrugReactionUpdateManyWithoutTradeNameNestedInput;
+    sideEffects?: Prisma.TradeNameSideEffectUpdateManyWithoutTradeNameNestedInput;
+    patientMedicines?: Prisma.PatientMedicineUpdateManyWithoutTradeNameNestedInput;
+    matchedRequests?: Prisma.AddMedicineRequestUpdateManyWithoutMatchedTradeNameNestedInput;
 };
 export type TradeNameUncheckedUpdateWithoutDrugInteractionAlertsInput = {
     id?: Prisma.IntFieldUpdateOperationsInput | number;
@@ -1099,6 +1209,112 @@ export type TradeNameUncheckedUpdateWithoutDrugInteractionAlertsInput = {
     contractingCompanyTradeNames?: Prisma.ContractingCompanyTradeNameUncheckedUpdateManyWithoutTradeNameNestedInput;
     batchHistories?: Prisma.BatchHistoryUncheckedUpdateManyWithoutTradeNameNestedInput;
     adverseReactions?: Prisma.AdverseDrugReactionUncheckedUpdateManyWithoutTradeNameNestedInput;
+    sideEffects?: Prisma.TradeNameSideEffectUncheckedUpdateManyWithoutTradeNameNestedInput;
+    patientMedicines?: Prisma.PatientMedicineUncheckedUpdateManyWithoutTradeNameNestedInput;
+    matchedRequests?: Prisma.AddMedicineRequestUncheckedUpdateManyWithoutMatchedTradeNameNestedInput;
+};
+export type TradeNameCreateWithoutSideEffectsInput = {
+    title: string;
+    warningNotification?: string | null;
+    batchNumber?: string | null;
+    barCode?: string | null;
+    availabilityStatus?: $Enums.MedicineAvailabilityStatus;
+    stockQuantity?: number | null;
+    expiryDate?: Date | string | null;
+    isActive?: boolean;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+    deletedAt?: Date | string | null;
+    activeSubstance: Prisma.ActiveSubstanceCreateNestedOneWithoutTradeNamesInput;
+    company: Prisma.CompanyCreateNestedOneWithoutTradeNamesInput;
+    prescriptions?: Prisma.PrescriptionCreateNestedManyWithoutTradeNameInput;
+    contractingCompanyTradeNames?: Prisma.ContractingCompanyTradeNameCreateNestedManyWithoutTradeNameInput;
+    drugInteractionAlerts?: Prisma.DrugInteractionAlertCreateNestedManyWithoutInteractingMedicineInput;
+    batchHistories?: Prisma.BatchHistoryCreateNestedManyWithoutTradeNameInput;
+    adverseReactions?: Prisma.AdverseDrugReactionCreateNestedManyWithoutTradeNameInput;
+    patientMedicines?: Prisma.PatientMedicineCreateNestedManyWithoutTradeNameInput;
+    matchedRequests?: Prisma.AddMedicineRequestCreateNestedManyWithoutMatchedTradeNameInput;
+};
+export type TradeNameUncheckedCreateWithoutSideEffectsInput = {
+    id?: number;
+    title: string;
+    activeSubstanceId: number;
+    companyId: number;
+    warningNotification?: string | null;
+    batchNumber?: string | null;
+    barCode?: string | null;
+    availabilityStatus?: $Enums.MedicineAvailabilityStatus;
+    stockQuantity?: number | null;
+    expiryDate?: Date | string | null;
+    isActive?: boolean;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+    deletedAt?: Date | string | null;
+    prescriptions?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutTradeNameInput;
+    contractingCompanyTradeNames?: Prisma.ContractingCompanyTradeNameUncheckedCreateNestedManyWithoutTradeNameInput;
+    drugInteractionAlerts?: Prisma.DrugInteractionAlertUncheckedCreateNestedManyWithoutInteractingMedicineInput;
+    batchHistories?: Prisma.BatchHistoryUncheckedCreateNestedManyWithoutTradeNameInput;
+    adverseReactions?: Prisma.AdverseDrugReactionUncheckedCreateNestedManyWithoutTradeNameInput;
+    patientMedicines?: Prisma.PatientMedicineUncheckedCreateNestedManyWithoutTradeNameInput;
+    matchedRequests?: Prisma.AddMedicineRequestUncheckedCreateNestedManyWithoutMatchedTradeNameInput;
+};
+export type TradeNameCreateOrConnectWithoutSideEffectsInput = {
+    where: Prisma.TradeNameWhereUniqueInput;
+    create: Prisma.XOR<Prisma.TradeNameCreateWithoutSideEffectsInput, Prisma.TradeNameUncheckedCreateWithoutSideEffectsInput>;
+};
+export type TradeNameUpsertWithoutSideEffectsInput = {
+    update: Prisma.XOR<Prisma.TradeNameUpdateWithoutSideEffectsInput, Prisma.TradeNameUncheckedUpdateWithoutSideEffectsInput>;
+    create: Prisma.XOR<Prisma.TradeNameCreateWithoutSideEffectsInput, Prisma.TradeNameUncheckedCreateWithoutSideEffectsInput>;
+    where?: Prisma.TradeNameWhereInput;
+};
+export type TradeNameUpdateToOneWithWhereWithoutSideEffectsInput = {
+    where?: Prisma.TradeNameWhereInput;
+    data: Prisma.XOR<Prisma.TradeNameUpdateWithoutSideEffectsInput, Prisma.TradeNameUncheckedUpdateWithoutSideEffectsInput>;
+};
+export type TradeNameUpdateWithoutSideEffectsInput = {
+    title?: Prisma.StringFieldUpdateOperationsInput | string;
+    warningNotification?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    batchNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    barCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    availabilityStatus?: Prisma.EnumMedicineAvailabilityStatusFieldUpdateOperationsInput | $Enums.MedicineAvailabilityStatus;
+    stockQuantity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
+    expiryDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    activeSubstance?: Prisma.ActiveSubstanceUpdateOneRequiredWithoutTradeNamesNestedInput;
+    company?: Prisma.CompanyUpdateOneRequiredWithoutTradeNamesNestedInput;
+    prescriptions?: Prisma.PrescriptionUpdateManyWithoutTradeNameNestedInput;
+    contractingCompanyTradeNames?: Prisma.ContractingCompanyTradeNameUpdateManyWithoutTradeNameNestedInput;
+    drugInteractionAlerts?: Prisma.DrugInteractionAlertUpdateManyWithoutInteractingMedicineNestedInput;
+    batchHistories?: Prisma.BatchHistoryUpdateManyWithoutTradeNameNestedInput;
+    adverseReactions?: Prisma.AdverseDrugReactionUpdateManyWithoutTradeNameNestedInput;
+    patientMedicines?: Prisma.PatientMedicineUpdateManyWithoutTradeNameNestedInput;
+    matchedRequests?: Prisma.AddMedicineRequestUpdateManyWithoutMatchedTradeNameNestedInput;
+};
+export type TradeNameUncheckedUpdateWithoutSideEffectsInput = {
+    id?: Prisma.IntFieldUpdateOperationsInput | number;
+    title?: Prisma.StringFieldUpdateOperationsInput | string;
+    activeSubstanceId?: Prisma.IntFieldUpdateOperationsInput | number;
+    companyId?: Prisma.IntFieldUpdateOperationsInput | number;
+    warningNotification?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    batchNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    barCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    availabilityStatus?: Prisma.EnumMedicineAvailabilityStatusFieldUpdateOperationsInput | $Enums.MedicineAvailabilityStatus;
+    stockQuantity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
+    expiryDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    prescriptions?: Prisma.PrescriptionUncheckedUpdateManyWithoutTradeNameNestedInput;
+    contractingCompanyTradeNames?: Prisma.ContractingCompanyTradeNameUncheckedUpdateManyWithoutTradeNameNestedInput;
+    drugInteractionAlerts?: Prisma.DrugInteractionAlertUncheckedUpdateManyWithoutInteractingMedicineNestedInput;
+    batchHistories?: Prisma.BatchHistoryUncheckedUpdateManyWithoutTradeNameNestedInput;
+    adverseReactions?: Prisma.AdverseDrugReactionUncheckedUpdateManyWithoutTradeNameNestedInput;
+    patientMedicines?: Prisma.PatientMedicineUncheckedUpdateManyWithoutTradeNameNestedInput;
+    matchedRequests?: Prisma.AddMedicineRequestUncheckedUpdateManyWithoutMatchedTradeNameNestedInput;
 };
 export type TradeNameCreateWithoutAdverseReactionsInput = {
     title: string;
@@ -1118,6 +1334,9 @@ export type TradeNameCreateWithoutAdverseReactionsInput = {
     contractingCompanyTradeNames?: Prisma.ContractingCompanyTradeNameCreateNestedManyWithoutTradeNameInput;
     drugInteractionAlerts?: Prisma.DrugInteractionAlertCreateNestedManyWithoutInteractingMedicineInput;
     batchHistories?: Prisma.BatchHistoryCreateNestedManyWithoutTradeNameInput;
+    sideEffects?: Prisma.TradeNameSideEffectCreateNestedManyWithoutTradeNameInput;
+    patientMedicines?: Prisma.PatientMedicineCreateNestedManyWithoutTradeNameInput;
+    matchedRequests?: Prisma.AddMedicineRequestCreateNestedManyWithoutMatchedTradeNameInput;
 };
 export type TradeNameUncheckedCreateWithoutAdverseReactionsInput = {
     id?: number;
@@ -1138,6 +1357,9 @@ export type TradeNameUncheckedCreateWithoutAdverseReactionsInput = {
     contractingCompanyTradeNames?: Prisma.ContractingCompanyTradeNameUncheckedCreateNestedManyWithoutTradeNameInput;
     drugInteractionAlerts?: Prisma.DrugInteractionAlertUncheckedCreateNestedManyWithoutInteractingMedicineInput;
     batchHistories?: Prisma.BatchHistoryUncheckedCreateNestedManyWithoutTradeNameInput;
+    sideEffects?: Prisma.TradeNameSideEffectUncheckedCreateNestedManyWithoutTradeNameInput;
+    patientMedicines?: Prisma.PatientMedicineUncheckedCreateNestedManyWithoutTradeNameInput;
+    matchedRequests?: Prisma.AddMedicineRequestUncheckedCreateNestedManyWithoutMatchedTradeNameInput;
 };
 export type TradeNameCreateOrConnectWithoutAdverseReactionsInput = {
     where: Prisma.TradeNameWhereUniqueInput;
@@ -1170,6 +1392,9 @@ export type TradeNameUpdateWithoutAdverseReactionsInput = {
     contractingCompanyTradeNames?: Prisma.ContractingCompanyTradeNameUpdateManyWithoutTradeNameNestedInput;
     drugInteractionAlerts?: Prisma.DrugInteractionAlertUpdateManyWithoutInteractingMedicineNestedInput;
     batchHistories?: Prisma.BatchHistoryUpdateManyWithoutTradeNameNestedInput;
+    sideEffects?: Prisma.TradeNameSideEffectUpdateManyWithoutTradeNameNestedInput;
+    patientMedicines?: Prisma.PatientMedicineUpdateManyWithoutTradeNameNestedInput;
+    matchedRequests?: Prisma.AddMedicineRequestUpdateManyWithoutMatchedTradeNameNestedInput;
 };
 export type TradeNameUncheckedUpdateWithoutAdverseReactionsInput = {
     id?: Prisma.IntFieldUpdateOperationsInput | number;
@@ -1190,6 +1415,9 @@ export type TradeNameUncheckedUpdateWithoutAdverseReactionsInput = {
     contractingCompanyTradeNames?: Prisma.ContractingCompanyTradeNameUncheckedUpdateManyWithoutTradeNameNestedInput;
     drugInteractionAlerts?: Prisma.DrugInteractionAlertUncheckedUpdateManyWithoutInteractingMedicineNestedInput;
     batchHistories?: Prisma.BatchHistoryUncheckedUpdateManyWithoutTradeNameNestedInput;
+    sideEffects?: Prisma.TradeNameSideEffectUncheckedUpdateManyWithoutTradeNameNestedInput;
+    patientMedicines?: Prisma.PatientMedicineUncheckedUpdateManyWithoutTradeNameNestedInput;
+    matchedRequests?: Prisma.AddMedicineRequestUncheckedUpdateManyWithoutMatchedTradeNameNestedInput;
 };
 export type TradeNameCreateWithoutBatchHistoriesInput = {
     title: string;
@@ -1209,6 +1437,9 @@ export type TradeNameCreateWithoutBatchHistoriesInput = {
     contractingCompanyTradeNames?: Prisma.ContractingCompanyTradeNameCreateNestedManyWithoutTradeNameInput;
     drugInteractionAlerts?: Prisma.DrugInteractionAlertCreateNestedManyWithoutInteractingMedicineInput;
     adverseReactions?: Prisma.AdverseDrugReactionCreateNestedManyWithoutTradeNameInput;
+    sideEffects?: Prisma.TradeNameSideEffectCreateNestedManyWithoutTradeNameInput;
+    patientMedicines?: Prisma.PatientMedicineCreateNestedManyWithoutTradeNameInput;
+    matchedRequests?: Prisma.AddMedicineRequestCreateNestedManyWithoutMatchedTradeNameInput;
 };
 export type TradeNameUncheckedCreateWithoutBatchHistoriesInput = {
     id?: number;
@@ -1229,6 +1460,9 @@ export type TradeNameUncheckedCreateWithoutBatchHistoriesInput = {
     contractingCompanyTradeNames?: Prisma.ContractingCompanyTradeNameUncheckedCreateNestedManyWithoutTradeNameInput;
     drugInteractionAlerts?: Prisma.DrugInteractionAlertUncheckedCreateNestedManyWithoutInteractingMedicineInput;
     adverseReactions?: Prisma.AdverseDrugReactionUncheckedCreateNestedManyWithoutTradeNameInput;
+    sideEffects?: Prisma.TradeNameSideEffectUncheckedCreateNestedManyWithoutTradeNameInput;
+    patientMedicines?: Prisma.PatientMedicineUncheckedCreateNestedManyWithoutTradeNameInput;
+    matchedRequests?: Prisma.AddMedicineRequestUncheckedCreateNestedManyWithoutMatchedTradeNameInput;
 };
 export type TradeNameCreateOrConnectWithoutBatchHistoriesInput = {
     where: Prisma.TradeNameWhereUniqueInput;
@@ -1261,6 +1495,9 @@ export type TradeNameUpdateWithoutBatchHistoriesInput = {
     contractingCompanyTradeNames?: Prisma.ContractingCompanyTradeNameUpdateManyWithoutTradeNameNestedInput;
     drugInteractionAlerts?: Prisma.DrugInteractionAlertUpdateManyWithoutInteractingMedicineNestedInput;
     adverseReactions?: Prisma.AdverseDrugReactionUpdateManyWithoutTradeNameNestedInput;
+    sideEffects?: Prisma.TradeNameSideEffectUpdateManyWithoutTradeNameNestedInput;
+    patientMedicines?: Prisma.PatientMedicineUpdateManyWithoutTradeNameNestedInput;
+    matchedRequests?: Prisma.AddMedicineRequestUpdateManyWithoutMatchedTradeNameNestedInput;
 };
 export type TradeNameUncheckedUpdateWithoutBatchHistoriesInput = {
     id?: Prisma.IntFieldUpdateOperationsInput | number;
@@ -1281,6 +1518,215 @@ export type TradeNameUncheckedUpdateWithoutBatchHistoriesInput = {
     contractingCompanyTradeNames?: Prisma.ContractingCompanyTradeNameUncheckedUpdateManyWithoutTradeNameNestedInput;
     drugInteractionAlerts?: Prisma.DrugInteractionAlertUncheckedUpdateManyWithoutInteractingMedicineNestedInput;
     adverseReactions?: Prisma.AdverseDrugReactionUncheckedUpdateManyWithoutTradeNameNestedInput;
+    sideEffects?: Prisma.TradeNameSideEffectUncheckedUpdateManyWithoutTradeNameNestedInput;
+    patientMedicines?: Prisma.PatientMedicineUncheckedUpdateManyWithoutTradeNameNestedInput;
+    matchedRequests?: Prisma.AddMedicineRequestUncheckedUpdateManyWithoutMatchedTradeNameNestedInput;
+};
+export type TradeNameCreateWithoutPatientMedicinesInput = {
+    title: string;
+    warningNotification?: string | null;
+    batchNumber?: string | null;
+    barCode?: string | null;
+    availabilityStatus?: $Enums.MedicineAvailabilityStatus;
+    stockQuantity?: number | null;
+    expiryDate?: Date | string | null;
+    isActive?: boolean;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+    deletedAt?: Date | string | null;
+    activeSubstance: Prisma.ActiveSubstanceCreateNestedOneWithoutTradeNamesInput;
+    company: Prisma.CompanyCreateNestedOneWithoutTradeNamesInput;
+    prescriptions?: Prisma.PrescriptionCreateNestedManyWithoutTradeNameInput;
+    contractingCompanyTradeNames?: Prisma.ContractingCompanyTradeNameCreateNestedManyWithoutTradeNameInput;
+    drugInteractionAlerts?: Prisma.DrugInteractionAlertCreateNestedManyWithoutInteractingMedicineInput;
+    batchHistories?: Prisma.BatchHistoryCreateNestedManyWithoutTradeNameInput;
+    adverseReactions?: Prisma.AdverseDrugReactionCreateNestedManyWithoutTradeNameInput;
+    sideEffects?: Prisma.TradeNameSideEffectCreateNestedManyWithoutTradeNameInput;
+    matchedRequests?: Prisma.AddMedicineRequestCreateNestedManyWithoutMatchedTradeNameInput;
+};
+export type TradeNameUncheckedCreateWithoutPatientMedicinesInput = {
+    id?: number;
+    title: string;
+    activeSubstanceId: number;
+    companyId: number;
+    warningNotification?: string | null;
+    batchNumber?: string | null;
+    barCode?: string | null;
+    availabilityStatus?: $Enums.MedicineAvailabilityStatus;
+    stockQuantity?: number | null;
+    expiryDate?: Date | string | null;
+    isActive?: boolean;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+    deletedAt?: Date | string | null;
+    prescriptions?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutTradeNameInput;
+    contractingCompanyTradeNames?: Prisma.ContractingCompanyTradeNameUncheckedCreateNestedManyWithoutTradeNameInput;
+    drugInteractionAlerts?: Prisma.DrugInteractionAlertUncheckedCreateNestedManyWithoutInteractingMedicineInput;
+    batchHistories?: Prisma.BatchHistoryUncheckedCreateNestedManyWithoutTradeNameInput;
+    adverseReactions?: Prisma.AdverseDrugReactionUncheckedCreateNestedManyWithoutTradeNameInput;
+    sideEffects?: Prisma.TradeNameSideEffectUncheckedCreateNestedManyWithoutTradeNameInput;
+    matchedRequests?: Prisma.AddMedicineRequestUncheckedCreateNestedManyWithoutMatchedTradeNameInput;
+};
+export type TradeNameCreateOrConnectWithoutPatientMedicinesInput = {
+    where: Prisma.TradeNameWhereUniqueInput;
+    create: Prisma.XOR<Prisma.TradeNameCreateWithoutPatientMedicinesInput, Prisma.TradeNameUncheckedCreateWithoutPatientMedicinesInput>;
+};
+export type TradeNameUpsertWithoutPatientMedicinesInput = {
+    update: Prisma.XOR<Prisma.TradeNameUpdateWithoutPatientMedicinesInput, Prisma.TradeNameUncheckedUpdateWithoutPatientMedicinesInput>;
+    create: Prisma.XOR<Prisma.TradeNameCreateWithoutPatientMedicinesInput, Prisma.TradeNameUncheckedCreateWithoutPatientMedicinesInput>;
+    where?: Prisma.TradeNameWhereInput;
+};
+export type TradeNameUpdateToOneWithWhereWithoutPatientMedicinesInput = {
+    where?: Prisma.TradeNameWhereInput;
+    data: Prisma.XOR<Prisma.TradeNameUpdateWithoutPatientMedicinesInput, Prisma.TradeNameUncheckedUpdateWithoutPatientMedicinesInput>;
+};
+export type TradeNameUpdateWithoutPatientMedicinesInput = {
+    title?: Prisma.StringFieldUpdateOperationsInput | string;
+    warningNotification?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    batchNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    barCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    availabilityStatus?: Prisma.EnumMedicineAvailabilityStatusFieldUpdateOperationsInput | $Enums.MedicineAvailabilityStatus;
+    stockQuantity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
+    expiryDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    activeSubstance?: Prisma.ActiveSubstanceUpdateOneRequiredWithoutTradeNamesNestedInput;
+    company?: Prisma.CompanyUpdateOneRequiredWithoutTradeNamesNestedInput;
+    prescriptions?: Prisma.PrescriptionUpdateManyWithoutTradeNameNestedInput;
+    contractingCompanyTradeNames?: Prisma.ContractingCompanyTradeNameUpdateManyWithoutTradeNameNestedInput;
+    drugInteractionAlerts?: Prisma.DrugInteractionAlertUpdateManyWithoutInteractingMedicineNestedInput;
+    batchHistories?: Prisma.BatchHistoryUpdateManyWithoutTradeNameNestedInput;
+    adverseReactions?: Prisma.AdverseDrugReactionUpdateManyWithoutTradeNameNestedInput;
+    sideEffects?: Prisma.TradeNameSideEffectUpdateManyWithoutTradeNameNestedInput;
+    matchedRequests?: Prisma.AddMedicineRequestUpdateManyWithoutMatchedTradeNameNestedInput;
+};
+export type TradeNameUncheckedUpdateWithoutPatientMedicinesInput = {
+    id?: Prisma.IntFieldUpdateOperationsInput | number;
+    title?: Prisma.StringFieldUpdateOperationsInput | string;
+    activeSubstanceId?: Prisma.IntFieldUpdateOperationsInput | number;
+    companyId?: Prisma.IntFieldUpdateOperationsInput | number;
+    warningNotification?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    batchNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    barCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    availabilityStatus?: Prisma.EnumMedicineAvailabilityStatusFieldUpdateOperationsInput | $Enums.MedicineAvailabilityStatus;
+    stockQuantity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
+    expiryDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    prescriptions?: Prisma.PrescriptionUncheckedUpdateManyWithoutTradeNameNestedInput;
+    contractingCompanyTradeNames?: Prisma.ContractingCompanyTradeNameUncheckedUpdateManyWithoutTradeNameNestedInput;
+    drugInteractionAlerts?: Prisma.DrugInteractionAlertUncheckedUpdateManyWithoutInteractingMedicineNestedInput;
+    batchHistories?: Prisma.BatchHistoryUncheckedUpdateManyWithoutTradeNameNestedInput;
+    adverseReactions?: Prisma.AdverseDrugReactionUncheckedUpdateManyWithoutTradeNameNestedInput;
+    sideEffects?: Prisma.TradeNameSideEffectUncheckedUpdateManyWithoutTradeNameNestedInput;
+    matchedRequests?: Prisma.AddMedicineRequestUncheckedUpdateManyWithoutMatchedTradeNameNestedInput;
+};
+export type TradeNameCreateWithoutMatchedRequestsInput = {
+    title: string;
+    warningNotification?: string | null;
+    batchNumber?: string | null;
+    barCode?: string | null;
+    availabilityStatus?: $Enums.MedicineAvailabilityStatus;
+    stockQuantity?: number | null;
+    expiryDate?: Date | string | null;
+    isActive?: boolean;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+    deletedAt?: Date | string | null;
+    activeSubstance: Prisma.ActiveSubstanceCreateNestedOneWithoutTradeNamesInput;
+    company: Prisma.CompanyCreateNestedOneWithoutTradeNamesInput;
+    prescriptions?: Prisma.PrescriptionCreateNestedManyWithoutTradeNameInput;
+    contractingCompanyTradeNames?: Prisma.ContractingCompanyTradeNameCreateNestedManyWithoutTradeNameInput;
+    drugInteractionAlerts?: Prisma.DrugInteractionAlertCreateNestedManyWithoutInteractingMedicineInput;
+    batchHistories?: Prisma.BatchHistoryCreateNestedManyWithoutTradeNameInput;
+    adverseReactions?: Prisma.AdverseDrugReactionCreateNestedManyWithoutTradeNameInput;
+    sideEffects?: Prisma.TradeNameSideEffectCreateNestedManyWithoutTradeNameInput;
+    patientMedicines?: Prisma.PatientMedicineCreateNestedManyWithoutTradeNameInput;
+};
+export type TradeNameUncheckedCreateWithoutMatchedRequestsInput = {
+    id?: number;
+    title: string;
+    activeSubstanceId: number;
+    companyId: number;
+    warningNotification?: string | null;
+    batchNumber?: string | null;
+    barCode?: string | null;
+    availabilityStatus?: $Enums.MedicineAvailabilityStatus;
+    stockQuantity?: number | null;
+    expiryDate?: Date | string | null;
+    isActive?: boolean;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+    deletedAt?: Date | string | null;
+    prescriptions?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutTradeNameInput;
+    contractingCompanyTradeNames?: Prisma.ContractingCompanyTradeNameUncheckedCreateNestedManyWithoutTradeNameInput;
+    drugInteractionAlerts?: Prisma.DrugInteractionAlertUncheckedCreateNestedManyWithoutInteractingMedicineInput;
+    batchHistories?: Prisma.BatchHistoryUncheckedCreateNestedManyWithoutTradeNameInput;
+    adverseReactions?: Prisma.AdverseDrugReactionUncheckedCreateNestedManyWithoutTradeNameInput;
+    sideEffects?: Prisma.TradeNameSideEffectUncheckedCreateNestedManyWithoutTradeNameInput;
+    patientMedicines?: Prisma.PatientMedicineUncheckedCreateNestedManyWithoutTradeNameInput;
+};
+export type TradeNameCreateOrConnectWithoutMatchedRequestsInput = {
+    where: Prisma.TradeNameWhereUniqueInput;
+    create: Prisma.XOR<Prisma.TradeNameCreateWithoutMatchedRequestsInput, Prisma.TradeNameUncheckedCreateWithoutMatchedRequestsInput>;
+};
+export type TradeNameUpsertWithoutMatchedRequestsInput = {
+    update: Prisma.XOR<Prisma.TradeNameUpdateWithoutMatchedRequestsInput, Prisma.TradeNameUncheckedUpdateWithoutMatchedRequestsInput>;
+    create: Prisma.XOR<Prisma.TradeNameCreateWithoutMatchedRequestsInput, Prisma.TradeNameUncheckedCreateWithoutMatchedRequestsInput>;
+    where?: Prisma.TradeNameWhereInput;
+};
+export type TradeNameUpdateToOneWithWhereWithoutMatchedRequestsInput = {
+    where?: Prisma.TradeNameWhereInput;
+    data: Prisma.XOR<Prisma.TradeNameUpdateWithoutMatchedRequestsInput, Prisma.TradeNameUncheckedUpdateWithoutMatchedRequestsInput>;
+};
+export type TradeNameUpdateWithoutMatchedRequestsInput = {
+    title?: Prisma.StringFieldUpdateOperationsInput | string;
+    warningNotification?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    batchNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    barCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    availabilityStatus?: Prisma.EnumMedicineAvailabilityStatusFieldUpdateOperationsInput | $Enums.MedicineAvailabilityStatus;
+    stockQuantity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
+    expiryDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    activeSubstance?: Prisma.ActiveSubstanceUpdateOneRequiredWithoutTradeNamesNestedInput;
+    company?: Prisma.CompanyUpdateOneRequiredWithoutTradeNamesNestedInput;
+    prescriptions?: Prisma.PrescriptionUpdateManyWithoutTradeNameNestedInput;
+    contractingCompanyTradeNames?: Prisma.ContractingCompanyTradeNameUpdateManyWithoutTradeNameNestedInput;
+    drugInteractionAlerts?: Prisma.DrugInteractionAlertUpdateManyWithoutInteractingMedicineNestedInput;
+    batchHistories?: Prisma.BatchHistoryUpdateManyWithoutTradeNameNestedInput;
+    adverseReactions?: Prisma.AdverseDrugReactionUpdateManyWithoutTradeNameNestedInput;
+    sideEffects?: Prisma.TradeNameSideEffectUpdateManyWithoutTradeNameNestedInput;
+    patientMedicines?: Prisma.PatientMedicineUpdateManyWithoutTradeNameNestedInput;
+};
+export type TradeNameUncheckedUpdateWithoutMatchedRequestsInput = {
+    id?: Prisma.IntFieldUpdateOperationsInput | number;
+    title?: Prisma.StringFieldUpdateOperationsInput | string;
+    activeSubstanceId?: Prisma.IntFieldUpdateOperationsInput | number;
+    companyId?: Prisma.IntFieldUpdateOperationsInput | number;
+    warningNotification?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    batchNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    barCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    availabilityStatus?: Prisma.EnumMedicineAvailabilityStatusFieldUpdateOperationsInput | $Enums.MedicineAvailabilityStatus;
+    stockQuantity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
+    expiryDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    prescriptions?: Prisma.PrescriptionUncheckedUpdateManyWithoutTradeNameNestedInput;
+    contractingCompanyTradeNames?: Prisma.ContractingCompanyTradeNameUncheckedUpdateManyWithoutTradeNameNestedInput;
+    drugInteractionAlerts?: Prisma.DrugInteractionAlertUncheckedUpdateManyWithoutInteractingMedicineNestedInput;
+    batchHistories?: Prisma.BatchHistoryUncheckedUpdateManyWithoutTradeNameNestedInput;
+    adverseReactions?: Prisma.AdverseDrugReactionUncheckedUpdateManyWithoutTradeNameNestedInput;
+    sideEffects?: Prisma.TradeNameSideEffectUncheckedUpdateManyWithoutTradeNameNestedInput;
+    patientMedicines?: Prisma.PatientMedicineUncheckedUpdateManyWithoutTradeNameNestedInput;
 };
 export type TradeNameCreateManyActiveSubstanceInput = {
     id?: number;
@@ -1315,6 +1761,9 @@ export type TradeNameUpdateWithoutActiveSubstanceInput = {
     drugInteractionAlerts?: Prisma.DrugInteractionAlertUpdateManyWithoutInteractingMedicineNestedInput;
     batchHistories?: Prisma.BatchHistoryUpdateManyWithoutTradeNameNestedInput;
     adverseReactions?: Prisma.AdverseDrugReactionUpdateManyWithoutTradeNameNestedInput;
+    sideEffects?: Prisma.TradeNameSideEffectUpdateManyWithoutTradeNameNestedInput;
+    patientMedicines?: Prisma.PatientMedicineUpdateManyWithoutTradeNameNestedInput;
+    matchedRequests?: Prisma.AddMedicineRequestUpdateManyWithoutMatchedTradeNameNestedInput;
 };
 export type TradeNameUncheckedUpdateWithoutActiveSubstanceInput = {
     id?: Prisma.IntFieldUpdateOperationsInput | number;
@@ -1335,6 +1784,9 @@ export type TradeNameUncheckedUpdateWithoutActiveSubstanceInput = {
     drugInteractionAlerts?: Prisma.DrugInteractionAlertUncheckedUpdateManyWithoutInteractingMedicineNestedInput;
     batchHistories?: Prisma.BatchHistoryUncheckedUpdateManyWithoutTradeNameNestedInput;
     adverseReactions?: Prisma.AdverseDrugReactionUncheckedUpdateManyWithoutTradeNameNestedInput;
+    sideEffects?: Prisma.TradeNameSideEffectUncheckedUpdateManyWithoutTradeNameNestedInput;
+    patientMedicines?: Prisma.PatientMedicineUncheckedUpdateManyWithoutTradeNameNestedInput;
+    matchedRequests?: Prisma.AddMedicineRequestUncheckedUpdateManyWithoutMatchedTradeNameNestedInput;
 };
 export type TradeNameUncheckedUpdateManyWithoutActiveSubstanceInput = {
     id?: Prisma.IntFieldUpdateOperationsInput | number;
@@ -1384,6 +1836,9 @@ export type TradeNameUpdateWithoutCompanyInput = {
     drugInteractionAlerts?: Prisma.DrugInteractionAlertUpdateManyWithoutInteractingMedicineNestedInput;
     batchHistories?: Prisma.BatchHistoryUpdateManyWithoutTradeNameNestedInput;
     adverseReactions?: Prisma.AdverseDrugReactionUpdateManyWithoutTradeNameNestedInput;
+    sideEffects?: Prisma.TradeNameSideEffectUpdateManyWithoutTradeNameNestedInput;
+    patientMedicines?: Prisma.PatientMedicineUpdateManyWithoutTradeNameNestedInput;
+    matchedRequests?: Prisma.AddMedicineRequestUpdateManyWithoutMatchedTradeNameNestedInput;
 };
 export type TradeNameUncheckedUpdateWithoutCompanyInput = {
     id?: Prisma.IntFieldUpdateOperationsInput | number;
@@ -1404,6 +1859,9 @@ export type TradeNameUncheckedUpdateWithoutCompanyInput = {
     drugInteractionAlerts?: Prisma.DrugInteractionAlertUncheckedUpdateManyWithoutInteractingMedicineNestedInput;
     batchHistories?: Prisma.BatchHistoryUncheckedUpdateManyWithoutTradeNameNestedInput;
     adverseReactions?: Prisma.AdverseDrugReactionUncheckedUpdateManyWithoutTradeNameNestedInput;
+    sideEffects?: Prisma.TradeNameSideEffectUncheckedUpdateManyWithoutTradeNameNestedInput;
+    patientMedicines?: Prisma.PatientMedicineUncheckedUpdateManyWithoutTradeNameNestedInput;
+    matchedRequests?: Prisma.AddMedicineRequestUncheckedUpdateManyWithoutMatchedTradeNameNestedInput;
 };
 export type TradeNameUncheckedUpdateManyWithoutCompanyInput = {
     id?: Prisma.IntFieldUpdateOperationsInput | number;
@@ -1429,6 +1887,9 @@ export type TradeNameCountOutputType = {
     drugInteractionAlerts: number;
     batchHistories: number;
     adverseReactions: number;
+    sideEffects: number;
+    patientMedicines: number;
+    matchedRequests: number;
 };
 export type TradeNameCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     prescriptions?: boolean | TradeNameCountOutputTypeCountPrescriptionsArgs;
@@ -1436,6 +1897,9 @@ export type TradeNameCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensi
     drugInteractionAlerts?: boolean | TradeNameCountOutputTypeCountDrugInteractionAlertsArgs;
     batchHistories?: boolean | TradeNameCountOutputTypeCountBatchHistoriesArgs;
     adverseReactions?: boolean | TradeNameCountOutputTypeCountAdverseReactionsArgs;
+    sideEffects?: boolean | TradeNameCountOutputTypeCountSideEffectsArgs;
+    patientMedicines?: boolean | TradeNameCountOutputTypeCountPatientMedicinesArgs;
+    matchedRequests?: boolean | TradeNameCountOutputTypeCountMatchedRequestsArgs;
 };
 /**
  * TradeNameCountOutputType without action
@@ -1476,6 +1940,24 @@ export type TradeNameCountOutputTypeCountBatchHistoriesArgs<ExtArgs extends runt
 export type TradeNameCountOutputTypeCountAdverseReactionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     where?: Prisma.AdverseDrugReactionWhereInput;
 };
+/**
+ * TradeNameCountOutputType without action
+ */
+export type TradeNameCountOutputTypeCountSideEffectsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    where?: Prisma.TradeNameSideEffectWhereInput;
+};
+/**
+ * TradeNameCountOutputType without action
+ */
+export type TradeNameCountOutputTypeCountPatientMedicinesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    where?: Prisma.PatientMedicineWhereInput;
+};
+/**
+ * TradeNameCountOutputType without action
+ */
+export type TradeNameCountOutputTypeCountMatchedRequestsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    where?: Prisma.AddMedicineRequestWhereInput;
+};
 export type TradeNameSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
     id?: boolean;
     title?: boolean;
@@ -1498,6 +1980,9 @@ export type TradeNameSelect<ExtArgs extends runtime.Types.Extensions.InternalArg
     drugInteractionAlerts?: boolean | Prisma.TradeName$drugInteractionAlertsArgs<ExtArgs>;
     batchHistories?: boolean | Prisma.TradeName$batchHistoriesArgs<ExtArgs>;
     adverseReactions?: boolean | Prisma.TradeName$adverseReactionsArgs<ExtArgs>;
+    sideEffects?: boolean | Prisma.TradeName$sideEffectsArgs<ExtArgs>;
+    patientMedicines?: boolean | Prisma.TradeName$patientMedicinesArgs<ExtArgs>;
+    matchedRequests?: boolean | Prisma.TradeName$matchedRequestsArgs<ExtArgs>;
     _count?: boolean | Prisma.TradeNameCountOutputTypeDefaultArgs<ExtArgs>;
 }, ExtArgs["result"]["tradeName"]>;
 export type TradeNameSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -1561,6 +2046,9 @@ export type TradeNameInclude<ExtArgs extends runtime.Types.Extensions.InternalAr
     drugInteractionAlerts?: boolean | Prisma.TradeName$drugInteractionAlertsArgs<ExtArgs>;
     batchHistories?: boolean | Prisma.TradeName$batchHistoriesArgs<ExtArgs>;
     adverseReactions?: boolean | Prisma.TradeName$adverseReactionsArgs<ExtArgs>;
+    sideEffects?: boolean | Prisma.TradeName$sideEffectsArgs<ExtArgs>;
+    patientMedicines?: boolean | Prisma.TradeName$patientMedicinesArgs<ExtArgs>;
+    matchedRequests?: boolean | Prisma.TradeName$matchedRequestsArgs<ExtArgs>;
     _count?: boolean | Prisma.TradeNameCountOutputTypeDefaultArgs<ExtArgs>;
 };
 export type TradeNameIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1581,6 +2069,9 @@ export type $TradeNamePayload<ExtArgs extends runtime.Types.Extensions.InternalA
         drugInteractionAlerts: Prisma.$DrugInteractionAlertPayload<ExtArgs>[];
         batchHistories: Prisma.$BatchHistoryPayload<ExtArgs>[];
         adverseReactions: Prisma.$AdverseDrugReactionPayload<ExtArgs>[];
+        sideEffects: Prisma.$TradeNameSideEffectPayload<ExtArgs>[];
+        patientMedicines: Prisma.$PatientMedicinePayload<ExtArgs>[];
+        matchedRequests: Prisma.$AddMedicineRequestPayload<ExtArgs>[];
     };
     scalars: runtime.Types.Extensions.GetPayloadResult<{
         id: number;
@@ -1933,6 +2424,9 @@ export interface Prisma__TradeNameClient<T, Null = never, ExtArgs extends runtim
     drugInteractionAlerts<T extends Prisma.TradeName$drugInteractionAlertsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TradeName$drugInteractionAlertsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DrugInteractionAlertPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>;
     batchHistories<T extends Prisma.TradeName$batchHistoriesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TradeName$batchHistoriesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BatchHistoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>;
     adverseReactions<T extends Prisma.TradeName$adverseReactionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TradeName$adverseReactionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AdverseDrugReactionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>;
+    sideEffects<T extends Prisma.TradeName$sideEffectsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TradeName$sideEffectsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TradeNameSideEffectPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>;
+    patientMedicines<T extends Prisma.TradeName$patientMedicinesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TradeName$patientMedicinesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PatientMedicinePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>;
+    matchedRequests<T extends Prisma.TradeName$matchedRequestsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TradeName$matchedRequestsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AddMedicineRequestPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>;
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2464,6 +2958,75 @@ export type TradeName$adverseReactionsArgs<ExtArgs extends runtime.Types.Extensi
     take?: number;
     skip?: number;
     distinct?: Prisma.AdverseDrugReactionScalarFieldEnum | Prisma.AdverseDrugReactionScalarFieldEnum[];
+};
+/**
+ * TradeName.sideEffects
+ */
+export type TradeName$sideEffectsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TradeNameSideEffect
+     */
+    select?: Prisma.TradeNameSideEffectSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the TradeNameSideEffect
+     */
+    omit?: Prisma.TradeNameSideEffectOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: Prisma.TradeNameSideEffectInclude<ExtArgs> | null;
+    where?: Prisma.TradeNameSideEffectWhereInput;
+    orderBy?: Prisma.TradeNameSideEffectOrderByWithRelationInput | Prisma.TradeNameSideEffectOrderByWithRelationInput[];
+    cursor?: Prisma.TradeNameSideEffectWhereUniqueInput;
+    take?: number;
+    skip?: number;
+    distinct?: Prisma.TradeNameSideEffectScalarFieldEnum | Prisma.TradeNameSideEffectScalarFieldEnum[];
+};
+/**
+ * TradeName.patientMedicines
+ */
+export type TradeName$patientMedicinesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PatientMedicine
+     */
+    select?: Prisma.PatientMedicineSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the PatientMedicine
+     */
+    omit?: Prisma.PatientMedicineOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: Prisma.PatientMedicineInclude<ExtArgs> | null;
+    where?: Prisma.PatientMedicineWhereInput;
+    orderBy?: Prisma.PatientMedicineOrderByWithRelationInput | Prisma.PatientMedicineOrderByWithRelationInput[];
+    cursor?: Prisma.PatientMedicineWhereUniqueInput;
+    take?: number;
+    skip?: number;
+    distinct?: Prisma.PatientMedicineScalarFieldEnum | Prisma.PatientMedicineScalarFieldEnum[];
+};
+/**
+ * TradeName.matchedRequests
+ */
+export type TradeName$matchedRequestsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AddMedicineRequest
+     */
+    select?: Prisma.AddMedicineRequestSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the AddMedicineRequest
+     */
+    omit?: Prisma.AddMedicineRequestOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: Prisma.AddMedicineRequestInclude<ExtArgs> | null;
+    where?: Prisma.AddMedicineRequestWhereInput;
+    orderBy?: Prisma.AddMedicineRequestOrderByWithRelationInput | Prisma.AddMedicineRequestOrderByWithRelationInput[];
+    cursor?: Prisma.AddMedicineRequestWhereUniqueInput;
+    take?: number;
+    skip?: number;
+    distinct?: Prisma.AddMedicineRequestScalarFieldEnum | Prisma.AddMedicineRequestScalarFieldEnum[];
 };
 /**
  * TradeName without action

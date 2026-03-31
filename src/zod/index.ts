@@ -12,7 +12,7 @@ export {
   createPatientSchema,
   medicalHistorySchema,
   familyHistorySchema,
-  lifestyleSchema,
+  patientLifestyleSchema,
   allergySchema,
   childProfileSchema,
 } from "./patient.zod";

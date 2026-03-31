@@ -9,8 +9,8 @@ export async function getLogo(_req: Request, res: Response, next: NextFunction):
         const row = await prisma.appSetting.findUnique({
             where: { key: LOGO_KEY }
         });
-        if (!row?.valueBytes) {
-            res.status(404).end();
+        if (!row?.valueBytes || row.valueBytes.toString().length === 0) {
+            res.status(204).end();
             return;
         }
         const buf = Buffer.isBuffer(row.valueBytes) ? row.valueBytes : Buffer.from(row.valueBytes as unknown as ArrayBuffer);
@@ -19,6 +19,8 @@ export async function getLogo(_req: Request, res: Response, next: NextFunction):
             return;
         }
         const contentType = row.contentType || 'image/png';
+        res.setHeader('Access-Control-Expose-Headers', 'X-Logo-Set');
+        res.setHeader('X-Logo-Set', 'true');
         res.setHeader('Content-Type', contentType);
         res.setHeader('Cache-Control', 'public, max-age=60');
         res.send(buf);

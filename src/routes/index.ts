@@ -34,6 +34,9 @@ import patientDiseaseRoutes from './patientDisease.routes';
 import diseaseWarningRuleRoutes from './diseaseWarningRule.routes';
 import medicineSuggestionRoutes from './medicineSuggestion.routes';
 import settingsRoutes from './settings.routes';
+import operationsRoutes from './operations.routes';
+import lifestylesRoutes from './lifestyles.routes';
+import addMedicineRequestsRoutes from './addMedicineRequests.routes';
 
 // Mount routes
 router.use('/auth', authRoutes);
@@ -68,6 +71,9 @@ router.use('/patient-diseases', patientDiseaseRoutes);
 router.use('/disease-warning-rules', diseaseWarningRuleRoutes);
 router.use('/medicine-suggestions', medicineSuggestionRoutes);
 router.use('/settings', settingsRoutes);
+router.use('/operations', operationsRoutes);
+router.use('/lifestyles', lifestylesRoutes);
+router.use('/add-medicine-requests', addMedicineRequestsRoutes);
 
 // Example route
 router.get('/', (_req: Request, res: Response) => {

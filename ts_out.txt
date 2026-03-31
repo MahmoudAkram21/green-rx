@@ -1,0 +1,6 @@
+prisma/seed.ts(1351,9): error TS2353: Object literal may only specify known properties, and 'patientId' does not exist in type 'LifestyleCreateManyInput'.
+prisma/seed.ts(1362,9): error TS2353: Object literal may only specify known properties, and 'patientId' does not exist in type 'LifestyleCreateManyInput'.
+prisma/seed.ts(1372,9): error TS2353: Object literal may only specify known properties, and 'patientId' does not exist in type 'LifestyleCreateManyInput'.
+prisma/seed.ts(1382,9): error TS2353: Object literal may only specify known properties, and 'patientId' does not exist in type 'LifestyleCreateManyInput'.
+prisma/seed.ts(1393,9): error TS2353: Object literal may only specify known properties, and 'patientId' does not exist in type 'LifestyleCreateManyInput'.
+src/zod/index.ts(15,3): error TS2305: Module '"./patient.zod"' has no exported member 'lifestyleSchema'.

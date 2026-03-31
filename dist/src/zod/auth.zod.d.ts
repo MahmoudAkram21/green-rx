@@ -1,6 +1,6 @@
 import { z } from "zod";
 export declare const registerSchema: z.ZodObject<{
-    email: z.ZodString;
+    email: z.ZodPipe<z.ZodString, z.ZodTransform<string, string>>;
     password: z.ZodString;
     role: z.ZodDefault<z.ZodEnum<{
         readonly Patient: "Patient";
@@ -13,7 +13,7 @@ export declare const registerSchema: z.ZodObject<{
     name: z.ZodOptional<z.ZodString>;
 }, z.core.$strip>;
 export declare const loginSchema: z.ZodObject<{
-    email: z.ZodString;
+    email: z.ZodPipe<z.ZodString, z.ZodTransform<string, string>>;
     password: z.ZodString;
 }, z.core.$strip>;
 export declare const refreshTokenSchema: z.ZodObject<{

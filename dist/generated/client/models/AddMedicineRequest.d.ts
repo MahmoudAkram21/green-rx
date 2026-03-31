@@ -1,0 +1,2350 @@
+import type * as runtime from "@prisma/client/runtime/client";
+import type * as Prisma from "../internal/prismaNamespace";
+/**
+ * Model AddMedicineRequest
+ *
+ */
+export type AddMedicineRequestModel = runtime.Types.Result.DefaultSelection<Prisma.$AddMedicineRequestPayload>;
+export type AggregateAddMedicineRequest = {
+    _count: AddMedicineRequestCountAggregateOutputType | null;
+    _avg: AddMedicineRequestAvgAggregateOutputType | null;
+    _sum: AddMedicineRequestSumAggregateOutputType | null;
+    _min: AddMedicineRequestMinAggregateOutputType | null;
+    _max: AddMedicineRequestMaxAggregateOutputType | null;
+};
+export type AddMedicineRequestAvgAggregateOutputType = {
+    id: number | null;
+    patientId: number | null;
+    patientMedicineId: number | null;
+    matchedTradeNameId: number | null;
+    matchedActiveSubstanceId: number | null;
+    resolvedByUserId: number | null;
+};
+export type AddMedicineRequestSumAggregateOutputType = {
+    id: number | null;
+    patientId: number | null;
+    patientMedicineId: number | null;
+    matchedTradeNameId: number | null;
+    matchedActiveSubstanceId: number | null;
+    resolvedByUserId: number | null;
+};
+export type AddMedicineRequestMinAggregateOutputType = {
+    id: number | null;
+    patientId: number | null;
+    patientMedicineId: number | null;
+    imageUrl: string | null;
+    extractedTradeName: string | null;
+    extractedActiveSubstance: string | null;
+    extractedConcentration: string | null;
+    extractedDosageForm: string | null;
+    matchedTradeNameId: number | null;
+    matchedActiveSubstanceId: number | null;
+    status: string | null;
+    resolvedByUserId: number | null;
+    resolvedAt: Date | null;
+    resolutionNotes: string | null;
+    createdAt: Date | null;
+    updatedAt: Date | null;
+};
+export type AddMedicineRequestMaxAggregateOutputType = {
+    id: number | null;
+    patientId: number | null;
+    patientMedicineId: number | null;
+    imageUrl: string | null;
+    extractedTradeName: string | null;
+    extractedActiveSubstance: string | null;
+    extractedConcentration: string | null;
+    extractedDosageForm: string | null;
+    matchedTradeNameId: number | null;
+    matchedActiveSubstanceId: number | null;
+    status: string | null;
+    resolvedByUserId: number | null;
+    resolvedAt: Date | null;
+    resolutionNotes: string | null;
+    createdAt: Date | null;
+    updatedAt: Date | null;
+};
+export type AddMedicineRequestCountAggregateOutputType = {
+    id: number;
+    patientId: number;
+    patientMedicineId: number;
+    imageUrl: number;
+    extractedTradeName: number;
+    extractedActiveSubstance: number;
+    extractedConcentration: number;
+    extractedDosageForm: number;
+    matchedTradeNameId: number;
+    matchedActiveSubstanceId: number;
+    status: number;
+    resolvedByUserId: number;
+    resolvedAt: number;
+    resolutionNotes: number;
+    createdAt: number;
+    updatedAt: number;
+    _all: number;
+};
+export type AddMedicineRequestAvgAggregateInputType = {
+    id?: true;
+    patientId?: true;
+    patientMedicineId?: true;
+    matchedTradeNameId?: true;
+    matchedActiveSubstanceId?: true;
+    resolvedByUserId?: true;
+};
+export type AddMedicineRequestSumAggregateInputType = {
+    id?: true;
+    patientId?: true;
+    patientMedicineId?: true;
+    matchedTradeNameId?: true;
+    matchedActiveSubstanceId?: true;
+    resolvedByUserId?: true;
+};
+export type AddMedicineRequestMinAggregateInputType = {
+    id?: true;
+    patientId?: true;
+    patientMedicineId?: true;
+    imageUrl?: true;
+    extractedTradeName?: true;
+    extractedActiveSubstance?: true;
+    extractedConcentration?: true;
+    extractedDosageForm?: true;
+    matchedTradeNameId?: true;
+    matchedActiveSubstanceId?: true;
+    status?: true;
+    resolvedByUserId?: true;
+    resolvedAt?: true;
+    resolutionNotes?: true;
+    createdAt?: true;
+    updatedAt?: true;
+};
+export type AddMedicineRequestMaxAggregateInputType = {
+    id?: true;
+    patientId?: true;
+    patientMedicineId?: true;
+    imageUrl?: true;
+    extractedTradeName?: true;
+    extractedActiveSubstance?: true;
+    extractedConcentration?: true;
+    extractedDosageForm?: true;
+    matchedTradeNameId?: true;
+    matchedActiveSubstanceId?: true;
+    status?: true;
+    resolvedByUserId?: true;
+    resolvedAt?: true;
+    resolutionNotes?: true;
+    createdAt?: true;
+    updatedAt?: true;
+};
+export type AddMedicineRequestCountAggregateInputType = {
+    id?: true;
+    patientId?: true;
+    patientMedicineId?: true;
+    imageUrl?: true;
+    extractedTradeName?: true;
+    extractedActiveSubstance?: true;
+    extractedConcentration?: true;
+    extractedDosageForm?: true;
+    matchedTradeNameId?: true;
+    matchedActiveSubstanceId?: true;
+    status?: true;
+    resolvedByUserId?: true;
+    resolvedAt?: true;
+    resolutionNotes?: true;
+    createdAt?: true;
+    updatedAt?: true;
+    _all?: true;
+};
+export type AddMedicineRequestAggregateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Filter which AddMedicineRequest to aggregate.
+     */
+    where?: Prisma.AddMedicineRequestWhereInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of AddMedicineRequests to fetch.
+     */
+    orderBy?: Prisma.AddMedicineRequestOrderByWithRelationInput | Prisma.AddMedicineRequestOrderByWithRelationInput[];
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the start position
+     */
+    cursor?: Prisma.AddMedicineRequestWhereUniqueInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` AddMedicineRequests from the position of the cursor.
+     */
+    take?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` AddMedicineRequests.
+     */
+    skip?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Count returned AddMedicineRequests
+    **/
+    _count?: true | AddMedicineRequestCountAggregateInputType;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Select which fields to average
+    **/
+    _avg?: AddMedicineRequestAvgAggregateInputType;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Select which fields to sum
+    **/
+    _sum?: AddMedicineRequestSumAggregateInputType;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Select which fields to find the minimum value
+    **/
+    _min?: AddMedicineRequestMinAggregateInputType;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Select which fields to find the maximum value
+    **/
+    _max?: AddMedicineRequestMaxAggregateInputType;
+};
+export type GetAddMedicineRequestAggregateType<T extends AddMedicineRequestAggregateArgs> = {
+    [P in keyof T & keyof AggregateAddMedicineRequest]: P extends '_count' | 'count' ? T[P] extends true ? number : Prisma.GetScalarType<T[P], AggregateAddMedicineRequest[P]> : Prisma.GetScalarType<T[P], AggregateAddMedicineRequest[P]>;
+};
+export type AddMedicineRequestGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    where?: Prisma.AddMedicineRequestWhereInput;
+    orderBy?: Prisma.AddMedicineRequestOrderByWithAggregationInput | Prisma.AddMedicineRequestOrderByWithAggregationInput[];
+    by: Prisma.AddMedicineRequestScalarFieldEnum[] | Prisma.AddMedicineRequestScalarFieldEnum;
+    having?: Prisma.AddMedicineRequestScalarWhereWithAggregatesInput;
+    take?: number;
+    skip?: number;
+    _count?: AddMedicineRequestCountAggregateInputType | true;
+    _avg?: AddMedicineRequestAvgAggregateInputType;
+    _sum?: AddMedicineRequestSumAggregateInputType;
+    _min?: AddMedicineRequestMinAggregateInputType;
+    _max?: AddMedicineRequestMaxAggregateInputType;
+};
+export type AddMedicineRequestGroupByOutputType = {
+    id: number;
+    patientId: number;
+    patientMedicineId: number;
+    imageUrl: string | null;
+    extractedTradeName: string;
+    extractedActiveSubstance: string;
+    extractedConcentration: string | null;
+    extractedDosageForm: string | null;
+    matchedTradeNameId: number | null;
+    matchedActiveSubstanceId: number | null;
+    status: string;
+    resolvedByUserId: number | null;
+    resolvedAt: Date | null;
+    resolutionNotes: string | null;
+    createdAt: Date;
+    updatedAt: Date;
+    _count: AddMedicineRequestCountAggregateOutputType | null;
+    _avg: AddMedicineRequestAvgAggregateOutputType | null;
+    _sum: AddMedicineRequestSumAggregateOutputType | null;
+    _min: AddMedicineRequestMinAggregateOutputType | null;
+    _max: AddMedicineRequestMaxAggregateOutputType | null;
+};
+type GetAddMedicineRequestGroupByPayload<T extends AddMedicineRequestGroupByArgs> = Prisma.PrismaPromise<Array<Prisma.PickEnumerable<AddMedicineRequestGroupByOutputType, T['by']> & {
+    [P in ((keyof T) & (keyof AddMedicineRequestGroupByOutputType))]: P extends '_count' ? T[P] extends boolean ? number : Prisma.GetScalarType<T[P], AddMedicineRequestGroupByOutputType[P]> : Prisma.GetScalarType<T[P], AddMedicineRequestGroupByOutputType[P]>;
+}>>;
+export type AddMedicineRequestWhereInput = {
+    AND?: Prisma.AddMedicineRequestWhereInput | Prisma.AddMedicineRequestWhereInput[];
+    OR?: Prisma.AddMedicineRequestWhereInput[];
+    NOT?: Prisma.AddMedicineRequestWhereInput | Prisma.AddMedicineRequestWhereInput[];
+    id?: Prisma.IntFilter<"AddMedicineRequest"> | number;
+    patientId?: Prisma.IntFilter<"AddMedicineRequest"> | number;
+    patientMedicineId?: Prisma.IntFilter<"AddMedicineRequest"> | number;
+    imageUrl?: Prisma.StringNullableFilter<"AddMedicineRequest"> | string | null;
+    extractedTradeName?: Prisma.StringFilter<"AddMedicineRequest"> | string;
+    extractedActiveSubstance?: Prisma.StringFilter<"AddMedicineRequest"> | string;
+    extractedConcentration?: Prisma.StringNullableFilter<"AddMedicineRequest"> | string | null;
+    extractedDosageForm?: Prisma.StringNullableFilter<"AddMedicineRequest"> | string | null;
+    matchedTradeNameId?: Prisma.IntNullableFilter<"AddMedicineRequest"> | number | null;
+    matchedActiveSubstanceId?: Prisma.IntNullableFilter<"AddMedicineRequest"> | number | null;
+    status?: Prisma.StringFilter<"AddMedicineRequest"> | string;
+    resolvedByUserId?: Prisma.IntNullableFilter<"AddMedicineRequest"> | number | null;
+    resolvedAt?: Prisma.DateTimeNullableFilter<"AddMedicineRequest"> | Date | string | null;
+    resolutionNotes?: Prisma.StringNullableFilter<"AddMedicineRequest"> | string | null;
+    createdAt?: Prisma.DateTimeFilter<"AddMedicineRequest"> | Date | string;
+    updatedAt?: Prisma.DateTimeFilter<"AddMedicineRequest"> | Date | string;
+    patient?: Prisma.XOR<Prisma.PatientScalarRelationFilter, Prisma.PatientWhereInput>;
+    patientMedicine?: Prisma.XOR<Prisma.PatientMedicineScalarRelationFilter, Prisma.PatientMedicineWhereInput>;
+    matchedTradeName?: Prisma.XOR<Prisma.TradeNameNullableScalarRelationFilter, Prisma.TradeNameWhereInput> | null;
+    matchedActiveSubstance?: Prisma.XOR<Prisma.ActiveSubstanceNullableScalarRelationFilter, Prisma.ActiveSubstanceWhereInput> | null;
+    resolvedByUser?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null;
+};
+export type AddMedicineRequestOrderByWithRelationInput = {
+    id?: Prisma.SortOrder;
+    patientId?: Prisma.SortOrder;
+    patientMedicineId?: Prisma.SortOrder;
+    imageUrl?: Prisma.SortOrderInput | Prisma.SortOrder;
+    extractedTradeName?: Prisma.SortOrder;
+    extractedActiveSubstance?: Prisma.SortOrder;
+    extractedConcentration?: Prisma.SortOrderInput | Prisma.SortOrder;
+    extractedDosageForm?: Prisma.SortOrderInput | Prisma.SortOrder;
+    matchedTradeNameId?: Prisma.SortOrderInput | Prisma.SortOrder;
+    matchedActiveSubstanceId?: Prisma.SortOrderInput | Prisma.SortOrder;
+    status?: Prisma.SortOrder;
+    resolvedByUserId?: Prisma.SortOrderInput | Prisma.SortOrder;
+    resolvedAt?: Prisma.SortOrderInput | Prisma.SortOrder;
+    resolutionNotes?: Prisma.SortOrderInput | Prisma.SortOrder;
+    createdAt?: Prisma.SortOrder;
+    updatedAt?: Prisma.SortOrder;
+    patient?: Prisma.PatientOrderByWithRelationInput;
+    patientMedicine?: Prisma.PatientMedicineOrderByWithRelationInput;
+    matchedTradeName?: Prisma.TradeNameOrderByWithRelationInput;
+    matchedActiveSubstance?: Prisma.ActiveSubstanceOrderByWithRelationInput;
+    resolvedByUser?: Prisma.UserOrderByWithRelationInput;
+};
+export type AddMedicineRequestWhereUniqueInput = Prisma.AtLeast<{
+    id?: number;
+    AND?: Prisma.AddMedicineRequestWhereInput | Prisma.AddMedicineRequestWhereInput[];
+    OR?: Prisma.AddMedicineRequestWhereInput[];
+    NOT?: Prisma.AddMedicineRequestWhereInput | Prisma.AddMedicineRequestWhereInput[];
+    patientId?: Prisma.IntFilter<"AddMedicineRequest"> | number;
+    patientMedicineId?: Prisma.IntFilter<"AddMedicineRequest"> | number;
+    imageUrl?: Prisma.StringNullableFilter<"AddMedicineRequest"> | string | null;
+    extractedTradeName?: Prisma.StringFilter<"AddMedicineRequest"> | string;
+    extractedActiveSubstance?: Prisma.StringFilter<"AddMedicineRequest"> | string;
+    extractedConcentration?: Prisma.StringNullableFilter<"AddMedicineRequest"> | string | null;
+    extractedDosageForm?: Prisma.StringNullableFilter<"AddMedicineRequest"> | string | null;
+    matchedTradeNameId?: Prisma.IntNullableFilter<"AddMedicineRequest"> | number | null;
+    matchedActiveSubstanceId?: Prisma.IntNullableFilter<"AddMedicineRequest"> | number | null;
+    status?: Prisma.StringFilter<"AddMedicineRequest"> | string;
+    resolvedByUserId?: Prisma.IntNullableFilter<"AddMedicineRequest"> | number | null;
+    resolvedAt?: Prisma.DateTimeNullableFilter<"AddMedicineRequest"> | Date | string | null;
+    resolutionNotes?: Prisma.StringNullableFilter<"AddMedicineRequest"> | string | null;
+    createdAt?: Prisma.DateTimeFilter<"AddMedicineRequest"> | Date | string;
+    updatedAt?: Prisma.DateTimeFilter<"AddMedicineRequest"> | Date | string;
+    patient?: Prisma.XOR<Prisma.PatientScalarRelationFilter, Prisma.PatientWhereInput>;
+    patientMedicine?: Prisma.XOR<Prisma.PatientMedicineScalarRelationFilter, Prisma.PatientMedicineWhereInput>;
+    matchedTradeName?: Prisma.XOR<Prisma.TradeNameNullableScalarRelationFilter, Prisma.TradeNameWhereInput> | null;
+    matchedActiveSubstance?: Prisma.XOR<Prisma.ActiveSubstanceNullableScalarRelationFilter, Prisma.ActiveSubstanceWhereInput> | null;
+    resolvedByUser?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null;
+}, "id">;
+export type AddMedicineRequestOrderByWithAggregationInput = {
+    id?: Prisma.SortOrder;
+    patientId?: Prisma.SortOrder;
+    patientMedicineId?: Prisma.SortOrder;
+    imageUrl?: Prisma.SortOrderInput | Prisma.SortOrder;
+    extractedTradeName?: Prisma.SortOrder;
+    extractedActiveSubstance?: Prisma.SortOrder;
+    extractedConcentration?: Prisma.SortOrderInput | Prisma.SortOrder;
+    extractedDosageForm?: Prisma.SortOrderInput | Prisma.SortOrder;
+    matchedTradeNameId?: Prisma.SortOrderInput | Prisma.SortOrder;
+    matchedActiveSubstanceId?: Prisma.SortOrderInput | Prisma.SortOrder;
+    status?: Prisma.SortOrder;
+    resolvedByUserId?: Prisma.SortOrderInput | Prisma.SortOrder;
+    resolvedAt?: Prisma.SortOrderInput | Prisma.SortOrder;
+    resolutionNotes?: Prisma.SortOrderInput | Prisma.SortOrder;
+    createdAt?: Prisma.SortOrder;
+    updatedAt?: Prisma.SortOrder;
+    _count?: Prisma.AddMedicineRequestCountOrderByAggregateInput;
+    _avg?: Prisma.AddMedicineRequestAvgOrderByAggregateInput;
+    _max?: Prisma.AddMedicineRequestMaxOrderByAggregateInput;
+    _min?: Prisma.AddMedicineRequestMinOrderByAggregateInput;
+    _sum?: Prisma.AddMedicineRequestSumOrderByAggregateInput;
+};
+export type AddMedicineRequestScalarWhereWithAggregatesInput = {
+    AND?: Prisma.AddMedicineRequestScalarWhereWithAggregatesInput | Prisma.AddMedicineRequestScalarWhereWithAggregatesInput[];
+    OR?: Prisma.AddMedicineRequestScalarWhereWithAggregatesInput[];
+    NOT?: Prisma.AddMedicineRequestScalarWhereWithAggregatesInput | Prisma.AddMedicineRequestScalarWhereWithAggregatesInput[];
+    id?: Prisma.IntWithAggregatesFilter<"AddMedicineRequest"> | number;
+    patientId?: Prisma.IntWithAggregatesFilter<"AddMedicineRequest"> | number;
+    patientMedicineId?: Prisma.IntWithAggregatesFilter<"AddMedicineRequest"> | number;
+    imageUrl?: Prisma.StringNullableWithAggregatesFilter<"AddMedicineRequest"> | string | null;
+    extractedTradeName?: Prisma.StringWithAggregatesFilter<"AddMedicineRequest"> | string;
+    extractedActiveSubstance?: Prisma.StringWithAggregatesFilter<"AddMedicineRequest"> | string;
+    extractedConcentration?: Prisma.StringNullableWithAggregatesFilter<"AddMedicineRequest"> | string | null;
+    extractedDosageForm?: Prisma.StringNullableWithAggregatesFilter<"AddMedicineRequest"> | string | null;
+    matchedTradeNameId?: Prisma.IntNullableWithAggregatesFilter<"AddMedicineRequest"> | number | null;
+    matchedActiveSubstanceId?: Prisma.IntNullableWithAggregatesFilter<"AddMedicineRequest"> | number | null;
+    status?: Prisma.StringWithAggregatesFilter<"AddMedicineRequest"> | string;
+    resolvedByUserId?: Prisma.IntNullableWithAggregatesFilter<"AddMedicineRequest"> | number | null;
+    resolvedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"AddMedicineRequest"> | Date | string | null;
+    resolutionNotes?: Prisma.StringNullableWithAggregatesFilter<"AddMedicineRequest"> | string | null;
+    createdAt?: Prisma.DateTimeWithAggregatesFilter<"AddMedicineRequest"> | Date | string;
+    updatedAt?: Prisma.DateTimeWithAggregatesFilter<"AddMedicineRequest"> | Date | string;
+};
+export type AddMedicineRequestCreateInput = {
+    imageUrl?: string | null;
+    extractedTradeName: string;
+    extractedActiveSubstance: string;
+    extractedConcentration?: string | null;
+    extractedDosageForm?: string | null;
+    status?: string;
+    resolvedAt?: Date | string | null;
+    resolutionNotes?: string | null;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+    patient: Prisma.PatientCreateNestedOneWithoutAddMedicineReqsInput;
+    patientMedicine: Prisma.PatientMedicineCreateNestedOneWithoutAddMedicineRequestsInput;
+    matchedTradeName?: Prisma.TradeNameCreateNestedOneWithoutMatchedRequestsInput;
+    matchedActiveSubstance?: Prisma.ActiveSubstanceCreateNestedOneWithoutMatchedRequestsInput;
+    resolvedByUser?: Prisma.UserCreateNestedOneWithoutResolvedRequestsInput;
+};
+export type AddMedicineRequestUncheckedCreateInput = {
+    id?: number;
+    patientId: number;
+    patientMedicineId: number;
+    imageUrl?: string | null;
+    extractedTradeName: string;
+    extractedActiveSubstance: string;
+    extractedConcentration?: string | null;
+    extractedDosageForm?: string | null;
+    matchedTradeNameId?: number | null;
+    matchedActiveSubstanceId?: number | null;
+    status?: string;
+    resolvedByUserId?: number | null;
+    resolvedAt?: Date | string | null;
+    resolutionNotes?: string | null;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+};
+export type AddMedicineRequestUpdateInput = {
+    imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    extractedTradeName?: Prisma.StringFieldUpdateOperationsInput | string;
+    extractedActiveSubstance?: Prisma.StringFieldUpdateOperationsInput | string;
+    extractedConcentration?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    extractedDosageForm?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    status?: Prisma.StringFieldUpdateOperationsInput | string;
+    resolvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    resolutionNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    patient?: Prisma.PatientUpdateOneRequiredWithoutAddMedicineReqsNestedInput;
+    patientMedicine?: Prisma.PatientMedicineUpdateOneRequiredWithoutAddMedicineRequestsNestedInput;
+    matchedTradeName?: Prisma.TradeNameUpdateOneWithoutMatchedRequestsNestedInput;
+    matchedActiveSubstance?: Prisma.ActiveSubstanceUpdateOneWithoutMatchedRequestsNestedInput;
+    resolvedByUser?: Prisma.UserUpdateOneWithoutResolvedRequestsNestedInput;
+};
+export type AddMedicineRequestUncheckedUpdateInput = {
+    id?: Prisma.IntFieldUpdateOperationsInput | number;
+    patientId?: Prisma.IntFieldUpdateOperationsInput | number;
+    patientMedicineId?: Prisma.IntFieldUpdateOperationsInput | number;
+    imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    extractedTradeName?: Prisma.StringFieldUpdateOperationsInput | string;
+    extractedActiveSubstance?: Prisma.StringFieldUpdateOperationsInput | string;
+    extractedConcentration?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    extractedDosageForm?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    matchedTradeNameId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
+    matchedActiveSubstanceId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
+    status?: Prisma.StringFieldUpdateOperationsInput | string;
+    resolvedByUserId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
+    resolvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    resolutionNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+};
+export type AddMedicineRequestCreateManyInput = {
+    id?: number;
+    patientId: number;
+    patientMedicineId: number;
+    imageUrl?: string | null;
+    extractedTradeName: string;
+    extractedActiveSubstance: string;
+    extractedConcentration?: string | null;
+    extractedDosageForm?: string | null;
+    matchedTradeNameId?: number | null;
+    matchedActiveSubstanceId?: number | null;
+    status?: string;
+    resolvedByUserId?: number | null;
+    resolvedAt?: Date | string | null;
+    resolutionNotes?: string | null;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+};
+export type AddMedicineRequestUpdateManyMutationInput = {
+    imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    extractedTradeName?: Prisma.StringFieldUpdateOperationsInput | string;
+    extractedActiveSubstance?: Prisma.StringFieldUpdateOperationsInput | string;
+    extractedConcentration?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    extractedDosageForm?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    status?: Prisma.StringFieldUpdateOperationsInput | string;
+    resolvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    resolutionNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+};
+export type AddMedicineRequestUncheckedUpdateManyInput = {
+    id?: Prisma.IntFieldUpdateOperationsInput | number;
+    patientId?: Prisma.IntFieldUpdateOperationsInput | number;
+    patientMedicineId?: Prisma.IntFieldUpdateOperationsInput | number;
+    imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    extractedTradeName?: Prisma.StringFieldUpdateOperationsInput | string;
+    extractedActiveSubstance?: Prisma.StringFieldUpdateOperationsInput | string;
+    extractedConcentration?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    extractedDosageForm?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    matchedTradeNameId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
+    matchedActiveSubstanceId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
+    status?: Prisma.StringFieldUpdateOperationsInput | string;
+    resolvedByUserId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
+    resolvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    resolutionNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+};
+export type AddMedicineRequestListRelationFilter = {
+    every?: Prisma.AddMedicineRequestWhereInput;
+    some?: Prisma.AddMedicineRequestWhereInput;
+    none?: Prisma.AddMedicineRequestWhereInput;
+};
+export type AddMedicineRequestOrderByRelationAggregateInput = {
+    _count?: Prisma.SortOrder;
+};
+export type AddMedicineRequestCountOrderByAggregateInput = {
+    id?: Prisma.SortOrder;
+    patientId?: Prisma.SortOrder;
+    patientMedicineId?: Prisma.SortOrder;
+    imageUrl?: Prisma.SortOrder;
+    extractedTradeName?: Prisma.SortOrder;
+    extractedActiveSubstance?: Prisma.SortOrder;
+    extractedConcentration?: Prisma.SortOrder;
+    extractedDosageForm?: Prisma.SortOrder;
+    matchedTradeNameId?: Prisma.SortOrder;
+    matchedActiveSubstanceId?: Prisma.SortOrder;
+    status?: Prisma.SortOrder;
+    resolvedByUserId?: Prisma.SortOrder;
+    resolvedAt?: Prisma.SortOrder;
+    resolutionNotes?: Prisma.SortOrder;
+    createdAt?: Prisma.SortOrder;
+    updatedAt?: Prisma.SortOrder;
+};
+export type AddMedicineRequestAvgOrderByAggregateInput = {
+    id?: Prisma.SortOrder;
+    patientId?: Prisma.SortOrder;
+    patientMedicineId?: Prisma.SortOrder;
+    matchedTradeNameId?: Prisma.SortOrder;
+    matchedActiveSubstanceId?: Prisma.SortOrder;
+    resolvedByUserId?: Prisma.SortOrder;
+};
+export type AddMedicineRequestMaxOrderByAggregateInput = {
+    id?: Prisma.SortOrder;
+    patientId?: Prisma.SortOrder;
+    patientMedicineId?: Prisma.SortOrder;
+    imageUrl?: Prisma.SortOrder;
+    extractedTradeName?: Prisma.SortOrder;
+    extractedActiveSubstance?: Prisma.SortOrder;
+    extractedConcentration?: Prisma.SortOrder;
+    extractedDosageForm?: Prisma.SortOrder;
+    matchedTradeNameId?: Prisma.SortOrder;
+    matchedActiveSubstanceId?: Prisma.SortOrder;
+    status?: Prisma.SortOrder;
+    resolvedByUserId?: Prisma.SortOrder;
+    resolvedAt?: Prisma.SortOrder;
+    resolutionNotes?: Prisma.SortOrder;
+    createdAt?: Prisma.SortOrder;
+    updatedAt?: Prisma.SortOrder;
+};
+export type AddMedicineRequestMinOrderByAggregateInput = {
+    id?: Prisma.SortOrder;
+    patientId?: Prisma.SortOrder;
+    patientMedicineId?: Prisma.SortOrder;
+    imageUrl?: Prisma.SortOrder;
+    extractedTradeName?: Prisma.SortOrder;
+    extractedActiveSubstance?: Prisma.SortOrder;
+    extractedConcentration?: Prisma.SortOrder;
+    extractedDosageForm?: Prisma.SortOrder;
+    matchedTradeNameId?: Prisma.SortOrder;
+    matchedActiveSubstanceId?: Prisma.SortOrder;
+    status?: Prisma.SortOrder;
+    resolvedByUserId?: Prisma.SortOrder;
+    resolvedAt?: Prisma.SortOrder;
+    resolutionNotes?: Prisma.SortOrder;
+    createdAt?: Prisma.SortOrder;
+    updatedAt?: Prisma.SortOrder;
+};
+export type AddMedicineRequestSumOrderByAggregateInput = {
+    id?: Prisma.SortOrder;
+    patientId?: Prisma.SortOrder;
+    patientMedicineId?: Prisma.SortOrder;
+    matchedTradeNameId?: Prisma.SortOrder;
+    matchedActiveSubstanceId?: Prisma.SortOrder;
+    resolvedByUserId?: Prisma.SortOrder;
+};
+export type AddMedicineRequestCreateNestedManyWithoutResolvedByUserInput = {
+    create?: Prisma.XOR<Prisma.AddMedicineRequestCreateWithoutResolvedByUserInput, Prisma.AddMedicineRequestUncheckedCreateWithoutResolvedByUserInput> | Prisma.AddMedicineRequestCreateWithoutResolvedByUserInput[] | Prisma.AddMedicineRequestUncheckedCreateWithoutResolvedByUserInput[];
+    connectOrCreate?: Prisma.AddMedicineRequestCreateOrConnectWithoutResolvedByUserInput | Prisma.AddMedicineRequestCreateOrConnectWithoutResolvedByUserInput[];
+    createMany?: Prisma.AddMedicineRequestCreateManyResolvedByUserInputEnvelope;
+    connect?: Prisma.AddMedicineRequestWhereUniqueInput | Prisma.AddMedicineRequestWhereUniqueInput[];
+};
+export type AddMedicineRequestUncheckedCreateNestedManyWithoutResolvedByUserInput = {
+    create?: Prisma.XOR<Prisma.AddMedicineRequestCreateWithoutResolvedByUserInput, Prisma.AddMedicineRequestUncheckedCreateWithoutResolvedByUserInput> | Prisma.AddMedicineRequestCreateWithoutResolvedByUserInput[] | Prisma.AddMedicineRequestUncheckedCreateWithoutResolvedByUserInput[];
+    connectOrCreate?: Prisma.AddMedicineRequestCreateOrConnectWithoutResolvedByUserInput | Prisma.AddMedicineRequestCreateOrConnectWithoutResolvedByUserInput[];
+    createMany?: Prisma.AddMedicineRequestCreateManyResolvedByUserInputEnvelope;
+    connect?: Prisma.AddMedicineRequestWhereUniqueInput | Prisma.AddMedicineRequestWhereUniqueInput[];
+};
+export type AddMedicineRequestUpdateManyWithoutResolvedByUserNestedInput = {
+    create?: Prisma.XOR<Prisma.AddMedicineRequestCreateWithoutResolvedByUserInput, Prisma.AddMedicineRequestUncheckedCreateWithoutResolvedByUserInput> | Prisma.AddMedicineRequestCreateWithoutResolvedByUserInput[] | Prisma.AddMedicineRequestUncheckedCreateWithoutResolvedByUserInput[];
+    connectOrCreate?: Prisma.AddMedicineRequestCreateOrConnectWithoutResolvedByUserInput | Prisma.AddMedicineRequestCreateOrConnectWithoutResolvedByUserInput[];
+    upsert?: Prisma.AddMedicineRequestUpsertWithWhereUniqueWithoutResolvedByUserInput | Prisma.AddMedicineRequestUpsertWithWhereUniqueWithoutResolvedByUserInput[];
+    createMany?: Prisma.AddMedicineRequestCreateManyResolvedByUserInputEnvelope;
+    set?: Prisma.AddMedicineRequestWhereUniqueInput | Prisma.AddMedicineRequestWhereUniqueInput[];
+    disconnect?: Prisma.AddMedicineRequestWhereUniqueInput | Prisma.AddMedicineRequestWhereUniqueInput[];
+    delete?: Prisma.AddMedicineRequestWhereUniqueInput | Prisma.AddMedicineRequestWhereUniqueInput[];
+    connect?: Prisma.AddMedicineRequestWhereUniqueInput | Prisma.AddMedicineRequestWhereUniqueInput[];
+    update?: Prisma.AddMedicineRequestUpdateWithWhereUniqueWithoutResolvedByUserInput | Prisma.AddMedicineRequestUpdateWithWhereUniqueWithoutResolvedByUserInput[];
+    updateMany?: Prisma.AddMedicineRequestUpdateManyWithWhereWithoutResolvedByUserInput | Prisma.AddMedicineRequestUpdateManyWithWhereWithoutResolvedByUserInput[];
+    deleteMany?: Prisma.AddMedicineRequestScalarWhereInput | Prisma.AddMedicineRequestScalarWhereInput[];
+};
+export type AddMedicineRequestUncheckedUpdateManyWithoutResolvedByUserNestedInput = {
+    create?: Prisma.XOR<Prisma.AddMedicineRequestCreateWithoutResolvedByUserInput, Prisma.AddMedicineRequestUncheckedCreateWithoutResolvedByUserInput> | Prisma.AddMedicineRequestCreateWithoutResolvedByUserInput[] | Prisma.AddMedicineRequestUncheckedCreateWithoutResolvedByUserInput[];
+    connectOrCreate?: Prisma.AddMedicineRequestCreateOrConnectWithoutResolvedByUserInput | Prisma.AddMedicineRequestCreateOrConnectWithoutResolvedByUserInput[];
+    upsert?: Prisma.AddMedicineRequestUpsertWithWhereUniqueWithoutResolvedByUserInput | Prisma.AddMedicineRequestUpsertWithWhereUniqueWithoutResolvedByUserInput[];
+    createMany?: Prisma.AddMedicineRequestCreateManyResolvedByUserInputEnvelope;
+    set?: Prisma.AddMedicineRequestWhereUniqueInput | Prisma.AddMedicineRequestWhereUniqueInput[];
+    disconnect?: Prisma.AddMedicineRequestWhereUniqueInput | Prisma.AddMedicineRequestWhereUniqueInput[];
+    delete?: Prisma.AddMedicineRequestWhereUniqueInput | Prisma.AddMedicineRequestWhereUniqueInput[];
+    connect?: Prisma.AddMedicineRequestWhereUniqueInput | Prisma.AddMedicineRequestWhereUniqueInput[];
+    update?: Prisma.AddMedicineRequestUpdateWithWhereUniqueWithoutResolvedByUserInput | Prisma.AddMedicineRequestUpdateWithWhereUniqueWithoutResolvedByUserInput[];
+    updateMany?: Prisma.AddMedicineRequestUpdateManyWithWhereWithoutResolvedByUserInput | Prisma.AddMedicineRequestUpdateManyWithWhereWithoutResolvedByUserInput[];
+    deleteMany?: Prisma.AddMedicineRequestScalarWhereInput | Prisma.AddMedicineRequestScalarWhereInput[];
+};
+export type AddMedicineRequestCreateNestedManyWithoutPatientInput = {
+    create?: Prisma.XOR<Prisma.AddMedicineRequestCreateWithoutPatientInput, Prisma.AddMedicineRequestUncheckedCreateWithoutPatientInput> | Prisma.AddMedicineRequestCreateWithoutPatientInput[] | Prisma.AddMedicineRequestUncheckedCreateWithoutPatientInput[];
+    connectOrCreate?: Prisma.AddMedicineRequestCreateOrConnectWithoutPatientInput | Prisma.AddMedicineRequestCreateOrConnectWithoutPatientInput[];
+    createMany?: Prisma.AddMedicineRequestCreateManyPatientInputEnvelope;
+    connect?: Prisma.AddMedicineRequestWhereUniqueInput | Prisma.AddMedicineRequestWhereUniqueInput[];
+};
+export type AddMedicineRequestUncheckedCreateNestedManyWithoutPatientInput = {
+    create?: Prisma.XOR<Prisma.AddMedicineRequestCreateWithoutPatientInput, Prisma.AddMedicineRequestUncheckedCreateWithoutPatientInput> | Prisma.AddMedicineRequestCreateWithoutPatientInput[] | Prisma.AddMedicineRequestUncheckedCreateWithoutPatientInput[];
+    connectOrCreate?: Prisma.AddMedicineRequestCreateOrConnectWithoutPatientInput | Prisma.AddMedicineRequestCreateOrConnectWithoutPatientInput[];
+    createMany?: Prisma.AddMedicineRequestCreateManyPatientInputEnvelope;
+    connect?: Prisma.AddMedicineRequestWhereUniqueInput | Prisma.AddMedicineRequestWhereUniqueInput[];
+};
+export type AddMedicineRequestUpdateManyWithoutPatientNestedInput = {
+    create?: Prisma.XOR<Prisma.AddMedicineRequestCreateWithoutPatientInput, Prisma.AddMedicineRequestUncheckedCreateWithoutPatientInput> | Prisma.AddMedicineRequestCreateWithoutPatientInput[] | Prisma.AddMedicineRequestUncheckedCreateWithoutPatientInput[];
+    connectOrCreate?: Prisma.AddMedicineRequestCreateOrConnectWithoutPatientInput | Prisma.AddMedicineRequestCreateOrConnectWithoutPatientInput[];
+    upsert?: Prisma.AddMedicineRequestUpsertWithWhereUniqueWithoutPatientInput | Prisma.AddMedicineRequestUpsertWithWhereUniqueWithoutPatientInput[];
+    createMany?: Prisma.AddMedicineRequestCreateManyPatientInputEnvelope;
+    set?: Prisma.AddMedicineRequestWhereUniqueInput | Prisma.AddMedicineRequestWhereUniqueInput[];
+    disconnect?: Prisma.AddMedicineRequestWhereUniqueInput | Prisma.AddMedicineRequestWhereUniqueInput[];
+    delete?: Prisma.AddMedicineRequestWhereUniqueInput | Prisma.AddMedicineRequestWhereUniqueInput[];
+    connect?: Prisma.AddMedicineRequestWhereUniqueInput | Prisma.AddMedicineRequestWhereUniqueInput[];
+    update?: Prisma.AddMedicineRequestUpdateWithWhereUniqueWithoutPatientInput | Prisma.AddMedicineRequestUpdateWithWhereUniqueWithoutPatientInput[];
+    updateMany?: Prisma.AddMedicineRequestUpdateManyWithWhereWithoutPatientInput | Prisma.AddMedicineRequestUpdateManyWithWhereWithoutPatientInput[];
+    deleteMany?: Prisma.AddMedicineRequestScalarWhereInput | Prisma.AddMedicineRequestScalarWhereInput[];
+};
+export type AddMedicineRequestUncheckedUpdateManyWithoutPatientNestedInput = {
+    create?: Prisma.XOR<Prisma.AddMedicineRequestCreateWithoutPatientInput, Prisma.AddMedicineRequestUncheckedCreateWithoutPatientInput> | Prisma.AddMedicineRequestCreateWithoutPatientInput[] | Prisma.AddMedicineRequestUncheckedCreateWithoutPatientInput[];
+    connectOrCreate?: Prisma.AddMedicineRequestCreateOrConnectWithoutPatientInput | Prisma.AddMedicineRequestCreateOrConnectWithoutPatientInput[];
+    upsert?: Prisma.AddMedicineRequestUpsertWithWhereUniqueWithoutPatientInput | Prisma.AddMedicineRequestUpsertWithWhereUniqueWithoutPatientInput[];
+    createMany?: Prisma.AddMedicineRequestCreateManyPatientInputEnvelope;
+    set?: Prisma.AddMedicineRequestWhereUniqueInput | Prisma.AddMedicineRequestWhereUniqueInput[];
+    disconnect?: Prisma.AddMedicineRequestWhereUniqueInput | Prisma.AddMedicineRequestWhereUniqueInput[];
+    delete?: Prisma.AddMedicineRequestWhereUniqueInput | Prisma.AddMedicineRequestWhereUniqueInput[];
+    connect?: Prisma.AddMedicineRequestWhereUniqueInput | Prisma.AddMedicineRequestWhereUniqueInput[];
+    update?: Prisma.AddMedicineRequestUpdateWithWhereUniqueWithoutPatientInput | Prisma.AddMedicineRequestUpdateWithWhereUniqueWithoutPatientInput[];
+    updateMany?: Prisma.AddMedicineRequestUpdateManyWithWhereWithoutPatientInput | Prisma.AddMedicineRequestUpdateManyWithWhereWithoutPatientInput[];
+    deleteMany?: Prisma.AddMedicineRequestScalarWhereInput | Prisma.AddMedicineRequestScalarWhereInput[];
+};
+export type AddMedicineRequestCreateNestedManyWithoutMatchedActiveSubstanceInput = {
+    create?: Prisma.XOR<Prisma.AddMedicineRequestCreateWithoutMatchedActiveSubstanceInput, Prisma.AddMedicineRequestUncheckedCreateWithoutMatchedActiveSubstanceInput> | Prisma.AddMedicineRequestCreateWithoutMatchedActiveSubstanceInput[] | Prisma.AddMedicineRequestUncheckedCreateWithoutMatchedActiveSubstanceInput[];
+    connectOrCreate?: Prisma.AddMedicineRequestCreateOrConnectWithoutMatchedActiveSubstanceInput | Prisma.AddMedicineRequestCreateOrConnectWithoutMatchedActiveSubstanceInput[];
+    createMany?: Prisma.AddMedicineRequestCreateManyMatchedActiveSubstanceInputEnvelope;
+    connect?: Prisma.AddMedicineRequestWhereUniqueInput | Prisma.AddMedicineRequestWhereUniqueInput[];
+};
+export type AddMedicineRequestUncheckedCreateNestedManyWithoutMatchedActiveSubstanceInput = {
+    create?: Prisma.XOR<Prisma.AddMedicineRequestCreateWithoutMatchedActiveSubstanceInput, Prisma.AddMedicineRequestUncheckedCreateWithoutMatchedActiveSubstanceInput> | Prisma.AddMedicineRequestCreateWithoutMatchedActiveSubstanceInput[] | Prisma.AddMedicineRequestUncheckedCreateWithoutMatchedActiveSubstanceInput[];
+    connectOrCreate?: Prisma.AddMedicineRequestCreateOrConnectWithoutMatchedActiveSubstanceInput | Prisma.AddMedicineRequestCreateOrConnectWithoutMatchedActiveSubstanceInput[];
+    createMany?: Prisma.AddMedicineRequestCreateManyMatchedActiveSubstanceInputEnvelope;
+    connect?: Prisma.AddMedicineRequestWhereUniqueInput | Prisma.AddMedicineRequestWhereUniqueInput[];
+};
+export type AddMedicineRequestUpdateManyWithoutMatchedActiveSubstanceNestedInput = {
+    create?: Prisma.XOR<Prisma.AddMedicineRequestCreateWithoutMatchedActiveSubstanceInput, Prisma.AddMedicineRequestUncheckedCreateWithoutMatchedActiveSubstanceInput> | Prisma.AddMedicineRequestCreateWithoutMatchedActiveSubstanceInput[] | Prisma.AddMedicineRequestUncheckedCreateWithoutMatchedActiveSubstanceInput[];
+    connectOrCreate?: Prisma.AddMedicineRequestCreateOrConnectWithoutMatchedActiveSubstanceInput | Prisma.AddMedicineRequestCreateOrConnectWithoutMatchedActiveSubstanceInput[];
+    upsert?: Prisma.AddMedicineRequestUpsertWithWhereUniqueWithoutMatchedActiveSubstanceInput | Prisma.AddMedicineRequestUpsertWithWhereUniqueWithoutMatchedActiveSubstanceInput[];
+    createMany?: Prisma.AddMedicineRequestCreateManyMatchedActiveSubstanceInputEnvelope;
+    set?: Prisma.AddMedicineRequestWhereUniqueInput | Prisma.AddMedicineRequestWhereUniqueInput[];
+    disconnect?: Prisma.AddMedicineRequestWhereUniqueInput | Prisma.AddMedicineRequestWhereUniqueInput[];
+    delete?: Prisma.AddMedicineRequestWhereUniqueInput | Prisma.AddMedicineRequestWhereUniqueInput[];
+    connect?: Prisma.AddMedicineRequestWhereUniqueInput | Prisma.AddMedicineRequestWhereUniqueInput[];
+    update?: Prisma.AddMedicineRequestUpdateWithWhereUniqueWithoutMatchedActiveSubstanceInput | Prisma.AddMedicineRequestUpdateWithWhereUniqueWithoutMatchedActiveSubstanceInput[];
+    updateMany?: Prisma.AddMedicineRequestUpdateManyWithWhereWithoutMatchedActiveSubstanceInput | Prisma.AddMedicineRequestUpdateManyWithWhereWithoutMatchedActiveSubstanceInput[];
+    deleteMany?: Prisma.AddMedicineRequestScalarWhereInput | Prisma.AddMedicineRequestScalarWhereInput[];
+};
+export type AddMedicineRequestUncheckedUpdateManyWithoutMatchedActiveSubstanceNestedInput = {
+    create?: Prisma.XOR<Prisma.AddMedicineRequestCreateWithoutMatchedActiveSubstanceInput, Prisma.AddMedicineRequestUncheckedCreateWithoutMatchedActiveSubstanceInput> | Prisma.AddMedicineRequestCreateWithoutMatchedActiveSubstanceInput[] | Prisma.AddMedicineRequestUncheckedCreateWithoutMatchedActiveSubstanceInput[];
+    connectOrCreate?: Prisma.AddMedicineRequestCreateOrConnectWithoutMatchedActiveSubstanceInput | Prisma.AddMedicineRequestCreateOrConnectWithoutMatchedActiveSubstanceInput[];
+    upsert?: Prisma.AddMedicineRequestUpsertWithWhereUniqueWithoutMatchedActiveSubstanceInput | Prisma.AddMedicineRequestUpsertWithWhereUniqueWithoutMatchedActiveSubstanceInput[];
+    createMany?: Prisma.AddMedicineRequestCreateManyMatchedActiveSubstanceInputEnvelope;
+    set?: Prisma.AddMedicineRequestWhereUniqueInput | Prisma.AddMedicineRequestWhereUniqueInput[];
+    disconnect?: Prisma.AddMedicineRequestWhereUniqueInput | Prisma.AddMedicineRequestWhereUniqueInput[];
+    delete?: Prisma.AddMedicineRequestWhereUniqueInput | Prisma.AddMedicineRequestWhereUniqueInput[];
+    connect?: Prisma.AddMedicineRequestWhereUniqueInput | Prisma.AddMedicineRequestWhereUniqueInput[];
+    update?: Prisma.AddMedicineRequestUpdateWithWhereUniqueWithoutMatchedActiveSubstanceInput | Prisma.AddMedicineRequestUpdateWithWhereUniqueWithoutMatchedActiveSubstanceInput[];
+    updateMany?: Prisma.AddMedicineRequestUpdateManyWithWhereWithoutMatchedActiveSubstanceInput | Prisma.AddMedicineRequestUpdateManyWithWhereWithoutMatchedActiveSubstanceInput[];
+    deleteMany?: Prisma.AddMedicineRequestScalarWhereInput | Prisma.AddMedicineRequestScalarWhereInput[];
+};
+export type AddMedicineRequestCreateNestedManyWithoutMatchedTradeNameInput = {
+    create?: Prisma.XOR<Prisma.AddMedicineRequestCreateWithoutMatchedTradeNameInput, Prisma.AddMedicineRequestUncheckedCreateWithoutMatchedTradeNameInput> | Prisma.AddMedicineRequestCreateWithoutMatchedTradeNameInput[] | Prisma.AddMedicineRequestUncheckedCreateWithoutMatchedTradeNameInput[];
+    connectOrCreate?: Prisma.AddMedicineRequestCreateOrConnectWithoutMatchedTradeNameInput | Prisma.AddMedicineRequestCreateOrConnectWithoutMatchedTradeNameInput[];
+    createMany?: Prisma.AddMedicineRequestCreateManyMatchedTradeNameInputEnvelope;
+    connect?: Prisma.AddMedicineRequestWhereUniqueInput | Prisma.AddMedicineRequestWhereUniqueInput[];
+};
+export type AddMedicineRequestUncheckedCreateNestedManyWithoutMatchedTradeNameInput = {
+    create?: Prisma.XOR<Prisma.AddMedicineRequestCreateWithoutMatchedTradeNameInput, Prisma.AddMedicineRequestUncheckedCreateWithoutMatchedTradeNameInput> | Prisma.AddMedicineRequestCreateWithoutMatchedTradeNameInput[] | Prisma.AddMedicineRequestUncheckedCreateWithoutMatchedTradeNameInput[];
+    connectOrCreate?: Prisma.AddMedicineRequestCreateOrConnectWithoutMatchedTradeNameInput | Prisma.AddMedicineRequestCreateOrConnectWithoutMatchedTradeNameInput[];
+    createMany?: Prisma.AddMedicineRequestCreateManyMatchedTradeNameInputEnvelope;
+    connect?: Prisma.AddMedicineRequestWhereUniqueInput | Prisma.AddMedicineRequestWhereUniqueInput[];
+};
+export type AddMedicineRequestUpdateManyWithoutMatchedTradeNameNestedInput = {
+    create?: Prisma.XOR<Prisma.AddMedicineRequestCreateWithoutMatchedTradeNameInput, Prisma.AddMedicineRequestUncheckedCreateWithoutMatchedTradeNameInput> | Prisma.AddMedicineRequestCreateWithoutMatchedTradeNameInput[] | Prisma.AddMedicineRequestUncheckedCreateWithoutMatchedTradeNameInput[];
+    connectOrCreate?: Prisma.AddMedicineRequestCreateOrConnectWithoutMatchedTradeNameInput | Prisma.AddMedicineRequestCreateOrConnectWithoutMatchedTradeNameInput[];
+    upsert?: Prisma.AddMedicineRequestUpsertWithWhereUniqueWithoutMatchedTradeNameInput | Prisma.AddMedicineRequestUpsertWithWhereUniqueWithoutMatchedTradeNameInput[];
+    createMany?: Prisma.AddMedicineRequestCreateManyMatchedTradeNameInputEnvelope;
+    set?: Prisma.AddMedicineRequestWhereUniqueInput | Prisma.AddMedicineRequestWhereUniqueInput[];
+    disconnect?: Prisma.AddMedicineRequestWhereUniqueInput | Prisma.AddMedicineRequestWhereUniqueInput[];
+    delete?: Prisma.AddMedicineRequestWhereUniqueInput | Prisma.AddMedicineRequestWhereUniqueInput[];
+    connect?: Prisma.AddMedicineRequestWhereUniqueInput | Prisma.AddMedicineRequestWhereUniqueInput[];
+    update?: Prisma.AddMedicineRequestUpdateWithWhereUniqueWithoutMatchedTradeNameInput | Prisma.AddMedicineRequestUpdateWithWhereUniqueWithoutMatchedTradeNameInput[];
+    updateMany?: Prisma.AddMedicineRequestUpdateManyWithWhereWithoutMatchedTradeNameInput | Prisma.AddMedicineRequestUpdateManyWithWhereWithoutMatchedTradeNameInput[];
+    deleteMany?: Prisma.AddMedicineRequestScalarWhereInput | Prisma.AddMedicineRequestScalarWhereInput[];
+};
+export type AddMedicineRequestUncheckedUpdateManyWithoutMatchedTradeNameNestedInput = {
+    create?: Prisma.XOR<Prisma.AddMedicineRequestCreateWithoutMatchedTradeNameInput, Prisma.AddMedicineRequestUncheckedCreateWithoutMatchedTradeNameInput> | Prisma.AddMedicineRequestCreateWithoutMatchedTradeNameInput[] | Prisma.AddMedicineRequestUncheckedCreateWithoutMatchedTradeNameInput[];
+    connectOrCreate?: Prisma.AddMedicineRequestCreateOrConnectWithoutMatchedTradeNameInput | Prisma.AddMedicineRequestCreateOrConnectWithoutMatchedTradeNameInput[];
+    upsert?: Prisma.AddMedicineRequestUpsertWithWhereUniqueWithoutMatchedTradeNameInput | Prisma.AddMedicineRequestUpsertWithWhereUniqueWithoutMatchedTradeNameInput[];
+    createMany?: Prisma.AddMedicineRequestCreateManyMatchedTradeNameInputEnvelope;
+    set?: Prisma.AddMedicineRequestWhereUniqueInput | Prisma.AddMedicineRequestWhereUniqueInput[];
+    disconnect?: Prisma.AddMedicineRequestWhereUniqueInput | Prisma.AddMedicineRequestWhereUniqueInput[];
+    delete?: Prisma.AddMedicineRequestWhereUniqueInput | Prisma.AddMedicineRequestWhereUniqueInput[];
+    connect?: Prisma.AddMedicineRequestWhereUniqueInput | Prisma.AddMedicineRequestWhereUniqueInput[];
+    update?: Prisma.AddMedicineRequestUpdateWithWhereUniqueWithoutMatchedTradeNameInput | Prisma.AddMedicineRequestUpdateWithWhereUniqueWithoutMatchedTradeNameInput[];
+    updateMany?: Prisma.AddMedicineRequestUpdateManyWithWhereWithoutMatchedTradeNameInput | Prisma.AddMedicineRequestUpdateManyWithWhereWithoutMatchedTradeNameInput[];
+    deleteMany?: Prisma.AddMedicineRequestScalarWhereInput | Prisma.AddMedicineRequestScalarWhereInput[];
+};
+export type AddMedicineRequestCreateNestedManyWithoutPatientMedicineInput = {
+    create?: Prisma.XOR<Prisma.AddMedicineRequestCreateWithoutPatientMedicineInput, Prisma.AddMedicineRequestUncheckedCreateWithoutPatientMedicineInput> | Prisma.AddMedicineRequestCreateWithoutPatientMedicineInput[] | Prisma.AddMedicineRequestUncheckedCreateWithoutPatientMedicineInput[];
+    connectOrCreate?: Prisma.AddMedicineRequestCreateOrConnectWithoutPatientMedicineInput | Prisma.AddMedicineRequestCreateOrConnectWithoutPatientMedicineInput[];
+    createMany?: Prisma.AddMedicineRequestCreateManyPatientMedicineInputEnvelope;
+    connect?: Prisma.AddMedicineRequestWhereUniqueInput | Prisma.AddMedicineRequestWhereUniqueInput[];
+};
+export type AddMedicineRequestUncheckedCreateNestedManyWithoutPatientMedicineInput = {
+    create?: Prisma.XOR<Prisma.AddMedicineRequestCreateWithoutPatientMedicineInput, Prisma.AddMedicineRequestUncheckedCreateWithoutPatientMedicineInput> | Prisma.AddMedicineRequestCreateWithoutPatientMedicineInput[] | Prisma.AddMedicineRequestUncheckedCreateWithoutPatientMedicineInput[];
+    connectOrCreate?: Prisma.AddMedicineRequestCreateOrConnectWithoutPatientMedicineInput | Prisma.AddMedicineRequestCreateOrConnectWithoutPatientMedicineInput[];
+    createMany?: Prisma.AddMedicineRequestCreateManyPatientMedicineInputEnvelope;
+    connect?: Prisma.AddMedicineRequestWhereUniqueInput | Prisma.AddMedicineRequestWhereUniqueInput[];
+};
+export type AddMedicineRequestUpdateManyWithoutPatientMedicineNestedInput = {
+    create?: Prisma.XOR<Prisma.AddMedicineRequestCreateWithoutPatientMedicineInput, Prisma.AddMedicineRequestUncheckedCreateWithoutPatientMedicineInput> | Prisma.AddMedicineRequestCreateWithoutPatientMedicineInput[] | Prisma.AddMedicineRequestUncheckedCreateWithoutPatientMedicineInput[];
+    connectOrCreate?: Prisma.AddMedicineRequestCreateOrConnectWithoutPatientMedicineInput | Prisma.AddMedicineRequestCreateOrConnectWithoutPatientMedicineInput[];
+    upsert?: Prisma.AddMedicineRequestUpsertWithWhereUniqueWithoutPatientMedicineInput | Prisma.AddMedicineRequestUpsertWithWhereUniqueWithoutPatientMedicineInput[];
+    createMany?: Prisma.AddMedicineRequestCreateManyPatientMedicineInputEnvelope;
+    set?: Prisma.AddMedicineRequestWhereUniqueInput | Prisma.AddMedicineRequestWhereUniqueInput[];
+    disconnect?: Prisma.AddMedicineRequestWhereUniqueInput | Prisma.AddMedicineRequestWhereUniqueInput[];
+    delete?: Prisma.AddMedicineRequestWhereUniqueInput | Prisma.AddMedicineRequestWhereUniqueInput[];
+    connect?: Prisma.AddMedicineRequestWhereUniqueInput | Prisma.AddMedicineRequestWhereUniqueInput[];
+    update?: Prisma.AddMedicineRequestUpdateWithWhereUniqueWithoutPatientMedicineInput | Prisma.AddMedicineRequestUpdateWithWhereUniqueWithoutPatientMedicineInput[];
+    updateMany?: Prisma.AddMedicineRequestUpdateManyWithWhereWithoutPatientMedicineInput | Prisma.AddMedicineRequestUpdateManyWithWhereWithoutPatientMedicineInput[];
+    deleteMany?: Prisma.AddMedicineRequestScalarWhereInput | Prisma.AddMedicineRequestScalarWhereInput[];
+};
+export type AddMedicineRequestUncheckedUpdateManyWithoutPatientMedicineNestedInput = {
+    create?: Prisma.XOR<Prisma.AddMedicineRequestCreateWithoutPatientMedicineInput, Prisma.AddMedicineRequestUncheckedCreateWithoutPatientMedicineInput> | Prisma.AddMedicineRequestCreateWithoutPatientMedicineInput[] | Prisma.AddMedicineRequestUncheckedCreateWithoutPatientMedicineInput[];
+    connectOrCreate?: Prisma.AddMedicineRequestCreateOrConnectWithoutPatientMedicineInput | Prisma.AddMedicineRequestCreateOrConnectWithoutPatientMedicineInput[];
+    upsert?: Prisma.AddMedicineRequestUpsertWithWhereUniqueWithoutPatientMedicineInput | Prisma.AddMedicineRequestUpsertWithWhereUniqueWithoutPatientMedicineInput[];
+    createMany?: Prisma.AddMedicineRequestCreateManyPatientMedicineInputEnvelope;
+    set?: Prisma.AddMedicineRequestWhereUniqueInput | Prisma.AddMedicineRequestWhereUniqueInput[];
+    disconnect?: Prisma.AddMedicineRequestWhereUniqueInput | Prisma.AddMedicineRequestWhereUniqueInput[];
+    delete?: Prisma.AddMedicineRequestWhereUniqueInput | Prisma.AddMedicineRequestWhereUniqueInput[];
+    connect?: Prisma.AddMedicineRequestWhereUniqueInput | Prisma.AddMedicineRequestWhereUniqueInput[];
+    update?: Prisma.AddMedicineRequestUpdateWithWhereUniqueWithoutPatientMedicineInput | Prisma.AddMedicineRequestUpdateWithWhereUniqueWithoutPatientMedicineInput[];
+    updateMany?: Prisma.AddMedicineRequestUpdateManyWithWhereWithoutPatientMedicineInput | Prisma.AddMedicineRequestUpdateManyWithWhereWithoutPatientMedicineInput[];
+    deleteMany?: Prisma.AddMedicineRequestScalarWhereInput | Prisma.AddMedicineRequestScalarWhereInput[];
+};
+export type AddMedicineRequestCreateWithoutResolvedByUserInput = {
+    imageUrl?: string | null;
+    extractedTradeName: string;
+    extractedActiveSubstance: string;
+    extractedConcentration?: string | null;
+    extractedDosageForm?: string | null;
+    status?: string;
+    resolvedAt?: Date | string | null;
+    resolutionNotes?: string | null;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+    patient: Prisma.PatientCreateNestedOneWithoutAddMedicineReqsInput;
+    patientMedicine: Prisma.PatientMedicineCreateNestedOneWithoutAddMedicineRequestsInput;
+    matchedTradeName?: Prisma.TradeNameCreateNestedOneWithoutMatchedRequestsInput;
+    matchedActiveSubstance?: Prisma.ActiveSubstanceCreateNestedOneWithoutMatchedRequestsInput;
+};
+export type AddMedicineRequestUncheckedCreateWithoutResolvedByUserInput = {
+    id?: number;
+    patientId: number;
+    patientMedicineId: number;
+    imageUrl?: string | null;
+    extractedTradeName: string;
+    extractedActiveSubstance: string;
+    extractedConcentration?: string | null;
+    extractedDosageForm?: string | null;
+    matchedTradeNameId?: number | null;
+    matchedActiveSubstanceId?: number | null;
+    status?: string;
+    resolvedAt?: Date | string | null;
+    resolutionNotes?: string | null;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+};
+export type AddMedicineRequestCreateOrConnectWithoutResolvedByUserInput = {
+    where: Prisma.AddMedicineRequestWhereUniqueInput;
+    create: Prisma.XOR<Prisma.AddMedicineRequestCreateWithoutResolvedByUserInput, Prisma.AddMedicineRequestUncheckedCreateWithoutResolvedByUserInput>;
+};
+export type AddMedicineRequestCreateManyResolvedByUserInputEnvelope = {
+    data: Prisma.AddMedicineRequestCreateManyResolvedByUserInput | Prisma.AddMedicineRequestCreateManyResolvedByUserInput[];
+    skipDuplicates?: boolean;
+};
+export type AddMedicineRequestUpsertWithWhereUniqueWithoutResolvedByUserInput = {
+    where: Prisma.AddMedicineRequestWhereUniqueInput;
+    update: Prisma.XOR<Prisma.AddMedicineRequestUpdateWithoutResolvedByUserInput, Prisma.AddMedicineRequestUncheckedUpdateWithoutResolvedByUserInput>;
+    create: Prisma.XOR<Prisma.AddMedicineRequestCreateWithoutResolvedByUserInput, Prisma.AddMedicineRequestUncheckedCreateWithoutResolvedByUserInput>;
+};
+export type AddMedicineRequestUpdateWithWhereUniqueWithoutResolvedByUserInput = {
+    where: Prisma.AddMedicineRequestWhereUniqueInput;
+    data: Prisma.XOR<Prisma.AddMedicineRequestUpdateWithoutResolvedByUserInput, Prisma.AddMedicineRequestUncheckedUpdateWithoutResolvedByUserInput>;
+};
+export type AddMedicineRequestUpdateManyWithWhereWithoutResolvedByUserInput = {
+    where: Prisma.AddMedicineRequestScalarWhereInput;
+    data: Prisma.XOR<Prisma.AddMedicineRequestUpdateManyMutationInput, Prisma.AddMedicineRequestUncheckedUpdateManyWithoutResolvedByUserInput>;
+};
+export type AddMedicineRequestScalarWhereInput = {
+    AND?: Prisma.AddMedicineRequestScalarWhereInput | Prisma.AddMedicineRequestScalarWhereInput[];
+    OR?: Prisma.AddMedicineRequestScalarWhereInput[];
+    NOT?: Prisma.AddMedicineRequestScalarWhereInput | Prisma.AddMedicineRequestScalarWhereInput[];
+    id?: Prisma.IntFilter<"AddMedicineRequest"> | number;
+    patientId?: Prisma.IntFilter<"AddMedicineRequest"> | number;
+    patientMedicineId?: Prisma.IntFilter<"AddMedicineRequest"> | number;
+    imageUrl?: Prisma.StringNullableFilter<"AddMedicineRequest"> | string | null;
+    extractedTradeName?: Prisma.StringFilter<"AddMedicineRequest"> | string;
+    extractedActiveSubstance?: Prisma.StringFilter<"AddMedicineRequest"> | string;
+    extractedConcentration?: Prisma.StringNullableFilter<"AddMedicineRequest"> | string | null;
+    extractedDosageForm?: Prisma.StringNullableFilter<"AddMedicineRequest"> | string | null;
+    matchedTradeNameId?: Prisma.IntNullableFilter<"AddMedicineRequest"> | number | null;
+    matchedActiveSubstanceId?: Prisma.IntNullableFilter<"AddMedicineRequest"> | number | null;
+    status?: Prisma.StringFilter<"AddMedicineRequest"> | string;
+    resolvedByUserId?: Prisma.IntNullableFilter<"AddMedicineRequest"> | number | null;
+    resolvedAt?: Prisma.DateTimeNullableFilter<"AddMedicineRequest"> | Date | string | null;
+    resolutionNotes?: Prisma.StringNullableFilter<"AddMedicineRequest"> | string | null;
+    createdAt?: Prisma.DateTimeFilter<"AddMedicineRequest"> | Date | string;
+    updatedAt?: Prisma.DateTimeFilter<"AddMedicineRequest"> | Date | string;
+};
+export type AddMedicineRequestCreateWithoutPatientInput = {
+    imageUrl?: string | null;
+    extractedTradeName: string;
+    extractedActiveSubstance: string;
+    extractedConcentration?: string | null;
+    extractedDosageForm?: string | null;
+    status?: string;
+    resolvedAt?: Date | string | null;
+    resolutionNotes?: string | null;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+    patientMedicine: Prisma.PatientMedicineCreateNestedOneWithoutAddMedicineRequestsInput;
+    matchedTradeName?: Prisma.TradeNameCreateNestedOneWithoutMatchedRequestsInput;
+    matchedActiveSubstance?: Prisma.ActiveSubstanceCreateNestedOneWithoutMatchedRequestsInput;
+    resolvedByUser?: Prisma.UserCreateNestedOneWithoutResolvedRequestsInput;
+};
+export type AddMedicineRequestUncheckedCreateWithoutPatientInput = {
+    id?: number;
+    patientMedicineId: number;
+    imageUrl?: string | null;
+    extractedTradeName: string;
+    extractedActiveSubstance: string;
+    extractedConcentration?: string | null;
+    extractedDosageForm?: string | null;
+    matchedTradeNameId?: number | null;
+    matchedActiveSubstanceId?: number | null;
+    status?: string;
+    resolvedByUserId?: number | null;
+    resolvedAt?: Date | string | null;
+    resolutionNotes?: string | null;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+};
+export type AddMedicineRequestCreateOrConnectWithoutPatientInput = {
+    where: Prisma.AddMedicineRequestWhereUniqueInput;
+    create: Prisma.XOR<Prisma.AddMedicineRequestCreateWithoutPatientInput, Prisma.AddMedicineRequestUncheckedCreateWithoutPatientInput>;
+};
+export type AddMedicineRequestCreateManyPatientInputEnvelope = {
+    data: Prisma.AddMedicineRequestCreateManyPatientInput | Prisma.AddMedicineRequestCreateManyPatientInput[];
+    skipDuplicates?: boolean;
+};
+export type AddMedicineRequestUpsertWithWhereUniqueWithoutPatientInput = {
+    where: Prisma.AddMedicineRequestWhereUniqueInput;
+    update: Prisma.XOR<Prisma.AddMedicineRequestUpdateWithoutPatientInput, Prisma.AddMedicineRequestUncheckedUpdateWithoutPatientInput>;
+    create: Prisma.XOR<Prisma.AddMedicineRequestCreateWithoutPatientInput, Prisma.AddMedicineRequestUncheckedCreateWithoutPatientInput>;
+};
+export type AddMedicineRequestUpdateWithWhereUniqueWithoutPatientInput = {
+    where: Prisma.AddMedicineRequestWhereUniqueInput;
+    data: Prisma.XOR<Prisma.AddMedicineRequestUpdateWithoutPatientInput, Prisma.AddMedicineRequestUncheckedUpdateWithoutPatientInput>;
+};
+export type AddMedicineRequestUpdateManyWithWhereWithoutPatientInput = {
+    where: Prisma.AddMedicineRequestScalarWhereInput;
+    data: Prisma.XOR<Prisma.AddMedicineRequestUpdateManyMutationInput, Prisma.AddMedicineRequestUncheckedUpdateManyWithoutPatientInput>;
+};
+export type AddMedicineRequestCreateWithoutMatchedActiveSubstanceInput = {
+    imageUrl?: string | null;
+    extractedTradeName: string;
+    extractedActiveSubstance: string;
+    extractedConcentration?: string | null;
+    extractedDosageForm?: string | null;
+    status?: string;
+    resolvedAt?: Date | string | null;
+    resolutionNotes?: string | null;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+    patient: Prisma.PatientCreateNestedOneWithoutAddMedicineReqsInput;
+    patientMedicine: Prisma.PatientMedicineCreateNestedOneWithoutAddMedicineRequestsInput;
+    matchedTradeName?: Prisma.TradeNameCreateNestedOneWithoutMatchedRequestsInput;
+    resolvedByUser?: Prisma.UserCreateNestedOneWithoutResolvedRequestsInput;
+};
+export type AddMedicineRequestUncheckedCreateWithoutMatchedActiveSubstanceInput = {
+    id?: number;
+    patientId: number;
+    patientMedicineId: number;
+    imageUrl?: string | null;
+    extractedTradeName: string;
+    extractedActiveSubstance: string;
+    extractedConcentration?: string | null;
+    extractedDosageForm?: string | null;
+    matchedTradeNameId?: number | null;
+    status?: string;
+    resolvedByUserId?: number | null;
+    resolvedAt?: Date | string | null;
+    resolutionNotes?: string | null;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+};
+export type AddMedicineRequestCreateOrConnectWithoutMatchedActiveSubstanceInput = {
+    where: Prisma.AddMedicineRequestWhereUniqueInput;
+    create: Prisma.XOR<Prisma.AddMedicineRequestCreateWithoutMatchedActiveSubstanceInput, Prisma.AddMedicineRequestUncheckedCreateWithoutMatchedActiveSubstanceInput>;
+};
+export type AddMedicineRequestCreateManyMatchedActiveSubstanceInputEnvelope = {
+    data: Prisma.AddMedicineRequestCreateManyMatchedActiveSubstanceInput | Prisma.AddMedicineRequestCreateManyMatchedActiveSubstanceInput[];
+    skipDuplicates?: boolean;
+};
+export type AddMedicineRequestUpsertWithWhereUniqueWithoutMatchedActiveSubstanceInput = {
+    where: Prisma.AddMedicineRequestWhereUniqueInput;
+    update: Prisma.XOR<Prisma.AddMedicineRequestUpdateWithoutMatchedActiveSubstanceInput, Prisma.AddMedicineRequestUncheckedUpdateWithoutMatchedActiveSubstanceInput>;
+    create: Prisma.XOR<Prisma.AddMedicineRequestCreateWithoutMatchedActiveSubstanceInput, Prisma.AddMedicineRequestUncheckedCreateWithoutMatchedActiveSubstanceInput>;
+};
+export type AddMedicineRequestUpdateWithWhereUniqueWithoutMatchedActiveSubstanceInput = {
+    where: Prisma.AddMedicineRequestWhereUniqueInput;
+    data: Prisma.XOR<Prisma.AddMedicineRequestUpdateWithoutMatchedActiveSubstanceInput, Prisma.AddMedicineRequestUncheckedUpdateWithoutMatchedActiveSubstanceInput>;
+};
+export type AddMedicineRequestUpdateManyWithWhereWithoutMatchedActiveSubstanceInput = {
+    where: Prisma.AddMedicineRequestScalarWhereInput;
+    data: Prisma.XOR<Prisma.AddMedicineRequestUpdateManyMutationInput, Prisma.AddMedicineRequestUncheckedUpdateManyWithoutMatchedActiveSubstanceInput>;
+};
+export type AddMedicineRequestCreateWithoutMatchedTradeNameInput = {
+    imageUrl?: string | null;
+    extractedTradeName: string;
+    extractedActiveSubstance: string;
+    extractedConcentration?: string | null;
+    extractedDosageForm?: string | null;
+    status?: string;
+    resolvedAt?: Date | string | null;
+    resolutionNotes?: string | null;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+    patient: Prisma.PatientCreateNestedOneWithoutAddMedicineReqsInput;
+    patientMedicine: Prisma.PatientMedicineCreateNestedOneWithoutAddMedicineRequestsInput;
+    matchedActiveSubstance?: Prisma.ActiveSubstanceCreateNestedOneWithoutMatchedRequestsInput;
+    resolvedByUser?: Prisma.UserCreateNestedOneWithoutResolvedRequestsInput;
+};
+export type AddMedicineRequestUncheckedCreateWithoutMatchedTradeNameInput = {
+    id?: number;
+    patientId: number;
+    patientMedicineId: number;
+    imageUrl?: string | null;
+    extractedTradeName: string;
+    extractedActiveSubstance: string;
+    extractedConcentration?: string | null;
+    extractedDosageForm?: string | null;
+    matchedActiveSubstanceId?: number | null;
+    status?: string;
+    resolvedByUserId?: number | null;
+    resolvedAt?: Date | string | null;
+    resolutionNotes?: string | null;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+};
+export type AddMedicineRequestCreateOrConnectWithoutMatchedTradeNameInput = {
+    where: Prisma.AddMedicineRequestWhereUniqueInput;
+    create: Prisma.XOR<Prisma.AddMedicineRequestCreateWithoutMatchedTradeNameInput, Prisma.AddMedicineRequestUncheckedCreateWithoutMatchedTradeNameInput>;
+};
+export type AddMedicineRequestCreateManyMatchedTradeNameInputEnvelope = {
+    data: Prisma.AddMedicineRequestCreateManyMatchedTradeNameInput | Prisma.AddMedicineRequestCreateManyMatchedTradeNameInput[];
+    skipDuplicates?: boolean;
+};
+export type AddMedicineRequestUpsertWithWhereUniqueWithoutMatchedTradeNameInput = {
+    where: Prisma.AddMedicineRequestWhereUniqueInput;
+    update: Prisma.XOR<Prisma.AddMedicineRequestUpdateWithoutMatchedTradeNameInput, Prisma.AddMedicineRequestUncheckedUpdateWithoutMatchedTradeNameInput>;
+    create: Prisma.XOR<Prisma.AddMedicineRequestCreateWithoutMatchedTradeNameInput, Prisma.AddMedicineRequestUncheckedCreateWithoutMatchedTradeNameInput>;
+};
+export type AddMedicineRequestUpdateWithWhereUniqueWithoutMatchedTradeNameInput = {
+    where: Prisma.AddMedicineRequestWhereUniqueInput;
+    data: Prisma.XOR<Prisma.AddMedicineRequestUpdateWithoutMatchedTradeNameInput, Prisma.AddMedicineRequestUncheckedUpdateWithoutMatchedTradeNameInput>;
+};
+export type AddMedicineRequestUpdateManyWithWhereWithoutMatchedTradeNameInput = {
+    where: Prisma.AddMedicineRequestScalarWhereInput;
+    data: Prisma.XOR<Prisma.AddMedicineRequestUpdateManyMutationInput, Prisma.AddMedicineRequestUncheckedUpdateManyWithoutMatchedTradeNameInput>;
+};
+export type AddMedicineRequestCreateWithoutPatientMedicineInput = {
+    imageUrl?: string | null;
+    extractedTradeName: string;
+    extractedActiveSubstance: string;
+    extractedConcentration?: string | null;
+    extractedDosageForm?: string | null;
+    status?: string;
+    resolvedAt?: Date | string | null;
+    resolutionNotes?: string | null;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+    patient: Prisma.PatientCreateNestedOneWithoutAddMedicineReqsInput;
+    matchedTradeName?: Prisma.TradeNameCreateNestedOneWithoutMatchedRequestsInput;
+    matchedActiveSubstance?: Prisma.ActiveSubstanceCreateNestedOneWithoutMatchedRequestsInput;
+    resolvedByUser?: Prisma.UserCreateNestedOneWithoutResolvedRequestsInput;
+};
+export type AddMedicineRequestUncheckedCreateWithoutPatientMedicineInput = {
+    id?: number;
+    patientId: number;
+    imageUrl?: string | null;
+    extractedTradeName: string;
+    extractedActiveSubstance: string;
+    extractedConcentration?: string | null;
+    extractedDosageForm?: string | null;
+    matchedTradeNameId?: number | null;
+    matchedActiveSubstanceId?: number | null;
+    status?: string;
+    resolvedByUserId?: number | null;
+    resolvedAt?: Date | string | null;
+    resolutionNotes?: string | null;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+};
+export type AddMedicineRequestCreateOrConnectWithoutPatientMedicineInput = {
+    where: Prisma.AddMedicineRequestWhereUniqueInput;
+    create: Prisma.XOR<Prisma.AddMedicineRequestCreateWithoutPatientMedicineInput, Prisma.AddMedicineRequestUncheckedCreateWithoutPatientMedicineInput>;
+};
+export type AddMedicineRequestCreateManyPatientMedicineInputEnvelope = {
+    data: Prisma.AddMedicineRequestCreateManyPatientMedicineInput | Prisma.AddMedicineRequestCreateManyPatientMedicineInput[];
+    skipDuplicates?: boolean;
+};
+export type AddMedicineRequestUpsertWithWhereUniqueWithoutPatientMedicineInput = {
+    where: Prisma.AddMedicineRequestWhereUniqueInput;
+    update: Prisma.XOR<Prisma.AddMedicineRequestUpdateWithoutPatientMedicineInput, Prisma.AddMedicineRequestUncheckedUpdateWithoutPatientMedicineInput>;
+    create: Prisma.XOR<Prisma.AddMedicineRequestCreateWithoutPatientMedicineInput, Prisma.AddMedicineRequestUncheckedCreateWithoutPatientMedicineInput>;
+};
+export type AddMedicineRequestUpdateWithWhereUniqueWithoutPatientMedicineInput = {
+    where: Prisma.AddMedicineRequestWhereUniqueInput;
+    data: Prisma.XOR<Prisma.AddMedicineRequestUpdateWithoutPatientMedicineInput, Prisma.AddMedicineRequestUncheckedUpdateWithoutPatientMedicineInput>;
+};
+export type AddMedicineRequestUpdateManyWithWhereWithoutPatientMedicineInput = {
+    where: Prisma.AddMedicineRequestScalarWhereInput;
+    data: Prisma.XOR<Prisma.AddMedicineRequestUpdateManyMutationInput, Prisma.AddMedicineRequestUncheckedUpdateManyWithoutPatientMedicineInput>;
+};
+export type AddMedicineRequestCreateManyResolvedByUserInput = {
+    id?: number;
+    patientId: number;
+    patientMedicineId: number;
+    imageUrl?: string | null;
+    extractedTradeName: string;
+    extractedActiveSubstance: string;
+    extractedConcentration?: string | null;
+    extractedDosageForm?: string | null;
+    matchedTradeNameId?: number | null;
+    matchedActiveSubstanceId?: number | null;
+    status?: string;
+    resolvedAt?: Date | string | null;
+    resolutionNotes?: string | null;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+};
+export type AddMedicineRequestUpdateWithoutResolvedByUserInput = {
+    imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    extractedTradeName?: Prisma.StringFieldUpdateOperationsInput | string;
+    extractedActiveSubstance?: Prisma.StringFieldUpdateOperationsInput | string;
+    extractedConcentration?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    extractedDosageForm?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    status?: Prisma.StringFieldUpdateOperationsInput | string;
+    resolvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    resolutionNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    patient?: Prisma.PatientUpdateOneRequiredWithoutAddMedicineReqsNestedInput;
+    patientMedicine?: Prisma.PatientMedicineUpdateOneRequiredWithoutAddMedicineRequestsNestedInput;
+    matchedTradeName?: Prisma.TradeNameUpdateOneWithoutMatchedRequestsNestedInput;
+    matchedActiveSubstance?: Prisma.ActiveSubstanceUpdateOneWithoutMatchedRequestsNestedInput;
+};
+export type AddMedicineRequestUncheckedUpdateWithoutResolvedByUserInput = {
+    id?: Prisma.IntFieldUpdateOperationsInput | number;
+    patientId?: Prisma.IntFieldUpdateOperationsInput | number;
+    patientMedicineId?: Prisma.IntFieldUpdateOperationsInput | number;
+    imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    extractedTradeName?: Prisma.StringFieldUpdateOperationsInput | string;
+    extractedActiveSubstance?: Prisma.StringFieldUpdateOperationsInput | string;
+    extractedConcentration?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    extractedDosageForm?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    matchedTradeNameId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
+    matchedActiveSubstanceId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
+    status?: Prisma.StringFieldUpdateOperationsInput | string;
+    resolvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    resolutionNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+};
+export type AddMedicineRequestUncheckedUpdateManyWithoutResolvedByUserInput = {
+    id?: Prisma.IntFieldUpdateOperationsInput | number;
+    patientId?: Prisma.IntFieldUpdateOperationsInput | number;
+    patientMedicineId?: Prisma.IntFieldUpdateOperationsInput | number;
+    imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    extractedTradeName?: Prisma.StringFieldUpdateOperationsInput | string;
+    extractedActiveSubstance?: Prisma.StringFieldUpdateOperationsInput | string;
+    extractedConcentration?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    extractedDosageForm?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    matchedTradeNameId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
+    matchedActiveSubstanceId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
+    status?: Prisma.StringFieldUpdateOperationsInput | string;
+    resolvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    resolutionNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+};
+export type AddMedicineRequestCreateManyPatientInput = {
+    id?: number;
+    patientMedicineId: number;
+    imageUrl?: string | null;
+    extractedTradeName: string;
+    extractedActiveSubstance: string;
+    extractedConcentration?: string | null;
+    extractedDosageForm?: string | null;
+    matchedTradeNameId?: number | null;
+    matchedActiveSubstanceId?: number | null;
+    status?: string;
+    resolvedByUserId?: number | null;
+    resolvedAt?: Date | string | null;
+    resolutionNotes?: string | null;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+};
+export type AddMedicineRequestUpdateWithoutPatientInput = {
+    imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    extractedTradeName?: Prisma.StringFieldUpdateOperationsInput | string;
+    extractedActiveSubstance?: Prisma.StringFieldUpdateOperationsInput | string;
+    extractedConcentration?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    extractedDosageForm?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    status?: Prisma.StringFieldUpdateOperationsInput | string;
+    resolvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    resolutionNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    patientMedicine?: Prisma.PatientMedicineUpdateOneRequiredWithoutAddMedicineRequestsNestedInput;
+    matchedTradeName?: Prisma.TradeNameUpdateOneWithoutMatchedRequestsNestedInput;
+    matchedActiveSubstance?: Prisma.ActiveSubstanceUpdateOneWithoutMatchedRequestsNestedInput;
+    resolvedByUser?: Prisma.UserUpdateOneWithoutResolvedRequestsNestedInput;
+};
+export type AddMedicineRequestUncheckedUpdateWithoutPatientInput = {
+    id?: Prisma.IntFieldUpdateOperationsInput | number;
+    patientMedicineId?: Prisma.IntFieldUpdateOperationsInput | number;
+    imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    extractedTradeName?: Prisma.StringFieldUpdateOperationsInput | string;
+    extractedActiveSubstance?: Prisma.StringFieldUpdateOperationsInput | string;
+    extractedConcentration?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    extractedDosageForm?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    matchedTradeNameId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
+    matchedActiveSubstanceId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
+    status?: Prisma.StringFieldUpdateOperationsInput | string;
+    resolvedByUserId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
+    resolvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    resolutionNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+};
+export type AddMedicineRequestUncheckedUpdateManyWithoutPatientInput = {
+    id?: Prisma.IntFieldUpdateOperationsInput | number;
+    patientMedicineId?: Prisma.IntFieldUpdateOperationsInput | number;
+    imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    extractedTradeName?: Prisma.StringFieldUpdateOperationsInput | string;
+    extractedActiveSubstance?: Prisma.StringFieldUpdateOperationsInput | string;
+    extractedConcentration?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    extractedDosageForm?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    matchedTradeNameId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
+    matchedActiveSubstanceId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
+    status?: Prisma.StringFieldUpdateOperationsInput | string;
+    resolvedByUserId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
+    resolvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    resolutionNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+};
+export type AddMedicineRequestCreateManyMatchedActiveSubstanceInput = {
+    id?: number;
+    patientId: number;
+    patientMedicineId: number;
+    imageUrl?: string | null;
+    extractedTradeName: string;
+    extractedActiveSubstance: string;
+    extractedConcentration?: string | null;
+    extractedDosageForm?: string | null;
+    matchedTradeNameId?: number | null;
+    status?: string;
+    resolvedByUserId?: number | null;
+    resolvedAt?: Date | string | null;
+    resolutionNotes?: string | null;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+};
+export type AddMedicineRequestUpdateWithoutMatchedActiveSubstanceInput = {
+    imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    extractedTradeName?: Prisma.StringFieldUpdateOperationsInput | string;
+    extractedActiveSubstance?: Prisma.StringFieldUpdateOperationsInput | string;
+    extractedConcentration?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    extractedDosageForm?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    status?: Prisma.StringFieldUpdateOperationsInput | string;
+    resolvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    resolutionNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    patient?: Prisma.PatientUpdateOneRequiredWithoutAddMedicineReqsNestedInput;
+    patientMedicine?: Prisma.PatientMedicineUpdateOneRequiredWithoutAddMedicineRequestsNestedInput;
+    matchedTradeName?: Prisma.TradeNameUpdateOneWithoutMatchedRequestsNestedInput;
+    resolvedByUser?: Prisma.UserUpdateOneWithoutResolvedRequestsNestedInput;
+};
+export type AddMedicineRequestUncheckedUpdateWithoutMatchedActiveSubstanceInput = {
+    id?: Prisma.IntFieldUpdateOperationsInput | number;
+    patientId?: Prisma.IntFieldUpdateOperationsInput | number;
+    patientMedicineId?: Prisma.IntFieldUpdateOperationsInput | number;
+    imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    extractedTradeName?: Prisma.StringFieldUpdateOperationsInput | string;
+    extractedActiveSubstance?: Prisma.StringFieldUpdateOperationsInput | string;
+    extractedConcentration?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    extractedDosageForm?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    matchedTradeNameId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
+    status?: Prisma.StringFieldUpdateOperationsInput | string;
+    resolvedByUserId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
+    resolvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    resolutionNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+};
+export type AddMedicineRequestUncheckedUpdateManyWithoutMatchedActiveSubstanceInput = {
+    id?: Prisma.IntFieldUpdateOperationsInput | number;
+    patientId?: Prisma.IntFieldUpdateOperationsInput | number;
+    patientMedicineId?: Prisma.IntFieldUpdateOperationsInput | number;
+    imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    extractedTradeName?: Prisma.StringFieldUpdateOperationsInput | string;
+    extractedActiveSubstance?: Prisma.StringFieldUpdateOperationsInput | string;
+    extractedConcentration?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    extractedDosageForm?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    matchedTradeNameId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
+    status?: Prisma.StringFieldUpdateOperationsInput | string;
+    resolvedByUserId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
+    resolvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    resolutionNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+};
+export type AddMedicineRequestCreateManyMatchedTradeNameInput = {
+    id?: number;
+    patientId: number;
+    patientMedicineId: number;
+    imageUrl?: string | null;
+    extractedTradeName: string;
+    extractedActiveSubstance: string;
+    extractedConcentration?: string | null;
+    extractedDosageForm?: string | null;
+    matchedActiveSubstanceId?: number | null;
+    status?: string;
+    resolvedByUserId?: number | null;
+    resolvedAt?: Date | string | null;
+    resolutionNotes?: string | null;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+};
+export type AddMedicineRequestUpdateWithoutMatchedTradeNameInput = {
+    imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    extractedTradeName?: Prisma.StringFieldUpdateOperationsInput | string;
+    extractedActiveSubstance?: Prisma.StringFieldUpdateOperationsInput | string;
+    extractedConcentration?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    extractedDosageForm?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    status?: Prisma.StringFieldUpdateOperationsInput | string;
+    resolvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    resolutionNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    patient?: Prisma.PatientUpdateOneRequiredWithoutAddMedicineReqsNestedInput;
+    patientMedicine?: Prisma.PatientMedicineUpdateOneRequiredWithoutAddMedicineRequestsNestedInput;
+    matchedActiveSubstance?: Prisma.ActiveSubstanceUpdateOneWithoutMatchedRequestsNestedInput;
+    resolvedByUser?: Prisma.UserUpdateOneWithoutResolvedRequestsNestedInput;
+};
+export type AddMedicineRequestUncheckedUpdateWithoutMatchedTradeNameInput = {
+    id?: Prisma.IntFieldUpdateOperationsInput | number;
+    patientId?: Prisma.IntFieldUpdateOperationsInput | number;
+    patientMedicineId?: Prisma.IntFieldUpdateOperationsInput | number;
+    imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    extractedTradeName?: Prisma.StringFieldUpdateOperationsInput | string;
+    extractedActiveSubstance?: Prisma.StringFieldUpdateOperationsInput | string;
+    extractedConcentration?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    extractedDosageForm?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    matchedActiveSubstanceId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
+    status?: Prisma.StringFieldUpdateOperationsInput | string;
+    resolvedByUserId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
+    resolvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    resolutionNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+};
+export type AddMedicineRequestUncheckedUpdateManyWithoutMatchedTradeNameInput = {
+    id?: Prisma.IntFieldUpdateOperationsInput | number;
+    patientId?: Prisma.IntFieldUpdateOperationsInput | number;
+    patientMedicineId?: Prisma.IntFieldUpdateOperationsInput | number;
+    imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    extractedTradeName?: Prisma.StringFieldUpdateOperationsInput | string;
+    extractedActiveSubstance?: Prisma.StringFieldUpdateOperationsInput | string;
+    extractedConcentration?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    extractedDosageForm?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    matchedActiveSubstanceId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
+    status?: Prisma.StringFieldUpdateOperationsInput | string;
+    resolvedByUserId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
+    resolvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    resolutionNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+};
+export type AddMedicineRequestCreateManyPatientMedicineInput = {
+    id?: number;
+    patientId: number;
+    imageUrl?: string | null;
+    extractedTradeName: string;
+    extractedActiveSubstance: string;
+    extractedConcentration?: string | null;
+    extractedDosageForm?: string | null;
+    matchedTradeNameId?: number | null;
+    matchedActiveSubstanceId?: number | null;
+    status?: string;
+    resolvedByUserId?: number | null;
+    resolvedAt?: Date | string | null;
+    resolutionNotes?: string | null;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+};
+export type AddMedicineRequestUpdateWithoutPatientMedicineInput = {
+    imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    extractedTradeName?: Prisma.StringFieldUpdateOperationsInput | string;
+    extractedActiveSubstance?: Prisma.StringFieldUpdateOperationsInput | string;
+    extractedConcentration?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    extractedDosageForm?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    status?: Prisma.StringFieldUpdateOperationsInput | string;
+    resolvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    resolutionNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    patient?: Prisma.PatientUpdateOneRequiredWithoutAddMedicineReqsNestedInput;
+    matchedTradeName?: Prisma.TradeNameUpdateOneWithoutMatchedRequestsNestedInput;
+    matchedActiveSubstance?: Prisma.ActiveSubstanceUpdateOneWithoutMatchedRequestsNestedInput;
+    resolvedByUser?: Prisma.UserUpdateOneWithoutResolvedRequestsNestedInput;
+};
+export type AddMedicineRequestUncheckedUpdateWithoutPatientMedicineInput = {
+    id?: Prisma.IntFieldUpdateOperationsInput | number;
+    patientId?: Prisma.IntFieldUpdateOperationsInput | number;
+    imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    extractedTradeName?: Prisma.StringFieldUpdateOperationsInput | string;
+    extractedActiveSubstance?: Prisma.StringFieldUpdateOperationsInput | string;
+    extractedConcentration?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    extractedDosageForm?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    matchedTradeNameId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
+    matchedActiveSubstanceId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
+    status?: Prisma.StringFieldUpdateOperationsInput | string;
+    resolvedByUserId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
+    resolvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    resolutionNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+};
+export type AddMedicineRequestUncheckedUpdateManyWithoutPatientMedicineInput = {
+    id?: Prisma.IntFieldUpdateOperationsInput | number;
+    patientId?: Prisma.IntFieldUpdateOperationsInput | number;
+    imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    extractedTradeName?: Prisma.StringFieldUpdateOperationsInput | string;
+    extractedActiveSubstance?: Prisma.StringFieldUpdateOperationsInput | string;
+    extractedConcentration?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    extractedDosageForm?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    matchedTradeNameId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
+    matchedActiveSubstanceId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
+    status?: Prisma.StringFieldUpdateOperationsInput | string;
+    resolvedByUserId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
+    resolvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    resolutionNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+};
+export type AddMedicineRequestSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+    id?: boolean;
+    patientId?: boolean;
+    patientMedicineId?: boolean;
+    imageUrl?: boolean;
+    extractedTradeName?: boolean;
+    extractedActiveSubstance?: boolean;
+    extractedConcentration?: boolean;
+    extractedDosageForm?: boolean;
+    matchedTradeNameId?: boolean;
+    matchedActiveSubstanceId?: boolean;
+    status?: boolean;
+    resolvedByUserId?: boolean;
+    resolvedAt?: boolean;
+    resolutionNotes?: boolean;
+    createdAt?: boolean;
+    updatedAt?: boolean;
+    patient?: boolean | Prisma.PatientDefaultArgs<ExtArgs>;
+    patientMedicine?: boolean | Prisma.PatientMedicineDefaultArgs<ExtArgs>;
+    matchedTradeName?: boolean | Prisma.AddMedicineRequest$matchedTradeNameArgs<ExtArgs>;
+    matchedActiveSubstance?: boolean | Prisma.AddMedicineRequest$matchedActiveSubstanceArgs<ExtArgs>;
+    resolvedByUser?: boolean | Prisma.AddMedicineRequest$resolvedByUserArgs<ExtArgs>;
+}, ExtArgs["result"]["addMedicineRequest"]>;
+export type AddMedicineRequestSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+    id?: boolean;
+    patientId?: boolean;
+    patientMedicineId?: boolean;
+    imageUrl?: boolean;
+    extractedTradeName?: boolean;
+    extractedActiveSubstance?: boolean;
+    extractedConcentration?: boolean;
+    extractedDosageForm?: boolean;
+    matchedTradeNameId?: boolean;
+    matchedActiveSubstanceId?: boolean;
+    status?: boolean;
+    resolvedByUserId?: boolean;
+    resolvedAt?: boolean;
+    resolutionNotes?: boolean;
+    createdAt?: boolean;
+    updatedAt?: boolean;
+    patient?: boolean | Prisma.PatientDefaultArgs<ExtArgs>;
+    patientMedicine?: boolean | Prisma.PatientMedicineDefaultArgs<ExtArgs>;
+    matchedTradeName?: boolean | Prisma.AddMedicineRequest$matchedTradeNameArgs<ExtArgs>;
+    matchedActiveSubstance?: boolean | Prisma.AddMedicineRequest$matchedActiveSubstanceArgs<ExtArgs>;
+    resolvedByUser?: boolean | Prisma.AddMedicineRequest$resolvedByUserArgs<ExtArgs>;
+}, ExtArgs["result"]["addMedicineRequest"]>;
+export type AddMedicineRequestSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+    id?: boolean;
+    patientId?: boolean;
+    patientMedicineId?: boolean;
+    imageUrl?: boolean;
+    extractedTradeName?: boolean;
+    extractedActiveSubstance?: boolean;
+    extractedConcentration?: boolean;
+    extractedDosageForm?: boolean;
+    matchedTradeNameId?: boolean;
+    matchedActiveSubstanceId?: boolean;
+    status?: boolean;
+    resolvedByUserId?: boolean;
+    resolvedAt?: boolean;
+    resolutionNotes?: boolean;
+    createdAt?: boolean;
+    updatedAt?: boolean;
+    patient?: boolean | Prisma.PatientDefaultArgs<ExtArgs>;
+    patientMedicine?: boolean | Prisma.PatientMedicineDefaultArgs<ExtArgs>;
+    matchedTradeName?: boolean | Prisma.AddMedicineRequest$matchedTradeNameArgs<ExtArgs>;
+    matchedActiveSubstance?: boolean | Prisma.AddMedicineRequest$matchedActiveSubstanceArgs<ExtArgs>;
+    resolvedByUser?: boolean | Prisma.AddMedicineRequest$resolvedByUserArgs<ExtArgs>;
+}, ExtArgs["result"]["addMedicineRequest"]>;
+export type AddMedicineRequestSelectScalar = {
+    id?: boolean;
+    patientId?: boolean;
+    patientMedicineId?: boolean;
+    imageUrl?: boolean;
+    extractedTradeName?: boolean;
+    extractedActiveSubstance?: boolean;
+    extractedConcentration?: boolean;
+    extractedDosageForm?: boolean;
+    matchedTradeNameId?: boolean;
+    matchedActiveSubstanceId?: boolean;
+    status?: boolean;
+    resolvedByUserId?: boolean;
+    resolvedAt?: boolean;
+    resolutionNotes?: boolean;
+    createdAt?: boolean;
+    updatedAt?: boolean;
+};
+export type AddMedicineRequestOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "patientId" | "patientMedicineId" | "imageUrl" | "extractedTradeName" | "extractedActiveSubstance" | "extractedConcentration" | "extractedDosageForm" | "matchedTradeNameId" | "matchedActiveSubstanceId" | "status" | "resolvedByUserId" | "resolvedAt" | "resolutionNotes" | "createdAt" | "updatedAt", ExtArgs["result"]["addMedicineRequest"]>;
+export type AddMedicineRequestInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    patient?: boolean | Prisma.PatientDefaultArgs<ExtArgs>;
+    patientMedicine?: boolean | Prisma.PatientMedicineDefaultArgs<ExtArgs>;
+    matchedTradeName?: boolean | Prisma.AddMedicineRequest$matchedTradeNameArgs<ExtArgs>;
+    matchedActiveSubstance?: boolean | Prisma.AddMedicineRequest$matchedActiveSubstanceArgs<ExtArgs>;
+    resolvedByUser?: boolean | Prisma.AddMedicineRequest$resolvedByUserArgs<ExtArgs>;
+};
+export type AddMedicineRequestIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    patient?: boolean | Prisma.PatientDefaultArgs<ExtArgs>;
+    patientMedicine?: boolean | Prisma.PatientMedicineDefaultArgs<ExtArgs>;
+    matchedTradeName?: boolean | Prisma.AddMedicineRequest$matchedTradeNameArgs<ExtArgs>;
+    matchedActiveSubstance?: boolean | Prisma.AddMedicineRequest$matchedActiveSubstanceArgs<ExtArgs>;
+    resolvedByUser?: boolean | Prisma.AddMedicineRequest$resolvedByUserArgs<ExtArgs>;
+};
+export type AddMedicineRequestIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    patient?: boolean | Prisma.PatientDefaultArgs<ExtArgs>;
+    patientMedicine?: boolean | Prisma.PatientMedicineDefaultArgs<ExtArgs>;
+    matchedTradeName?: boolean | Prisma.AddMedicineRequest$matchedTradeNameArgs<ExtArgs>;
+    matchedActiveSubstance?: boolean | Prisma.AddMedicineRequest$matchedActiveSubstanceArgs<ExtArgs>;
+    resolvedByUser?: boolean | Prisma.AddMedicineRequest$resolvedByUserArgs<ExtArgs>;
+};
+export type $AddMedicineRequestPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    name: "AddMedicineRequest";
+    objects: {
+        patient: Prisma.$PatientPayload<ExtArgs>;
+        patientMedicine: Prisma.$PatientMedicinePayload<ExtArgs>;
+        matchedTradeName: Prisma.$TradeNamePayload<ExtArgs> | null;
+        matchedActiveSubstance: Prisma.$ActiveSubstancePayload<ExtArgs> | null;
+        resolvedByUser: Prisma.$UserPayload<ExtArgs> | null;
+    };
+    scalars: runtime.Types.Extensions.GetPayloadResult<{
+        id: number;
+        patientId: number;
+        patientMedicineId: number;
+        imageUrl: string | null;
+        extractedTradeName: string;
+        extractedActiveSubstance: string;
+        extractedConcentration: string | null;
+        extractedDosageForm: string | null;
+        matchedTradeNameId: number | null;
+        matchedActiveSubstanceId: number | null;
+        status: string;
+        resolvedByUserId: number | null;
+        resolvedAt: Date | null;
+        resolutionNotes: string | null;
+        createdAt: Date;
+        updatedAt: Date;
+    }, ExtArgs["result"]["addMedicineRequest"]>;
+    composites: {};
+};
+export type AddMedicineRequestGetPayload<S extends boolean | null | undefined | AddMedicineRequestDefaultArgs> = runtime.Types.Result.GetResult<Prisma.$AddMedicineRequestPayload, S>;
+export type AddMedicineRequestCountArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = Omit<AddMedicineRequestFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+    select?: AddMedicineRequestCountAggregateInputType | true;
+};
+export interface AddMedicineRequestDelegate<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: {
+        types: Prisma.TypeMap<ExtArgs>['model']['AddMedicineRequest'];
+        meta: {
+            name: 'AddMedicineRequest';
+        };
+    };
+    /**
+     * Find zero or one AddMedicineRequest that matches the filter.
+     * @param {AddMedicineRequestFindUniqueArgs} args - Arguments to find a AddMedicineRequest
+     * @example
+     * // Get one AddMedicineRequest
+     * const addMedicineRequest = await prisma.addMedicineRequest.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends AddMedicineRequestFindUniqueArgs>(args: Prisma.SelectSubset<T, AddMedicineRequestFindUniqueArgs<ExtArgs>>): Prisma.Prisma__AddMedicineRequestClient<runtime.Types.Result.GetResult<Prisma.$AddMedicineRequestPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>;
+    /**
+     * Find one AddMedicineRequest that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {AddMedicineRequestFindUniqueOrThrowArgs} args - Arguments to find a AddMedicineRequest
+     * @example
+     * // Get one AddMedicineRequest
+     * const addMedicineRequest = await prisma.addMedicineRequest.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends AddMedicineRequestFindUniqueOrThrowArgs>(args: Prisma.SelectSubset<T, AddMedicineRequestFindUniqueOrThrowArgs<ExtArgs>>): Prisma.Prisma__AddMedicineRequestClient<runtime.Types.Result.GetResult<Prisma.$AddMedicineRequestPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
+    /**
+     * Find the first AddMedicineRequest that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AddMedicineRequestFindFirstArgs} args - Arguments to find a AddMedicineRequest
+     * @example
+     * // Get one AddMedicineRequest
+     * const addMedicineRequest = await prisma.addMedicineRequest.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends AddMedicineRequestFindFirstArgs>(args?: Prisma.SelectSubset<T, AddMedicineRequestFindFirstArgs<ExtArgs>>): Prisma.Prisma__AddMedicineRequestClient<runtime.Types.Result.GetResult<Prisma.$AddMedicineRequestPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>;
+    /**
+     * Find the first AddMedicineRequest that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AddMedicineRequestFindFirstOrThrowArgs} args - Arguments to find a AddMedicineRequest
+     * @example
+     * // Get one AddMedicineRequest
+     * const addMedicineRequest = await prisma.addMedicineRequest.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends AddMedicineRequestFindFirstOrThrowArgs>(args?: Prisma.SelectSubset<T, AddMedicineRequestFindFirstOrThrowArgs<ExtArgs>>): Prisma.Prisma__AddMedicineRequestClient<runtime.Types.Result.GetResult<Prisma.$AddMedicineRequestPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
+    /**
+     * Find zero or more AddMedicineRequests that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AddMedicineRequestFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all AddMedicineRequests
+     * const addMedicineRequests = await prisma.addMedicineRequest.findMany()
+     *
+     * // Get first 10 AddMedicineRequests
+     * const addMedicineRequests = await prisma.addMedicineRequest.findMany({ take: 10 })
+     *
+     * // Only select the `id`
+     * const addMedicineRequestWithIdOnly = await prisma.addMedicineRequest.findMany({ select: { id: true } })
+     *
+     */
+    findMany<T extends AddMedicineRequestFindManyArgs>(args?: Prisma.SelectSubset<T, AddMedicineRequestFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AddMedicineRequestPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>;
+    /**
+     * Create a AddMedicineRequest.
+     * @param {AddMedicineRequestCreateArgs} args - Arguments to create a AddMedicineRequest.
+     * @example
+     * // Create one AddMedicineRequest
+     * const AddMedicineRequest = await prisma.addMedicineRequest.create({
+     *   data: {
+     *     // ... data to create a AddMedicineRequest
+     *   }
+     * })
+     *
+     */
+    create<T extends AddMedicineRequestCreateArgs>(args: Prisma.SelectSubset<T, AddMedicineRequestCreateArgs<ExtArgs>>): Prisma.Prisma__AddMedicineRequestClient<runtime.Types.Result.GetResult<Prisma.$AddMedicineRequestPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
+    /**
+     * Create many AddMedicineRequests.
+     * @param {AddMedicineRequestCreateManyArgs} args - Arguments to create many AddMedicineRequests.
+     * @example
+     * // Create many AddMedicineRequests
+     * const addMedicineRequest = await prisma.addMedicineRequest.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *
+     */
+    createMany<T extends AddMedicineRequestCreateManyArgs>(args?: Prisma.SelectSubset<T, AddMedicineRequestCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>;
+    /**
+     * Create many AddMedicineRequests and returns the data saved in the database.
+     * @param {AddMedicineRequestCreateManyAndReturnArgs} args - Arguments to create many AddMedicineRequests.
+     * @example
+     * // Create many AddMedicineRequests
+     * const addMedicineRequest = await prisma.addMedicineRequest.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *
+     * // Create many AddMedicineRequests and only return the `id`
+     * const addMedicineRequestWithIdOnly = await prisma.addMedicineRequest.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     *
+     */
+    createManyAndReturn<T extends AddMedicineRequestCreateManyAndReturnArgs>(args?: Prisma.SelectSubset<T, AddMedicineRequestCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AddMedicineRequestPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>;
+    /**
+     * Delete a AddMedicineRequest.
+     * @param {AddMedicineRequestDeleteArgs} args - Arguments to delete one AddMedicineRequest.
+     * @example
+     * // Delete one AddMedicineRequest
+     * const AddMedicineRequest = await prisma.addMedicineRequest.delete({
+     *   where: {
+     *     // ... filter to delete one AddMedicineRequest
+     *   }
+     * })
+     *
+     */
+    delete<T extends AddMedicineRequestDeleteArgs>(args: Prisma.SelectSubset<T, AddMedicineRequestDeleteArgs<ExtArgs>>): Prisma.Prisma__AddMedicineRequestClient<runtime.Types.Result.GetResult<Prisma.$AddMedicineRequestPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
+    /**
+     * Update one AddMedicineRequest.
+     * @param {AddMedicineRequestUpdateArgs} args - Arguments to update one AddMedicineRequest.
+     * @example
+     * // Update one AddMedicineRequest
+     * const addMedicineRequest = await prisma.addMedicineRequest.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     *
+     */
+    update<T extends AddMedicineRequestUpdateArgs>(args: Prisma.SelectSubset<T, AddMedicineRequestUpdateArgs<ExtArgs>>): Prisma.Prisma__AddMedicineRequestClient<runtime.Types.Result.GetResult<Prisma.$AddMedicineRequestPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
+    /**
+     * Delete zero or more AddMedicineRequests.
+     * @param {AddMedicineRequestDeleteManyArgs} args - Arguments to filter AddMedicineRequests to delete.
+     * @example
+     * // Delete a few AddMedicineRequests
+     * const { count } = await prisma.addMedicineRequest.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     *
+     */
+    deleteMany<T extends AddMedicineRequestDeleteManyArgs>(args?: Prisma.SelectSubset<T, AddMedicineRequestDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>;
+    /**
+     * Update zero or more AddMedicineRequests.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AddMedicineRequestUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many AddMedicineRequests
+     * const addMedicineRequest = await prisma.addMedicineRequest.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     *
+     */
+    updateMany<T extends AddMedicineRequestUpdateManyArgs>(args: Prisma.SelectSubset<T, AddMedicineRequestUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>;
+    /**
+     * Update zero or more AddMedicineRequests and returns the data updated in the database.
+     * @param {AddMedicineRequestUpdateManyAndReturnArgs} args - Arguments to update many AddMedicineRequests.
+     * @example
+     * // Update many AddMedicineRequests
+     * const addMedicineRequest = await prisma.addMedicineRequest.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *
+     * // Update zero or more AddMedicineRequests and only return the `id`
+     * const addMedicineRequestWithIdOnly = await prisma.addMedicineRequest.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     *
+     */
+    updateManyAndReturn<T extends AddMedicineRequestUpdateManyAndReturnArgs>(args: Prisma.SelectSubset<T, AddMedicineRequestUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AddMedicineRequestPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>;
+    /**
+     * Create or update one AddMedicineRequest.
+     * @param {AddMedicineRequestUpsertArgs} args - Arguments to update or create a AddMedicineRequest.
+     * @example
+     * // Update or create a AddMedicineRequest
+     * const addMedicineRequest = await prisma.addMedicineRequest.upsert({
+     *   create: {
+     *     // ... data to create a AddMedicineRequest
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the AddMedicineRequest we want to update
+     *   }
+     * })
+     */
+    upsert<T extends AddMedicineRequestUpsertArgs>(args: Prisma.SelectSubset<T, AddMedicineRequestUpsertArgs<ExtArgs>>): Prisma.Prisma__AddMedicineRequestClient<runtime.Types.Result.GetResult<Prisma.$AddMedicineRequestPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
+    /**
+     * Count the number of AddMedicineRequests.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AddMedicineRequestCountArgs} args - Arguments to filter AddMedicineRequests to count.
+     * @example
+     * // Count the number of AddMedicineRequests
+     * const count = await prisma.addMedicineRequest.count({
+     *   where: {
+     *     // ... the filter for the AddMedicineRequests we want to count
+     *   }
+     * })
+    **/
+    count<T extends AddMedicineRequestCountArgs>(args?: Prisma.Subset<T, AddMedicineRequestCountArgs>): Prisma.PrismaPromise<T extends runtime.Types.Utils.Record<'select', any> ? T['select'] extends true ? number : Prisma.GetScalarType<T['select'], AddMedicineRequestCountAggregateOutputType> : number>;
+    /**
+     * Allows you to perform aggregations operations on a AddMedicineRequest.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AddMedicineRequestAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends AddMedicineRequestAggregateArgs>(args: Prisma.Subset<T, AddMedicineRequestAggregateArgs>): Prisma.PrismaPromise<GetAddMedicineRequestAggregateType<T>>;
+    /**
+     * Group by AddMedicineRequest.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AddMedicineRequestGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     *
+    **/
+    groupBy<T extends AddMedicineRequestGroupByArgs, HasSelectOrTake extends Prisma.Or<Prisma.Extends<'skip', Prisma.Keys<T>>, Prisma.Extends<'take', Prisma.Keys<T>>>, OrderByArg extends Prisma.True extends HasSelectOrTake ? {
+        orderBy: AddMedicineRequestGroupByArgs['orderBy'];
+    } : {
+        orderBy?: AddMedicineRequestGroupByArgs['orderBy'];
+    }, OrderFields extends Prisma.ExcludeUnderscoreKeys<Prisma.Keys<Prisma.MaybeTupleToUnion<T['orderBy']>>>, ByFields extends Prisma.MaybeTupleToUnion<T['by']>, ByValid extends Prisma.Has<ByFields, OrderFields>, HavingFields extends Prisma.GetHavingFields<T['having']>, HavingValid extends Prisma.Has<ByFields, HavingFields>, ByEmpty extends T['by'] extends never[] ? Prisma.True : Prisma.False, InputErrors extends ByEmpty extends Prisma.True ? `Error: "by" must not be empty.` : HavingValid extends Prisma.False ? {
+        [P in HavingFields]: P extends ByFields ? never : P extends string ? `Error: Field "${P}" used in "having" needs to be provided in "by".` : [
+            Error,
+            'Field ',
+            P,
+            ` in "having" needs to be provided in "by"`
+        ];
+    }[HavingFields] : 'take' extends Prisma.Keys<T> ? 'orderBy' extends Prisma.Keys<T> ? ByValid extends Prisma.True ? {} : {
+        [P in OrderFields]: P extends ByFields ? never : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+    }[OrderFields] : 'Error: If you provide "take", you also need to provide "orderBy"' : 'skip' extends Prisma.Keys<T> ? 'orderBy' extends Prisma.Keys<T> ? ByValid extends Prisma.True ? {} : {
+        [P in OrderFields]: P extends ByFields ? never : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+    }[OrderFields] : 'Error: If you provide "skip", you also need to provide "orderBy"' : ByValid extends Prisma.True ? {} : {
+        [P in OrderFields]: P extends ByFields ? never : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+    }[OrderFields]>(args: Prisma.SubsetIntersection<T, AddMedicineRequestGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetAddMedicineRequestGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>;
+    /**
+     * Fields of the AddMedicineRequest model
+     */
+    readonly fields: AddMedicineRequestFieldRefs;
+}
+/**
+ * The delegate class that acts as a "Promise-like" for AddMedicineRequest.
+ * Why is this prefixed with `Prisma__`?
+ * Because we want to prevent naming conflicts as mentioned in
+ * https://github.com/prisma/prisma-client-js/issues/707
+ */
+export interface Prisma__AddMedicineRequestClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise";
+    patient<T extends Prisma.PatientDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PatientDefaultArgs<ExtArgs>>): Prisma.Prisma__PatientClient<runtime.Types.Result.GetResult<Prisma.$PatientPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>;
+    patientMedicine<T extends Prisma.PatientMedicineDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PatientMedicineDefaultArgs<ExtArgs>>): Prisma.Prisma__PatientMedicineClient<runtime.Types.Result.GetResult<Prisma.$PatientMedicinePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>;
+    matchedTradeName<T extends Prisma.AddMedicineRequest$matchedTradeNameArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AddMedicineRequest$matchedTradeNameArgs<ExtArgs>>): Prisma.Prisma__TradeNameClient<runtime.Types.Result.GetResult<Prisma.$TradeNamePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>;
+    matchedActiveSubstance<T extends Prisma.AddMedicineRequest$matchedActiveSubstanceArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AddMedicineRequest$matchedActiveSubstanceArgs<ExtArgs>>): Prisma.Prisma__ActiveSubstanceClient<runtime.Types.Result.GetResult<Prisma.$ActiveSubstancePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>;
+    resolvedByUser<T extends Prisma.AddMedicineRequest$resolvedByUserArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AddMedicineRequest$resolvedByUserArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>;
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): runtime.Types.Utils.JsPromise<TResult1 | TResult2>;
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): runtime.Types.Utils.JsPromise<T | TResult>;
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): runtime.Types.Utils.JsPromise<T>;
+}
+/**
+ * Fields of the AddMedicineRequest model
+ */
+export interface AddMedicineRequestFieldRefs {
+    readonly id: Prisma.FieldRef<"AddMedicineRequest", 'Int'>;
+    readonly patientId: Prisma.FieldRef<"AddMedicineRequest", 'Int'>;
+    readonly patientMedicineId: Prisma.FieldRef<"AddMedicineRequest", 'Int'>;
+    readonly imageUrl: Prisma.FieldRef<"AddMedicineRequest", 'String'>;
+    readonly extractedTradeName: Prisma.FieldRef<"AddMedicineRequest", 'String'>;
+    readonly extractedActiveSubstance: Prisma.FieldRef<"AddMedicineRequest", 'String'>;
+    readonly extractedConcentration: Prisma.FieldRef<"AddMedicineRequest", 'String'>;
+    readonly extractedDosageForm: Prisma.FieldRef<"AddMedicineRequest", 'String'>;
+    readonly matchedTradeNameId: Prisma.FieldRef<"AddMedicineRequest", 'Int'>;
+    readonly matchedActiveSubstanceId: Prisma.FieldRef<"AddMedicineRequest", 'Int'>;
+    readonly status: Prisma.FieldRef<"AddMedicineRequest", 'String'>;
+    readonly resolvedByUserId: Prisma.FieldRef<"AddMedicineRequest", 'Int'>;
+    readonly resolvedAt: Prisma.FieldRef<"AddMedicineRequest", 'DateTime'>;
+    readonly resolutionNotes: Prisma.FieldRef<"AddMedicineRequest", 'String'>;
+    readonly createdAt: Prisma.FieldRef<"AddMedicineRequest", 'DateTime'>;
+    readonly updatedAt: Prisma.FieldRef<"AddMedicineRequest", 'DateTime'>;
+}
+/**
+ * AddMedicineRequest findUnique
+ */
+export type AddMedicineRequestFindUniqueArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AddMedicineRequest
+     */
+    select?: Prisma.AddMedicineRequestSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the AddMedicineRequest
+     */
+    omit?: Prisma.AddMedicineRequestOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: Prisma.AddMedicineRequestInclude<ExtArgs> | null;
+    /**
+     * Filter, which AddMedicineRequest to fetch.
+     */
+    where: Prisma.AddMedicineRequestWhereUniqueInput;
+};
+/**
+ * AddMedicineRequest findUniqueOrThrow
+ */
+export type AddMedicineRequestFindUniqueOrThrowArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AddMedicineRequest
+     */
+    select?: Prisma.AddMedicineRequestSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the AddMedicineRequest
+     */
+    omit?: Prisma.AddMedicineRequestOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: Prisma.AddMedicineRequestInclude<ExtArgs> | null;
+    /**
+     * Filter, which AddMedicineRequest to fetch.
+     */
+    where: Prisma.AddMedicineRequestWhereUniqueInput;
+};
+/**
+ * AddMedicineRequest findFirst
+ */
+export type AddMedicineRequestFindFirstArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AddMedicineRequest
+     */
+    select?: Prisma.AddMedicineRequestSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the AddMedicineRequest
+     */
+    omit?: Prisma.AddMedicineRequestOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: Prisma.AddMedicineRequestInclude<ExtArgs> | null;
+    /**
+     * Filter, which AddMedicineRequest to fetch.
+     */
+    where?: Prisma.AddMedicineRequestWhereInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of AddMedicineRequests to fetch.
+     */
+    orderBy?: Prisma.AddMedicineRequestOrderByWithRelationInput | Prisma.AddMedicineRequestOrderByWithRelationInput[];
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the position for searching for AddMedicineRequests.
+     */
+    cursor?: Prisma.AddMedicineRequestWhereUniqueInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` AddMedicineRequests from the position of the cursor.
+     */
+    take?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` AddMedicineRequests.
+     */
+    skip?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     *
+     * Filter by unique combinations of AddMedicineRequests.
+     */
+    distinct?: Prisma.AddMedicineRequestScalarFieldEnum | Prisma.AddMedicineRequestScalarFieldEnum[];
+};
+/**
+ * AddMedicineRequest findFirstOrThrow
+ */
+export type AddMedicineRequestFindFirstOrThrowArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AddMedicineRequest
+     */
+    select?: Prisma.AddMedicineRequestSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the AddMedicineRequest
+     */
+    omit?: Prisma.AddMedicineRequestOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: Prisma.AddMedicineRequestInclude<ExtArgs> | null;
+    /**
+     * Filter, which AddMedicineRequest to fetch.
+     */
+    where?: Prisma.AddMedicineRequestWhereInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of AddMedicineRequests to fetch.
+     */
+    orderBy?: Prisma.AddMedicineRequestOrderByWithRelationInput | Prisma.AddMedicineRequestOrderByWithRelationInput[];
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the position for searching for AddMedicineRequests.
+     */
+    cursor?: Prisma.AddMedicineRequestWhereUniqueInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` AddMedicineRequests from the position of the cursor.
+     */
+    take?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` AddMedicineRequests.
+     */
+    skip?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     *
+     * Filter by unique combinations of AddMedicineRequests.
+     */
+    distinct?: Prisma.AddMedicineRequestScalarFieldEnum | Prisma.AddMedicineRequestScalarFieldEnum[];
+};
+/**
+ * AddMedicineRequest findMany
+ */
+export type AddMedicineRequestFindManyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AddMedicineRequest
+     */
+    select?: Prisma.AddMedicineRequestSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the AddMedicineRequest
+     */
+    omit?: Prisma.AddMedicineRequestOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: Prisma.AddMedicineRequestInclude<ExtArgs> | null;
+    /**
+     * Filter, which AddMedicineRequests to fetch.
+     */
+    where?: Prisma.AddMedicineRequestWhereInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of AddMedicineRequests to fetch.
+     */
+    orderBy?: Prisma.AddMedicineRequestOrderByWithRelationInput | Prisma.AddMedicineRequestOrderByWithRelationInput[];
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the position for listing AddMedicineRequests.
+     */
+    cursor?: Prisma.AddMedicineRequestWhereUniqueInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` AddMedicineRequests from the position of the cursor.
+     */
+    take?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` AddMedicineRequests.
+     */
+    skip?: number;
+    distinct?: Prisma.AddMedicineRequestScalarFieldEnum | Prisma.AddMedicineRequestScalarFieldEnum[];
+};
+/**
+ * AddMedicineRequest create
+ */
+export type AddMedicineRequestCreateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AddMedicineRequest
+     */
+    select?: Prisma.AddMedicineRequestSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the AddMedicineRequest
+     */
+    omit?: Prisma.AddMedicineRequestOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: Prisma.AddMedicineRequestInclude<ExtArgs> | null;
+    /**
+     * The data needed to create a AddMedicineRequest.
+     */
+    data: Prisma.XOR<Prisma.AddMedicineRequestCreateInput, Prisma.AddMedicineRequestUncheckedCreateInput>;
+};
+/**
+ * AddMedicineRequest createMany
+ */
+export type AddMedicineRequestCreateManyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many AddMedicineRequests.
+     */
+    data: Prisma.AddMedicineRequestCreateManyInput | Prisma.AddMedicineRequestCreateManyInput[];
+    skipDuplicates?: boolean;
+};
+/**
+ * AddMedicineRequest createManyAndReturn
+ */
+export type AddMedicineRequestCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AddMedicineRequest
+     */
+    select?: Prisma.AddMedicineRequestSelectCreateManyAndReturn<ExtArgs> | null;
+    /**
+     * Omit specific fields from the AddMedicineRequest
+     */
+    omit?: Prisma.AddMedicineRequestOmit<ExtArgs> | null;
+    /**
+     * The data used to create many AddMedicineRequests.
+     */
+    data: Prisma.AddMedicineRequestCreateManyInput | Prisma.AddMedicineRequestCreateManyInput[];
+    skipDuplicates?: boolean;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: Prisma.AddMedicineRequestIncludeCreateManyAndReturn<ExtArgs> | null;
+};
+/**
+ * AddMedicineRequest update
+ */
+export type AddMedicineRequestUpdateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AddMedicineRequest
+     */
+    select?: Prisma.AddMedicineRequestSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the AddMedicineRequest
+     */
+    omit?: Prisma.AddMedicineRequestOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: Prisma.AddMedicineRequestInclude<ExtArgs> | null;
+    /**
+     * The data needed to update a AddMedicineRequest.
+     */
+    data: Prisma.XOR<Prisma.AddMedicineRequestUpdateInput, Prisma.AddMedicineRequestUncheckedUpdateInput>;
+    /**
+     * Choose, which AddMedicineRequest to update.
+     */
+    where: Prisma.AddMedicineRequestWhereUniqueInput;
+};
+/**
+ * AddMedicineRequest updateMany
+ */
+export type AddMedicineRequestUpdateManyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * The data used to update AddMedicineRequests.
+     */
+    data: Prisma.XOR<Prisma.AddMedicineRequestUpdateManyMutationInput, Prisma.AddMedicineRequestUncheckedUpdateManyInput>;
+    /**
+     * Filter which AddMedicineRequests to update
+     */
+    where?: Prisma.AddMedicineRequestWhereInput;
+    /**
+     * Limit how many AddMedicineRequests to update.
+     */
+    limit?: number;
+};
+/**
+ * AddMedicineRequest updateManyAndReturn
+ */
+export type AddMedicineRequestUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AddMedicineRequest
+     */
+    select?: Prisma.AddMedicineRequestSelectUpdateManyAndReturn<ExtArgs> | null;
+    /**
+     * Omit specific fields from the AddMedicineRequest
+     */
+    omit?: Prisma.AddMedicineRequestOmit<ExtArgs> | null;
+    /**
+     * The data used to update AddMedicineRequests.
+     */
+    data: Prisma.XOR<Prisma.AddMedicineRequestUpdateManyMutationInput, Prisma.AddMedicineRequestUncheckedUpdateManyInput>;
+    /**
+     * Filter which AddMedicineRequests to update
+     */
+    where?: Prisma.AddMedicineRequestWhereInput;
+    /**
+     * Limit how many AddMedicineRequests to update.
+     */
+    limit?: number;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: Prisma.AddMedicineRequestIncludeUpdateManyAndReturn<ExtArgs> | null;
+};
+/**
+ * AddMedicineRequest upsert
+ */
+export type AddMedicineRequestUpsertArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AddMedicineRequest
+     */
+    select?: Prisma.AddMedicineRequestSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the AddMedicineRequest
+     */
+    omit?: Prisma.AddMedicineRequestOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: Prisma.AddMedicineRequestInclude<ExtArgs> | null;
+    /**
+     * The filter to search for the AddMedicineRequest to update in case it exists.
+     */
+    where: Prisma.AddMedicineRequestWhereUniqueInput;
+    /**
+     * In case the AddMedicineRequest found by the `where` argument doesn't exist, create a new AddMedicineRequest with this data.
+     */
+    create: Prisma.XOR<Prisma.AddMedicineRequestCreateInput, Prisma.AddMedicineRequestUncheckedCreateInput>;
+    /**
+     * In case the AddMedicineRequest was found with the provided `where` argument, update it with this data.
+     */
+    update: Prisma.XOR<Prisma.AddMedicineRequestUpdateInput, Prisma.AddMedicineRequestUncheckedUpdateInput>;
+};
+/**
+ * AddMedicineRequest delete
+ */
+export type AddMedicineRequestDeleteArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AddMedicineRequest
+     */
+    select?: Prisma.AddMedicineRequestSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the AddMedicineRequest
+     */
+    omit?: Prisma.AddMedicineRequestOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: Prisma.AddMedicineRequestInclude<ExtArgs> | null;
+    /**
+     * Filter which AddMedicineRequest to delete.
+     */
+    where: Prisma.AddMedicineRequestWhereUniqueInput;
+};
+/**
+ * AddMedicineRequest deleteMany
+ */
+export type AddMedicineRequestDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Filter which AddMedicineRequests to delete
+     */
+    where?: Prisma.AddMedicineRequestWhereInput;
+    /**
+     * Limit how many AddMedicineRequests to delete.
+     */
+    limit?: number;
+};
+/**
+ * AddMedicineRequest.matchedTradeName
+ */
+export type AddMedicineRequest$matchedTradeNameArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TradeName
+     */
+    select?: Prisma.TradeNameSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the TradeName
+     */
+    omit?: Prisma.TradeNameOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: Prisma.TradeNameInclude<ExtArgs> | null;
+    where?: Prisma.TradeNameWhereInput;
+};
+/**
+ * AddMedicineRequest.matchedActiveSubstance
+ */
+export type AddMedicineRequest$matchedActiveSubstanceArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ActiveSubstance
+     */
+    select?: Prisma.ActiveSubstanceSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the ActiveSubstance
+     */
+    omit?: Prisma.ActiveSubstanceOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: Prisma.ActiveSubstanceInclude<ExtArgs> | null;
+    where?: Prisma.ActiveSubstanceWhereInput;
+};
+/**
+ * AddMedicineRequest.resolvedByUser
+ */
+export type AddMedicineRequest$resolvedByUserArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the User
+     */
+    select?: Prisma.UserSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the User
+     */
+    omit?: Prisma.UserOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: Prisma.UserInclude<ExtArgs> | null;
+    where?: Prisma.UserWhereInput;
+};
+/**
+ * AddMedicineRequest without action
+ */
+export type AddMedicineRequestDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AddMedicineRequest
+     */
+    select?: Prisma.AddMedicineRequestSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the AddMedicineRequest
+     */
+    omit?: Prisma.AddMedicineRequestOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: Prisma.AddMedicineRequestInclude<ExtArgs> | null;
+};
+export {};
+//# sourceMappingURL=AddMedicineRequest.d.ts.map

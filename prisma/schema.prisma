@@ -198,6 +198,8 @@ model User {
   uploadedReports     MedicalReport[]      @relation("UploadedReports")
   diseaseWarningRules DiseaseWarningRule[]
   reviewedSuggestions MedicineSuggestion[] @relation("SuggestionReviewer")
+  createdSideEffects  SideEffect[]         @relation("CreatedSideEffects")
+  resolvedRequests    AddMedicineRequest[] @relation("ResolvedAddMedicineRequests")
 
   @@index([role])
   @@index([deletedAt])
@@ -298,7 +300,7 @@ model Patient {
   patientDiseases  PatientDisease[]
   medicalHistories MedicalHistory[]
   familyHistories  FamilyHistory[]
-  lifestyle        Lifestyle?
+  patientLifestyles PatientLifestyle[]
   allergies        Allergy[]
   patientDoctors   PatientDoctor[]
   consultations    Consultation[]
@@ -309,6 +311,9 @@ model Patient {
   childrenProfiles ChildProfile[]        @relation("ParentChildren")
   ratings          Rating[]
   visits           Visit[]
+  patientSurgeries PatientSurgery[]
+  patientMedicines PatientMedicine[]
+  addMedicineReqs  AddMedicineRequest[]
 
   @@index([age])
   @@index([ageClassification])
@@ -358,22 +363,30 @@ model FamilyHistory {
 
 model Lifestyle {
   id                   Int      @id @default(autoincrement())
-  patientId            Int      @unique
-  noGlasses            Boolean  @default(false)
-  alcoholAbuse         Boolean  @default(false)
-  excessCaffeine       Boolean  @default(false)
-  waterDaily           Decimal? @db.Decimal(4, 2) // liters per day
-  travellerAbroad      Boolean  @default(false)
-  annualVaccination    Boolean  @default(false)
-  surgeriesLast3Months Boolean  @default(false)
-  surgeriesDetails     String?
+  question             String
+  activeSubstanceField String
   createdAt            DateTime @default(now())
   updatedAt            DateTime @updatedAt
 
-  // Relations
-  patient Patient @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  patientLifestyles PatientLifestyle[]
 
-  @@map("lifestyles")
+  @@map("lifestyle_questions")
+}
+
+model PatientLifestyle {
+  id          Int      @id @default(autoincrement())
+  patientId   Int
+  lifestyleId Int
+  value       Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  patient   Patient   @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  lifestyle Lifestyle @relation(fields: [lifestyleId], references: [id], onDelete: Cascade)
+
+  @@unique([patientId, lifestyleId])
+  @@index([patientId])
+  @@map("patient_lifestyle_answers")
 }
 
 model Allergy {
@@ -393,6 +406,38 @@ model Allergy {
   @@index([patientId])
   @@index([allergen])
   @@map("allergies")
+}
+
+// ============================================
+// OPERATIONS & SURGERIES
+// ============================================
+
+model Operation {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  patientSurgeries PatientSurgery[]
+  
+  @@map("operations")
+}
+
+model PatientSurgery {
+  id          Int      @id @default(autoincrement())
+  patientId   Int
+  operationId Int
+  surgeryDate DateTime
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  patient   Patient   @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  operation Operation @relation(fields: [operationId], references: [id], onDelete: Cascade)
+
+  @@index([patientId])
+  @@index([operationId])
+  @@map("patient_surgeries")
 }
 
 // ============================================
@@ -792,6 +837,7 @@ model ActiveSubstance {
   medicineAlternatives           MedicineAlternative[]           @relation("PrimarySubstance")
   alternativeTo                  MedicineAlternative[]           @relation("AlternativeSubstance")
   adverseReactions               AdverseDrugReaction[]
+  matchedRequests                AddMedicineRequest[]            @relation("MatchedActiveSubstance")
 
   @@index([activeSubstance])
   @@index([isActive])
@@ -861,6 +907,9 @@ model TradeName {
   drugInteractionAlerts        DrugInteractionAlert[]
   batchHistories               BatchHistory[]
   adverseReactions             AdverseDrugReaction[]
+  sideEffects                  TradeNameSideEffect[]
+  patientMedicines             PatientMedicine[]
+  matchedRequests              AddMedicineRequest[] @relation("MatchedTradeName")
 
   @@index([title])
   @@index([activeSubstanceId])
@@ -1112,6 +1161,38 @@ model Session {
   @@index([userId])
   @@index([expiresAt])
   @@map("sessions")
+}
+
+// ============================================
+// SIDE EFFECTS (ADMIN CONFIGURABLE)
+// ============================================
+
+model SideEffect {
+  id              Int      @id @default(autoincrement())
+  name            String
+  nameAr          String?
+  createdBy       String   @default("Admin") // Admin, Patient
+  status          String   @default("Approved") // Approved, Pending
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  createdByUserId Int?
+  createdByUser   User?    @relation("CreatedSideEffects", fields: [createdByUserId], references: [id], onDelete: SetNull)
+
+  tradeNames      TradeNameSideEffect[]
+
+  @@map("side_effects")
+}
+
+model TradeNameSideEffect {
+  sideEffectId Int
+  tradeNameId  Int
+
+  sideEffect SideEffect @relation(fields: [sideEffectId], references: [id], onDelete: Cascade)
+  tradeName  TradeName  @relation(fields: [tradeNameId], references: [id], onDelete: Cascade)
+
+  @@id([sideEffectId, tradeNameId])
+  @@map("trade_name_side_effects")
 }
 
 // ============================================
@@ -1425,4 +1506,66 @@ model ExportHistory {
   @@index([exportedBy])
   @@index([exportDate])
   @@map("export_histories")
+}
+
+// ============================================
+// PATIENT MEDICINE TRACKING
+// ============================================
+
+model PatientMedicine {
+  id              Int       @id @default(autoincrement())
+  patientId       Int
+  tradeNameId     Int?
+  medicineName    String
+  dosageAmount    Decimal?  @db.Decimal(10, 2)
+  frequencyCount  Int?
+  frequencyPeriod Int?
+  frequencyUnit   String? // 'Hours' | 'Days' | 'Weeks' | 'Months' | 'Years'
+  durationValue   Int?
+  durationUnit    String? // 'Days' | 'Weeks' | 'Months' | 'Years'
+  startDate       DateTime?
+  endDate         DateTime?
+  isOngoing       Boolean   @default(false)
+  notes           String?
+  reminderEnabled Boolean   @default(false)
+  reminderTimes   Json?
+  imageUrl        String?
+  isVerified      Boolean   @default(false)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  patient             Patient              @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  tradeName           TradeName?           @relation(fields: [tradeNameId], references: [id])
+  addMedicineRequests AddMedicineRequest[]
+
+  @@index([patientId])
+  @@map("patient_medicines")
+}
+
+model AddMedicineRequest {
+  id                       Int       @id @default(autoincrement())
+  patientId                Int
+  patientMedicineId        Int
+  imageUrl                 String?
+  extractedTradeName       String
+  extractedActiveSubstance String
+  extractedConcentration   String?
+  extractedDosageForm      String?
+  matchedTradeNameId       Int?
+  matchedActiveSubstanceId Int?
+  status                   String    @default("Pending") // Pending, Resolved
+  resolvedByUserId         Int?
+  resolvedAt               DateTime?
+  resolutionNotes          String?
+  createdAt                DateTime  @default(now())
+  updatedAt                DateTime  @updatedAt
+
+  patient                Patient          @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  patientMedicine        PatientMedicine  @relation(fields: [patientMedicineId], references: [id], onDelete: Cascade)
+  matchedTradeName       TradeName?       @relation("MatchedTradeName", fields: [matchedTradeNameId], references: [id])
+  matchedActiveSubstance ActiveSubstance? @relation("MatchedActiveSubstance", fields: [matchedActiveSubstanceId], references: [id])
+  resolvedByUser         User?            @relation("ResolvedAddMedicineRequests", fields: [resolvedByUserId], references: [id], onDelete: SetNull)
+
+  @@index([status])
+  @@map("add_medicine_requests")
 }

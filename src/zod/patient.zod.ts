@@ -39,16 +39,9 @@ export const familyHistorySchema = z.object({
   notes: z.string().optional(),
 });
 
-export const lifestyleSchema = z.object({
-  noGlasses: z.boolean().optional(),
-  alcoholAbuse: z.boolean().optional(),
-  excessCaffeine: z.boolean().optional(),
-  waterDaily: z.number().positive().optional(),
-  travellerAbroad: z.boolean().optional(),
-  annualVaccination: z.boolean().optional(),
-  noiseExposure: z.boolean().optional(),
-  chemicalExposure: z.boolean().optional(),
-  radiationExposure: z.boolean().optional(),
+export const patientLifestyleSchema = z.object({
+  lifestyleId: z.number().int().positive(),
+  value: z.boolean(),
 });
 
 export const allergySchema = z.object({

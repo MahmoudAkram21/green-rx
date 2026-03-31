@@ -28,57 +28,32 @@ export type AggregateLifestyle = {
 
 export type LifestyleAvgAggregateOutputType = {
   id: number | null
-  patientId: number | null
-  waterDaily: runtime.Decimal | null
 }
 
 export type LifestyleSumAggregateOutputType = {
   id: number | null
-  patientId: number | null
-  waterDaily: runtime.Decimal | null
 }
 
 export type LifestyleMinAggregateOutputType = {
   id: number | null
-  patientId: number | null
-  noGlasses: boolean | null
-  alcoholAbuse: boolean | null
-  excessCaffeine: boolean | null
-  waterDaily: runtime.Decimal | null
-  travellerAbroad: boolean | null
-  annualVaccination: boolean | null
-  surgeriesLast3Months: boolean | null
-  surgeriesDetails: string | null
+  question: string | null
+  activeSubstanceField: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
 
 export type LifestyleMaxAggregateOutputType = {
   id: number | null
-  patientId: number | null
-  noGlasses: boolean | null
-  alcoholAbuse: boolean | null
-  excessCaffeine: boolean | null
-  waterDaily: runtime.Decimal | null
-  travellerAbroad: boolean | null
-  annualVaccination: boolean | null
-  surgeriesLast3Months: boolean | null
-  surgeriesDetails: string | null
+  question: string | null
+  activeSubstanceField: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
 
 export type LifestyleCountAggregateOutputType = {
   id: number
-  patientId: number
-  noGlasses: number
-  alcoholAbuse: number
-  excessCaffeine: number
-  waterDaily: number
-  travellerAbroad: number
-  annualVaccination: number
-  surgeriesLast3Months: number
-  surgeriesDetails: number
+  question: number
+  activeSubstanceField: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -87,57 +62,32 @@ export type LifestyleCountAggregateOutputType = {
 
 export type LifestyleAvgAggregateInputType = {
   id?: true
-  patientId?: true
-  waterDaily?: true
 }
 
 export type LifestyleSumAggregateInputType = {
   id?: true
-  patientId?: true
-  waterDaily?: true
 }
 
 export type LifestyleMinAggregateInputType = {
   id?: true
-  patientId?: true
-  noGlasses?: true
-  alcoholAbuse?: true
-  excessCaffeine?: true
-  waterDaily?: true
-  travellerAbroad?: true
-  annualVaccination?: true
-  surgeriesLast3Months?: true
-  surgeriesDetails?: true
+  question?: true
+  activeSubstanceField?: true
   createdAt?: true
   updatedAt?: true
 }
 
 export type LifestyleMaxAggregateInputType = {
   id?: true
-  patientId?: true
-  noGlasses?: true
-  alcoholAbuse?: true
-  excessCaffeine?: true
-  waterDaily?: true
-  travellerAbroad?: true
-  annualVaccination?: true
-  surgeriesLast3Months?: true
-  surgeriesDetails?: true
+  question?: true
+  activeSubstanceField?: true
   createdAt?: true
   updatedAt?: true
 }
 
 export type LifestyleCountAggregateInputType = {
   id?: true
-  patientId?: true
-  noGlasses?: true
-  alcoholAbuse?: true
-  excessCaffeine?: true
-  waterDaily?: true
-  travellerAbroad?: true
-  annualVaccination?: true
-  surgeriesLast3Months?: true
-  surgeriesDetails?: true
+  question?: true
+  activeSubstanceField?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -231,15 +181,8 @@ export type LifestyleGroupByArgs<ExtArgs extends runtime.Types.Extensions.Intern
 
 export type LifestyleGroupByOutputType = {
   id: number
-  patientId: number
-  noGlasses: boolean
-  alcoholAbuse: boolean
-  excessCaffeine: boolean
-  waterDaily: runtime.Decimal | null
-  travellerAbroad: boolean
-  annualVaccination: boolean
-  surgeriesLast3Months: boolean
-  surgeriesDetails: string | null
+  question: string
+  activeSubstanceField: string
   createdAt: Date
   updatedAt: Date
   _count: LifestyleCountAggregateOutputType | null
@@ -269,66 +212,38 @@ export type LifestyleWhereInput = {
   OR?: Prisma.LifestyleWhereInput[]
   NOT?: Prisma.LifestyleWhereInput | Prisma.LifestyleWhereInput[]
   id?: Prisma.IntFilter<"Lifestyle"> | number
-  patientId?: Prisma.IntFilter<"Lifestyle"> | number
-  noGlasses?: Prisma.BoolFilter<"Lifestyle"> | boolean
-  alcoholAbuse?: Prisma.BoolFilter<"Lifestyle"> | boolean
-  excessCaffeine?: Prisma.BoolFilter<"Lifestyle"> | boolean
-  waterDaily?: Prisma.DecimalNullableFilter<"Lifestyle"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  travellerAbroad?: Prisma.BoolFilter<"Lifestyle"> | boolean
-  annualVaccination?: Prisma.BoolFilter<"Lifestyle"> | boolean
-  surgeriesLast3Months?: Prisma.BoolFilter<"Lifestyle"> | boolean
-  surgeriesDetails?: Prisma.StringNullableFilter<"Lifestyle"> | string | null
+  question?: Prisma.StringFilter<"Lifestyle"> | string
+  activeSubstanceField?: Prisma.StringFilter<"Lifestyle"> | string
   createdAt?: Prisma.DateTimeFilter<"Lifestyle"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Lifestyle"> | Date | string
-  patient?: Prisma.XOR<Prisma.PatientScalarRelationFilter, Prisma.PatientWhereInput>
+  patientLifestyles?: Prisma.PatientLifestyleListRelationFilter
 }
 
 export type LifestyleOrderByWithRelationInput = {
   id?: Prisma.SortOrder
-  patientId?: Prisma.SortOrder
-  noGlasses?: Prisma.SortOrder
-  alcoholAbuse?: Prisma.SortOrder
-  excessCaffeine?: Prisma.SortOrder
-  waterDaily?: Prisma.SortOrderInput | Prisma.SortOrder
-  travellerAbroad?: Prisma.SortOrder
-  annualVaccination?: Prisma.SortOrder
-  surgeriesLast3Months?: Prisma.SortOrder
-  surgeriesDetails?: Prisma.SortOrderInput | Prisma.SortOrder
+  question?: Prisma.SortOrder
+  activeSubstanceField?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
-  patient?: Prisma.PatientOrderByWithRelationInput
+  patientLifestyles?: Prisma.PatientLifestyleOrderByRelationAggregateInput
 }
 
 export type LifestyleWhereUniqueInput = Prisma.AtLeast<{
   id?: number
-  patientId?: number
   AND?: Prisma.LifestyleWhereInput | Prisma.LifestyleWhereInput[]
   OR?: Prisma.LifestyleWhereInput[]
   NOT?: Prisma.LifestyleWhereInput | Prisma.LifestyleWhereInput[]
-  noGlasses?: Prisma.BoolFilter<"Lifestyle"> | boolean
-  alcoholAbuse?: Prisma.BoolFilter<"Lifestyle"> | boolean
-  excessCaffeine?: Prisma.BoolFilter<"Lifestyle"> | boolean
-  waterDaily?: Prisma.DecimalNullableFilter<"Lifestyle"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  travellerAbroad?: Prisma.BoolFilter<"Lifestyle"> | boolean
-  annualVaccination?: Prisma.BoolFilter<"Lifestyle"> | boolean
-  surgeriesLast3Months?: Prisma.BoolFilter<"Lifestyle"> | boolean
-  surgeriesDetails?: Prisma.StringNullableFilter<"Lifestyle"> | string | null
+  question?: Prisma.StringFilter<"Lifestyle"> | string
+  activeSubstanceField?: Prisma.StringFilter<"Lifestyle"> | string
   createdAt?: Prisma.DateTimeFilter<"Lifestyle"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Lifestyle"> | Date | string
-  patient?: Prisma.XOR<Prisma.PatientScalarRelationFilter, Prisma.PatientWhereInput>
-}, "id" | "patientId">
+  patientLifestyles?: Prisma.PatientLifestyleListRelationFilter
+}, "id">
 
 export type LifestyleOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
-  patientId?: Prisma.SortOrder
-  noGlasses?: Prisma.SortOrder
-  alcoholAbuse?: Prisma.SortOrder
-  excessCaffeine?: Prisma.SortOrder
-  waterDaily?: Prisma.SortOrderInput | Prisma.SortOrder
-  travellerAbroad?: Prisma.SortOrder
-  annualVaccination?: Prisma.SortOrder
-  surgeriesLast3Months?: Prisma.SortOrder
-  surgeriesDetails?: Prisma.SortOrderInput | Prisma.SortOrder
+  question?: Prisma.SortOrder
+  activeSubstanceField?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.LifestyleCountOrderByAggregateInput
@@ -343,376 +258,248 @@ export type LifestyleScalarWhereWithAggregatesInput = {
   OR?: Prisma.LifestyleScalarWhereWithAggregatesInput[]
   NOT?: Prisma.LifestyleScalarWhereWithAggregatesInput | Prisma.LifestyleScalarWhereWithAggregatesInput[]
   id?: Prisma.IntWithAggregatesFilter<"Lifestyle"> | number
-  patientId?: Prisma.IntWithAggregatesFilter<"Lifestyle"> | number
-  noGlasses?: Prisma.BoolWithAggregatesFilter<"Lifestyle"> | boolean
-  alcoholAbuse?: Prisma.BoolWithAggregatesFilter<"Lifestyle"> | boolean
-  excessCaffeine?: Prisma.BoolWithAggregatesFilter<"Lifestyle"> | boolean
-  waterDaily?: Prisma.DecimalNullableWithAggregatesFilter<"Lifestyle"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  travellerAbroad?: Prisma.BoolWithAggregatesFilter<"Lifestyle"> | boolean
-  annualVaccination?: Prisma.BoolWithAggregatesFilter<"Lifestyle"> | boolean
-  surgeriesLast3Months?: Prisma.BoolWithAggregatesFilter<"Lifestyle"> | boolean
-  surgeriesDetails?: Prisma.StringNullableWithAggregatesFilter<"Lifestyle"> | string | null
+  question?: Prisma.StringWithAggregatesFilter<"Lifestyle"> | string
+  activeSubstanceField?: Prisma.StringWithAggregatesFilter<"Lifestyle"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Lifestyle"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Lifestyle"> | Date | string
 }
 
 export type LifestyleCreateInput = {
-  noGlasses?: boolean
-  alcoholAbuse?: boolean
-  excessCaffeine?: boolean
-  waterDaily?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  travellerAbroad?: boolean
-  annualVaccination?: boolean
-  surgeriesLast3Months?: boolean
-  surgeriesDetails?: string | null
+  question: string
+  activeSubstanceField: string
   createdAt?: Date | string
   updatedAt?: Date | string
-  patient: Prisma.PatientCreateNestedOneWithoutLifestyleInput
+  patientLifestyles?: Prisma.PatientLifestyleCreateNestedManyWithoutLifestyleInput
 }
 
 export type LifestyleUncheckedCreateInput = {
   id?: number
-  patientId: number
-  noGlasses?: boolean
-  alcoholAbuse?: boolean
-  excessCaffeine?: boolean
-  waterDaily?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  travellerAbroad?: boolean
-  annualVaccination?: boolean
-  surgeriesLast3Months?: boolean
-  surgeriesDetails?: string | null
+  question: string
+  activeSubstanceField: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  patientLifestyles?: Prisma.PatientLifestyleUncheckedCreateNestedManyWithoutLifestyleInput
 }
 
 export type LifestyleUpdateInput = {
-  noGlasses?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  alcoholAbuse?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  excessCaffeine?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  waterDaily?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  travellerAbroad?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  annualVaccination?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  surgeriesLast3Months?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  surgeriesDetails?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  question?: Prisma.StringFieldUpdateOperationsInput | string
+  activeSubstanceField?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  patient?: Prisma.PatientUpdateOneRequiredWithoutLifestyleNestedInput
+  patientLifestyles?: Prisma.PatientLifestyleUpdateManyWithoutLifestyleNestedInput
 }
 
 export type LifestyleUncheckedUpdateInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
-  patientId?: Prisma.IntFieldUpdateOperationsInput | number
-  noGlasses?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  alcoholAbuse?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  excessCaffeine?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  waterDaily?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  travellerAbroad?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  annualVaccination?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  surgeriesLast3Months?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  surgeriesDetails?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  question?: Prisma.StringFieldUpdateOperationsInput | string
+  activeSubstanceField?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  patientLifestyles?: Prisma.PatientLifestyleUncheckedUpdateManyWithoutLifestyleNestedInput
 }
 
 export type LifestyleCreateManyInput = {
   id?: number
-  patientId: number
-  noGlasses?: boolean
-  alcoholAbuse?: boolean
-  excessCaffeine?: boolean
-  waterDaily?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  travellerAbroad?: boolean
-  annualVaccination?: boolean
-  surgeriesLast3Months?: boolean
-  surgeriesDetails?: string | null
+  question: string
+  activeSubstanceField: string
   createdAt?: Date | string
   updatedAt?: Date | string
 }
 
 export type LifestyleUpdateManyMutationInput = {
-  noGlasses?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  alcoholAbuse?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  excessCaffeine?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  waterDaily?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  travellerAbroad?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  annualVaccination?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  surgeriesLast3Months?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  surgeriesDetails?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  question?: Prisma.StringFieldUpdateOperationsInput | string
+  activeSubstanceField?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type LifestyleUncheckedUpdateManyInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
-  patientId?: Prisma.IntFieldUpdateOperationsInput | number
-  noGlasses?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  alcoholAbuse?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  excessCaffeine?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  waterDaily?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  travellerAbroad?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  annualVaccination?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  surgeriesLast3Months?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  surgeriesDetails?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  question?: Prisma.StringFieldUpdateOperationsInput | string
+  activeSubstanceField?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
-export type LifestyleNullableScalarRelationFilter = {
-  is?: Prisma.LifestyleWhereInput | null
-  isNot?: Prisma.LifestyleWhereInput | null
-}
-
 export type LifestyleCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  patientId?: Prisma.SortOrder
-  noGlasses?: Prisma.SortOrder
-  alcoholAbuse?: Prisma.SortOrder
-  excessCaffeine?: Prisma.SortOrder
-  waterDaily?: Prisma.SortOrder
-  travellerAbroad?: Prisma.SortOrder
-  annualVaccination?: Prisma.SortOrder
-  surgeriesLast3Months?: Prisma.SortOrder
-  surgeriesDetails?: Prisma.SortOrder
+  question?: Prisma.SortOrder
+  activeSubstanceField?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
 
 export type LifestyleAvgOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  patientId?: Prisma.SortOrder
-  waterDaily?: Prisma.SortOrder
 }
 
 export type LifestyleMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  patientId?: Prisma.SortOrder
-  noGlasses?: Prisma.SortOrder
-  alcoholAbuse?: Prisma.SortOrder
-  excessCaffeine?: Prisma.SortOrder
-  waterDaily?: Prisma.SortOrder
-  travellerAbroad?: Prisma.SortOrder
-  annualVaccination?: Prisma.SortOrder
-  surgeriesLast3Months?: Prisma.SortOrder
-  surgeriesDetails?: Prisma.SortOrder
+  question?: Prisma.SortOrder
+  activeSubstanceField?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
 
 export type LifestyleMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  patientId?: Prisma.SortOrder
-  noGlasses?: Prisma.SortOrder
-  alcoholAbuse?: Prisma.SortOrder
-  excessCaffeine?: Prisma.SortOrder
-  waterDaily?: Prisma.SortOrder
-  travellerAbroad?: Prisma.SortOrder
-  annualVaccination?: Prisma.SortOrder
-  surgeriesLast3Months?: Prisma.SortOrder
-  surgeriesDetails?: Prisma.SortOrder
+  question?: Prisma.SortOrder
+  activeSubstanceField?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
 
 export type LifestyleSumOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  patientId?: Prisma.SortOrder
-  waterDaily?: Prisma.SortOrder
 }
 
-export type LifestyleCreateNestedOneWithoutPatientInput = {
-  create?: Prisma.XOR<Prisma.LifestyleCreateWithoutPatientInput, Prisma.LifestyleUncheckedCreateWithoutPatientInput>
-  connectOrCreate?: Prisma.LifestyleCreateOrConnectWithoutPatientInput
+export type LifestyleScalarRelationFilter = {
+  is?: Prisma.LifestyleWhereInput
+  isNot?: Prisma.LifestyleWhereInput
+}
+
+export type LifestyleCreateNestedOneWithoutPatientLifestylesInput = {
+  create?: Prisma.XOR<Prisma.LifestyleCreateWithoutPatientLifestylesInput, Prisma.LifestyleUncheckedCreateWithoutPatientLifestylesInput>
+  connectOrCreate?: Prisma.LifestyleCreateOrConnectWithoutPatientLifestylesInput
   connect?: Prisma.LifestyleWhereUniqueInput
 }
 
-export type LifestyleUncheckedCreateNestedOneWithoutPatientInput = {
-  create?: Prisma.XOR<Prisma.LifestyleCreateWithoutPatientInput, Prisma.LifestyleUncheckedCreateWithoutPatientInput>
-  connectOrCreate?: Prisma.LifestyleCreateOrConnectWithoutPatientInput
+export type LifestyleUpdateOneRequiredWithoutPatientLifestylesNestedInput = {
+  create?: Prisma.XOR<Prisma.LifestyleCreateWithoutPatientLifestylesInput, Prisma.LifestyleUncheckedCreateWithoutPatientLifestylesInput>
+  connectOrCreate?: Prisma.LifestyleCreateOrConnectWithoutPatientLifestylesInput
+  upsert?: Prisma.LifestyleUpsertWithoutPatientLifestylesInput
   connect?: Prisma.LifestyleWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.LifestyleUpdateToOneWithWhereWithoutPatientLifestylesInput, Prisma.LifestyleUpdateWithoutPatientLifestylesInput>, Prisma.LifestyleUncheckedUpdateWithoutPatientLifestylesInput>
 }
 
-export type LifestyleUpdateOneWithoutPatientNestedInput = {
-  create?: Prisma.XOR<Prisma.LifestyleCreateWithoutPatientInput, Prisma.LifestyleUncheckedCreateWithoutPatientInput>
-  connectOrCreate?: Prisma.LifestyleCreateOrConnectWithoutPatientInput
-  upsert?: Prisma.LifestyleUpsertWithoutPatientInput
-  disconnect?: Prisma.LifestyleWhereInput | boolean
-  delete?: Prisma.LifestyleWhereInput | boolean
-  connect?: Prisma.LifestyleWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.LifestyleUpdateToOneWithWhereWithoutPatientInput, Prisma.LifestyleUpdateWithoutPatientInput>, Prisma.LifestyleUncheckedUpdateWithoutPatientInput>
-}
-
-export type LifestyleUncheckedUpdateOneWithoutPatientNestedInput = {
-  create?: Prisma.XOR<Prisma.LifestyleCreateWithoutPatientInput, Prisma.LifestyleUncheckedCreateWithoutPatientInput>
-  connectOrCreate?: Prisma.LifestyleCreateOrConnectWithoutPatientInput
-  upsert?: Prisma.LifestyleUpsertWithoutPatientInput
-  disconnect?: Prisma.LifestyleWhereInput | boolean
-  delete?: Prisma.LifestyleWhereInput | boolean
-  connect?: Prisma.LifestyleWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.LifestyleUpdateToOneWithWhereWithoutPatientInput, Prisma.LifestyleUpdateWithoutPatientInput>, Prisma.LifestyleUncheckedUpdateWithoutPatientInput>
-}
-
-export type LifestyleCreateWithoutPatientInput = {
-  noGlasses?: boolean
-  alcoholAbuse?: boolean
-  excessCaffeine?: boolean
-  waterDaily?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  travellerAbroad?: boolean
-  annualVaccination?: boolean
-  surgeriesLast3Months?: boolean
-  surgeriesDetails?: string | null
+export type LifestyleCreateWithoutPatientLifestylesInput = {
+  question: string
+  activeSubstanceField: string
   createdAt?: Date | string
   updatedAt?: Date | string
 }
 
-export type LifestyleUncheckedCreateWithoutPatientInput = {
+export type LifestyleUncheckedCreateWithoutPatientLifestylesInput = {
   id?: number
-  noGlasses?: boolean
-  alcoholAbuse?: boolean
-  excessCaffeine?: boolean
-  waterDaily?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  travellerAbroad?: boolean
-  annualVaccination?: boolean
-  surgeriesLast3Months?: boolean
-  surgeriesDetails?: string | null
+  question: string
+  activeSubstanceField: string
   createdAt?: Date | string
   updatedAt?: Date | string
 }
 
-export type LifestyleCreateOrConnectWithoutPatientInput = {
+export type LifestyleCreateOrConnectWithoutPatientLifestylesInput = {
   where: Prisma.LifestyleWhereUniqueInput
-  create: Prisma.XOR<Prisma.LifestyleCreateWithoutPatientInput, Prisma.LifestyleUncheckedCreateWithoutPatientInput>
+  create: Prisma.XOR<Prisma.LifestyleCreateWithoutPatientLifestylesInput, Prisma.LifestyleUncheckedCreateWithoutPatientLifestylesInput>
 }
 
-export type LifestyleUpsertWithoutPatientInput = {
-  update: Prisma.XOR<Prisma.LifestyleUpdateWithoutPatientInput, Prisma.LifestyleUncheckedUpdateWithoutPatientInput>
-  create: Prisma.XOR<Prisma.LifestyleCreateWithoutPatientInput, Prisma.LifestyleUncheckedCreateWithoutPatientInput>
+export type LifestyleUpsertWithoutPatientLifestylesInput = {
+  update: Prisma.XOR<Prisma.LifestyleUpdateWithoutPatientLifestylesInput, Prisma.LifestyleUncheckedUpdateWithoutPatientLifestylesInput>
+  create: Prisma.XOR<Prisma.LifestyleCreateWithoutPatientLifestylesInput, Prisma.LifestyleUncheckedCreateWithoutPatientLifestylesInput>
   where?: Prisma.LifestyleWhereInput
 }
 
-export type LifestyleUpdateToOneWithWhereWithoutPatientInput = {
+export type LifestyleUpdateToOneWithWhereWithoutPatientLifestylesInput = {
   where?: Prisma.LifestyleWhereInput
-  data: Prisma.XOR<Prisma.LifestyleUpdateWithoutPatientInput, Prisma.LifestyleUncheckedUpdateWithoutPatientInput>
+  data: Prisma.XOR<Prisma.LifestyleUpdateWithoutPatientLifestylesInput, Prisma.LifestyleUncheckedUpdateWithoutPatientLifestylesInput>
 }
 
-export type LifestyleUpdateWithoutPatientInput = {
-  noGlasses?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  alcoholAbuse?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  excessCaffeine?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  waterDaily?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  travellerAbroad?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  annualVaccination?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  surgeriesLast3Months?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  surgeriesDetails?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+export type LifestyleUpdateWithoutPatientLifestylesInput = {
+  question?: Prisma.StringFieldUpdateOperationsInput | string
+  activeSubstanceField?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
-export type LifestyleUncheckedUpdateWithoutPatientInput = {
+export type LifestyleUncheckedUpdateWithoutPatientLifestylesInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
-  noGlasses?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  alcoholAbuse?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  excessCaffeine?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  waterDaily?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  travellerAbroad?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  annualVaccination?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  surgeriesLast3Months?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  surgeriesDetails?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  question?: Prisma.StringFieldUpdateOperationsInput | string
+  activeSubstanceField?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
+
+/**
+ * Count Type LifestyleCountOutputType
+ */
+
+export type LifestyleCountOutputType = {
+  patientLifestyles: number
+}
+
+export type LifestyleCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  patientLifestyles?: boolean | LifestyleCountOutputTypeCountPatientLifestylesArgs
+}
+
+/**
+ * LifestyleCountOutputType without action
+ */
+export type LifestyleCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the LifestyleCountOutputType
+   */
+  select?: Prisma.LifestyleCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * LifestyleCountOutputType without action
+ */
+export type LifestyleCountOutputTypeCountPatientLifestylesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.PatientLifestyleWhereInput
+}
 
 
 export type LifestyleSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  patientId?: boolean
-  noGlasses?: boolean
-  alcoholAbuse?: boolean
-  excessCaffeine?: boolean
-  waterDaily?: boolean
-  travellerAbroad?: boolean
-  annualVaccination?: boolean
-  surgeriesLast3Months?: boolean
-  surgeriesDetails?: boolean
+  question?: boolean
+  activeSubstanceField?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  patient?: boolean | Prisma.PatientDefaultArgs<ExtArgs>
+  patientLifestyles?: boolean | Prisma.Lifestyle$patientLifestylesArgs<ExtArgs>
+  _count?: boolean | Prisma.LifestyleCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["lifestyle"]>
 
 export type LifestyleSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  patientId?: boolean
-  noGlasses?: boolean
-  alcoholAbuse?: boolean
-  excessCaffeine?: boolean
-  waterDaily?: boolean
-  travellerAbroad?: boolean
-  annualVaccination?: boolean
-  surgeriesLast3Months?: boolean
-  surgeriesDetails?: boolean
+  question?: boolean
+  activeSubstanceField?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  patient?: boolean | Prisma.PatientDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["lifestyle"]>
 
 export type LifestyleSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  patientId?: boolean
-  noGlasses?: boolean
-  alcoholAbuse?: boolean
-  excessCaffeine?: boolean
-  waterDaily?: boolean
-  travellerAbroad?: boolean
-  annualVaccination?: boolean
-  surgeriesLast3Months?: boolean
-  surgeriesDetails?: boolean
+  question?: boolean
+  activeSubstanceField?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  patient?: boolean | Prisma.PatientDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["lifestyle"]>
 
 export type LifestyleSelectScalar = {
   id?: boolean
-  patientId?: boolean
-  noGlasses?: boolean
-  alcoholAbuse?: boolean
-  excessCaffeine?: boolean
-  waterDaily?: boolean
-  travellerAbroad?: boolean
-  annualVaccination?: boolean
-  surgeriesLast3Months?: boolean
-  surgeriesDetails?: boolean
+  question?: boolean
+  activeSubstanceField?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type LifestyleOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "patientId" | "noGlasses" | "alcoholAbuse" | "excessCaffeine" | "waterDaily" | "travellerAbroad" | "annualVaccination" | "surgeriesLast3Months" | "surgeriesDetails" | "createdAt" | "updatedAt", ExtArgs["result"]["lifestyle"]>
+export type LifestyleOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "question" | "activeSubstanceField" | "createdAt" | "updatedAt", ExtArgs["result"]["lifestyle"]>
 export type LifestyleInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  patient?: boolean | Prisma.PatientDefaultArgs<ExtArgs>
+  patientLifestyles?: boolean | Prisma.Lifestyle$patientLifestylesArgs<ExtArgs>
+  _count?: boolean | Prisma.LifestyleCountOutputTypeDefaultArgs<ExtArgs>
 }
-export type LifestyleIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  patient?: boolean | Prisma.PatientDefaultArgs<ExtArgs>
-}
-export type LifestyleIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  patient?: boolean | Prisma.PatientDefaultArgs<ExtArgs>
-}
+export type LifestyleIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
+export type LifestyleIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
 
 export type $LifestylePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Lifestyle"
   objects: {
-    patient: Prisma.$PatientPayload<ExtArgs>
+    patientLifestyles: Prisma.$PatientLifestylePayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: number
-    patientId: number
-    noGlasses: boolean
-    alcoholAbuse: boolean
-    excessCaffeine: boolean
-    waterDaily: runtime.Decimal | null
-    travellerAbroad: boolean
-    annualVaccination: boolean
-    surgeriesLast3Months: boolean
-    surgeriesDetails: string | null
+    question: string
+    activeSubstanceField: string
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["lifestyle"]>
@@ -1109,7 +896,7 @@ readonly fields: LifestyleFieldRefs;
  */
 export interface Prisma__LifestyleClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  patient<T extends Prisma.PatientDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PatientDefaultArgs<ExtArgs>>): Prisma.Prisma__PatientClient<runtime.Types.Result.GetResult<Prisma.$PatientPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  patientLifestyles<T extends Prisma.Lifestyle$patientLifestylesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Lifestyle$patientLifestylesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PatientLifestylePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1140,15 +927,8 @@ export interface Prisma__LifestyleClient<T, Null = never, ExtArgs extends runtim
  */
 export interface LifestyleFieldRefs {
   readonly id: Prisma.FieldRef<"Lifestyle", 'Int'>
-  readonly patientId: Prisma.FieldRef<"Lifestyle", 'Int'>
-  readonly noGlasses: Prisma.FieldRef<"Lifestyle", 'Boolean'>
-  readonly alcoholAbuse: Prisma.FieldRef<"Lifestyle", 'Boolean'>
-  readonly excessCaffeine: Prisma.FieldRef<"Lifestyle", 'Boolean'>
-  readonly waterDaily: Prisma.FieldRef<"Lifestyle", 'Decimal'>
-  readonly travellerAbroad: Prisma.FieldRef<"Lifestyle", 'Boolean'>
-  readonly annualVaccination: Prisma.FieldRef<"Lifestyle", 'Boolean'>
-  readonly surgeriesLast3Months: Prisma.FieldRef<"Lifestyle", 'Boolean'>
-  readonly surgeriesDetails: Prisma.FieldRef<"Lifestyle", 'String'>
+  readonly question: Prisma.FieldRef<"Lifestyle", 'String'>
+  readonly activeSubstanceField: Prisma.FieldRef<"Lifestyle", 'String'>
   readonly createdAt: Prisma.FieldRef<"Lifestyle", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Lifestyle", 'DateTime'>
 }
@@ -1400,10 +1180,6 @@ export type LifestyleCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Exten
    */
   data: Prisma.LifestyleCreateManyInput | Prisma.LifestyleCreateManyInput[]
   skipDuplicates?: boolean
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.LifestyleIncludeCreateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -1474,10 +1250,6 @@ export type LifestyleUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.Exten
    * Limit how many Lifestyles to update.
    */
   limit?: number
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.LifestyleIncludeUpdateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -1544,6 +1316,30 @@ export type LifestyleDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Int
    * Limit how many Lifestyles to delete.
    */
   limit?: number
+}
+
+/**
+ * Lifestyle.patientLifestyles
+ */
+export type Lifestyle$patientLifestylesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PatientLifestyle
+   */
+  select?: Prisma.PatientLifestyleSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the PatientLifestyle
+   */
+  omit?: Prisma.PatientLifestyleOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PatientLifestyleInclude<ExtArgs> | null
+  where?: Prisma.PatientLifestyleWhereInput
+  orderBy?: Prisma.PatientLifestyleOrderByWithRelationInput | Prisma.PatientLifestyleOrderByWithRelationInput[]
+  cursor?: Prisma.PatientLifestyleWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.PatientLifestyleScalarFieldEnum | Prisma.PatientLifestyleScalarFieldEnum[]
 }
 
 /**

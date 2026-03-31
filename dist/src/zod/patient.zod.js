@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.childProfileSchema = exports.allergySchema = exports.lifestyleSchema = exports.familyHistorySchema = exports.medicalHistorySchema = exports.createPatientSchema = void 0;
+exports.childProfileSchema = exports.allergySchema = exports.patientLifestyleSchema = exports.familyHistorySchema = exports.medicalHistorySchema = exports.createPatientSchema = void 0;
 const zod_1 = require("zod");
 const client_1 = require("../../generated/client/client");
 exports.createPatientSchema = zod_1.z.object({
@@ -9,8 +9,11 @@ exports.createPatientSchema = zod_1.z.object({
     age: zod_1.z.number().int().positive(),
     ageClassification: zod_1.z.nativeEnum(client_1.AgeClassification),
     gender: zod_1.z.nativeEnum(client_1.Gender),
-    weight: zod_1.z.number().positive().optional(),
-    height: zod_1.z.number().positive().optional(),
+    weight: zod_1.z.number().positive({ message: "Weight must be greater than zero" }).optional(),
+    height: zod_1.z.number().positive({ message: "Height must be greater than zero" }).optional(),
+    dateOfBirth: zod_1.z.string().datetime().optional(),
+    pregnancyStatus: zod_1.z.boolean().optional(),
+    trimester: zod_1.z.number().int().min(1).max(3).optional(),
     smoking: zod_1.z.boolean().optional(),
     pregnancyWarning: zod_1.z.boolean().optional(),
     lactation: zod_1.z.boolean().optional(),
@@ -29,16 +32,9 @@ exports.familyHistorySchema = zod_1.z.object({
     severity: zod_1.z.nativeEnum(client_1.DiseaseSeverity),
     notes: zod_1.z.string().optional(),
 });
-exports.lifestyleSchema = zod_1.z.object({
-    noGlasses: zod_1.z.boolean().optional(),
-    alcoholAbuse: zod_1.z.boolean().optional(),
-    excessCaffeine: zod_1.z.boolean().optional(),
-    waterDaily: zod_1.z.number().positive().optional(),
-    travellerAbroad: zod_1.z.boolean().optional(),
-    annualVaccination: zod_1.z.boolean().optional(),
-    noiseExposure: zod_1.z.boolean().optional(),
-    chemicalExposure: zod_1.z.boolean().optional(),
-    radiationExposure: zod_1.z.boolean().optional(),
+exports.patientLifestyleSchema = zod_1.z.object({
+    lifestyleId: zod_1.z.number().int().positive(),
+    value: zod_1.z.boolean(),
 });
 exports.allergySchema = zod_1.z.object({
     allergen: zod_1.z.string().min(1),
@@ -51,8 +47,8 @@ exports.childProfileSchema = zod_1.z.object({
     dateOfBirth: zod_1.z.string().datetime(),
     gender: zod_1.z.nativeEnum(client_1.Gender),
     ageClassification: zod_1.z.nativeEnum(client_1.AgeClassification),
-    weight: zod_1.z.number().positive().optional(),
-    height: zod_1.z.number().positive().optional(),
+    weight: zod_1.z.number().positive({ message: "Weight must be greater than zero" }).optional(),
+    height: zod_1.z.number().positive({ message: "Height must be greater than zero" }).optional(),
     allergies: zod_1.z.any().optional(), // JSON
     diseases: zod_1.z.any().optional(), // JSON
     medicalHistory: zod_1.z.any().optional(), // JSON

@@ -292,6 +292,8 @@ export type UserWhereInput = {
   uploadedReports?: Prisma.MedicalReportListRelationFilter
   diseaseWarningRules?: Prisma.DiseaseWarningRuleListRelationFilter
   reviewedSuggestions?: Prisma.MedicineSuggestionListRelationFilter
+  createdSideEffects?: Prisma.SideEffectListRelationFilter
+  resolvedRequests?: Prisma.AddMedicineRequestListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
@@ -320,6 +322,8 @@ export type UserOrderByWithRelationInput = {
   uploadedReports?: Prisma.MedicalReportOrderByRelationAggregateInput
   diseaseWarningRules?: Prisma.DiseaseWarningRuleOrderByRelationAggregateInput
   reviewedSuggestions?: Prisma.MedicineSuggestionOrderByRelationAggregateInput
+  createdSideEffects?: Prisma.SideEffectOrderByRelationAggregateInput
+  resolvedRequests?: Prisma.AddMedicineRequestOrderByRelationAggregateInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -351,6 +355,8 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   uploadedReports?: Prisma.MedicalReportListRelationFilter
   diseaseWarningRules?: Prisma.DiseaseWarningRuleListRelationFilter
   reviewedSuggestions?: Prisma.MedicineSuggestionListRelationFilter
+  createdSideEffects?: Prisma.SideEffectListRelationFilter
+  resolvedRequests?: Prisma.AddMedicineRequestListRelationFilter
 }, "id" | "email">
 
 export type UserOrderByWithAggregationInput = {
@@ -418,6 +424,8 @@ export type UserCreateInput = {
   uploadedReports?: Prisma.MedicalReportCreateNestedManyWithoutUploaderInput
   diseaseWarningRules?: Prisma.DiseaseWarningRuleCreateNestedManyWithoutCreatorInput
   reviewedSuggestions?: Prisma.MedicineSuggestionCreateNestedManyWithoutReviewerInput
+  createdSideEffects?: Prisma.SideEffectCreateNestedManyWithoutCreatedByUserInput
+  resolvedRequests?: Prisma.AddMedicineRequestCreateNestedManyWithoutResolvedByUserInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -446,6 +454,8 @@ export type UserUncheckedCreateInput = {
   uploadedReports?: Prisma.MedicalReportUncheckedCreateNestedManyWithoutUploaderInput
   diseaseWarningRules?: Prisma.DiseaseWarningRuleUncheckedCreateNestedManyWithoutCreatorInput
   reviewedSuggestions?: Prisma.MedicineSuggestionUncheckedCreateNestedManyWithoutReviewerInput
+  createdSideEffects?: Prisma.SideEffectUncheckedCreateNestedManyWithoutCreatedByUserInput
+  resolvedRequests?: Prisma.AddMedicineRequestUncheckedCreateNestedManyWithoutResolvedByUserInput
 }
 
 export type UserUpdateInput = {
@@ -473,6 +483,8 @@ export type UserUpdateInput = {
   uploadedReports?: Prisma.MedicalReportUpdateManyWithoutUploaderNestedInput
   diseaseWarningRules?: Prisma.DiseaseWarningRuleUpdateManyWithoutCreatorNestedInput
   reviewedSuggestions?: Prisma.MedicineSuggestionUpdateManyWithoutReviewerNestedInput
+  createdSideEffects?: Prisma.SideEffectUpdateManyWithoutCreatedByUserNestedInput
+  resolvedRequests?: Prisma.AddMedicineRequestUpdateManyWithoutResolvedByUserNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -501,6 +513,8 @@ export type UserUncheckedUpdateInput = {
   uploadedReports?: Prisma.MedicalReportUncheckedUpdateManyWithoutUploaderNestedInput
   diseaseWarningRules?: Prisma.DiseaseWarningRuleUncheckedUpdateManyWithoutCreatorNestedInput
   reviewedSuggestions?: Prisma.MedicineSuggestionUncheckedUpdateManyWithoutReviewerNestedInput
+  createdSideEffects?: Prisma.SideEffectUncheckedUpdateManyWithoutCreatedByUserNestedInput
+  resolvedRequests?: Prisma.AddMedicineRequestUncheckedUpdateManyWithoutResolvedByUserNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -748,6 +762,22 @@ export type UserUpdateOneRequiredWithoutSessionsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutSessionsInput, Prisma.UserUpdateWithoutSessionsInput>, Prisma.UserUncheckedUpdateWithoutSessionsInput>
 }
 
+export type UserCreateNestedOneWithoutCreatedSideEffectsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutCreatedSideEffectsInput, Prisma.UserUncheckedCreateWithoutCreatedSideEffectsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutCreatedSideEffectsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneWithoutCreatedSideEffectsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutCreatedSideEffectsInput, Prisma.UserUncheckedCreateWithoutCreatedSideEffectsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutCreatedSideEffectsInput
+  upsert?: Prisma.UserUpsertWithoutCreatedSideEffectsInput
+  disconnect?: Prisma.UserWhereInput | boolean
+  delete?: Prisma.UserWhereInput | boolean
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutCreatedSideEffectsInput, Prisma.UserUpdateWithoutCreatedSideEffectsInput>, Prisma.UserUncheckedUpdateWithoutCreatedSideEffectsInput>
+}
+
 export type UserCreateNestedOneWithoutPharmacistInput = {
   create?: Prisma.XOR<Prisma.UserCreateWithoutPharmacistInput, Prisma.UserUncheckedCreateWithoutPharmacistInput>
   connectOrCreate?: Prisma.UserCreateOrConnectWithoutPharmacistInput
@@ -820,6 +850,22 @@ export type UserUpdateOneRequiredWithoutExportHistoryNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutExportHistoryInput, Prisma.UserUpdateWithoutExportHistoryInput>, Prisma.UserUncheckedUpdateWithoutExportHistoryInput>
 }
 
+export type UserCreateNestedOneWithoutResolvedRequestsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutResolvedRequestsInput, Prisma.UserUncheckedCreateWithoutResolvedRequestsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutResolvedRequestsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneWithoutResolvedRequestsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutResolvedRequestsInput, Prisma.UserUncheckedCreateWithoutResolvedRequestsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutResolvedRequestsInput
+  upsert?: Prisma.UserUpsertWithoutResolvedRequestsInput
+  disconnect?: Prisma.UserWhereInput | boolean
+  delete?: Prisma.UserWhereInput | boolean
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutResolvedRequestsInput, Prisma.UserUpdateWithoutResolvedRequestsInput>, Prisma.UserUncheckedUpdateWithoutResolvedRequestsInput>
+}
+
 export type UserCreateWithoutSubscriptionInput = {
   email: string
   passwordHash: string
@@ -844,6 +890,8 @@ export type UserCreateWithoutSubscriptionInput = {
   uploadedReports?: Prisma.MedicalReportCreateNestedManyWithoutUploaderInput
   diseaseWarningRules?: Prisma.DiseaseWarningRuleCreateNestedManyWithoutCreatorInput
   reviewedSuggestions?: Prisma.MedicineSuggestionCreateNestedManyWithoutReviewerInput
+  createdSideEffects?: Prisma.SideEffectCreateNestedManyWithoutCreatedByUserInput
+  resolvedRequests?: Prisma.AddMedicineRequestCreateNestedManyWithoutResolvedByUserInput
 }
 
 export type UserUncheckedCreateWithoutSubscriptionInput = {
@@ -871,6 +919,8 @@ export type UserUncheckedCreateWithoutSubscriptionInput = {
   uploadedReports?: Prisma.MedicalReportUncheckedCreateNestedManyWithoutUploaderInput
   diseaseWarningRules?: Prisma.DiseaseWarningRuleUncheckedCreateNestedManyWithoutCreatorInput
   reviewedSuggestions?: Prisma.MedicineSuggestionUncheckedCreateNestedManyWithoutReviewerInput
+  createdSideEffects?: Prisma.SideEffectUncheckedCreateNestedManyWithoutCreatedByUserInput
+  resolvedRequests?: Prisma.AddMedicineRequestUncheckedCreateNestedManyWithoutResolvedByUserInput
 }
 
 export type UserCreateOrConnectWithoutSubscriptionInput = {
@@ -913,6 +963,8 @@ export type UserUpdateWithoutSubscriptionInput = {
   uploadedReports?: Prisma.MedicalReportUpdateManyWithoutUploaderNestedInput
   diseaseWarningRules?: Prisma.DiseaseWarningRuleUpdateManyWithoutCreatorNestedInput
   reviewedSuggestions?: Prisma.MedicineSuggestionUpdateManyWithoutReviewerNestedInput
+  createdSideEffects?: Prisma.SideEffectUpdateManyWithoutCreatedByUserNestedInput
+  resolvedRequests?: Prisma.AddMedicineRequestUpdateManyWithoutResolvedByUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutSubscriptionInput = {
@@ -940,6 +992,8 @@ export type UserUncheckedUpdateWithoutSubscriptionInput = {
   uploadedReports?: Prisma.MedicalReportUncheckedUpdateManyWithoutUploaderNestedInput
   diseaseWarningRules?: Prisma.DiseaseWarningRuleUncheckedUpdateManyWithoutCreatorNestedInput
   reviewedSuggestions?: Prisma.MedicineSuggestionUncheckedUpdateManyWithoutReviewerNestedInput
+  createdSideEffects?: Prisma.SideEffectUncheckedUpdateManyWithoutCreatedByUserNestedInput
+  resolvedRequests?: Prisma.AddMedicineRequestUncheckedUpdateManyWithoutResolvedByUserNestedInput
 }
 
 export type UserCreateWithoutPatientInput = {
@@ -966,6 +1020,8 @@ export type UserCreateWithoutPatientInput = {
   uploadedReports?: Prisma.MedicalReportCreateNestedManyWithoutUploaderInput
   diseaseWarningRules?: Prisma.DiseaseWarningRuleCreateNestedManyWithoutCreatorInput
   reviewedSuggestions?: Prisma.MedicineSuggestionCreateNestedManyWithoutReviewerInput
+  createdSideEffects?: Prisma.SideEffectCreateNestedManyWithoutCreatedByUserInput
+  resolvedRequests?: Prisma.AddMedicineRequestCreateNestedManyWithoutResolvedByUserInput
 }
 
 export type UserUncheckedCreateWithoutPatientInput = {
@@ -993,6 +1049,8 @@ export type UserUncheckedCreateWithoutPatientInput = {
   uploadedReports?: Prisma.MedicalReportUncheckedCreateNestedManyWithoutUploaderInput
   diseaseWarningRules?: Prisma.DiseaseWarningRuleUncheckedCreateNestedManyWithoutCreatorInput
   reviewedSuggestions?: Prisma.MedicineSuggestionUncheckedCreateNestedManyWithoutReviewerInput
+  createdSideEffects?: Prisma.SideEffectUncheckedCreateNestedManyWithoutCreatedByUserInput
+  resolvedRequests?: Prisma.AddMedicineRequestUncheckedCreateNestedManyWithoutResolvedByUserInput
 }
 
 export type UserCreateOrConnectWithoutPatientInput = {
@@ -1035,6 +1093,8 @@ export type UserUpdateWithoutPatientInput = {
   uploadedReports?: Prisma.MedicalReportUpdateManyWithoutUploaderNestedInput
   diseaseWarningRules?: Prisma.DiseaseWarningRuleUpdateManyWithoutCreatorNestedInput
   reviewedSuggestions?: Prisma.MedicineSuggestionUpdateManyWithoutReviewerNestedInput
+  createdSideEffects?: Prisma.SideEffectUpdateManyWithoutCreatedByUserNestedInput
+  resolvedRequests?: Prisma.AddMedicineRequestUpdateManyWithoutResolvedByUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutPatientInput = {
@@ -1062,6 +1122,8 @@ export type UserUncheckedUpdateWithoutPatientInput = {
   uploadedReports?: Prisma.MedicalReportUncheckedUpdateManyWithoutUploaderNestedInput
   diseaseWarningRules?: Prisma.DiseaseWarningRuleUncheckedUpdateManyWithoutCreatorNestedInput
   reviewedSuggestions?: Prisma.MedicineSuggestionUncheckedUpdateManyWithoutReviewerNestedInput
+  createdSideEffects?: Prisma.SideEffectUncheckedUpdateManyWithoutCreatedByUserNestedInput
+  resolvedRequests?: Prisma.AddMedicineRequestUncheckedUpdateManyWithoutResolvedByUserNestedInput
 }
 
 export type UserCreateWithoutDoctorInput = {
@@ -1088,6 +1150,8 @@ export type UserCreateWithoutDoctorInput = {
   uploadedReports?: Prisma.MedicalReportCreateNestedManyWithoutUploaderInput
   diseaseWarningRules?: Prisma.DiseaseWarningRuleCreateNestedManyWithoutCreatorInput
   reviewedSuggestions?: Prisma.MedicineSuggestionCreateNestedManyWithoutReviewerInput
+  createdSideEffects?: Prisma.SideEffectCreateNestedManyWithoutCreatedByUserInput
+  resolvedRequests?: Prisma.AddMedicineRequestCreateNestedManyWithoutResolvedByUserInput
 }
 
 export type UserUncheckedCreateWithoutDoctorInput = {
@@ -1115,6 +1179,8 @@ export type UserUncheckedCreateWithoutDoctorInput = {
   uploadedReports?: Prisma.MedicalReportUncheckedCreateNestedManyWithoutUploaderInput
   diseaseWarningRules?: Prisma.DiseaseWarningRuleUncheckedCreateNestedManyWithoutCreatorInput
   reviewedSuggestions?: Prisma.MedicineSuggestionUncheckedCreateNestedManyWithoutReviewerInput
+  createdSideEffects?: Prisma.SideEffectUncheckedCreateNestedManyWithoutCreatedByUserInput
+  resolvedRequests?: Prisma.AddMedicineRequestUncheckedCreateNestedManyWithoutResolvedByUserInput
 }
 
 export type UserCreateOrConnectWithoutDoctorInput = {
@@ -1157,6 +1223,8 @@ export type UserUpdateWithoutDoctorInput = {
   uploadedReports?: Prisma.MedicalReportUpdateManyWithoutUploaderNestedInput
   diseaseWarningRules?: Prisma.DiseaseWarningRuleUpdateManyWithoutCreatorNestedInput
   reviewedSuggestions?: Prisma.MedicineSuggestionUpdateManyWithoutReviewerNestedInput
+  createdSideEffects?: Prisma.SideEffectUpdateManyWithoutCreatedByUserNestedInput
+  resolvedRequests?: Prisma.AddMedicineRequestUpdateManyWithoutResolvedByUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutDoctorInput = {
@@ -1184,6 +1252,8 @@ export type UserUncheckedUpdateWithoutDoctorInput = {
   uploadedReports?: Prisma.MedicalReportUncheckedUpdateManyWithoutUploaderNestedInput
   diseaseWarningRules?: Prisma.DiseaseWarningRuleUncheckedUpdateManyWithoutCreatorNestedInput
   reviewedSuggestions?: Prisma.MedicineSuggestionUncheckedUpdateManyWithoutReviewerNestedInput
+  createdSideEffects?: Prisma.SideEffectUncheckedUpdateManyWithoutCreatedByUserNestedInput
+  resolvedRequests?: Prisma.AddMedicineRequestUncheckedUpdateManyWithoutResolvedByUserNestedInput
 }
 
 export type UserCreateWithoutDiseaseWarningRulesInput = {
@@ -1210,6 +1280,8 @@ export type UserCreateWithoutDiseaseWarningRulesInput = {
   exportHistory?: Prisma.ExportHistoryCreateNestedManyWithoutUserInput
   uploadedReports?: Prisma.MedicalReportCreateNestedManyWithoutUploaderInput
   reviewedSuggestions?: Prisma.MedicineSuggestionCreateNestedManyWithoutReviewerInput
+  createdSideEffects?: Prisma.SideEffectCreateNestedManyWithoutCreatedByUserInput
+  resolvedRequests?: Prisma.AddMedicineRequestCreateNestedManyWithoutResolvedByUserInput
 }
 
 export type UserUncheckedCreateWithoutDiseaseWarningRulesInput = {
@@ -1237,6 +1309,8 @@ export type UserUncheckedCreateWithoutDiseaseWarningRulesInput = {
   exportHistory?: Prisma.ExportHistoryUncheckedCreateNestedManyWithoutUserInput
   uploadedReports?: Prisma.MedicalReportUncheckedCreateNestedManyWithoutUploaderInput
   reviewedSuggestions?: Prisma.MedicineSuggestionUncheckedCreateNestedManyWithoutReviewerInput
+  createdSideEffects?: Prisma.SideEffectUncheckedCreateNestedManyWithoutCreatedByUserInput
+  resolvedRequests?: Prisma.AddMedicineRequestUncheckedCreateNestedManyWithoutResolvedByUserInput
 }
 
 export type UserCreateOrConnectWithoutDiseaseWarningRulesInput = {
@@ -1279,6 +1353,8 @@ export type UserUpdateWithoutDiseaseWarningRulesInput = {
   exportHistory?: Prisma.ExportHistoryUpdateManyWithoutUserNestedInput
   uploadedReports?: Prisma.MedicalReportUpdateManyWithoutUploaderNestedInput
   reviewedSuggestions?: Prisma.MedicineSuggestionUpdateManyWithoutReviewerNestedInput
+  createdSideEffects?: Prisma.SideEffectUpdateManyWithoutCreatedByUserNestedInput
+  resolvedRequests?: Prisma.AddMedicineRequestUpdateManyWithoutResolvedByUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutDiseaseWarningRulesInput = {
@@ -1306,6 +1382,8 @@ export type UserUncheckedUpdateWithoutDiseaseWarningRulesInput = {
   exportHistory?: Prisma.ExportHistoryUncheckedUpdateManyWithoutUserNestedInput
   uploadedReports?: Prisma.MedicalReportUncheckedUpdateManyWithoutUploaderNestedInput
   reviewedSuggestions?: Prisma.MedicineSuggestionUncheckedUpdateManyWithoutReviewerNestedInput
+  createdSideEffects?: Prisma.SideEffectUncheckedUpdateManyWithoutCreatedByUserNestedInput
+  resolvedRequests?: Prisma.AddMedicineRequestUncheckedUpdateManyWithoutResolvedByUserNestedInput
 }
 
 export type UserCreateWithoutNotificationsInput = {
@@ -1332,6 +1410,8 @@ export type UserCreateWithoutNotificationsInput = {
   uploadedReports?: Prisma.MedicalReportCreateNestedManyWithoutUploaderInput
   diseaseWarningRules?: Prisma.DiseaseWarningRuleCreateNestedManyWithoutCreatorInput
   reviewedSuggestions?: Prisma.MedicineSuggestionCreateNestedManyWithoutReviewerInput
+  createdSideEffects?: Prisma.SideEffectCreateNestedManyWithoutCreatedByUserInput
+  resolvedRequests?: Prisma.AddMedicineRequestCreateNestedManyWithoutResolvedByUserInput
 }
 
 export type UserUncheckedCreateWithoutNotificationsInput = {
@@ -1359,6 +1439,8 @@ export type UserUncheckedCreateWithoutNotificationsInput = {
   uploadedReports?: Prisma.MedicalReportUncheckedCreateNestedManyWithoutUploaderInput
   diseaseWarningRules?: Prisma.DiseaseWarningRuleUncheckedCreateNestedManyWithoutCreatorInput
   reviewedSuggestions?: Prisma.MedicineSuggestionUncheckedCreateNestedManyWithoutReviewerInput
+  createdSideEffects?: Prisma.SideEffectUncheckedCreateNestedManyWithoutCreatedByUserInput
+  resolvedRequests?: Prisma.AddMedicineRequestUncheckedCreateNestedManyWithoutResolvedByUserInput
 }
 
 export type UserCreateOrConnectWithoutNotificationsInput = {
@@ -1401,6 +1483,8 @@ export type UserUpdateWithoutNotificationsInput = {
   uploadedReports?: Prisma.MedicalReportUpdateManyWithoutUploaderNestedInput
   diseaseWarningRules?: Prisma.DiseaseWarningRuleUpdateManyWithoutCreatorNestedInput
   reviewedSuggestions?: Prisma.MedicineSuggestionUpdateManyWithoutReviewerNestedInput
+  createdSideEffects?: Prisma.SideEffectUpdateManyWithoutCreatedByUserNestedInput
+  resolvedRequests?: Prisma.AddMedicineRequestUpdateManyWithoutResolvedByUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutNotificationsInput = {
@@ -1428,6 +1512,8 @@ export type UserUncheckedUpdateWithoutNotificationsInput = {
   uploadedReports?: Prisma.MedicalReportUncheckedUpdateManyWithoutUploaderNestedInput
   diseaseWarningRules?: Prisma.DiseaseWarningRuleUncheckedUpdateManyWithoutCreatorNestedInput
   reviewedSuggestions?: Prisma.MedicineSuggestionUncheckedUpdateManyWithoutReviewerNestedInput
+  createdSideEffects?: Prisma.SideEffectUncheckedUpdateManyWithoutCreatedByUserNestedInput
+  resolvedRequests?: Prisma.AddMedicineRequestUncheckedUpdateManyWithoutResolvedByUserNestedInput
 }
 
 export type UserCreateWithoutAuditLogsInput = {
@@ -1454,6 +1540,8 @@ export type UserCreateWithoutAuditLogsInput = {
   uploadedReports?: Prisma.MedicalReportCreateNestedManyWithoutUploaderInput
   diseaseWarningRules?: Prisma.DiseaseWarningRuleCreateNestedManyWithoutCreatorInput
   reviewedSuggestions?: Prisma.MedicineSuggestionCreateNestedManyWithoutReviewerInput
+  createdSideEffects?: Prisma.SideEffectCreateNestedManyWithoutCreatedByUserInput
+  resolvedRequests?: Prisma.AddMedicineRequestCreateNestedManyWithoutResolvedByUserInput
 }
 
 export type UserUncheckedCreateWithoutAuditLogsInput = {
@@ -1481,6 +1569,8 @@ export type UserUncheckedCreateWithoutAuditLogsInput = {
   uploadedReports?: Prisma.MedicalReportUncheckedCreateNestedManyWithoutUploaderInput
   diseaseWarningRules?: Prisma.DiseaseWarningRuleUncheckedCreateNestedManyWithoutCreatorInput
   reviewedSuggestions?: Prisma.MedicineSuggestionUncheckedCreateNestedManyWithoutReviewerInput
+  createdSideEffects?: Prisma.SideEffectUncheckedCreateNestedManyWithoutCreatedByUserInput
+  resolvedRequests?: Prisma.AddMedicineRequestUncheckedCreateNestedManyWithoutResolvedByUserInput
 }
 
 export type UserCreateOrConnectWithoutAuditLogsInput = {
@@ -1523,6 +1613,8 @@ export type UserUpdateWithoutAuditLogsInput = {
   uploadedReports?: Prisma.MedicalReportUpdateManyWithoutUploaderNestedInput
   diseaseWarningRules?: Prisma.DiseaseWarningRuleUpdateManyWithoutCreatorNestedInput
   reviewedSuggestions?: Prisma.MedicineSuggestionUpdateManyWithoutReviewerNestedInput
+  createdSideEffects?: Prisma.SideEffectUpdateManyWithoutCreatedByUserNestedInput
+  resolvedRequests?: Prisma.AddMedicineRequestUpdateManyWithoutResolvedByUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAuditLogsInput = {
@@ -1550,6 +1642,8 @@ export type UserUncheckedUpdateWithoutAuditLogsInput = {
   uploadedReports?: Prisma.MedicalReportUncheckedUpdateManyWithoutUploaderNestedInput
   diseaseWarningRules?: Prisma.DiseaseWarningRuleUncheckedUpdateManyWithoutCreatorNestedInput
   reviewedSuggestions?: Prisma.MedicineSuggestionUncheckedUpdateManyWithoutReviewerNestedInput
+  createdSideEffects?: Prisma.SideEffectUncheckedUpdateManyWithoutCreatedByUserNestedInput
+  resolvedRequests?: Prisma.AddMedicineRequestUncheckedUpdateManyWithoutResolvedByUserNestedInput
 }
 
 export type UserCreateWithoutSessionsInput = {
@@ -1576,6 +1670,8 @@ export type UserCreateWithoutSessionsInput = {
   uploadedReports?: Prisma.MedicalReportCreateNestedManyWithoutUploaderInput
   diseaseWarningRules?: Prisma.DiseaseWarningRuleCreateNestedManyWithoutCreatorInput
   reviewedSuggestions?: Prisma.MedicineSuggestionCreateNestedManyWithoutReviewerInput
+  createdSideEffects?: Prisma.SideEffectCreateNestedManyWithoutCreatedByUserInput
+  resolvedRequests?: Prisma.AddMedicineRequestCreateNestedManyWithoutResolvedByUserInput
 }
 
 export type UserUncheckedCreateWithoutSessionsInput = {
@@ -1603,6 +1699,8 @@ export type UserUncheckedCreateWithoutSessionsInput = {
   uploadedReports?: Prisma.MedicalReportUncheckedCreateNestedManyWithoutUploaderInput
   diseaseWarningRules?: Prisma.DiseaseWarningRuleUncheckedCreateNestedManyWithoutCreatorInput
   reviewedSuggestions?: Prisma.MedicineSuggestionUncheckedCreateNestedManyWithoutReviewerInput
+  createdSideEffects?: Prisma.SideEffectUncheckedCreateNestedManyWithoutCreatedByUserInput
+  resolvedRequests?: Prisma.AddMedicineRequestUncheckedCreateNestedManyWithoutResolvedByUserInput
 }
 
 export type UserCreateOrConnectWithoutSessionsInput = {
@@ -1645,6 +1743,8 @@ export type UserUpdateWithoutSessionsInput = {
   uploadedReports?: Prisma.MedicalReportUpdateManyWithoutUploaderNestedInput
   diseaseWarningRules?: Prisma.DiseaseWarningRuleUpdateManyWithoutCreatorNestedInput
   reviewedSuggestions?: Prisma.MedicineSuggestionUpdateManyWithoutReviewerNestedInput
+  createdSideEffects?: Prisma.SideEffectUpdateManyWithoutCreatedByUserNestedInput
+  resolvedRequests?: Prisma.AddMedicineRequestUpdateManyWithoutResolvedByUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutSessionsInput = {
@@ -1672,6 +1772,138 @@ export type UserUncheckedUpdateWithoutSessionsInput = {
   uploadedReports?: Prisma.MedicalReportUncheckedUpdateManyWithoutUploaderNestedInput
   diseaseWarningRules?: Prisma.DiseaseWarningRuleUncheckedUpdateManyWithoutCreatorNestedInput
   reviewedSuggestions?: Prisma.MedicineSuggestionUncheckedUpdateManyWithoutReviewerNestedInput
+  createdSideEffects?: Prisma.SideEffectUncheckedUpdateManyWithoutCreatedByUserNestedInput
+  resolvedRequests?: Prisma.AddMedicineRequestUncheckedUpdateManyWithoutResolvedByUserNestedInput
+}
+
+export type UserCreateWithoutCreatedSideEffectsInput = {
+  email: string
+  passwordHash: string
+  role: $Enums.UserRole
+  emailVerified?: boolean
+  emailVerificationToken?: string | null
+  passwordResetToken?: string | null
+  passwordResetExpires?: Date | string | null
+  isActive?: boolean
+  lastLoginAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  subscription?: Prisma.SubscriptionCreateNestedOneWithoutUserInput
+  patient?: Prisma.PatientCreateNestedOneWithoutUserInput
+  doctor?: Prisma.DoctorCreateNestedOneWithoutUserInput
+  pharmacist?: Prisma.PharmacistCreateNestedOneWithoutUserInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  importHistory?: Prisma.ImportHistoryCreateNestedManyWithoutImporterInput
+  exportHistory?: Prisma.ExportHistoryCreateNestedManyWithoutUserInput
+  uploadedReports?: Prisma.MedicalReportCreateNestedManyWithoutUploaderInput
+  diseaseWarningRules?: Prisma.DiseaseWarningRuleCreateNestedManyWithoutCreatorInput
+  reviewedSuggestions?: Prisma.MedicineSuggestionCreateNestedManyWithoutReviewerInput
+  resolvedRequests?: Prisma.AddMedicineRequestCreateNestedManyWithoutResolvedByUserInput
+}
+
+export type UserUncheckedCreateWithoutCreatedSideEffectsInput = {
+  id?: number
+  email: string
+  passwordHash: string
+  role: $Enums.UserRole
+  emailVerified?: boolean
+  emailVerificationToken?: string | null
+  passwordResetToken?: string | null
+  passwordResetExpires?: Date | string | null
+  isActive?: boolean
+  lastLoginAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  subscription?: Prisma.SubscriptionUncheckedCreateNestedOneWithoutUserInput
+  patient?: Prisma.PatientUncheckedCreateNestedOneWithoutUserInput
+  doctor?: Prisma.DoctorUncheckedCreateNestedOneWithoutUserInput
+  pharmacist?: Prisma.PharmacistUncheckedCreateNestedOneWithoutUserInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  importHistory?: Prisma.ImportHistoryUncheckedCreateNestedManyWithoutImporterInput
+  exportHistory?: Prisma.ExportHistoryUncheckedCreateNestedManyWithoutUserInput
+  uploadedReports?: Prisma.MedicalReportUncheckedCreateNestedManyWithoutUploaderInput
+  diseaseWarningRules?: Prisma.DiseaseWarningRuleUncheckedCreateNestedManyWithoutCreatorInput
+  reviewedSuggestions?: Prisma.MedicineSuggestionUncheckedCreateNestedManyWithoutReviewerInput
+  resolvedRequests?: Prisma.AddMedicineRequestUncheckedCreateNestedManyWithoutResolvedByUserInput
+}
+
+export type UserCreateOrConnectWithoutCreatedSideEffectsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutCreatedSideEffectsInput, Prisma.UserUncheckedCreateWithoutCreatedSideEffectsInput>
+}
+
+export type UserUpsertWithoutCreatedSideEffectsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutCreatedSideEffectsInput, Prisma.UserUncheckedUpdateWithoutCreatedSideEffectsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutCreatedSideEffectsInput, Prisma.UserUncheckedCreateWithoutCreatedSideEffectsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutCreatedSideEffectsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutCreatedSideEffectsInput, Prisma.UserUncheckedUpdateWithoutCreatedSideEffectsInput>
+}
+
+export type UserUpdateWithoutCreatedSideEffectsInput = {
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  emailVerificationToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  subscription?: Prisma.SubscriptionUpdateOneWithoutUserNestedInput
+  patient?: Prisma.PatientUpdateOneWithoutUserNestedInput
+  doctor?: Prisma.DoctorUpdateOneWithoutUserNestedInput
+  pharmacist?: Prisma.PharmacistUpdateOneWithoutUserNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  importHistory?: Prisma.ImportHistoryUpdateManyWithoutImporterNestedInput
+  exportHistory?: Prisma.ExportHistoryUpdateManyWithoutUserNestedInput
+  uploadedReports?: Prisma.MedicalReportUpdateManyWithoutUploaderNestedInput
+  diseaseWarningRules?: Prisma.DiseaseWarningRuleUpdateManyWithoutCreatorNestedInput
+  reviewedSuggestions?: Prisma.MedicineSuggestionUpdateManyWithoutReviewerNestedInput
+  resolvedRequests?: Prisma.AddMedicineRequestUpdateManyWithoutResolvedByUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutCreatedSideEffectsInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  emailVerificationToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  subscription?: Prisma.SubscriptionUncheckedUpdateOneWithoutUserNestedInput
+  patient?: Prisma.PatientUncheckedUpdateOneWithoutUserNestedInput
+  doctor?: Prisma.DoctorUncheckedUpdateOneWithoutUserNestedInput
+  pharmacist?: Prisma.PharmacistUncheckedUpdateOneWithoutUserNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  importHistory?: Prisma.ImportHistoryUncheckedUpdateManyWithoutImporterNestedInput
+  exportHistory?: Prisma.ExportHistoryUncheckedUpdateManyWithoutUserNestedInput
+  uploadedReports?: Prisma.MedicalReportUncheckedUpdateManyWithoutUploaderNestedInput
+  diseaseWarningRules?: Prisma.DiseaseWarningRuleUncheckedUpdateManyWithoutCreatorNestedInput
+  reviewedSuggestions?: Prisma.MedicineSuggestionUncheckedUpdateManyWithoutReviewerNestedInput
+  resolvedRequests?: Prisma.AddMedicineRequestUncheckedUpdateManyWithoutResolvedByUserNestedInput
 }
 
 export type UserCreateWithoutPharmacistInput = {
@@ -1698,6 +1930,8 @@ export type UserCreateWithoutPharmacistInput = {
   uploadedReports?: Prisma.MedicalReportCreateNestedManyWithoutUploaderInput
   diseaseWarningRules?: Prisma.DiseaseWarningRuleCreateNestedManyWithoutCreatorInput
   reviewedSuggestions?: Prisma.MedicineSuggestionCreateNestedManyWithoutReviewerInput
+  createdSideEffects?: Prisma.SideEffectCreateNestedManyWithoutCreatedByUserInput
+  resolvedRequests?: Prisma.AddMedicineRequestCreateNestedManyWithoutResolvedByUserInput
 }
 
 export type UserUncheckedCreateWithoutPharmacistInput = {
@@ -1725,6 +1959,8 @@ export type UserUncheckedCreateWithoutPharmacistInput = {
   uploadedReports?: Prisma.MedicalReportUncheckedCreateNestedManyWithoutUploaderInput
   diseaseWarningRules?: Prisma.DiseaseWarningRuleUncheckedCreateNestedManyWithoutCreatorInput
   reviewedSuggestions?: Prisma.MedicineSuggestionUncheckedCreateNestedManyWithoutReviewerInput
+  createdSideEffects?: Prisma.SideEffectUncheckedCreateNestedManyWithoutCreatedByUserInput
+  resolvedRequests?: Prisma.AddMedicineRequestUncheckedCreateNestedManyWithoutResolvedByUserInput
 }
 
 export type UserCreateOrConnectWithoutPharmacistInput = {
@@ -1767,6 +2003,8 @@ export type UserUpdateWithoutPharmacistInput = {
   uploadedReports?: Prisma.MedicalReportUpdateManyWithoutUploaderNestedInput
   diseaseWarningRules?: Prisma.DiseaseWarningRuleUpdateManyWithoutCreatorNestedInput
   reviewedSuggestions?: Prisma.MedicineSuggestionUpdateManyWithoutReviewerNestedInput
+  createdSideEffects?: Prisma.SideEffectUpdateManyWithoutCreatedByUserNestedInput
+  resolvedRequests?: Prisma.AddMedicineRequestUpdateManyWithoutResolvedByUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutPharmacistInput = {
@@ -1794,6 +2032,8 @@ export type UserUncheckedUpdateWithoutPharmacistInput = {
   uploadedReports?: Prisma.MedicalReportUncheckedUpdateManyWithoutUploaderNestedInput
   diseaseWarningRules?: Prisma.DiseaseWarningRuleUncheckedUpdateManyWithoutCreatorNestedInput
   reviewedSuggestions?: Prisma.MedicineSuggestionUncheckedUpdateManyWithoutReviewerNestedInput
+  createdSideEffects?: Prisma.SideEffectUncheckedUpdateManyWithoutCreatedByUserNestedInput
+  resolvedRequests?: Prisma.AddMedicineRequestUncheckedUpdateManyWithoutResolvedByUserNestedInput
 }
 
 export type UserCreateWithoutUploadedReportsInput = {
@@ -1820,6 +2060,8 @@ export type UserCreateWithoutUploadedReportsInput = {
   exportHistory?: Prisma.ExportHistoryCreateNestedManyWithoutUserInput
   diseaseWarningRules?: Prisma.DiseaseWarningRuleCreateNestedManyWithoutCreatorInput
   reviewedSuggestions?: Prisma.MedicineSuggestionCreateNestedManyWithoutReviewerInput
+  createdSideEffects?: Prisma.SideEffectCreateNestedManyWithoutCreatedByUserInput
+  resolvedRequests?: Prisma.AddMedicineRequestCreateNestedManyWithoutResolvedByUserInput
 }
 
 export type UserUncheckedCreateWithoutUploadedReportsInput = {
@@ -1847,6 +2089,8 @@ export type UserUncheckedCreateWithoutUploadedReportsInput = {
   exportHistory?: Prisma.ExportHistoryUncheckedCreateNestedManyWithoutUserInput
   diseaseWarningRules?: Prisma.DiseaseWarningRuleUncheckedCreateNestedManyWithoutCreatorInput
   reviewedSuggestions?: Prisma.MedicineSuggestionUncheckedCreateNestedManyWithoutReviewerInput
+  createdSideEffects?: Prisma.SideEffectUncheckedCreateNestedManyWithoutCreatedByUserInput
+  resolvedRequests?: Prisma.AddMedicineRequestUncheckedCreateNestedManyWithoutResolvedByUserInput
 }
 
 export type UserCreateOrConnectWithoutUploadedReportsInput = {
@@ -1889,6 +2133,8 @@ export type UserUpdateWithoutUploadedReportsInput = {
   exportHistory?: Prisma.ExportHistoryUpdateManyWithoutUserNestedInput
   diseaseWarningRules?: Prisma.DiseaseWarningRuleUpdateManyWithoutCreatorNestedInput
   reviewedSuggestions?: Prisma.MedicineSuggestionUpdateManyWithoutReviewerNestedInput
+  createdSideEffects?: Prisma.SideEffectUpdateManyWithoutCreatedByUserNestedInput
+  resolvedRequests?: Prisma.AddMedicineRequestUpdateManyWithoutResolvedByUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutUploadedReportsInput = {
@@ -1916,6 +2162,8 @@ export type UserUncheckedUpdateWithoutUploadedReportsInput = {
   exportHistory?: Prisma.ExportHistoryUncheckedUpdateManyWithoutUserNestedInput
   diseaseWarningRules?: Prisma.DiseaseWarningRuleUncheckedUpdateManyWithoutCreatorNestedInput
   reviewedSuggestions?: Prisma.MedicineSuggestionUncheckedUpdateManyWithoutReviewerNestedInput
+  createdSideEffects?: Prisma.SideEffectUncheckedUpdateManyWithoutCreatedByUserNestedInput
+  resolvedRequests?: Prisma.AddMedicineRequestUncheckedUpdateManyWithoutResolvedByUserNestedInput
 }
 
 export type UserCreateWithoutImportHistoryInput = {
@@ -1942,6 +2190,8 @@ export type UserCreateWithoutImportHistoryInput = {
   uploadedReports?: Prisma.MedicalReportCreateNestedManyWithoutUploaderInput
   diseaseWarningRules?: Prisma.DiseaseWarningRuleCreateNestedManyWithoutCreatorInput
   reviewedSuggestions?: Prisma.MedicineSuggestionCreateNestedManyWithoutReviewerInput
+  createdSideEffects?: Prisma.SideEffectCreateNestedManyWithoutCreatedByUserInput
+  resolvedRequests?: Prisma.AddMedicineRequestCreateNestedManyWithoutResolvedByUserInput
 }
 
 export type UserUncheckedCreateWithoutImportHistoryInput = {
@@ -1969,6 +2219,8 @@ export type UserUncheckedCreateWithoutImportHistoryInput = {
   uploadedReports?: Prisma.MedicalReportUncheckedCreateNestedManyWithoutUploaderInput
   diseaseWarningRules?: Prisma.DiseaseWarningRuleUncheckedCreateNestedManyWithoutCreatorInput
   reviewedSuggestions?: Prisma.MedicineSuggestionUncheckedCreateNestedManyWithoutReviewerInput
+  createdSideEffects?: Prisma.SideEffectUncheckedCreateNestedManyWithoutCreatedByUserInput
+  resolvedRequests?: Prisma.AddMedicineRequestUncheckedCreateNestedManyWithoutResolvedByUserInput
 }
 
 export type UserCreateOrConnectWithoutImportHistoryInput = {
@@ -2011,6 +2263,8 @@ export type UserUpdateWithoutImportHistoryInput = {
   uploadedReports?: Prisma.MedicalReportUpdateManyWithoutUploaderNestedInput
   diseaseWarningRules?: Prisma.DiseaseWarningRuleUpdateManyWithoutCreatorNestedInput
   reviewedSuggestions?: Prisma.MedicineSuggestionUpdateManyWithoutReviewerNestedInput
+  createdSideEffects?: Prisma.SideEffectUpdateManyWithoutCreatedByUserNestedInput
+  resolvedRequests?: Prisma.AddMedicineRequestUpdateManyWithoutResolvedByUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutImportHistoryInput = {
@@ -2038,6 +2292,8 @@ export type UserUncheckedUpdateWithoutImportHistoryInput = {
   uploadedReports?: Prisma.MedicalReportUncheckedUpdateManyWithoutUploaderNestedInput
   diseaseWarningRules?: Prisma.DiseaseWarningRuleUncheckedUpdateManyWithoutCreatorNestedInput
   reviewedSuggestions?: Prisma.MedicineSuggestionUncheckedUpdateManyWithoutReviewerNestedInput
+  createdSideEffects?: Prisma.SideEffectUncheckedUpdateManyWithoutCreatedByUserNestedInput
+  resolvedRequests?: Prisma.AddMedicineRequestUncheckedUpdateManyWithoutResolvedByUserNestedInput
 }
 
 export type UserCreateWithoutReviewedSuggestionsInput = {
@@ -2064,6 +2320,8 @@ export type UserCreateWithoutReviewedSuggestionsInput = {
   exportHistory?: Prisma.ExportHistoryCreateNestedManyWithoutUserInput
   uploadedReports?: Prisma.MedicalReportCreateNestedManyWithoutUploaderInput
   diseaseWarningRules?: Prisma.DiseaseWarningRuleCreateNestedManyWithoutCreatorInput
+  createdSideEffects?: Prisma.SideEffectCreateNestedManyWithoutCreatedByUserInput
+  resolvedRequests?: Prisma.AddMedicineRequestCreateNestedManyWithoutResolvedByUserInput
 }
 
 export type UserUncheckedCreateWithoutReviewedSuggestionsInput = {
@@ -2091,6 +2349,8 @@ export type UserUncheckedCreateWithoutReviewedSuggestionsInput = {
   exportHistory?: Prisma.ExportHistoryUncheckedCreateNestedManyWithoutUserInput
   uploadedReports?: Prisma.MedicalReportUncheckedCreateNestedManyWithoutUploaderInput
   diseaseWarningRules?: Prisma.DiseaseWarningRuleUncheckedCreateNestedManyWithoutCreatorInput
+  createdSideEffects?: Prisma.SideEffectUncheckedCreateNestedManyWithoutCreatedByUserInput
+  resolvedRequests?: Prisma.AddMedicineRequestUncheckedCreateNestedManyWithoutResolvedByUserInput
 }
 
 export type UserCreateOrConnectWithoutReviewedSuggestionsInput = {
@@ -2133,6 +2393,8 @@ export type UserUpdateWithoutReviewedSuggestionsInput = {
   exportHistory?: Prisma.ExportHistoryUpdateManyWithoutUserNestedInput
   uploadedReports?: Prisma.MedicalReportUpdateManyWithoutUploaderNestedInput
   diseaseWarningRules?: Prisma.DiseaseWarningRuleUpdateManyWithoutCreatorNestedInput
+  createdSideEffects?: Prisma.SideEffectUpdateManyWithoutCreatedByUserNestedInput
+  resolvedRequests?: Prisma.AddMedicineRequestUpdateManyWithoutResolvedByUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutReviewedSuggestionsInput = {
@@ -2160,6 +2422,8 @@ export type UserUncheckedUpdateWithoutReviewedSuggestionsInput = {
   exportHistory?: Prisma.ExportHistoryUncheckedUpdateManyWithoutUserNestedInput
   uploadedReports?: Prisma.MedicalReportUncheckedUpdateManyWithoutUploaderNestedInput
   diseaseWarningRules?: Prisma.DiseaseWarningRuleUncheckedUpdateManyWithoutCreatorNestedInput
+  createdSideEffects?: Prisma.SideEffectUncheckedUpdateManyWithoutCreatedByUserNestedInput
+  resolvedRequests?: Prisma.AddMedicineRequestUncheckedUpdateManyWithoutResolvedByUserNestedInput
 }
 
 export type UserCreateWithoutExportHistoryInput = {
@@ -2186,6 +2450,8 @@ export type UserCreateWithoutExportHistoryInput = {
   uploadedReports?: Prisma.MedicalReportCreateNestedManyWithoutUploaderInput
   diseaseWarningRules?: Prisma.DiseaseWarningRuleCreateNestedManyWithoutCreatorInput
   reviewedSuggestions?: Prisma.MedicineSuggestionCreateNestedManyWithoutReviewerInput
+  createdSideEffects?: Prisma.SideEffectCreateNestedManyWithoutCreatedByUserInput
+  resolvedRequests?: Prisma.AddMedicineRequestCreateNestedManyWithoutResolvedByUserInput
 }
 
 export type UserUncheckedCreateWithoutExportHistoryInput = {
@@ -2213,6 +2479,8 @@ export type UserUncheckedCreateWithoutExportHistoryInput = {
   uploadedReports?: Prisma.MedicalReportUncheckedCreateNestedManyWithoutUploaderInput
   diseaseWarningRules?: Prisma.DiseaseWarningRuleUncheckedCreateNestedManyWithoutCreatorInput
   reviewedSuggestions?: Prisma.MedicineSuggestionUncheckedCreateNestedManyWithoutReviewerInput
+  createdSideEffects?: Prisma.SideEffectUncheckedCreateNestedManyWithoutCreatedByUserInput
+  resolvedRequests?: Prisma.AddMedicineRequestUncheckedCreateNestedManyWithoutResolvedByUserInput
 }
 
 export type UserCreateOrConnectWithoutExportHistoryInput = {
@@ -2255,6 +2523,8 @@ export type UserUpdateWithoutExportHistoryInput = {
   uploadedReports?: Prisma.MedicalReportUpdateManyWithoutUploaderNestedInput
   diseaseWarningRules?: Prisma.DiseaseWarningRuleUpdateManyWithoutCreatorNestedInput
   reviewedSuggestions?: Prisma.MedicineSuggestionUpdateManyWithoutReviewerNestedInput
+  createdSideEffects?: Prisma.SideEffectUpdateManyWithoutCreatedByUserNestedInput
+  resolvedRequests?: Prisma.AddMedicineRequestUpdateManyWithoutResolvedByUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutExportHistoryInput = {
@@ -2282,6 +2552,138 @@ export type UserUncheckedUpdateWithoutExportHistoryInput = {
   uploadedReports?: Prisma.MedicalReportUncheckedUpdateManyWithoutUploaderNestedInput
   diseaseWarningRules?: Prisma.DiseaseWarningRuleUncheckedUpdateManyWithoutCreatorNestedInput
   reviewedSuggestions?: Prisma.MedicineSuggestionUncheckedUpdateManyWithoutReviewerNestedInput
+  createdSideEffects?: Prisma.SideEffectUncheckedUpdateManyWithoutCreatedByUserNestedInput
+  resolvedRequests?: Prisma.AddMedicineRequestUncheckedUpdateManyWithoutResolvedByUserNestedInput
+}
+
+export type UserCreateWithoutResolvedRequestsInput = {
+  email: string
+  passwordHash: string
+  role: $Enums.UserRole
+  emailVerified?: boolean
+  emailVerificationToken?: string | null
+  passwordResetToken?: string | null
+  passwordResetExpires?: Date | string | null
+  isActive?: boolean
+  lastLoginAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  subscription?: Prisma.SubscriptionCreateNestedOneWithoutUserInput
+  patient?: Prisma.PatientCreateNestedOneWithoutUserInput
+  doctor?: Prisma.DoctorCreateNestedOneWithoutUserInput
+  pharmacist?: Prisma.PharmacistCreateNestedOneWithoutUserInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  importHistory?: Prisma.ImportHistoryCreateNestedManyWithoutImporterInput
+  exportHistory?: Prisma.ExportHistoryCreateNestedManyWithoutUserInput
+  uploadedReports?: Prisma.MedicalReportCreateNestedManyWithoutUploaderInput
+  diseaseWarningRules?: Prisma.DiseaseWarningRuleCreateNestedManyWithoutCreatorInput
+  reviewedSuggestions?: Prisma.MedicineSuggestionCreateNestedManyWithoutReviewerInput
+  createdSideEffects?: Prisma.SideEffectCreateNestedManyWithoutCreatedByUserInput
+}
+
+export type UserUncheckedCreateWithoutResolvedRequestsInput = {
+  id?: number
+  email: string
+  passwordHash: string
+  role: $Enums.UserRole
+  emailVerified?: boolean
+  emailVerificationToken?: string | null
+  passwordResetToken?: string | null
+  passwordResetExpires?: Date | string | null
+  isActive?: boolean
+  lastLoginAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  subscription?: Prisma.SubscriptionUncheckedCreateNestedOneWithoutUserInput
+  patient?: Prisma.PatientUncheckedCreateNestedOneWithoutUserInput
+  doctor?: Prisma.DoctorUncheckedCreateNestedOneWithoutUserInput
+  pharmacist?: Prisma.PharmacistUncheckedCreateNestedOneWithoutUserInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  importHistory?: Prisma.ImportHistoryUncheckedCreateNestedManyWithoutImporterInput
+  exportHistory?: Prisma.ExportHistoryUncheckedCreateNestedManyWithoutUserInput
+  uploadedReports?: Prisma.MedicalReportUncheckedCreateNestedManyWithoutUploaderInput
+  diseaseWarningRules?: Prisma.DiseaseWarningRuleUncheckedCreateNestedManyWithoutCreatorInput
+  reviewedSuggestions?: Prisma.MedicineSuggestionUncheckedCreateNestedManyWithoutReviewerInput
+  createdSideEffects?: Prisma.SideEffectUncheckedCreateNestedManyWithoutCreatedByUserInput
+}
+
+export type UserCreateOrConnectWithoutResolvedRequestsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutResolvedRequestsInput, Prisma.UserUncheckedCreateWithoutResolvedRequestsInput>
+}
+
+export type UserUpsertWithoutResolvedRequestsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutResolvedRequestsInput, Prisma.UserUncheckedUpdateWithoutResolvedRequestsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutResolvedRequestsInput, Prisma.UserUncheckedCreateWithoutResolvedRequestsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutResolvedRequestsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutResolvedRequestsInput, Prisma.UserUncheckedUpdateWithoutResolvedRequestsInput>
+}
+
+export type UserUpdateWithoutResolvedRequestsInput = {
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  emailVerificationToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  subscription?: Prisma.SubscriptionUpdateOneWithoutUserNestedInput
+  patient?: Prisma.PatientUpdateOneWithoutUserNestedInput
+  doctor?: Prisma.DoctorUpdateOneWithoutUserNestedInput
+  pharmacist?: Prisma.PharmacistUpdateOneWithoutUserNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  importHistory?: Prisma.ImportHistoryUpdateManyWithoutImporterNestedInput
+  exportHistory?: Prisma.ExportHistoryUpdateManyWithoutUserNestedInput
+  uploadedReports?: Prisma.MedicalReportUpdateManyWithoutUploaderNestedInput
+  diseaseWarningRules?: Prisma.DiseaseWarningRuleUpdateManyWithoutCreatorNestedInput
+  reviewedSuggestions?: Prisma.MedicineSuggestionUpdateManyWithoutReviewerNestedInput
+  createdSideEffects?: Prisma.SideEffectUpdateManyWithoutCreatedByUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutResolvedRequestsInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  emailVerificationToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  subscription?: Prisma.SubscriptionUncheckedUpdateOneWithoutUserNestedInput
+  patient?: Prisma.PatientUncheckedUpdateOneWithoutUserNestedInput
+  doctor?: Prisma.DoctorUncheckedUpdateOneWithoutUserNestedInput
+  pharmacist?: Prisma.PharmacistUncheckedUpdateOneWithoutUserNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  importHistory?: Prisma.ImportHistoryUncheckedUpdateManyWithoutImporterNestedInput
+  exportHistory?: Prisma.ExportHistoryUncheckedUpdateManyWithoutUserNestedInput
+  uploadedReports?: Prisma.MedicalReportUncheckedUpdateManyWithoutUploaderNestedInput
+  diseaseWarningRules?: Prisma.DiseaseWarningRuleUncheckedUpdateManyWithoutCreatorNestedInput
+  reviewedSuggestions?: Prisma.MedicineSuggestionUncheckedUpdateManyWithoutReviewerNestedInput
+  createdSideEffects?: Prisma.SideEffectUncheckedUpdateManyWithoutCreatedByUserNestedInput
 }
 
 
@@ -2298,6 +2700,8 @@ export type UserCountOutputType = {
   uploadedReports: number
   diseaseWarningRules: number
   reviewedSuggestions: number
+  createdSideEffects: number
+  resolvedRequests: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -2309,6 +2713,8 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   uploadedReports?: boolean | UserCountOutputTypeCountUploadedReportsArgs
   diseaseWarningRules?: boolean | UserCountOutputTypeCountDiseaseWarningRulesArgs
   reviewedSuggestions?: boolean | UserCountOutputTypeCountReviewedSuggestionsArgs
+  createdSideEffects?: boolean | UserCountOutputTypeCountCreatedSideEffectsArgs
+  resolvedRequests?: boolean | UserCountOutputTypeCountResolvedRequestsArgs
 }
 
 /**
@@ -2377,6 +2783,20 @@ export type UserCountOutputTypeCountReviewedSuggestionsArgs<ExtArgs extends runt
   where?: Prisma.MedicineSuggestionWhereInput
 }
 
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountCreatedSideEffectsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.SideEffectWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountResolvedRequestsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.AddMedicineRequestWhereInput
+}
+
 
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -2404,6 +2824,8 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   uploadedReports?: boolean | Prisma.User$uploadedReportsArgs<ExtArgs>
   diseaseWarningRules?: boolean | Prisma.User$diseaseWarningRulesArgs<ExtArgs>
   reviewedSuggestions?: boolean | Prisma.User$reviewedSuggestionsArgs<ExtArgs>
+  createdSideEffects?: boolean | Prisma.User$createdSideEffectsArgs<ExtArgs>
+  resolvedRequests?: boolean | Prisma.User$resolvedRequestsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -2469,6 +2891,8 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   uploadedReports?: boolean | Prisma.User$uploadedReportsArgs<ExtArgs>
   diseaseWarningRules?: boolean | Prisma.User$diseaseWarningRulesArgs<ExtArgs>
   reviewedSuggestions?: boolean | Prisma.User$reviewedSuggestionsArgs<ExtArgs>
+  createdSideEffects?: boolean | Prisma.User$createdSideEffectsArgs<ExtArgs>
+  resolvedRequests?: boolean | Prisma.User$resolvedRequestsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -2489,6 +2913,8 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     uploadedReports: Prisma.$MedicalReportPayload<ExtArgs>[]
     diseaseWarningRules: Prisma.$DiseaseWarningRulePayload<ExtArgs>[]
     reviewedSuggestions: Prisma.$MedicineSuggestionPayload<ExtArgs>[]
+    createdSideEffects: Prisma.$SideEffectPayload<ExtArgs>[]
+    resolvedRequests: Prisma.$AddMedicineRequestPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: number
@@ -2910,6 +3336,8 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   uploadedReports<T extends Prisma.User$uploadedReportsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$uploadedReportsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MedicalReportPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   diseaseWarningRules<T extends Prisma.User$diseaseWarningRulesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$diseaseWarningRulesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DiseaseWarningRulePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   reviewedSuggestions<T extends Prisma.User$reviewedSuggestionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$reviewedSuggestionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MedicineSuggestionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  createdSideEffects<T extends Prisma.User$createdSideEffectsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$createdSideEffectsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SideEffectPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  resolvedRequests<T extends Prisma.User$resolvedRequestsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$resolvedRequestsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AddMedicineRequestPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3605,6 +4033,54 @@ export type User$reviewedSuggestionsArgs<ExtArgs extends runtime.Types.Extension
   take?: number
   skip?: number
   distinct?: Prisma.MedicineSuggestionScalarFieldEnum | Prisma.MedicineSuggestionScalarFieldEnum[]
+}
+
+/**
+ * User.createdSideEffects
+ */
+export type User$createdSideEffectsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the SideEffect
+   */
+  select?: Prisma.SideEffectSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the SideEffect
+   */
+  omit?: Prisma.SideEffectOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SideEffectInclude<ExtArgs> | null
+  where?: Prisma.SideEffectWhereInput
+  orderBy?: Prisma.SideEffectOrderByWithRelationInput | Prisma.SideEffectOrderByWithRelationInput[]
+  cursor?: Prisma.SideEffectWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.SideEffectScalarFieldEnum | Prisma.SideEffectScalarFieldEnum[]
+}
+
+/**
+ * User.resolvedRequests
+ */
+export type User$resolvedRequestsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the AddMedicineRequest
+   */
+  select?: Prisma.AddMedicineRequestSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the AddMedicineRequest
+   */
+  omit?: Prisma.AddMedicineRequestOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.AddMedicineRequestInclude<ExtArgs> | null
+  where?: Prisma.AddMedicineRequestWhereInput
+  orderBy?: Prisma.AddMedicineRequestOrderByWithRelationInput | Prisma.AddMedicineRequestOrderByWithRelationInput[]
+  cursor?: Prisma.AddMedicineRequestWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.AddMedicineRequestScalarFieldEnum | Prisma.AddMedicineRequestScalarFieldEnum[]
 }
 
 /**

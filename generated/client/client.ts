@@ -78,10 +78,25 @@ export type FamilyHistory = Prisma.FamilyHistoryModel
  */
 export type Lifestyle = Prisma.LifestyleModel
 /**
+ * Model PatientLifestyle
+ * 
+ */
+export type PatientLifestyle = Prisma.PatientLifestyleModel
+/**
  * Model Allergy
  * 
  */
 export type Allergy = Prisma.AllergyModel
+/**
+ * Model Operation
+ * 
+ */
+export type Operation = Prisma.OperationModel
+/**
+ * Model PatientSurgery
+ * 
+ */
+export type PatientSurgery = Prisma.PatientSurgeryModel
 /**
  * Model Doctor
  * 
@@ -198,6 +213,16 @@ export type AppSetting = Prisma.AppSettingModel
  */
 export type Session = Prisma.SessionModel
 /**
+ * Model SideEffect
+ * 
+ */
+export type SideEffect = Prisma.SideEffectModel
+/**
+ * Model TradeNameSideEffect
+ * 
+ */
+export type TradeNameSideEffect = Prisma.TradeNameSideEffectModel
+/**
  * Model Pharmacist
  * 
  */
@@ -257,3 +282,13 @@ export type MedicineSuggestion = Prisma.MedicineSuggestionModel
  * 
  */
 export type ExportHistory = Prisma.ExportHistoryModel
+/**
+ * Model PatientMedicine
+ * 
+ */
+export type PatientMedicine = Prisma.PatientMedicineModel
+/**
+ * Model AddMedicineRequest
+ * 
+ */
+export type AddMedicineRequest = Prisma.AddMedicineRequestModel
