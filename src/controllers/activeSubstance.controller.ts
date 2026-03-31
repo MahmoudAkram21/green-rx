@@ -79,14 +79,14 @@ export const listClassifications = async (
     const q = typeof req.query.q === "string" ? req.query.q.trim() : "";
     const rows = await prisma.classification.findMany({
       where: q ? { name: { contains: q, mode: "insensitive" } } : undefined,
-      select: { name: true },
+      select: { name: true, id: true },
       orderBy: { name: "asc" },
       take: 200,
     });
     const classifications = rows
-      .map((r) => r.name)
-      .filter((c): c is string => c != null && c !== "")
-      .sort((a, b) => a.localeCompare(b, undefined, { sensitivity: "base" }));
+      .map((r) => ({ name: r.name, id: r.id }))
+      .filter((c): c is { name: string, id: number } => c != null && c.name !== "" && c.id !== undefined)
+      .sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: "base" }));
     res.json({ classifications });
   } catch (error) {
     next(error);

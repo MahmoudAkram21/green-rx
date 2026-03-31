@@ -283,6 +283,8 @@ export const searchTradeNames = async (req: Request, res: Response, next: NextFu
             prisma.tradeName.count({ where: whereClause })
         ]);
 
+        
+
         res.json({
             tradeNames,
             pagination: {

@@ -116,22 +116,6 @@ enum PaymentStatus {
   Refunded
 }
 
-enum WarningSeverity {
-  Info
-  Low
-  Medium
-  High
-  Critical
-}
-
-enum WarningRuleType {
-  BLOCK_ACTIVE_SUBSTANCE
-  WARN_ACTIVE_SUBSTANCE
-  REQUIRE_MONITORING
-  ADJUST_DOSAGE
-  BLOCK_DRUG_CLASS
-  REQUIRE_SPECIALIST_APPROVAL
-}
 
 enum SuggestionStatus {
   Pending

@@ -1,0 +1,62 @@
+enum WarningSeverity {
+  Info
+  Low
+  Medium
+  High
+  Critical
+}
+
+
+enum WarningRuleType {
+  BLOCK_ACTIVE_SUBSTANCE
+  WARN_ACTIVE_SUBSTANCE
+  REQUIRE_MONITORING
+  ADJUST_DOSAGE
+  BLOCK_DRUG_CLASS
+  REQUIRE_SPECIALIST_APPROVAL
+}
+
+
+model DiseaseWarningRule {
+  id                      Int             @id @default(autoincrement())
+  diseaseId               Int
+  ruleType                WarningRuleType
+  targetActiveSubstanceId Int?
+  targetDrugClass         String?
+  severity                WarningSeverity
+  warningMessage          String
+  autoBlock               Boolean         @default(false)
+  requiresOverride        Boolean         @default(false)
+  requiredMonitoring      String?
+  createdBy               Int
+  createdAt               DateTime        @default(now())
+  updatedAt               DateTime        @updatedAt
+
+  // Relations
+  disease         Disease          @relation(fields: [diseaseId], references: [id], onDelete: Cascade)
+  activeSubstance ActiveSubstance? @relation(fields: [targetActiveSubstanceId], references: [id])
+  creator         User             @relation(fields: [createdBy], references: [id])
+
+  @@index([diseaseId])
+  @@index([ruleType])
+  @@index([severity])
+  @@map("disease_warning_rules")
+}
+model DiseaseActiveSubstanceWarning {
+  id                Int             @id @default(autoincrement())
+  diseaseId         Int
+  activeSubstanceId Int
+  warningFieldName  String // which ActiveSubstance field to check
+  warningMessage    String // custom warning message
+  severity          WarningSeverity
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+
+  // Relations
+  disease         Disease         @relation(fields: [diseaseId], references: [id], onDelete: Cascade)
+  activeSubstance ActiveSubstance @relation(fields: [activeSubstanceId], references: [id], onDelete: Cascade)
+
+  @@unique([diseaseId, activeSubstanceId])
+  @@index([warningFieldName])
+  @@map("disease_active_substance_warnings")
+}
