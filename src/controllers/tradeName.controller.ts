@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { prisma } from '../lib/prisma';
 import { createTradeNameSchema, updateTradeNameSchema } from '../zod/tradeName.zod';
 import { extractMedicineFromImage } from '../services/medicineImageExtraction.service';
+import { evaluateDrugSafety, loadPatientContext } from '../services/pharmaSafetyEngine.service';
 
 // Create Trade Name
 export const createTradeName = async (req: Request, res: Response, next: NextFunction) => {
@@ -195,7 +196,7 @@ export const searchTradeNamesByImage = async (req: Request, res: Response, next:
     }
 };
 
-// Search Trade Names — GET /trade-names/search?q=... Optional: activeSubstanceId, classification, dosageForm, companyId, isActive, availabilityStatus, page, limit.
+// Search Trade Names — GET /trade-names/search?q=... Optional: activeSubstanceId, classification, dosageForm, companyId, isActive, availabilityStatus, patientId, page, limit.
 export const searchTradeNames = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const {
@@ -208,6 +209,7 @@ export const searchTradeNames = async (req: Request, res: Response, next: NextFu
             companyId,
             isActive,
             availabilityStatus,
+            patientId,
             page = '1',
             limit = '20'
         } = req.query;
@@ -215,6 +217,7 @@ export const searchTradeNames = async (req: Request, res: Response, next: NextFu
         const query = (typeof q === 'string' ? q : typeof search === 'string' ? search : '').trim();
         const pageNum = Math.max(1, parseInt(String(page), 10) || 1);
         const limitNum = Math.min(100, Math.max(1, parseInt(String(limit), 10) || 20));
+        const resolvedPatientId = patientId ? parseInt(String(patientId), 10) : null;
 
         const whereClause: any = { isActive: true };
 
@@ -272,9 +275,15 @@ export const searchTradeNames = async (req: Request, res: Response, next: NextFu
                     activeSubstance: {
                         select: { id: true, name: true, classificationId: true, dosageForm: true }
                     },
-                    company: {
-                        select: { id: true, name: true }
-                    }
+                    company: { select: { id: true, name: true } },
+                    // Excipients needed for allergy check when patient context is present
+                    ...(resolvedPatientId
+                        ? {
+                              excipientTradeName: {
+                                  include: { excipient: { select: { id: true, name: true } } }
+                              }
+                          }
+                        : {})
                 },
                 skip,
                 take: limitNum,
@@ -283,10 +292,29 @@ export const searchTradeNames = async (req: Request, res: Response, next: NextFu
             prisma.tradeName.count({ where: whereClause })
         ]);
 
-        
+        // Attach safety status per result when patientId is provided.
+        // Patient context is loaded ONCE here and passed into every evaluateDrugSafety
+        // call to avoid an N+1 query (one DB hit per trade name result).
+        let tradeNamesWithSafety: any[] = tradeNames;
+        if (resolvedPatientId && !Number.isNaN(resolvedPatientId)) {
+            const preloadedPatient = await loadPatientContext(resolvedPatientId);
+            tradeNamesWithSafety = await Promise.all(
+                tradeNames.map(async (tn) => {
+                    const safetyStatus = await evaluateDrugSafety({
+                        patientId: resolvedPatientId,
+                        tradeNameId: tn.id,
+                        activeSubstanceId: (tn as any).activeSubstance?.id,
+                        preloadedPatient,
+                    });
+                    return { ...tn, safetyStatus };
+                })
+            );
+        } else {
+            tradeNamesWithSafety = tradeNames.map((tn) => ({ ...tn, safetyStatus: null }));
+        }
 
         res.json({
-            tradeNames,
+            tradeNames: tradeNamesWithSafety,
             pagination: {
                 total,
                 page: pageNum,

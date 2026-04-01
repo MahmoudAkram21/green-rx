@@ -56,6 +56,8 @@ async function main() {
   await prisma.rolePermission.deleteMany();
   await prisma.permission.deleteMany();
 
+  await prisma.diseaseBodySystemMapping.deleteMany();
+
   // P0: Delete tables that reference users BEFORE deleting users
   await prisma.diseaseWarningRule.deleteMany();
   await prisma.medicineSuggestion.deleteMany();
@@ -4403,6 +4405,329 @@ async function main() {
   console.log(`✅ Created ${medicineSuggestions.length} Medicine Suggestions`);
 
   // ============================================
+  // SECTION 12: SAFETY ENGINE TEST SCENARIOS
+  // ============================================
+  // 8 dedicated patients, each proving exactly ONE safety check.
+  //
+  //  A → RED   Check 1: Allergy              test.red.allergy@greenrx.com
+  //  B → RED   Check 2: Contraindication kw  test.red.contraind@greenrx.com
+  //  C → RED   Check 6: Drug Interaction     test.red.interaction@greenrx.com
+  //  D → RED   Check 7: Cancer Risk          test.red.cancer@greenrx.com
+  //  E → ORANGE Check 2: Body System Mapping test.orange.disease@greenrx.com
+  //  F → ORANGE Check 5: Surgical History    test.orange.surgery@greenrx.com
+  //  G → ORANGE Check 3: Family Disease      test.orange.family@greenrx.com
+  //  H → GREEN  (no conflicts at all)        test.green@greenrx.com
+  // ============================================
+  console.log("\n🧪 Creating Safety Engine test scenarios...");
+
+  // ── Step 1: Enrich active substances with engine test fields ──────────────
+
+  // Metformin → JSON contraindications containing "renal failure" keyword
+  await prisma.activeSubstance.update({
+    where: { id: activeSubstances[3].id },
+    data: {
+      contraindications: {
+        en: "Contraindicated in patients with severe renal failure, acute kidney injury, or eGFR < 30 mL/min/1.73m2. Kidney function must be assessed before initiation and monitored regularly.",
+        ar: "موانع في الفشل الكلوي الحاد وانخفاض معدل الترشيح الكبيبي",
+      },
+    },
+  });
+
+  // Ibuprofen → anticoagulant interaction JSON (HIGH_SEVERITY → RED when patient on warfarin)
+  await prisma.activeSubstance.update({
+    where: { id: activeSubstances[1].id },
+    data: {
+      interactionAnticoagulant: {
+        en: "Co-administration with warfarin or acenocoumarol significantly increases the risk of serious bleeding events, including gastrointestinal haemorrhage. Warfarin INR must be closely monitored and the warfarin dose adjusted accordingly.",
+        ar: "التفاعل مع مضادات التخثر يزيد خطر النزيف بشكل ملحوظ",
+      },
+    },
+  });
+
+  // Atorvastatin → carcinogenicity data (String field)
+  await prisma.activeSubstance.update({
+    where: { id: activeSubstances[6].id },
+    data: {
+      carcinogenicityMutagenicity:
+        "Animal studies at supratherapeutic doses showed hepatocellular adenomas in rats. Clinical relevance in patients with a family history of colorectal or liver cancer warrants careful risk-benefit assessment before long-term prescription.",
+    },
+  });
+
+  // Amlodipine → strengthen vascularWarning for body-system ORANGE test
+  await prisma.activeSubstance.update({
+    where: { id: activeSubstances[4].id },
+    data: {
+      vascularWarning:
+        "May cause peripheral vasodilation and dependent oedema. Use with caution in patients with pre-existing vascular disease or hypertension-related vasculopathy. Monitor blood pressure closely.",
+    },
+  });
+
+  // ── Step 2: Create Warfarin (needed for drug-interaction RED test) ─────────
+  const warfarinSubstance = await prisma.activeSubstance.create({
+    data: {
+      name: "Warfarin",
+      concentration: "5mg",
+      dosageForm: "Tablet",
+      indication: "Anticoagulation: prevention of thromboembolic events",
+      adultDoseMaxPerDay: "10mg",
+      pregnancyWarning: "Category X - Contraindicated (teratogenic, fetal haemorrhage)",
+    },
+  });
+
+  const warfarinTradeName = await prisma.tradeName.create({
+    data: {
+      title: "Coumadin",
+      activeSubstanceId: warfarinSubstance.id,
+      companyId: companies[0].id, // Pfizer
+      availabilityStatus: "InStock",
+    },
+  });
+
+  // ── Step 3: Enrich diseases with contraindicationKeywords + cancer flag ────
+
+  // CKD → keywords matching Metformin's contraindications text
+  await prisma.disease.update({
+    where: { id: diseases[5].id }, // Chronic Kidney Disease
+    data: {
+      contraindicationKeywords: ["renal failure", "kidney"],
+      requiresSpecialHandling: true,
+    },
+  });
+
+  // Hypertension → keywords (general use)
+  await prisma.disease.update({
+    where: { id: diseases[1].id }, // Hypertension
+    data: {
+      contraindicationKeywords: ["hypertension", "hypertensive"],
+    },
+  });
+
+  // New: Colorectal Cancer disease with triggersCancerCheck = true
+  const colonCancerDisease = await prisma.disease.create({
+    data: {
+      name: "Colorectal Cancer",
+      severity: "Severe",
+      description: "Malignant tumour of the colon or rectum",
+      triggersCancerCheck: true,
+    },
+  });
+
+  // ── Step 4: Body System Mappings (disease → ActiveSubstance warning field) ─
+  await prisma.diseaseBodySystemMapping.createMany({
+    data: [
+      { diseaseId: diseases[1].id,  fieldName: "vascularWarning"  }, // Hypertension → vascularWarning
+      { diseaseId: diseases[1].id,  fieldName: "cardiacWarning"   }, // Hypertension → cardiacWarning
+      { diseaseId: diseases[5].id,  fieldName: "renalWarning"     }, // CKD → renalWarning
+      { diseaseId: diseases[7].id,  fieldName: "cardiacWarning"   }, // Coronary Artery Disease → cardiacWarning
+      { diseaseId: diseases[0].id,  fieldName: "metabolismWarning"}, // Diabetes → metabolismWarning
+      { diseaseId: diseases[6].id,  fieldName: "immuneSystemWarning" }, // Allergic Rhinitis → immuneSystemWarning
+    ],
+    skipDuplicates: true,
+  });
+
+  // ── Step 5: Create 8 safety test patients ─────────────────────────────────
+
+  // ─ Patient A: RED via Allergy ─────────────────────────────────────────────
+  // Penicillin allergy (already linked to Amoxicillin activeSubstance)
+  // Expected: search Amoxil → RED
+  const testUserA = await prisma.user.create({
+    data: {
+      email: "test.red.allergy@greenrx.com",
+      name: "Test RED - Allergy",
+      passwordHash: hashedPassword,
+      role: "Patient",
+      isEmailVerified: true,
+      isActive: true,
+      patient: { create: { age: 34, ageClassification: "Adults", dateOfBirth: new Date("1991-06-15"), gender: "Female", weight: 65, height: 162 } },
+    },
+    include: { patient: true },
+  });
+  const allergyReportA = await prisma.patientAllergyReport.create({
+    data: { patientId: testUserA.patient!.id, reaction: "Anaphylaxis", notes: "Immediate hypersensitivity. EpiPen prescribed. Avoid all penicillin-class antibiotics." },
+  });
+  await prisma.patientAllergy.create({
+    data: { patientAllergyReportId: allergyReportA.id, allergenId: allergenPenicillin.id },
+  });
+
+  // ─ Patient B: RED via Contraindication Keyword ────────────────────────────
+  // Has CKD (contraindicationKeywords: ["renal failure","kidney"])
+  // Metformin contraindications text contains "renal failure"
+  // Expected: search Glucophage / Metformin → RED
+  const testUserB = await prisma.user.create({
+    data: {
+      email: "test.red.contraind@greenrx.com",
+      name: "Test RED - Contraindication",
+      passwordHash: hashedPassword,
+      role: "Patient",
+      isEmailVerified: true,
+      isActive: true,
+      patient: { create: { age: 56, ageClassification: "Adults", dateOfBirth: new Date("1969-02-20"), gender: "Male", weight: 82, height: 175 } },
+    },
+    include: { patient: true },
+  });
+  await prisma.patientDisease.create({
+    data: {
+      patientId: testUserB.patient!.id,
+      diseaseId: diseases[5].id, // CKD
+      diagnosisDate: new Date("2020-04-10"),
+      severity: "Severe",
+      notes: "eGFR: 22 mL/min/1.73m2. Stage 4 CKD. Nephrology follow-up.",
+    },
+  });
+
+  // ─ Patient C: RED via Drug Interaction (HIGH_SEVERITY anticoagulant) ──────
+  // Currently on Warfarin (ongoing PatientMedicine)
+  // Ibuprofen.interactionAnticoagulant contains "warfarin" → HIGH_SEVERITY → RED
+  // Expected: search Brufen / Ibuprofen → RED
+  const testUserC = await prisma.user.create({
+    data: {
+      email: "test.red.interaction@greenrx.com",
+      name: "Test RED - Drug Interaction",
+      passwordHash: hashedPassword,
+      role: "Patient",
+      isEmailVerified: true,
+      isActive: true,
+      patient: { create: { age: 49, ageClassification: "Adults", dateOfBirth: new Date("1976-10-03"), gender: "Male", weight: 78, height: 178 } },
+    },
+    include: { patient: true },
+  });
+  await prisma.patientMedicine.create({
+    data: {
+      patientId: testUserC.patient!.id,
+      tradeNameId: warfarinTradeName.id,
+      activeSubstanceId: warfarinSubstance.id,
+      medicineName: "Coumadin (Warfarin 5mg)",
+      dosageAmount: 1,
+      frequencyCount: 1,
+      frequencyPeriod: 1,
+      frequencyUnit: "Days",
+      isOngoing: true,
+      notes: "Anticoagulation for atrial fibrillation. INR target 2.0–3.0. Monthly INR monitoring.",
+    },
+  });
+
+  // ─ Patient D: RED via Cancer Risk ─────────────────────────────────────────
+  // Father had Colorectal Cancer (triggersCancerCheck = true)
+  // Atorvastatin has carcinogenicityMutagenicity text → RED
+  // Expected: search Lipitor / Atorvastatin → RED
+  const testUserD = await prisma.user.create({
+    data: {
+      email: "test.red.cancer@greenrx.com",
+      name: "Test RED - Cancer Risk",
+      passwordHash: hashedPassword,
+      role: "Patient",
+      isEmailVerified: true,
+      isActive: true,
+      patient: { create: { age: 43, ageClassification: "Adults", dateOfBirth: new Date("1982-09-12"), gender: "Female", weight: 68, height: 165 } },
+    },
+    include: { patient: true },
+  });
+  await prisma.familyHistory.create({
+    data: {
+      patientId: testUserD.patient!.id,
+      diseaseId: colonCancerDisease.id,
+      relation: "Father",
+      severity: "Severe",
+      notes: "Father diagnosed with colorectal cancer at age 61. Underwent hemicolectomy.",
+    },
+  });
+
+  // ─ Patient E: ORANGE via Disease Body System Mapping ──────────────────────
+  // Has Hypertension (mapped to vascularWarning)
+  // Amlodipine.vascularWarning has content → ORANGE
+  // Expected: search Norvasc / Amlodipine → ORANGE
+  const testUserE = await prisma.user.create({
+    data: {
+      email: "test.orange.disease@greenrx.com",
+      name: "Test ORANGE - Disease Body System",
+      passwordHash: hashedPassword,
+      role: "Patient",
+      isEmailVerified: true,
+      isActive: true,
+      patient: { create: { age: 51, ageClassification: "Adults", dateOfBirth: new Date("1974-03-28"), gender: "Male", weight: 90, height: 180 } },
+    },
+    include: { patient: true },
+  });
+  await prisma.patientDisease.create({
+    data: {
+      patientId: testUserE.patient!.id,
+      diseaseId: diseases[1].id, // Hypertension → vascularWarning mapping
+      diagnosisDate: new Date("2017-11-05"),
+      severity: "Moderate",
+      notes: "Essential hypertension diagnosed 2017. Currently unmedicated, lifestyle management only.",
+    },
+  });
+
+  // ─ Patient F: ORANGE via Surgical History ────────────────────────────────
+  // Recent liver surgery (THREE_MONTHS) → ORGAN_TO_WARNING_FIELD: liver → hepaticWarning
+  // Atorvastatin.hepaticWarning = "Monitor liver enzymes" → ORANGE
+  // Expected: search Lipitor / Atorvastatin → ORANGE
+  const testUserF = await prisma.user.create({
+    data: {
+      email: "test.orange.surgery@greenrx.com",
+      name: "Test ORANGE - Surgical History",
+      passwordHash: hashedPassword,
+      role: "Patient",
+      isEmailVerified: true,
+      isActive: true,
+      patient: { create: { age: 46, ageClassification: "Adults", dateOfBirth: new Date("1979-07-18"), gender: "Female", weight: 72, height: 167 } },
+    },
+    include: { patient: true },
+  });
+  await prisma.surgicalHistory.create({
+    data: {
+      patientId: testUserF.patient!.id,
+      organId: organLiver.id, // "Liver" → maps to hepaticWarning
+      surgeryTimeframe: "THREE_MONTHS",
+    },
+  });
+
+  // ─ Patient G: ORANGE via Family Disease History ───────────────────────────
+  // Mother had Coronary Artery Disease (CAD → cardiacWarning mapping)
+  // Amlodipine.cardiacWarning = "Monitor blood pressure" → family ORANGE
+  // Expected: search Norvasc / Amlodipine → ORANGE
+  const testUserG = await prisma.user.create({
+    data: {
+      email: "test.orange.family@greenrx.com",
+      name: "Test ORANGE - Family History",
+      passwordHash: hashedPassword,
+      role: "Patient",
+      isEmailVerified: true,
+      isActive: true,
+      patient: { create: { age: 39, ageClassification: "Adults", dateOfBirth: new Date("1986-12-01"), gender: "Male", weight: 83, height: 182 } },
+    },
+    include: { patient: true },
+  });
+  await prisma.familyHistory.create({
+    data: {
+      patientId: testUserG.patient!.id,
+      diseaseId: diseases[7].id, // Coronary Artery Disease → cardiacWarning
+      relation: "Mother",
+      severity: "Severe",
+      notes: "Mother underwent CABG (coronary artery bypass graft) at age 55.",
+    },
+  });
+
+  // ─ Patient H: GREEN — no conflicts ──────────────────────────────────────
+  // Healthy 25-year-old, zero allergies / diseases / meds / surgeries / family flags
+  // Expected: search Panadol / Paracetamol → GREEN
+  await prisma.user.create({
+    data: {
+      email: "test.green@greenrx.com",
+      name: "Test GREEN - No Conflicts",
+      passwordHash: hashedPassword,
+      role: "Patient",
+      isEmailVerified: true,
+      isActive: true,
+      patient: { create: { age: 25, ageClassification: "Adults", dateOfBirth: new Date("2001-04-10"), gender: "Female", weight: 58, height: 160 } },
+    },
+  });
+
+  console.log("✅ Created 8 Safety Engine test patients (A–H)");
+  console.log("✅ Updated Metformin contraindications, Ibuprofen anticoagulant interaction, Atorvastatin carcinogenicity, Amlodipine vascularWarning");
+  console.log("✅ Created DiseaseBodySystemMapping for Hypertension, CKD, CAD, Diabetes, Allergic Rhinitis");
+
+  // ============================================
   // FINAL SUMMARY
   // ============================================
   console.log("\n✨ Database seeded successfully!");
@@ -4449,6 +4774,15 @@ async function main() {
   console.log("   Doctor:     dr.smith@greenrx.com");
   console.log("   Pharmacist: pharmacist1@greenrx.com");
   console.log("   Patient:    patient1@greenrx.com");
+  console.log("\n🧪 Safety Engine Test Patients (password: Password@123):");
+  console.log("   [RED  - Allergy]           test.red.allergy@greenrx.com       → GET /trade-names/search?q=Amoxil&patientId={id}");
+  console.log("   [RED  - Contraindication]  test.red.contraind@greenrx.com     → GET /active-substances/search?search=Metformin&patientId={id}");
+  console.log("   [RED  - Drug Interaction]  test.red.interaction@greenrx.com   → GET /trade-names/search?q=Brufen&patientId={id}");
+  console.log("   [RED  - Cancer Risk]       test.red.cancer@greenrx.com        → GET /active-substances/search?search=Atorvastatin&patientId={id}");
+  console.log("   [ORANGE - Disease Body]    test.orange.disease@greenrx.com    → GET /trade-names/search?q=Norvasc&patientId={id}");
+  console.log("   [ORANGE - Surgical]        test.orange.surgery@greenrx.com    → GET /trade-names/search?q=Lipitor&patientId={id}");
+  console.log("   [ORANGE - Family History]  test.orange.family@greenrx.com     → GET /trade-names/search?q=Norvasc&patientId={id}");
+  console.log("   [GREEN  - No Conflicts]    test.green@greenrx.com             → GET /active-substances/search?search=Paracetamol&patientId={id}");
 }
 
 main()

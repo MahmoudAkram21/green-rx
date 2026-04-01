@@ -6,7 +6,6 @@ enum WarningSeverity {
   Critical
 }
 
-
 enum WarningRuleType {
   BLOCK_ACTIVE_SUBSTANCE
   WARN_ACTIVE_SUBSTANCE
@@ -14,6 +13,33 @@ enum WarningRuleType {
   ADJUST_DOSAGE
   BLOCK_DRUG_CLASS
   REQUIRE_SPECIALIST_APPROVAL
+}
+
+enum ActiveSubstanceWarningField {
+  vascularWarning
+  cardiacWarning
+  gitWarning
+  hepaticWarning
+  renalWarning
+  nervousSystemWarning
+  psychiatricWarning
+  pulmonaryWarning
+  metabolismWarning
+  bloodWarning
+  immuneSystemWarning
+  infectionWarning
+  musculoSkeletalWarning
+  skinConnectiveTissueWarning
+  eyeDisordersWarning
+  earDisordersWarning
+  electrolyteImbalanceWarning
+  reproductiveWarningFemale
+  reproductiveWarningMale
+  specialPopulationElderly
+  specialPopulationChildren
+  carcinogenicityMutagenicity
+  contraindications
+  medicationErrorWarning
 }
 
 
@@ -59,4 +85,16 @@ model DiseaseActiveSubstanceWarning {
   @@unique([diseaseId, activeSubstanceId])
   @@index([warningFieldName])
   @@map("disease_active_substance_warnings")
+}
+
+model DiseaseBodySystemMapping {
+  id        Int                        @id @default(autoincrement())
+  diseaseId Int
+  fieldName ActiveSubstanceWarningField
+
+  disease Disease @relation(fields: [diseaseId], references: [id], onDelete: Cascade)
+
+  @@unique([diseaseId, fieldName])
+  @@index([diseaseId])
+  @@map("disease_body_system_mappings")
 }

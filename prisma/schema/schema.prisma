@@ -369,6 +369,7 @@ model FamilyHistory {
   id        Int             @id @default(autoincrement())
   patientId Int
   diseaseId Int
+  relation  FamilyRelation  @default(Other)
   severity  DiseaseSeverity
   notes     String?
   createdAt DateTime        @default(now())

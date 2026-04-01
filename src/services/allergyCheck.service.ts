@@ -211,9 +211,8 @@ export async function checkAllergyConflicts(input: AllergyCheckInput): Promise<A
           reason: `Patient has a documented allergy to "${tn.tradeName.title}" which contains the same active substance.`,
         });
       }
-    })
-  }2
-    // Same active substance via a different recorded trade name
+    });
+  }
 
   // ── 3. Classification match ──────────────────────────────────────────────────
   if (activeSubstance?.classificationId) {

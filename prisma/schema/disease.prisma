@@ -21,9 +21,11 @@ model Disease {
   isActive    Boolean         @default(true)
 
   // Warning Configuration Fields
-  requiresSpecialHandling Boolean @default(false)
-  warningMessage          String?
-  warningConfig           Json?
+  requiresSpecialHandling  Boolean  @default(false)
+  warningMessage           String?
+  warningConfig            Json?
+  triggersCancerCheck      Boolean  @default(false)
+  contraindicationKeywords String[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -31,6 +33,7 @@ model Disease {
   // Relations
   diseaseActiveSubstanceWarnings DiseaseActiveSubstanceWarning[]
   diseaseWarningRules            DiseaseWarningRule[]
+  bodySystemMappings             DiseaseBodySystemMapping[]
   patientDiseases                PatientDisease[]
   medicalHistories               MedicalHistory[]
   familyHistories                FamilyHistory[]

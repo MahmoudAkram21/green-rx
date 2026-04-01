@@ -401,6 +401,7 @@ export const addFamilyHistory = async (
         const data = validatedItems.map((v) => ({
             patientId: parseInt(patientId),
             diseaseId: v.diseaseId,
+            relation: v.relation,
             severity: v.severity,
             notes: v.notes,
         }));

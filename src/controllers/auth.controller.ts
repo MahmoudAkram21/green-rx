@@ -382,9 +382,21 @@ export const verifyOtp = async (
         id: updatedUser.id,
         email: updatedUser.email,
         role: updatedUser.role,
-        ...(updatedUser.role === UserRole.Patient ? { patientId: updatedUser.patient?.id } : {}),
-        ...(updatedUser.role === UserRole.Doctor ? { doctorId: updatedUser.doctor?.id, isVerified: updatedUser.doctor?.isVerified } : {}),
-        ...(updatedUser.role === UserRole.Pharmacist ? { pharmacistId: updatedUser.pharmacist?.id, isVerified: updatedUser.pharmacist?.isVerified } : {}),
+        ...(updatedUser.role === UserRole.Patient
+          ? { patientId: updatedUser.patient?.id }
+          : {}),
+        ...(updatedUser.role === UserRole.Doctor
+          ? {
+              doctorId: updatedUser.doctor?.id,
+              isVerified: updatedUser.doctor?.isVerified,
+            }
+          : {}),
+        ...(updatedUser.role === UserRole.Pharmacist
+          ? {
+              pharmacistId: updatedUser.pharmacist?.id,
+              isVerified: updatedUser.pharmacist?.isVerified,
+            }
+          : {}),
       },
       accessToken,
       refreshToken,
@@ -417,13 +429,11 @@ export const resendOtp = async (
     });
 
     const otp = await sendOtpEmail(decoded.email, newOtpToken, decoded.userId);
-    res
-      .status(200)
-      .json({
-        message: "OTP resent successfully",
-        otpToken: newOtpToken,
-        otp,
-      });
+    res.status(200).json({
+      message: "OTP resent successfully",
+      otpToken: newOtpToken,
+      otp,
+    });
   } catch (error: any) {
     next(error);
   }
@@ -454,7 +464,14 @@ export const login = async (
 
     if (!user.isActive) {
       console.log("[Auth] 401 reason: user inactive:", email);
-      res.status(401).json({ error: "Invalid credentials" });
+      res
+        .status(200)
+        .json({
+          name: user?.name,
+          email: user?.email,
+          role: user?.role,
+          isActive: user?.isActive,
+        });
       return;
     }
 

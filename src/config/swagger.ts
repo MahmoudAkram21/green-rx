@@ -69,6 +69,13 @@ const PHARMACIST_TAGS = {
   RATINGS: 'Pharmacist - 5. Ratings',
 };
 
+/**
+ * Single Swagger section grouping ALL endpoints that participate in the Warning System:
+ * - Pharma Safety Engine safetyStatus (RED/ORANGE/GREEN + warnings + filteredData)
+ * - aggregated patient warnings / interaction alerts
+ */
+const WARNING_SYSTEM_SECTION = '⚠️ Warning System (Pharma Safety Engine)';
+
 const ADMIN_TAG = 'System & Admin';
 
 /** Optional custom responses: e.g. { 201: 'Created', 204: 'No Content' } */
@@ -119,7 +126,7 @@ s('/health', 'get', ADMIN_TAG, 'Health check', false);
 // AUTH  →  /api/auth/*
 // ═══════════════════════════════════════════════════
 s('/auth/register', 'post', AUTH_TAGS, 'Register a new user', false, [], { schemaRef: 'RegisterRequest' }, { '201': 'User created — OTP sent to email' }, 'RegisterResponse');
-s('/auth/login', 'post', AUTH_TAGS, 'Login and receive tokens', false, [], { schemaRef: 'LoginRequest' }, {}, 'LoginResponse');
+s('/auth/login', 'post', AUTH_TAGS, 'Login and receive tokens. Returns 200 with tokens on success. Returns 200 with { name, email, role, isActive: false } (no tokens) when account is deactivated — handle this case by showing an "account inactive" screen without storing tokens.', false, [], { schemaRef: 'LoginRequest' }, { '401': 'Invalid credentials (wrong email or password)' }, 'LoginResponse');
 s('/auth/refresh', 'post', AUTH_TAGS, 'Refresh access token', false, [], { schemaRef: 'RefreshTokenRequest' }, {}, 'RefreshTokenResponse');
 s('/auth/logout', 'post', AUTH_TAGS, 'Logout (invalidate token)', true, [], undefined, {}, 'MessageResponse');
 s('/auth/me', 'get', AUTH_TAGS, 'Get current authenticated user. When role is Patient, response includes full patient data (same as GET /patients/:id): user, medicalHistories, familyHistories, patientLifestyles, patientAllergies, childrenProfiles, patientDiseases, bodyMassIndex.', true, [], undefined, {}, 'AuthMeResponse');
@@ -191,7 +198,7 @@ s('/patients/{patientId}/children', 'post', PATIENT_TAGS.PROFILE, 'Add a child p
 s('/patients/children/{childId}', 'delete', PATIENT_TAGS.PROFILE, 'Delete a child profile', true, [p('childId')]);
 
 // PATIENTS — All warnings (aggregated for current prescriptions + self-reported medicines)
-s('/patients/{patientId}/warnings', 'get', [PATIENT_TAGS.DRUG_SAFETY, PATIENT_TAGS.MEDICATIONS, DOCTOR_PATIENTS_SECTION], 'Get all warnings for a patient (all types: allergies, disease, interactions, etc.) for current prescriptions and self-reported medicines', true, [p('patientId')]);
+s('/patients/{patientId}/warnings', 'get', [WARNING_SYSTEM_SECTION, PATIENT_TAGS.DRUG_SAFETY, PATIENT_TAGS.MEDICATIONS, DOCTOR_PATIENTS_SECTION], 'Get all warnings for a patient (all types: allergies, disease, interactions, etc.) for current prescriptions and self-reported medicines', true, [p('patientId')]);
 
 // DOCTORS
 s('/doctors', 'post', [DOCTOR_TAGS.MY_PATIENTS, DOCTOR_PATIENTS_SECTION], 'Create or update doctor profile', true, [], { schemaRef: 'CreateDoctorRequest' });
@@ -211,7 +218,7 @@ s('/doctors/{doctorId}/clinics', 'post', [DOCTOR_TAGS.MY_PATIENTS, DOCTOR_PATIEN
 s('/doctors/{doctorId}/clinics/{clinicId}', 'patch', [DOCTOR_TAGS.MY_PATIENTS, DOCTOR_PATIENTS_SECTION], 'Update a doctor clinic. Body: same as create, all optional.', true, [p('doctorId'), p('clinicId')], { schemaRef: 'UpdateDoctorClinicRequest' });
 s('/doctors/{doctorId}/clinics/{clinicId}', 'delete', [DOCTOR_TAGS.MY_PATIENTS, DOCTOR_PATIENTS_SECTION], 'Delete a doctor clinic', true, [p('doctorId'), p('clinicId')]);
 s('/doctors/{doctorId}/patients/search', 'get', [DOCTOR_TAGS.MY_PATIENTS, DOCTOR_PATIENTS_SECTION], 'Search for patient by name (among doctor\'s assigned patients only)', true, [p('doctorId'), q('name', 'Patient name or partial name to search (also accepts "q")')]);
-s('/doctors/{doctorId}/patients/warnings', 'get', [DOCTOR_TAGS.MY_PATIENTS, DOCTOR_PATIENTS_SECTION, DOCTOR_TAGS.DRUG_SAFETY], 'Get all warnings for patients linked to this doctor. Returns { warnings: [ { patientId, name, patientName, email, type, severity, message, ... } ] } — one entry per warning with patient info on each.', true, [p('doctorId')]);
+s('/doctors/{doctorId}/patients/warnings', 'get', [WARNING_SYSTEM_SECTION, DOCTOR_TAGS.MY_PATIENTS, DOCTOR_PATIENTS_SECTION, DOCTOR_TAGS.DRUG_SAFETY], 'Get all warnings for patients linked to this doctor. Returns { warnings: [ { patientId, name, patientName, email, type, severity, message, ... } ] } — one entry per warning with patient info on each.', true, [p('doctorId')]);
 s('/doctors/{doctorId}/patients/{patientId}', 'get', [DOCTOR_TAGS.MY_PATIENTS, DOCTOR_PATIENTS_SECTION], 'Get full details of a patient (profile, vitals, health status, visit files). Only for patients linked to this doctor.', true, [p('doctorId'), p('patientId')]);
 s('/doctors/{doctorId}/patients', 'get', [DOCTOR_TAGS.MY_PATIENTS, DOCTOR_PATIENTS_SECTION], 'Get patients assigned to doctor (My patients)', true, [p('doctorId')]);
 s('/doctors/{doctorId}/patients', 'post', [PATIENT_TAGS.SHARE_WITH_DOCTOR, DOCTOR_TAGS.MY_PATIENTS, DOCTOR_PATIENTS_SECTION], 'Assign a patient to doctor', true, [p('doctorId')], { schemaRef: 'AssignPatientRequest' });
@@ -295,9 +302,9 @@ s('/add-medicine-requests/{id}/resolve', 'patch', ADMIN_TAG, 'Resolve request: l
 s('/prescriptions', 'get', [PATIENT_TAGS.PRESCRIPTIONS, DOCTOR_TAGS.PRESCRIPTIONS, DOCTOR_PATIENTS_SECTION], 'List prescriptions scoped by role: Doctor sees only their own, Patient sees only theirs, Admin can filter freely via patientId/doctorId query params. Requires Doctor, Patient, or Admin role.', true, [q('patientId', 'Admin only — filter by patient ID'), q('doctorId', 'Admin only — filter by doctor ID')]);
 s('/prescriptions', 'post', [DOCTOR_TAGS.PRESCRIPTIONS, DOCTOR_PATIENTS_SECTION, DOCTOR_ADD_DRUG_SECTION], 'Create prescription. Doctor only. doctorId is resolved automatically from the JWT token (do NOT pass doctorId in body when calling as Doctor). Required: patientId, items or medicationPlan; each item: medicineName (required), tradeNameId?, activeSubstanceId?, dosageAmount?, frequencyCount?, durationValue?, etc. Runs drug-safety check. First Visit fields: conditionDiagnosis, initialCheckUp, testResultsOrScans, followUpAppointmentDate.', true, [], { schemaRef: 'CreatePrescriptionRequest' });
 s('/prescriptions/batch', 'post', [DOCTOR_TAGS.PRESCRIPTIONS, DOCTOR_PATIENTS_SECTION], 'Batch-create prescriptions: one Prescription per medicine, each with one PatientMedicine + PrescriptionMedicine. Runs drug-safety and batch-interaction checks. Doctor only. doctorId is resolved from JWT token — do NOT pass it in body.', true, [], { schemaRef: 'BatchPrescriptionsRequest' });
-s('/prescriptions/interactions/{alertId}/acknowledge', 'put', [PATIENT_TAGS.PRESCRIPTIONS, PATIENT_TAGS.DRUG_SAFETY, DOCTOR_TAGS.DRUG_SAFETY, DOCTOR_PATIENTS_SECTION], 'Acknowledge a drug interaction alert. The acknowledgedBy field (doctor or patient) is derived automatically from the caller\'s role — no need to pass it in the request body. Requires Doctor or Patient role.', true, [p('alertId')]);
+s('/prescriptions/interactions/{alertId}/acknowledge', 'put', [WARNING_SYSTEM_SECTION, PATIENT_TAGS.PRESCRIPTIONS, PATIENT_TAGS.DRUG_SAFETY, DOCTOR_TAGS.DRUG_SAFETY, DOCTOR_PATIENTS_SECTION], 'Acknowledge a drug interaction alert. The acknowledgedBy field (doctor or patient) is derived automatically from the caller\'s role — no need to pass it in the request body. Requires Doctor or Patient role.', true, [p('alertId')]);
 s('/prescriptions/{prescriptionId}/medicines', 'post', [DOCTOR_TAGS.PRESCRIPTIONS, DOCTOR_PATIENTS_SECTION, DOCTOR_ADD_DRUG_SECTION], 'Add one medicine to an existing prescription (draft). Doctor must own the prescription. Body: AddMedicineToPrescriptionRequest (medicineName required, tradeNameId?, activeSubstanceId?, dosageAmount?, frequencyCount?, durationValue?, etc.). Returns prescription with prescriptionMedicines and patientMedicine.', true, [p('prescriptionId')], { schemaRef: 'AddMedicineToPrescriptionRequest' });
-s('/prescriptions/{prescriptionId}/interactions', 'get', [PATIENT_TAGS.PRESCRIPTIONS, PATIENT_TAGS.DRUG_SAFETY, DOCTOR_TAGS.DRUG_SAFETY, DOCTOR_PATIENTS_SECTION], 'Get drug interaction alerts for a prescription. Requires Doctor (own prescriptions), Patient (own prescriptions), or Admin role.', true, [p('prescriptionId')]);
+s('/prescriptions/{prescriptionId}/interactions', 'get', [WARNING_SYSTEM_SECTION, PATIENT_TAGS.PRESCRIPTIONS, PATIENT_TAGS.DRUG_SAFETY, DOCTOR_TAGS.DRUG_SAFETY, DOCTOR_PATIENTS_SECTION], 'Get drug interaction alerts for a prescription. Requires Doctor (own prescriptions), Patient (own prescriptions), or Admin role.', true, [p('prescriptionId')]);
 s('/prescriptions/{id}', 'get', [PATIENT_TAGS.PRESCRIPTIONS, DOCTOR_TAGS.PRESCRIPTIONS, DOCTOR_PATIENTS_SECTION], 'Get prescription by ID. Ownership enforced: Doctor must own it, Patient must be the subject. Response includes prescriptionMedicines (sortOrder) with nested patientMedicine (tradeName, activeSubstance, dosageAmount, frequencyCount, durationValue, notes).', true, [p('id')]);
 s('/prescriptions/{id}', 'put', [DOCTOR_TAGS.PRESCRIPTIONS, DOCTOR_PATIENTS_SECTION], 'Update a prescription. Doctor must own the prescription. Requires Doctor or Admin role.', true, [p('id')], { schemaRef: 'UpdatePrescriptionRequest' });
 s('/prescriptions/{id}', 'delete', [DOCTOR_TAGS.PRESCRIPTIONS, DOCTOR_PATIENTS_SECTION], 'Soft-delete a prescription (sets status to Cancelled). Doctor must own the prescription. Requires Doctor or Admin role.', true, [p('id')]);
@@ -368,31 +375,31 @@ s('/notifications/{id}', 'delete', [PATIENT_TAGS.NOTIFICATIONS, DOCTOR_TAGS.NOTI
 s('/notifications/appointment-reminders', 'post', ADMIN_TAG, 'Trigger appointment reminder notifications');
 
 // BATCH NUMBER CHECK (trade name can have many batch numbers in BatchHistory)
-s('/batch-check/trade-name/{tradeNameId}', 'get', [PATIENT_TAGS.MEDICATIONS, PATIENT_TAGS.DRUG_SAFETY, ADMIN_TAG], 'List all batch numbers for a trade name. A trade name can have many batches (e.g. last 3 months from contracted companies). Returns tradeNameId, count, and batches array. Requires authentication.', true, [p('tradeNameId')]);
-s('/batch-check', 'post', [PATIENT_TAGS.MEDICATIONS, PATIENT_TAGS.DRUG_SAFETY], 'Check if a batch number is approved (in our database). Send batchNumber in body or upload image of batch section for AI extraction. Returns status: approved | recalled | not_in_database. Requires authentication. Batch numbers are stored per trade name (one trade name has many batch numbers).', true, []);
+s('/batch-check/trade-name/{tradeNameId}', 'get', [WARNING_SYSTEM_SECTION, PATIENT_TAGS.MEDICATIONS, PATIENT_TAGS.DRUG_SAFETY, ADMIN_TAG], 'List all batch numbers for a trade name. A trade name can have many batches (e.g. last 3 months from contracted companies). Returns tradeNameId, count, and batches array. Requires authentication.', true, [p('tradeNameId')]);
+s('/batch-check', 'post', [WARNING_SYSTEM_SECTION, PATIENT_TAGS.MEDICATIONS, PATIENT_TAGS.DRUG_SAFETY], 'Check if a batch number is approved (in our database). Send batchNumber in body or upload image of batch section for AI extraction. Returns status: approved | recalled | not_in_database. Requires authentication. Batch numbers are stored per trade name (one trade name has many batch numbers).', true, []);
 
 // DRUG INTERACTIONS
-s('/drug-interactions/check-by-trade-name', 'post', [DOCTOR_TAGS.DRUG_SAFETY, PATIENT_TAGS.DRUG_SAFETY, DOCTOR_PATIENTS_SECTION], 'Run full warning check for a drug by trade name ID. Returns blocked flag and all warnings (allergy, disease, lifestyle, pregnancy, lactation, age, organ, drug-drug). Doctor: any patient; Patient: own patientId only.', true, [], { schemaRef: 'CheckByTradeNameRequest' });
-s('/drug-interactions/check', 'post', [DOCTOR_TAGS.DRUG_SAFETY, DOCTOR_PATIENTS_SECTION], 'Check drug safety before prescribing', true, [], { schemaRef: 'DrugSafetyCheckRequest' });
-s('/drug-interactions/prescription/{prescriptionId}', 'get', [PATIENT_TAGS.DRUG_SAFETY, DOCTOR_TAGS.DRUG_SAFETY, DOCTOR_PATIENTS_SECTION], 'Get interaction alerts for a prescription', false, [p('prescriptionId')]);
-s('/drug-interactions/patient/{patientId}', 'get', [PATIENT_TAGS.DRUG_SAFETY, DOCTOR_PATIENTS_SECTION], 'Get prescription-linked drug interaction alerts only (stored DrugInteractionAlert for this patient). For aggregated warnings including self-reported medicines use GET /patients/:patientId/warnings.', true, [p('patientId')]);
-s('/drug-interactions/{id}/acknowledge-doctor', 'patch', [DOCTOR_TAGS.DRUG_SAFETY, DOCTOR_PATIENTS_SECTION], 'Doctor acknowledges an interaction alert', false, [p('id')]);
-s('/drug-interactions/{id}/acknowledge-patient', 'patch', PATIENT_TAGS.DRUG_SAFETY, 'Patient acknowledges an interaction alert', false, [p('id')]);
+s('/drug-interactions/check-by-trade-name', 'post', [WARNING_SYSTEM_SECTION, DOCTOR_TAGS.DRUG_SAFETY, PATIENT_TAGS.DRUG_SAFETY, DOCTOR_PATIENTS_SECTION], 'Run full warning check for a drug by trade name ID. Returns blocked flag and all warnings (allergy, disease, lifestyle, pregnancy, lactation, age, organ, drug-drug). Doctor: any patient; Patient: own patientId only.', true, [], { schemaRef: 'CheckByTradeNameRequest' });
+s('/drug-interactions/check', 'post', [WARNING_SYSTEM_SECTION, DOCTOR_TAGS.DRUG_SAFETY, DOCTOR_PATIENTS_SECTION], 'Check drug safety before prescribing', true, [], { schemaRef: 'DrugSafetyCheckRequest' });
+s('/drug-interactions/prescription/{prescriptionId}', 'get', [WARNING_SYSTEM_SECTION, PATIENT_TAGS.DRUG_SAFETY, DOCTOR_TAGS.DRUG_SAFETY, DOCTOR_PATIENTS_SECTION], 'Get interaction alerts for a prescription', false, [p('prescriptionId')]);
+s('/drug-interactions/patient/{patientId}', 'get', [WARNING_SYSTEM_SECTION, PATIENT_TAGS.DRUG_SAFETY, DOCTOR_PATIENTS_SECTION], 'Get prescription-linked drug interaction alerts only (stored DrugInteractionAlert for this patient). For aggregated warnings including self-reported medicines use GET /patients/:patientId/warnings.', true, [p('patientId')]);
+s('/drug-interactions/{id}/acknowledge-doctor', 'patch', [WARNING_SYSTEM_SECTION, DOCTOR_TAGS.DRUG_SAFETY, DOCTOR_PATIENTS_SECTION], 'Doctor acknowledges an interaction alert', false, [p('id')]);
+s('/drug-interactions/{id}/acknowledge-patient', 'patch', [WARNING_SYSTEM_SECTION, PATIENT_TAGS.DRUG_SAFETY], 'Patient acknowledges an interaction alert', false, [p('id')]);
 
 // ADVERSE DRUG REACTIONS
-s('/adverse-drug-reactions', 'post', PATIENT_TAGS.DRUG_SAFETY, 'Report an adverse drug reaction', true, [], { schemaRef: 'CreateAdrRequest' });
+s('/adverse-drug-reactions', 'post', [WARNING_SYSTEM_SECTION, PATIENT_TAGS.DRUG_SAFETY], 'Report an adverse drug reaction', true, [], { schemaRef: 'CreateAdrRequest' });
 s('/adverse-drug-reactions', 'get', ADMIN_TAG, 'Get all ADRs (Admin)');
 s('/adverse-drug-reactions/statistics/summary', 'get', ADMIN_TAG, 'Get ADR statistics summary');
-s('/adverse-drug-reactions/patient/{patientId}', 'get', PATIENT_TAGS.DRUG_SAFETY, 'Get all ADRs for a patient', false, [p('patientId')]);
-s('/adverse-drug-reactions/drug/{drugType}/{drugId}', 'get', [PATIENT_TAGS.DRUG_SAFETY, DOCTOR_TAGS.DRUG_SAFETY], 'Get ADRs for a specific drug', false, [ps('drugType'), p('drugId')]);
-s('/adverse-drug-reactions/{id}', 'get', PATIENT_TAGS.DRUG_SAFETY, 'Get ADR by ID', false, [p('id')]);
-s('/adverse-drug-reactions/{id}', 'patch', PATIENT_TAGS.DRUG_SAFETY, 'Update ADR record', false, [p('id')], { schemaRef: 'UpdateAdrRequest' });
+s('/adverse-drug-reactions/patient/{patientId}', 'get', [WARNING_SYSTEM_SECTION, PATIENT_TAGS.DRUG_SAFETY], 'Get all ADRs for a patient', false, [p('patientId')]);
+s('/adverse-drug-reactions/drug/{drugType}/{drugId}', 'get', [WARNING_SYSTEM_SECTION, PATIENT_TAGS.DRUG_SAFETY, DOCTOR_TAGS.DRUG_SAFETY], 'Get ADRs for a specific drug', false, [ps('drugType'), p('drugId')]);
+s('/adverse-drug-reactions/{id}', 'get', [WARNING_SYSTEM_SECTION, PATIENT_TAGS.DRUG_SAFETY], 'Get ADR by ID', false, [p('id')]);
+s('/adverse-drug-reactions/{id}', 'patch', [WARNING_SYSTEM_SECTION, PATIENT_TAGS.DRUG_SAFETY], 'Update ADR record', false, [p('id')], { schemaRef: 'UpdateAdrRequest' });
 
 // MEDICINE SUGGESTIONS
-s('/medicine-suggestions', 'get', [DOCTOR_TAGS.DRUG_SAFETY, ADMIN_TAG], 'List medicine suggestions (Doctor sees own, Admin sees all)', true, [q('status')]);
-s('/medicine-suggestions', 'post', DOCTOR_TAGS.DRUG_SAFETY, 'Create a medicine suggestion (Doctor only)', true, [], { schemaRef: 'CreateMedicineSuggestionRequest' });
-s('/medicine-suggestions/{id}', 'get', [DOCTOR_TAGS.DRUG_SAFETY, ADMIN_TAG], 'Get suggestion by ID', true, [p('id')]);
-s('/medicine-suggestions/{id}', 'delete', DOCTOR_TAGS.DRUG_SAFETY, 'Delete a suggestion', true, [p('id')]);
+s('/medicine-suggestions', 'get', [WARNING_SYSTEM_SECTION, DOCTOR_TAGS.DRUG_SAFETY, ADMIN_TAG], 'List medicine suggestions (Doctor sees own, Admin sees all)', true, [q('status')]);
+s('/medicine-suggestions', 'post', [WARNING_SYSTEM_SECTION, DOCTOR_TAGS.DRUG_SAFETY], 'Create a medicine suggestion (Doctor only)', true, [], { schemaRef: 'CreateMedicineSuggestionRequest' });
+s('/medicine-suggestions/{id}', 'get', [WARNING_SYSTEM_SECTION, DOCTOR_TAGS.DRUG_SAFETY, ADMIN_TAG], 'Get suggestion by ID', true, [p('id')]);
+s('/medicine-suggestions/{id}', 'delete', [WARNING_SYSTEM_SECTION, DOCTOR_TAGS.DRUG_SAFETY], 'Delete a suggestion', true, [p('id')]);
 s('/medicine-suggestions/{id}/review', 'patch', ADMIN_TAG, 'Review / approve suggestion (Admin)', true, [p('id')], { schemaRef: 'ReviewMedicineSuggestionRequest' });
 
 // ACTIVE SUBSTANCES
@@ -400,16 +407,16 @@ s('/active-substances', 'post', ADMIN_TAG, 'Create an active substance (Admin/Co
 s('/active-substances/classifications', 'get', [DOCTOR_ADD_DRUG_SECTION, DOCTOR_TAGS.PRESCRIPTIONS], 'Step 1: Search classifications for the active substance (dropdown / autocomplete). Doctor only.', true, [q('q', 'Filter classifications by substring (case-insensitive)')]);
 s('/active-substances/concentrations', 'get', [DOCTOR_ADD_DRUG_SECTION, DOCTOR_TAGS.PRESCRIPTIONS], 'List concentrations (Conc for this API). Optional: q, classification, activeSubstanceId. Returns { concentrations: string[] }. Doctor only.', true, [q('q'), q('classification'), q('activeSubstanceId')]);
 s('/active-substances/dosage-forms', 'get', [DOCTOR_ADD_DRUG_SECTION, DOCTOR_TAGS.PRESCRIPTIONS], 'Step 3: List dosage forms (optionally filtered by classification and/or selected active substance). Doctor only.', true, [q('q'), q('classification'), q('activeSubstanceId')]);
-s('/active-substances/search', 'get', [DOCTOR_ADD_DRUG_SECTION, DOCTOR_TAGS.PRESCRIPTIONS], 'Step 2: Search API (active substance) by classification; use selected classification from Step 1. Doctor only.', true, [q('q'), q('classification', 'Filter by classification (alias: therapeuticClass)'), q('therapeuticClass'), q('page'), q('limit')]);
+s('/active-substances/search', 'get', [WARNING_SYSTEM_SECTION, DOCTOR_ADD_DRUG_SECTION, DOCTOR_TAGS.PRESCRIPTIONS, PATIENT_TAGS.DRUG_SAFETY], 'Search active substances. Pass optional **patientId** to receive a `safetyStatus` on every result (statusColor RED/ORANGE/GREEN, blocked flag, warnings array, filteredData). Without patientId, safetyStatus is null. Patient context is pre-loaded once to avoid N+1 queries.', true, [q('search', 'Search by name or classification'), q('q', 'Alias for search'), q('classification', 'Filter by classification (alias: therapeuticClass)'), q('therapeuticClass'), q('patientId', 'Optional. Patient ID — enables real-time Pharma Safety Engine evaluation for each result.'), q('page'), q('limit')]);
 s('/active-substances/{id}', 'get', [PATIENT_TAGS.MEDICATIONS, PHARMACIST_TAGS.MEDICATIONS_SEARCH], 'Get active substance by ID', true, [p('id')]);
 s('/active-substances/{id}', 'put', ADMIN_TAG, 'Update active substance (Admin/Company)', true, [p('id')], { schemaRef: 'UpdateActiveSubstanceRequest' });
 s('/active-substances/{id}', 'delete', ADMIN_TAG, 'Delete active substance (Admin)', true, [p('id')]);
-s('/active-substances/{id}/interactions', 'get', [PATIENT_TAGS.DRUG_SAFETY, DOCTOR_TAGS.DRUG_SAFETY], 'Get all drug interactions for substance', true, [p('id')]);
+s('/active-substances/{id}/interactions', 'get', [WARNING_SYSTEM_SECTION, PATIENT_TAGS.DRUG_SAFETY, DOCTOR_TAGS.DRUG_SAFETY], 'Get all drug interactions for substance', true, [p('id')]);
 
 // TRADE NAMES
 s('/trade-names', 'get', [PATIENT_TAGS.MEDICATIONS, PHARMACIST_TAGS.MEDICATIONS_SEARCH], 'List all trade names');
 s('/trade-names', 'post', ADMIN_TAG, 'Create a trade name (Admin/Company)', true, [], { schemaRef: 'CreateTradeNameRequest' });
-s('/trade-names/search', 'get', [DOCTOR_ADD_DRUG_SECTION, DOCTOR_TAGS.PRESCRIPTIONS], 'Step 4: Get trade names matching classification, API, concentration, dosage form. Doctor only.', true, [q('q', 'Search text (title or active substance)'), q('search', 'Alias for q'), q('activeSubstanceId'), q('classification'), q('dosageForm'), q('concentration', 'Filter by active substance concentration e.g. 5 mg'), q('companyId'), q('isActive'), q('availabilityStatus', 'InStock | OutOfStock | Discontinued | Pending'), q('page'), q('limit')]);
+s('/trade-names/search', 'get', [WARNING_SYSTEM_SECTION, DOCTOR_ADD_DRUG_SECTION, DOCTOR_TAGS.PRESCRIPTIONS, PATIENT_TAGS.DRUG_SAFETY], 'Search trade names. Pass optional **patientId** to receive a `safetyStatus` on every result (statusColor RED/ORANGE/GREEN, blocked flag, warnings array, filteredData). When patientId is provided, excipients are also fetched for allergy checks and patient context is pre-loaded once. Without patientId, safetyStatus is null.', true, [q('q', 'Search text (title or active substance name)'), q('search', 'Alias for q'), q('activeSubstanceId'), q('classification'), q('dosageForm'), q('concentration', 'Filter by active substance concentration e.g. 5 mg'), q('companyId'), q('isActive'), q('availabilityStatus', 'InStock | OutOfStock | Discontinued | Pending'), q('patientId', 'Optional. Patient ID — enables real-time Pharma Safety Engine evaluation for each result.'), q('page'), q('limit')]);
   s('/trade-names/search-by-image', 'post', [PATIENT_TAGS.MEDICATIONS, PHARMACIST_TAGS.MEDICATIONS_SEARCH, DOCTOR_TAGS.PRESCRIPTIONS], 'Search for trade names by image. Upload a medicine package image; AI extracts trade name and active substance, then returns matching trade names from the database.', true);
   s('/trade-names/{id}', 'get', [PATIENT_TAGS.MEDICATIONS, PHARMACIST_TAGS.MEDICATIONS_SEARCH], 'Get trade name by ID', true, [p('id')]);
 s('/trade-names/{id}', 'put', ADMIN_TAG, 'Update trade name (Admin/Company)', true, [p('id')], { schemaRef: 'UpdateTradeNameRequest' });
@@ -421,8 +428,14 @@ s('/diseases', 'post', ADMIN_TAG, 'Create a disease (Admin)', true, [], { schema
 s('/diseases/{id}', 'get', [PATIENT_TAGS.CURRENT_DISEASES, ADMIN_TAG], 'Get disease by ID', true, [p('id')]);
 s('/diseases/{id}', 'put', ADMIN_TAG, 'Update disease (Admin)', true, [p('id')], { schemaRef: 'UpdateDiseaseRequest' });
 s('/diseases/{id}', 'delete', ADMIN_TAG, 'Delete disease (Admin)', true, [p('id')]);
-s('/diseases/warnings', 'post', ADMIN_TAG, 'Create a disease warning rule (Admin)', true, [], { schemaRef: 'CreateDiseaseWarningRequest' });
+s('/diseases/warnings', 'post', ADMIN_TAG, 'Create a disease–drug warning mapping (Admin)', true, [], { schemaRef: 'CreateDiseaseWarningRequest' });
 s('/diseases/{diseaseId}/warnings', 'get', [PATIENT_TAGS.CURRENT_DISEASES, ADMIN_TAG], 'Get all warnings for a disease', true, [p('diseaseId')]);
+
+// Body System Mappings — configure which ActiveSubstance warning fields the Safety Engine checks for each disease
+s('/diseases/{diseaseId}/body-system-mappings', 'get', ADMIN_TAG, 'List all body-system-mappings for a disease. The Safety Engine uses these to know which warning field on the ActiveSubstance to check when a patient has this disease.', true, [p('diseaseId')]);
+s('/diseases/body-system-mappings', 'post', ADMIN_TAG, 'Add a single body-system-mapping (Admin). Maps one disease to one ActiveSubstance warning field (e.g. Hypertension → vascularWarning).', true, [], { schemaRef: 'CreateBodySystemMappingRequest' }, { '201': 'Mapping created', '409': 'Mapping already exists for this disease+field' });
+s('/diseases/body-system-mappings/bulk', 'put', ADMIN_TAG, 'Bulk-replace all body-system-mappings for a disease (Admin). Atomically deletes existing mappings and inserts the new set. Ideal for the admin UI "save all" action.', true, [], { schemaRef: 'BulkBodySystemMappingRequest' });
+s('/diseases/body-system-mappings/{id}', 'delete', ADMIN_TAG, 'Remove a single body-system-mapping by its ID (Admin)', true, [p('id')], undefined, { '200': 'Deleted', '404': 'Mapping not found' });
 
 // DISEASE WARNING RULES
 s('/disease-warning-rules', 'get', ADMIN_TAG, 'Get all warning rules (Admin)');
@@ -710,6 +723,56 @@ if (paths['/batch-check/trade-name/{tradeNameId}']?.get) {
   };
 }
 
+// POST /auth/login: document both 200 cases with named examples
+if (paths['/auth/login']?.post) {
+  paths['/auth/login'].post.responses['200'] = {
+    description: 'Login result. Two distinct shapes: **success** (tokens + user) or **inactive account** (isActive: false, no tokens). Always check `isActive` before storing tokens.',
+    content: {
+      'application/json': {
+        examples: {
+          success_patient: {
+            summary: 'Successful login — Patient',
+            value: {
+              message: 'Login successful',
+              accessToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
+              refreshToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
+              user: { id: 12, email: 'patient@greenrx.com', role: 'Patient', patientId: 5 }
+            }
+          },
+          success_doctor: {
+            summary: 'Successful login — Doctor',
+            value: {
+              message: 'Login successful',
+              accessToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
+              refreshToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
+              user: { id: 7, email: 'dr.smith@greenrx.com', role: 'Doctor', doctorId: 2, isVerified: true }
+            }
+          },
+          success_pharmacist: {
+            summary: 'Successful login — Pharmacist',
+            value: {
+              message: 'Login successful',
+              accessToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
+              refreshToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
+              user: { id: 9, email: 'pharmacist@greenrx.com', role: 'Pharmacist', pharmacistId: 3, isVerified: true }
+            }
+          },
+          account_inactive: {
+            summary: '⚠️ Account deactivated — NO tokens returned',
+            description: 'The account exists but isActive is false. The client must NOT store tokens (none are returned). Show an "account suspended / contact support" message.',
+            value: {
+              name: 'John Doe',
+              email: 'john@greenrx.com',
+              role: 'Patient',
+              isActive: false
+            }
+          }
+        }
+      }
+    }
+  };
+}
+
 // GET /auth/me: document 200 response with user fields including name
 if (paths['/auth/me']?.get) {
   paths['/auth/me'].get.responses['200'] = {
@@ -731,6 +794,68 @@ if (paths['/doctors/me/stats']?.get) {
   paths['/doctors/me/stats'].get.responses['200'] = {
     description: 'Doctor statistics (patients, prescriptions, consultations, appointments, visits, ratings, clinics, averageRating).',
     content: { 'application/json': { schema: { $ref: '#/components/schemas/DoctorMeStatsResponse' } } }
+  };
+}
+
+// GET /active-substances/search: document 200 response (with safetyStatus shape)
+if (paths['/active-substances/search']?.get) {
+  paths['/active-substances/search'].get.responses['200'] = {
+    description: 'Paginated list of active substances. Each item includes a `safetyStatus` field (SafetyEvalResult) when patientId is supplied, otherwise null.',
+    content: {
+      'application/json': {
+        schema: {
+          type: 'object',
+          properties: {
+            substances: {
+              type: 'array',
+              items: {
+                allOf: [
+                  { $ref: '#/components/schemas/ActiveSubstance' },
+                  {
+                    type: 'object',
+                    properties: {
+                      safetyStatus: { $ref: '#/components/schemas/SafetyEvalResult' }
+                    }
+                  }
+                ]
+              }
+            },
+            pagination: { $ref: '#/components/schemas/Pagination' }
+          }
+        }
+      }
+    }
+  };
+}
+
+// GET /trade-names/search: document 200 response (with safetyStatus shape)
+if (paths['/trade-names/search']?.get) {
+  paths['/trade-names/search'].get.responses['200'] = {
+    description: 'Paginated list of trade names. Each item includes a `safetyStatus` field (SafetyEvalResult) when patientId is supplied, otherwise null.',
+    content: {
+      'application/json': {
+        schema: {
+          type: 'object',
+          properties: {
+            tradeNames: {
+              type: 'array',
+              items: {
+                allOf: [
+                  { $ref: '#/components/schemas/TradeName' },
+                  {
+                    type: 'object',
+                    properties: {
+                      safetyStatus: { $ref: '#/components/schemas/SafetyEvalResult' }
+                    }
+                  }
+                ]
+              }
+            },
+            pagination: { $ref: '#/components/schemas/Pagination' }
+          }
+        }
+      }
+    }
   };
 }
 
@@ -759,6 +884,7 @@ const options: Record<string, unknown> = {
     ],
     tags: [
       { name: ADMIN_TAG, description: 'Health, users, admin, settings, import/export' },
+      { name: WARNING_SYSTEM_SECTION, description: 'All endpoints that participate in the Warning System / Pharma Safety Engine (safetyStatus RED/ORANGE/GREEN, warnings, blocked, filteredData) + interaction alerts + ADR.' },
       { name: PATIENT_TAGS.AUTH, description: 'Authentication (Patient)' },
       { name: PATIENT_TAGS.PROFILE, description: 'Personal info and profile' },
       { name: PATIENT_TAGS.ALLERGIES, description: 'Allergies' },
@@ -803,31 +929,39 @@ const options: Record<string, unknown> = {
           type: 'object',
           properties: {
             message:  { type: 'string', example: 'User registered successfully and OTP sent to email' },
-            otpToken: { type: 'string', description: 'Short-lived JWT. Use as Bearer token when calling POST /otp/verify and POST /otp/resend.', example: 'eyJhbGci...' },
+            otpToken: { type: 'string', description: 'Short-lived JWT. Use as Bearer token when calling POST /otp/verify and POST /otp/resend.', example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...' },
             otp:      { type: 'integer', description: 'Dev/staging only — the actual OTP for quick testing. Not present in production.', example: 482910 }
+          },
+          example: {
+            message: 'User registered successfully and OTP sent to email',
+            otpToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
+            otp: 482910
           }
         },
         RefreshTokenResponse: {
           description: 'Returns a new access token. Use it to replace the expired one in subsequent requests.',
           type: 'object',
           properties: {
-            accessToken: { type: 'string', example: 'eyJhbGci...' }
-          }
+            accessToken: { type: 'string', example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...' }
+          },
+          example: { accessToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...' }
         },
         ResendOtpResponse: {
           description: 'Returned after successfully resending the OTP. Use the new otpToken as Bearer token for the next POST /otp/verify call.',
           type: 'object',
           properties: {
             message:  { type: 'string', example: 'OTP resent successfully' },
-            otpToken: { type: 'string', description: 'New short-lived JWT replacing the previous one.', example: 'eyJhbGci...' }
-          }
+            otpToken: { type: 'string', description: 'New short-lived JWT replacing the previous one.', example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...' }
+          },
+          example: { message: 'OTP resent successfully', otpToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...' }
         },
         MessageResponse: {
           description: 'Simple message response (e.g. logout).',
           type: 'object',
           properties: {
             message: { type: 'string', example: 'Logged out successfully' }
-          }
+          },
+          example: { message: 'Logged out successfully' }
         },
 
         // ── Auth request bodies
@@ -836,8 +970,8 @@ const options: Record<string, unknown> = {
           type: 'object',
           required: ['email', 'password'],
           properties: {
-            email:           { type: 'string', format: 'email', example: 'user@example.com', description: 'Required.' },
-            password:        { type: 'string', minLength: 6, example: 'secret123', description: 'Required. Min 6 characters.' },
+            email:           { type: 'string', format: 'email', example: 'patient@greenrx.com', description: 'Required.' },
+            password:        { type: 'string', minLength: 6, example: 'Password@123', description: 'Required. Min 6 characters.' },
             role:            { type: 'string', enum: ['Patient', 'Doctor', 'Pharmacist', 'Admin', 'SuperAdmin'], default: 'Patient', description: 'Optional. Default: Patient.' },
             name:            { type: 'string', minLength: 2, example: 'John Doe', description: 'Required when role=Doctor or Pharmacist.' },
             phone:           { type: 'string', example: '+201145441141', description: 'Optional. E.164 format.' },
@@ -845,44 +979,67 @@ const options: Record<string, unknown> = {
             specialization:  { type: 'string', description: 'Required when role=Doctor. Omit for Pharmacist.' },
             licenseImage:    { type: 'string', format: 'binary', description: 'Required when role=Pharmacist or Doctor. License image file (PNG, JPG, etc., max 10MB). Server stores it under uploads/pharmacist-licenses/ (Pharmacist) or uploads/doctor-licenses/ (Doctor) and saves the file URL as licenseImageUrl on the Pharmacist/Doctor profile.' },
             licenseImageUrl: { type: 'string', readOnly: true, description: 'Set by server from uploaded licenseImage. Do not send when registering. After registration, the stored URL is available on the Pharmacist/Doctor profile (e.g. GET /pharmacists or GET /doctors/me).' }
-          }
+          },
+          example: { email: 'patient@greenrx.com', password: 'Password@123', role: 'Patient', name: 'John Doe', phone: '+201145441141' }
         },
         LoginRequest: {
           description: 'Authenticate and get tokens. Required: email, password. Response includes accessToken, refreshToken, user (id, email, role, etc.). When role is Patient, user also includes patientId (use for /patients/me or /patients/:patientId).',
           type: 'object',
           required: ['email', 'password'],
           properties: {
-            email:    { type: 'string', format: 'email', example: 'user@example.com', description: 'Required.' },
-            password: { type: 'string', example: 'secret123', description: 'Required.' }
-          }
+            email:    { type: 'string', format: 'email', example: 'patient@greenrx.com', description: 'Required.' },
+            password: { type: 'string', example: 'Password@123', description: 'Required.' }
+          },
+          example: { email: 'patient@greenrx.com', password: 'Password@123' }
         },
         LoginResponse: {
-          description: 'Login and register response. user.patientId when role is Patient; user.doctorId and user.isVerified when role is Doctor; user.pharmacistId and user.isVerified when role is Pharmacist. isVerified indicates whether the admin has verified the doctor/pharmacist.',
+          description: 'Login result. **Two possible shapes**: (1) Success — includes accessToken, refreshToken, and user object. (2) Inactive account — includes name, email, role, and isActive: false with NO tokens. Always check isActive before storing tokens. user.patientId when role is Patient; user.doctorId and user.isVerified when role is Doctor; user.pharmacistId and user.isVerified when role is Pharmacist.',
           type: 'object',
           properties: {
-            accessToken:  { type: 'string' },
-            refreshToken: { type: 'string' },
-            user:         {
+            message:      { type: 'string', example: 'Login successful' },
+            accessToken:  { type: 'string', example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...' },
+            refreshToken: { type: 'string', example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...' },
+            user: {
               type: 'object',
               properties: {
-                id:          { type: 'integer' },
-                email:       { type: 'string' },
-                role:        { type: 'string' },
-                patientId:   { type: 'integer', description: 'Present when role is Patient.' },
-                doctorId:    { type: 'integer', description: 'Present when role is Doctor.' },
-                pharmacistId: { type: 'integer', description: 'Present when role is Pharmacist.' },
-                isVerified:  { type: 'boolean', description: 'Present when role is Doctor or Pharmacist. True if admin has verified the profile.' }
+                id:           { type: 'integer', example: 12 },
+                email:        { type: 'string', example: 'patient@greenrx.com' },
+                role:         { type: 'string', example: 'Patient' },
+                patientId:    { type: 'integer', example: 5, description: 'Present when role is Patient.' },
+                doctorId:     { type: 'integer', example: 2, description: 'Present when role is Doctor.' },
+                pharmacistId: { type: 'integer', example: 3, description: 'Present when role is Pharmacist.' },
+                isVerified:   { type: 'boolean', example: true, description: 'Present when role is Doctor or Pharmacist. True if admin has verified the profile.' }
               }
-            }
+            },
+            name:     { type: 'string', example: 'John Doe', description: 'Only present in inactive-account response.' },
+            isActive: { type: 'boolean', example: false, description: 'Only present in inactive-account response. Always false here.' }
+          },
+          example: {
+            message: 'Login successful',
+            accessToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
+            refreshToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
+            user: { id: 12, email: 'patient@greenrx.com', role: 'Patient', patientId: 5 }
           }
+        },
+        InactiveLoginResponse: {
+          description: 'Returned when the account exists but is deactivated (isActive=false). HTTP 200 but NO tokens. Client must show an "account suspended" message and must NOT store tokens.',
+          type: 'object',
+          properties: {
+            name:     { type: 'string', example: 'John Doe' },
+            email:    { type: 'string', example: 'john@greenrx.com' },
+            role:     { type: 'string', example: 'Patient' },
+            isActive: { type: 'boolean', example: false }
+          },
+          example: { name: 'John Doe', email: 'john@greenrx.com', role: 'Patient', isActive: false }
         },
         RefreshTokenRequest: {
           description: 'Get a new access token. Required: refreshToken (from login/register response).',
           type: 'object',
           required: ['refreshToken'],
           properties: {
-            refreshToken: { type: 'string', example: 'eyJhbGci...', description: 'Required.' }
-          }
+            refreshToken: { type: 'string', example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...', description: 'Required.' }
+          },
+          example: { refreshToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...' }
         },
         VerifyOtpRequest: {
           description: 'Submit the 6-digit OTP received by email. Send the otpToken returned from POST /auth/register as a Bearer token in the Authorization header. On success the account is activated and a full session (accessToken + refreshToken) is returned.',
@@ -890,42 +1047,54 @@ const options: Record<string, unknown> = {
           required: ['otp'],
           properties: {
             otp: { type: 'integer', minimum: 100000, maximum: 999999, example: 482910, description: 'The 6-digit numeric OTP sent to the registered email.' }
-          }
+          },
+          example: { otp: 482910 }
         },
         VerifyOtpResponse: {
           description: 'Successful OTP verification. Returns a full auth session identical to the login response.',
           type: 'object',
           properties: {
             message:      { type: 'string', example: 'OTP verified successfully' },
-            accessToken:  { type: 'string' },
-            refreshToken: { type: 'string' },
+            accessToken:  { type: 'string', example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...' },
+            refreshToken: { type: 'string', example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...' },
             user: {
               type: 'object',
               properties: {
-                id:           { type: 'integer' },
-                email:        { type: 'string' },
+                id:           { type: 'integer', example: 12 },
+                email:        { type: 'string', example: 'patient@greenrx.com' },
                 role:         { type: 'string', example: 'Patient' },
-                patientId:    { type: 'integer', description: 'Present when role is Patient.' },
-                doctorId:     { type: 'integer', description: 'Present when role is Doctor.' },
-                pharmacistId: { type: 'integer', description: 'Present when role is Pharmacist.' },
-                isVerified:   { type: 'boolean', description: 'Present when role is Doctor or Pharmacist.' }
+                patientId:    { type: 'integer', example: 5, description: 'Present when role is Patient.' },
+                doctorId:     { type: 'integer', example: 2, description: 'Present when role is Doctor.' },
+                pharmacistId: { type: 'integer', example: 3, description: 'Present when role is Pharmacist.' },
+                isVerified:   { type: 'boolean', example: true, description: 'Present when role is Doctor or Pharmacist.' }
               }
             }
+          },
+          example: {
+            message: 'OTP verified successfully',
+            accessToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
+            refreshToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
+            user: { id: 12, email: 'patient@greenrx.com', role: 'Patient', patientId: 5 }
           }
         },
         AuthMeResponse: {
           description: 'Current authenticated user (GET /auth/me). When role is Patient, patient contains full profile (same structure as GET /patients/:id): user, medicalHistories, familyHistories, patientLifestyles, patientAllergies, childrenProfiles, patientDiseases, bodyMassIndex.',
           type: 'object',
           properties: {
-            id:        { type: 'integer', description: 'User ID.' },
-            email:     { type: 'string', description: 'User email.' },
-            name:      { type: 'string', nullable: true, description: 'Display name (e.g. set at registration).' },
-            role:      { type: 'string', enum: ['Patient', 'Doctor', 'Pharmacist', 'Admin', 'SuperAdmin'] },
-            isActive:  { type: 'boolean' },
-            createdAt: { type: 'string', format: 'date-time' },
+            id:        { type: 'integer', example: 12, description: 'User ID.' },
+            email:     { type: 'string', example: 'patient@greenrx.com', description: 'User email.' },
+            name:      { type: 'string', nullable: true, example: 'John Doe', description: 'Display name (e.g. set at registration).' },
+            role:      { type: 'string', enum: ['Patient', 'Doctor', 'Pharmacist', 'Admin', 'SuperAdmin'], example: 'Patient' },
+            isActive:  { type: 'boolean', example: true },
+            createdAt: { type: 'string', format: 'date-time', example: '2025-01-15T10:30:00.000Z' },
             patient:   { type: 'object', nullable: true, description: 'When role is Patient: full patient profile (same as GET /patients/:id): user, medicalHistories, familyHistories, patientLifestyles, patientAllergies, childrenProfiles, patientDiseases, bodyMassIndex.' },
             doctor:    { type: 'object', nullable: true, description: 'Doctor profile if role is Doctor.' },
             pharmacist: { type: 'object', nullable: true, description: 'Pharmacist profile if role is Pharmacist.' }
+          },
+          example: {
+            id: 12, email: 'patient@greenrx.com', name: 'John Doe', role: 'Patient', isActive: true, createdAt: '2025-01-15T10:30:00.000Z',
+            patient: { id: 5, gender: 'Male', age: 45, ageClassification: 'Adults', height: 175, weight: 80, bodyMassIndex: 26.1, patientDiseases: [], medicalHistories: [], familyHistories: [], patientLifestyles: [], allergyReports: [] },
+            doctor: null, pharmacist: null
           }
         },
         CreatePatientRequest: {
@@ -933,25 +1102,26 @@ const options: Record<string, unknown> = {
           type: 'object',
           required: ['userId', 'gender'],
           properties: {
-            userId:           { type: 'integer', description: 'Required. From GET /auth/me or register response.' },
-            gender:           { type: 'string', enum: ['Male', 'Female', 'Other'], description: 'Required.' },
-            dateOfBirth:      { type: 'string', format: 'date-time', description: 'Optional. ISO 8601. When provided, age and ageClassification are computed by the backend.' },
-            age:              { type: 'integer', minimum: 0, maximum: 150, description: 'Optional. Ignored if dateOfBirth is provided. Fallback when dateOfBirth not sent.' },
-            ageClassification: { type: 'string', enum: ['Neonates', 'Infants', 'Toddlers', 'Children', 'Adolescents', 'Adults', 'Elderly'], description: 'Optional. Computed from dateOfBirth when provided.' },
-            height:           { type: 'number', description: 'Optional. Height in cm. With weight, used to compute bodyMassIndex in responses.' },
-            weight:           { type: 'number', description: 'Optional. Weight in kg. With height, used to compute bodyMassIndex in responses.' },
+            userId:           { type: 'integer', example: 12, description: 'Required. From GET /auth/me or register response.' },
+            gender:           { type: 'string', enum: ['Male', 'Female', 'Other'], example: 'Male', description: 'Required.' },
+            dateOfBirth:      { type: 'string', format: 'date-time', example: '1980-06-15T00:00:00.000Z', description: 'Optional. ISO 8601. When provided, age and ageClassification are computed by the backend.' },
+            age:              { type: 'integer', minimum: 0, maximum: 150, example: 45, description: 'Optional. Ignored if dateOfBirth is provided. Fallback when dateOfBirth not sent.' },
+            ageClassification: { type: 'string', enum: ['Neonates', 'Infants', 'Toddlers', 'Children', 'Adolescents', 'Adults', 'Elderly'], example: 'Adults', description: 'Optional. Computed from dateOfBirth when provided.' },
+            height:           { type: 'number', example: 175, description: 'Optional. Height in cm. With weight, used to compute bodyMassIndex in responses.' },
+            weight:           { type: 'number', example: 80, description: 'Optional. Weight in kg. With height, used to compute bodyMassIndex in responses.' },
             bloodType:        { type: 'string', example: 'A+', description: 'Optional. e.g. A+, A-, B+, B-, AB+, AB-, O+, O-' },
-            pregnancyWarning: { type: 'boolean', default: false, description: 'Optional.' },
-            pregnancyStatus:  { type: 'boolean', description: 'Optional.' },
-            trimester:        { type: 'integer', minimum: 1, maximum: 3, description: 'Optional. 1–3.' },
-            lactation:        { type: 'boolean', default: false, description: 'Optional.' },
-            contracipient:    { type: 'boolean', description: 'Optional. Female only.' },
-            isContracipientHormonal: { type: 'boolean', description: 'Optional. Female only.' },
-          }
+            pregnancyWarning: { type: 'boolean', example: false, default: false, description: 'Optional.' },
+            pregnancyStatus:  { type: 'boolean', example: false, description: 'Optional.' },
+            trimester:        { type: 'integer', minimum: 1, maximum: 3, example: 2, description: 'Optional. 1–3.' },
+            lactation:        { type: 'boolean', example: false, default: false, description: 'Optional.' },
+            contracipient:    { type: 'boolean', example: false, description: 'Optional. Female only.' },
+            isContracipientHormonal: { type: 'boolean', example: false, description: 'Optional. Female only.' },
+          },
+          example: { userId: 12, gender: 'Male', dateOfBirth: '1980-06-15T00:00:00.000Z', height: 175, weight: 80, bloodType: 'A+' }
         },
         // ── User
-        CreateUserRequest: { type: 'object', required: ['email', 'role'], properties: { email: { type: 'string', format: 'email' }, passwordHash: { type: 'string' }, role: { type: 'string', enum: ['Patient', 'Doctor', 'Pharmacist', 'Admin', 'SuperAdmin'] } } },
-        UpdateUserRequest: { description: 'All fields optional. Send only fields to update.', type: 'object', properties: { email: { type: 'string', format: 'email' }, isActive: { type: 'boolean' } } },
+        CreateUserRequest: { type: 'object', required: ['email', 'role'], properties: { email: { type: 'string', format: 'email', example: 'admin@greenrx.com' }, passwordHash: { type: 'string', example: '$2b$10$...' }, role: { type: 'string', enum: ['Patient', 'Doctor', 'Pharmacist', 'Admin', 'SuperAdmin'], example: 'Admin' } }, example: { email: 'admin@greenrx.com', role: 'Admin' } },
+        UpdateUserRequest: { description: 'All fields optional. Send only fields to update.', type: 'object', properties: { email: { type: 'string', format: 'email', example: 'newemail@greenrx.com' }, isActive: { type: 'boolean', example: true } }, example: { isActive: true } },
         // ── Patient profile & history
         DiseaseSeverity: {
           type: 'string',
@@ -968,257 +1138,291 @@ const options: Record<string, unknown> = {
           type: 'object',
           required: ['diseaseId', 'severity', 'status'],
           properties: {
-            diseaseId:    { type: 'integer', description: 'Required. Get IDs from GET /diseases.' },
+            diseaseId:    { type: 'integer', example: 3, description: 'Required. Get IDs from GET /diseases.' },
             severity:     { $ref: '#/components/schemas/DiseaseSeverity', description: 'Required.' },
             status:       { $ref: '#/components/schemas/DiseaseStatus', description: 'Required.' },
-            diagnosisDate: { type: 'string', format: 'date-time', description: 'Optional.' },
-            treatment:    { type: 'string', description: 'Optional.' },
-            notes:        { type: 'string', description: 'Optional.' }
-          }
+            diagnosisDate: { type: 'string', format: 'date-time', example: '2020-03-10T00:00:00.000Z', description: 'Optional.' },
+            treatment:    { type: 'string', example: 'Metformin 500mg twice daily', description: 'Optional.' },
+            notes:        { type: 'string', example: 'Well controlled with diet', description: 'Optional.' }
+          },
+          example: { diseaseId: 3, severity: 'Moderate', status: 'Chronic', diagnosisDate: '2020-03-10T00:00:00.000Z', treatment: 'Metformin 500mg twice daily' }
         },
         BatchMedicalHistoryRequest: {
           description: 'One or more medical history entries. Send a single object to add one disease, or an array of objects to add multiple diseases in one request. Each entry: diseaseId, severity, status required; diagnosisDate, treatment, notes optional. Get diseaseId from GET /diseases.',
           type: 'array',
           minItems: 1,
-          items: { $ref: '#/components/schemas/MedicalHistoryRequest' }
+          items: { $ref: '#/components/schemas/MedicalHistoryRequest' },
+          example: [{ diseaseId: 3, severity: 'Moderate', status: 'Chronic' }, { diseaseId: 7, severity: 'Mild', status: 'Active' }]
         },
 
         FamilyHistoryRequest: {
-          description: 'One family history entry. Required: diseaseId, severity. Optional: notes. Get diseaseId from GET /diseases.',
+          description: 'One family history entry. Required: diseaseId, severity. Optional: relation (defaults to Other), notes. Get diseaseId from GET /diseases. **Note:** only Father and Mother relations trigger the Pharma Safety Engine family-disease check. Setting triggersCancerCheck=true on a disease + Father or Mother relation activates the Cancer Risk (RED) check.',
           type: 'object',
           required: ['diseaseId', 'severity'],
           properties: {
-            diseaseId: { type: 'integer', description: 'Required. Get IDs from GET /diseases.' },
-            severity: { $ref: '#/components/schemas/DiseaseSeverity', description: 'Required.' },
-            notes: { type: 'string', description: 'Optional.' },
-          }
+            diseaseId: { type: 'integer', example: 8, description: 'Required. Get IDs from GET /diseases.' },
+            relation:  { type: 'string', enum: ['Father','Mother','Sibling','GrandParent','Uncle','Aunt','Cousin','Other'], example: 'Father', default: 'Other', description: 'Optional. Defaults to Other. Only Father and Mother are evaluated by the Safety Engine family-disease and cancer-risk checks.' },
+            severity:  { $ref: '#/components/schemas/DiseaseSeverity', description: 'Required.' },
+            notes:     { type: 'string', example: 'Diagnosed at age 60', description: 'Optional.' },
+          },
+          example: { diseaseId: 8, relation: 'Father', severity: 'Severe', notes: 'Diagnosed at age 60' }
         },
-        BatchFamilyHistoryRequest: { type: 'array', minItems: 1, items: { $ref: '#/components/schemas/FamilyHistoryRequest' }, description: 'Send multiple family history entries in one request. Body: array of FamilyHistoryRequest.' },
+        BatchFamilyHistoryRequest: { type: 'array', minItems: 1, items: { $ref: '#/components/schemas/FamilyHistoryRequest' }, description: 'Send multiple family history entries in one request. Body: array of FamilyHistoryRequest.', example: [{ diseaseId: 8, relation: 'Father', severity: 'Severe' }, { diseaseId: 10, relation: 'Mother', severity: 'Moderate' }] },
         SurgicalHistoryRequest: {
           description: 'One surgical history entry. Required: organId (from GET /operations). Use "me" as patientId for the logged-in patient.',
           type: 'object',
           required: ['organId', 'surgeryTimeframe'],
           properties: {
-            organId:  { type: 'integer', description: 'Required. ID from GET /operations.' },
-            surgeryTimeframe:  { type: 'string', enum: ['THREE_MONTHS', 'SIX_MONTHS', 'MORE_THAN_SIX_MONTHS'], description: 'Required. Surgery timeframe.' }
-          }
+            organId:  { type: 'integer', example: 2, description: 'Required. ID from GET /operations.' },
+            surgeryTimeframe:  { type: 'string', enum: ['THREE_MONTHS', 'SIX_MONTHS', 'MORE_THAN_SIX_MONTHS'], example: 'THREE_MONTHS', description: 'Required. Surgery timeframe.' }
+          },
+          example: { organId: 2, surgeryTimeframe: 'THREE_MONTHS' }
         },
         BatchSurgicalHistoryRequest: {
           description: 'One or more surgical history entries. Send a single object or array. Each entry: organId required. GET /patients/:id/surgeries returns each entry with organ: { id, name }.',
           type: 'array',
           minItems: 1,
-          items: { $ref: '#/components/schemas/SurgicalHistoryRequest' }
+          items: { $ref: '#/components/schemas/SurgicalHistoryRequest' },
+          example: [{ organId: 2, surgeryTimeframe: 'THREE_MONTHS' }, { organId: 5, surgeryTimeframe: 'SIX_MONTHS' }]
         },
         UpdateSurgicalHistoryRequest: {
           description: 'Update a surgical history entry. Required: organId from GET /operations, surgeryTimeframe.',
           type: 'object',
           required: ['organId', 'surgeryTimeframe'],
           properties: {
-            organId: { type: 'integer', description: 'Required. ID from GET /operations.' },
-            surgeryTimeframe: { type: 'string', enum: ['THREE_MONTHS', 'SIX_MONTHS', 'MORE_THAN_SIX_MONTHS'], description: 'Required. Surgery timeframe.' }
-          }
+            organId: { type: 'integer', example: 2, description: 'Required. ID from GET /operations.' },
+            surgeryTimeframe: { type: 'string', enum: ['THREE_MONTHS', 'SIX_MONTHS', 'MORE_THAN_SIX_MONTHS'], example: 'SIX_MONTHS', description: 'Required. Surgery timeframe.' }
+          },
+          example: { organId: 2, surgeryTimeframe: 'SIX_MONTHS' }
         },
         CreateLifestyleRequest: {
           description: 'Create lifestyle question (catalog). activeSubstanceField must be one of the ActiveSubstance field names used for warnings (e.g. interactionAlcohol, interactionXanthines). See backend enum ACTIVE_SUBSTANCE_LIFESTYLE_FIELDS.',
           type: 'object',
           required: ['question', 'activeSubstanceField'],
-          properties: { question: { type: 'string', description: 'e.g. Alcohol use' }, activeSubstanceField: { type: 'string', description: 'Field on ActiveSubstance to check when adding a medicine (enum)' } }
+          properties: { question: { type: 'string', example: 'Do you drink alcohol regularly?' }, activeSubstanceField: { type: 'string', example: 'interactionAlcohol', description: 'Field on ActiveSubstance to check when adding a medicine (enum)' } },
+          example: { question: 'Do you drink alcohol regularly?', activeSubstanceField: 'interactionAlcohol' }
         },
         UpdateLifestyleRequest: {
           description: 'Update lifestyle question. All fields optional.',
           type: 'object',
-          properties: { question: { type: 'string' }, activeSubstanceField: { type: 'string' } }
+          properties: { question: { type: 'string', example: 'Do you smoke?' }, activeSubstanceField: { type: 'string', example: 'interactionXanthines' } },
+          example: { question: 'Do you smoke?' }
         },
         PatientLifestyleItemRequest: {
           description: 'One lifestyle answer. lifestyleId from GET /lifestyles, value = boolean.',
           type: 'object',
           required: ['lifestyleId'],
-          properties: { lifestyleId: { type: 'integer' }, value: { type: 'boolean', default: false } }
+          properties: { lifestyleId: { type: 'integer', example: 1 }, value: { type: 'boolean', example: true, default: false } },
+          example: { lifestyleId: 1, value: true }
         },
         BatchPatientLifestyleRequest: {
           description: 'Array of { lifestyleId, value }. Upserts patient lifestyle answers.',
           type: 'array',
           minItems: 1,
-          items: { $ref: '#/components/schemas/PatientLifestyleItemRequest' }
+          items: { $ref: '#/components/schemas/PatientLifestyleItemRequest' },
+          example: [{ lifestyleId: 1, value: true }, { lifestyleId: 2, value: false }]
         },
         Operation: {
           description: 'Organ (admin-managed). Returned from GET /operations and used in Add Surgeries dropdown.',
           type: 'object',
-          properties: { id: { type: 'integer' }, name: { type: 'string' }, createdAt: { type: 'string', format: 'date-time' }, updatedAt: { type: 'string', format: 'date-time' } }
+          properties: { id: { type: 'integer', example: 2 }, name: { type: 'string', example: 'Liver' }, createdAt: { type: 'string', format: 'date-time', example: '2025-01-01T00:00:00.000Z' }, updatedAt: { type: 'string', format: 'date-time', example: '2025-01-01T00:00:00.000Z' } },
+          example: { id: 2, name: 'Liver', createdAt: '2025-01-01T00:00:00.000Z', updatedAt: '2025-01-01T00:00:00.000Z' }
         },
         CreateOperationRequest: {
           description: 'Create organ. Required: name.',
           type: 'object',
           required: ['name'],
-          properties: { name: { type: 'string', description: 'Organ name (e.g. Heart, Liver, Kidney)' } }
+          properties: { name: { type: 'string', example: 'Kidney', description: 'Organ name (e.g. Heart, Liver, Kidney)' } },
+          example: { name: 'Kidney' }
         },
         UpdateOperationRequest: {
           description: 'Update organ. All fields optional.',
           type: 'object',
-          properties: { name: { type: 'string' } }
+          properties: { name: { type: 'string', example: 'Right Kidney' } },
+          example: { name: 'Right Kidney' }
         },
-        ChildProfileRequest: { type: 'object', required: ['name', 'dateOfBirth', 'gender', 'ageClassification'], properties: { name: { type: 'string' }, dateOfBirth: { type: 'string', format: 'date-time' }, gender: { type: 'string', enum: ['Male', 'Female', 'Other'] }, ageClassification: { type: 'string', enum: ['Neonates', 'Infants', 'Toddlers', 'Children', 'Adolescents', 'Adults', 'Elderly'] }, weight: { type: 'number' }, height: { type: 'number' }, allergies: {}, diseases: {}, medicalHistory: {} } },
+        ChildProfileRequest: { type: 'object', required: ['name', 'dateOfBirth', 'gender', 'ageClassification'], properties: { name: { type: 'string', example: 'Sara Doe' }, dateOfBirth: { type: 'string', format: 'date-time', example: '2018-05-20T00:00:00.000Z' }, gender: { type: 'string', enum: ['Male', 'Female', 'Other'], example: 'Female' }, ageClassification: { type: 'string', enum: ['Neonates', 'Infants', 'Toddlers', 'Children', 'Adolescents', 'Adults', 'Elderly'], example: 'Children' }, weight: { type: 'number', example: 25 }, height: { type: 'number', example: 120 }, allergies: {}, diseases: {}, medicalHistory: {} }, example: { name: 'Sara Doe', dateOfBirth: '2018-05-20T00:00:00.000Z', gender: 'Female', ageClassification: 'Children', weight: 25, height: 120 } },
         // ── Doctor & Pharmacist
         CreateDoctorRequest: {
           description: 'Create/update doctor profile. Required: userId, name, specialization, licenseNumber. Optional: licenseImageUrl (URL of uploaded license image, e.g. from register or /uploads/doctor-licenses/...), phoneNumber, clinicAddress, yearsOfExperience, qualifications, consultationFee. Get userId from GET /auth/me.',
           type: 'object',
           required: ['userId', 'name', 'specialization', 'licenseNumber'],
-          properties: { userId: { type: 'integer', description: 'Required. From GET /auth/me.' }, name: { type: 'string', description: 'Required.' }, specialization: { type: 'string', description: 'Required.' }, licenseNumber: { type: 'string', description: 'Required.' }, licenseImageUrl: { type: 'string', description: 'Optional. URL of uploaded license image (e.g. /uploads/doctor-licenses/...).' }, phoneNumber: { type: 'string', description: 'Optional.' }, clinicAddress: { type: 'string', description: 'Optional.' }, yearsOfExperience: { type: 'integer', description: 'Optional.' }, qualifications: { type: 'string', description: 'Optional.' }, consultationFee: { type: 'number', description: 'Optional.' } }
+          properties: { userId: { type: 'integer', example: 7, description: 'Required. From GET /auth/me.' }, name: { type: 'string', example: 'Dr. Ahmed Smith', description: 'Required.' }, specialization: { type: 'string', example: 'Cardiology', description: 'Required.' }, licenseNumber: { type: 'string', example: 'DOC-2024-00123', description: 'Required.' }, licenseImageUrl: { type: 'string', example: '/uploads/doctor-licenses/doc123.jpg', description: 'Optional. URL of uploaded license image.' }, phoneNumber: { type: 'string', example: '+201145441100', description: 'Optional.' }, clinicAddress: { type: 'string', example: '12 Tahrir St, Cairo', description: 'Optional.' }, yearsOfExperience: { type: 'integer', example: 10, description: 'Optional.' }, qualifications: { type: 'string', example: 'MD, FACC', description: 'Optional.' }, consultationFee: { type: 'number', example: 250, description: 'Optional.' } },
+          example: { userId: 7, name: 'Dr. Ahmed Smith', specialization: 'Cardiology', licenseNumber: 'DOC-2024-00123', yearsOfExperience: 10, consultationFee: 250 }
         },
         UpdateDoctorMeRequest: {
           description: 'PATCH /doctors/me. All fields optional. clinics: optional array of clinic objects (name?, address?, city?, latitude?, longitude?, workingHours? array of { day, startTime, endTime }); when provided, replaces all doctor clinics.',
           type: 'object',
-          properties: { name: { type: 'string' }, specialization: { type: 'string' }, licenseNumber: { type: 'string' }, licenseImageUrl: { type: 'string' }, phoneNumber: { type: 'string' }, clinicAddress: { type: 'string' }, yearsOfExperience: { type: 'integer' }, qualifications: { type: 'string' }, consultationFee: { type: 'number' }, clinics: { type: 'array', items: { $ref: '#/components/schemas/CreateDoctorClinicRequest' }, description: 'Replace all clinics for this doctor; each item same shape as POST /doctors/:doctorId/clinics body.' } }
+          properties: { name: { type: 'string', example: 'Dr. Ahmed Smith' }, specialization: { type: 'string', example: 'Cardiology' }, licenseNumber: { type: 'string', example: 'DOC-2024-00123' }, licenseImageUrl: { type: 'string', example: '/uploads/doctor-licenses/doc123.jpg' }, phoneNumber: { type: 'string', example: '+201145441100' }, clinicAddress: { type: 'string', example: '12 Tahrir St, Cairo' }, yearsOfExperience: { type: 'integer', example: 11 }, qualifications: { type: 'string', example: 'MD, FACC' }, consultationFee: { type: 'number', example: 300 }, clinics: { type: 'array', items: { $ref: '#/components/schemas/CreateDoctorClinicRequest' }, description: 'Replace all clinics for this doctor; each item same shape as POST /doctors/:doctorId/clinics body.' } },
+          example: { consultationFee: 300, clinics: [{ name: 'Al-Shifaa Clinic', address: '12 Tahrir St, Cairo', city: 'Cairo', workingHours: [{ day: 'monday', startTime: '09:00', endTime: '17:00' }] }] }
         },
         DoctorMeStatsResponse: {
           description: 'GET /doctors/me/stats. Statistics for the current doctor.',
           type: 'object',
           properties: {
-            totalPatients: { type: 'integer', description: 'Number of patients linked to this doctor' },
-            totalPrescriptions: { type: 'integer', description: 'Number of prescriptions written' },
-            totalConsultations: { type: 'integer', description: 'Number of consultations' },
-            totalAppointments: { type: 'integer', description: 'Number of appointments' },
-            totalVisits: { type: 'integer', description: 'Number of visit records' },
-            totalRatings: { type: 'integer', description: 'Number of ratings received' },
-            totalClinics: { type: 'integer', description: 'Number of clinics (locations)' },
-            averageRating: { type: 'number', nullable: true, description: 'Average rating (1–5) or null if none' }
-          }
+            totalPatients:     { type: 'integer', example: 42, description: 'Number of patients linked to this doctor' },
+            totalPrescriptions:{ type: 'integer', example: 128, description: 'Number of prescriptions written' },
+            totalConsultations:{ type: 'integer', example: 95, description: 'Number of consultations' },
+            totalAppointments: { type: 'integer', example: 110, description: 'Number of appointments' },
+            totalVisits:       { type: 'integer', example: 87, description: 'Number of visit records' },
+            totalRatings:      { type: 'integer', example: 20, description: 'Number of ratings received' },
+            totalClinics:      { type: 'integer', example: 2, description: 'Number of clinics (locations)' },
+            averageRating:     { type: 'number', example: 4.7, nullable: true, description: 'Average rating (1–5) or null if none' }
+          },
+          example: { totalPatients: 42, totalPrescriptions: 128, totalConsultations: 95, totalAppointments: 110, totalVisits: 87, totalRatings: 20, totalClinics: 2, averageRating: 4.7 }
         },
         PutNearbyDoctorsRadiusRequest: {
           description: 'PUT /settings/nearby-doctors-radius. Admin sets the radius in km used by GET /doctors/nearby.',
           type: 'object',
           required: ['radiusKm'],
-          properties: { radiusKm: { type: 'integer', minimum: 1, maximum: 500, description: 'Radius in kilometres (1–500)' } }
+          properties: { radiusKm: { type: 'integer', minimum: 1, maximum: 500, example: 10, description: 'Radius in kilometres (1–500)' } },
+          example: { radiusKm: 10 }
         },
         AssignPatientRequest: {
           description: 'Assign patient to doctor. Required: patientId, relationshipType. Optional: startDate, endDate. Used in POST /doctors/:doctorId/patients.',
           type: 'object',
           required: ['patientId', 'relationshipType'],
-          properties: { patientId: { type: 'integer', description: 'Required.' }, relationshipType: { type: 'string', enum: ['PrimaryCare', 'Specialist', 'Consultation', 'Other'], description: 'Required.' }, startDate: { type: 'string', format: 'date-time', description: 'Optional.' }, endDate: { type: 'string', format: 'date-time', description: 'Optional.' } }
+          properties: { patientId: { type: 'integer', example: 5, description: 'Required.' }, relationshipType: { type: 'string', enum: ['PrimaryCare', 'Specialist', 'Consultation', 'Other'], example: 'PrimaryCare', description: 'Required.' }, startDate: { type: 'string', format: 'date-time', example: '2025-01-15T00:00:00.000Z', description: 'Optional.' }, endDate: { type: 'string', format: 'date-time', description: 'Optional.' } },
+          example: { patientId: 5, relationshipType: 'PrimaryCare', startDate: '2025-01-15T00:00:00.000Z' }
         },
         WorkingHoursSlot: {
           description: 'One slot: day (weekday e.g. "monday" or ISO date), startTime (e.g. "09:00"), endTime (e.g. "17:00").',
           type: 'object',
           required: ['day', 'startTime', 'endTime'],
-          properties: { day: { type: 'string' }, startTime: { type: 'string' }, endTime: { type: 'string' } }
+          properties: { day: { type: 'string', example: 'monday' }, startTime: { type: 'string', example: '09:00' }, endTime: { type: 'string', example: '17:00' } },
+          example: { day: 'monday', startTime: '09:00', endTime: '17:00' }
         },
         CreateDoctorClinicRequest: {
           description: 'Create a doctor clinic. All optional. workingHours: array of { day, startTime, endTime }.',
           type: 'object',
-          properties: { name: { type: 'string' }, address: { type: 'string' }, city: { type: 'string' }, latitude: { type: 'number' }, longitude: { type: 'number' }, workingHours: { type: 'array', items: { $ref: '#/components/schemas/WorkingHoursSlot' } } }
+          properties: { name: { type: 'string', example: 'Al-Shifaa Clinic' }, address: { type: 'string', example: '12 Tahrir St, Cairo' }, city: { type: 'string', example: 'Cairo' }, latitude: { type: 'number', example: 30.0444 }, longitude: { type: 'number', example: 31.2357 }, workingHours: { type: 'array', items: { $ref: '#/components/schemas/WorkingHoursSlot' } } },
+          example: { name: 'Al-Shifaa Clinic', address: '12 Tahrir St, Cairo', city: 'Cairo', latitude: 30.0444, longitude: 31.2357, workingHours: [{ day: 'monday', startTime: '09:00', endTime: '17:00' }] }
         },
         UpdateDoctorClinicRequest: {
           description: 'Update a doctor clinic. All optional. workingHours: array of { day, startTime, endTime }.',
           type: 'object',
-          properties: { name: { type: 'string' }, address: { type: 'string' }, city: { type: 'string' }, latitude: { type: 'number' }, longitude: { type: 'number' }, workingHours: { type: 'array', items: { $ref: '#/components/schemas/WorkingHoursSlot' } } }
+          properties: { name: { type: 'string', example: 'Al-Shifaa Clinic (Branch 2)' }, address: { type: 'string', example: '5 Nile St, Giza' }, city: { type: 'string', example: 'Giza' }, latitude: { type: 'number', example: 29.9765 }, longitude: { type: 'number', example: 31.1313 }, workingHours: { type: 'array', items: { $ref: '#/components/schemas/WorkingHoursSlot' } } },
+          example: { name: 'Al-Shifaa Clinic (Branch 2)', workingHours: [{ day: 'tuesday', startTime: '10:00', endTime: '16:00' }] }
         },
         CreatePharmacistRequest: {
           description: 'Create/update pharmacist profile. Required: userId, name, licenseNumber. Optional: phoneNumber, pharmacyName, pharmacyAddress. Get userId from GET /auth/me.',
           type: 'object',
           required: ['userId', 'name', 'licenseNumber'],
-          properties: { userId: { type: 'integer', description: 'Required.' }, name: { type: 'string', description: 'Required.' }, licenseNumber: { type: 'string', description: 'Required.' }, phoneNumber: { type: 'string', description: 'Optional.' }, pharmacyName: { type: 'string', description: 'Optional.' }, pharmacyAddress: { type: 'string', description: 'Optional.' } }
+          properties: { userId: { type: 'integer', example: 9, description: 'Required.' }, name: { type: 'string', example: 'Nadia Hassan', description: 'Required.' }, licenseNumber: { type: 'string', example: 'PH-2024-00456', description: 'Required.' }, phoneNumber: { type: 'string', example: '+201012345678', description: 'Optional.' }, pharmacyName: { type: 'string', example: 'GreenRx Pharmacy', description: 'Optional.' }, pharmacyAddress: { type: 'string', example: '88 Corniche St, Alexandria', description: 'Optional.' } },
+          example: { userId: 9, name: 'Nadia Hassan', licenseNumber: 'PH-2024-00456', pharmacyName: 'GreenRx Pharmacy', pharmacyAddress: '88 Corniche St, Alexandria' }
         },
         // ── Patient-Doctor
         CreatePatientDoctorRequest: {
           description: 'Create patient-doctor relationship. Required: patientId, doctorId, relationshipType. Get doctor IDs from GET /doctors/search.',
           type: 'object',
           required: ['patientId', 'doctorId', 'relationshipType'],
-          properties: { patientId: { type: 'integer', description: 'Required.' }, doctorId: { type: 'integer', description: 'Required. Get from GET /doctors/search.' }, relationshipType: { type: 'string', enum: ['PrimaryCare', 'Specialist', 'Consultation', 'Other'], description: 'Required.' } }
+          properties: { patientId: { type: 'integer', example: 5, description: 'Required.' }, doctorId: { type: 'integer', example: 2, description: 'Required. Get from GET /doctors/search.' }, relationshipType: { type: 'string', enum: ['PrimaryCare', 'Specialist', 'Consultation', 'Other'], example: 'PrimaryCare', description: 'Required.' } },
+          example: { patientId: 5, doctorId: 2, relationshipType: 'PrimaryCare' }
         },
-        UpdatePatientDoctorRequest: { description: 'All fields optional. Send only fields to update.', type: 'object', properties: { relationshipType: { type: 'string', enum: ['PrimaryCare', 'Specialist', 'Consultation', 'Other'] }, isActive: { type: 'boolean' }, endDate: { type: 'string', format: 'date-time' } } },
+        UpdatePatientDoctorRequest: { description: 'All fields optional. Send only fields to update.', type: 'object', properties: { relationshipType: { type: 'string', enum: ['PrimaryCare', 'Specialist', 'Consultation', 'Other'], example: 'Specialist' }, isActive: { type: 'boolean', example: true }, endDate: { type: 'string', format: 'date-time', example: '2026-01-01T00:00:00.000Z' } }, example: { relationshipType: 'Specialist' } },
         // ── Allergen categories (catalog)
         AllergenCategoryName: {
           description: 'Bilingual category name object.',
           type: 'object',
           required: ['en'],
-          properties: { en: { type: 'string', description: 'English name. Required.' }, ar: { type: 'string', description: 'Arabic name. Optional.' } }
+          properties: { en: { type: 'string', example: 'Antibiotics', description: 'English name. Required.' }, ar: { type: 'string', example: 'المضادات الحيوية', description: 'Arabic name. Optional.' } },
+          example: { en: 'Antibiotics', ar: 'المضادات الحيوية' }
         },
         AllergenCategory: {
           description: 'Allergen category (admin-managed). Used for grouping allergens in the patient form.',
           type: 'object',
           properties: {
-            id:        { type: 'integer' },
+            id:        { type: 'integer', example: 1 },
             name:      { $ref: '#/components/schemas/AllergenCategoryName' },
-            _count:    { type: 'object', properties: { allergens: { type: 'integer' } }, description: 'Number of allergens in this category.' },
-            createdAt: { type: 'string', format: 'date-time' },
-            updatedAt: { type: 'string', format: 'date-time' }
-          }
+            _count:    { type: 'object', properties: { allergens: { type: 'integer', example: 8 } }, description: 'Number of allergens in this category.' },
+            createdAt: { type: 'string', format: 'date-time', example: '2025-01-01T00:00:00.000Z' },
+            updatedAt: { type: 'string', format: 'date-time', example: '2025-01-01T00:00:00.000Z' }
+          },
+          example: { id: 1, name: { en: 'Antibiotics', ar: 'المضادات الحيوية' }, _count: { allergens: 8 }, createdAt: '2025-01-01T00:00:00.000Z', updatedAt: '2025-01-01T00:00:00.000Z' }
         },
         CreateAllergenCategoryRequest: {
           description: 'Create allergen category. Required: name.en. Optional: name.ar.',
           type: 'object',
           required: ['name'],
-          properties: { name: { $ref: '#/components/schemas/AllergenCategoryName' } }
+          properties: { name: { $ref: '#/components/schemas/AllergenCategoryName' } },
+          example: { name: { en: 'Antibiotics', ar: 'المضادات الحيوية' } }
         },
         UpdateAllergenCategoryRequest: {
           description: 'Update allergen category. All fields optional.',
           type: 'object',
-          properties: { name: { $ref: '#/components/schemas/AllergenCategoryName' } }
+          properties: { name: { $ref: '#/components/schemas/AllergenCategoryName' } },
+          example: { name: { en: 'Beta-Lactam Antibiotics' } }
         },
         // ── Allergens (catalog — GET /allergens for dropdown)
         Allergen: {
           description: 'Allergen catalog entry (admin-managed). Patients link via POST /patients/:patientId/allergies with allergenId. Response includes allergenCategory.',
           type: 'object',
           properties: {
-            id:                  { type: 'integer' },
-            name:                { type: 'string' },
-            allergenType:        { type: 'string', nullable: true, enum: ['Drug', 'Food', 'Pollen', 'Dust', 'Pet', 'Fragrance', 'Other'] },
-            allergenCategoryId:  { type: 'integer', description: 'FK to AllergenCategory.' },
+            id:                  { type: 'integer', example: 5 },
+            name:                { type: 'string', example: 'Penicillin' },
+            allergenType:        { type: 'string', nullable: true, enum: ['Drug', 'Food', 'Pollen', 'Dust', 'Pet', 'Fragrance', 'Other'], example: 'Drug' },
+            allergenCategoryId:  { type: 'integer', example: 1, description: 'FK to AllergenCategory.' },
             allergenCategory:    { $ref: '#/components/schemas/AllergenCategory', nullable: true, description: 'Included in GET responses.' },
-            createdAt:           { type: 'string', format: 'date-time' },
-            updatedAt:           { type: 'string', format: 'date-time' }
-          }
+            createdAt:           { type: 'string', format: 'date-time', example: '2025-01-01T00:00:00.000Z' },
+            updatedAt:           { type: 'string', format: 'date-time', example: '2025-01-01T00:00:00.000Z' }
+          },
+          example: { id: 5, name: 'Penicillin', allergenType: 'Drug', allergenCategoryId: 1, createdAt: '2025-01-01T00:00:00.000Z', updatedAt: '2025-01-01T00:00:00.000Z' }
         },
         CreateAllergenRequest: {
           description: 'Create allergen. Required: name, allergenCategoryId. Optional: allergenType.',
           type: 'object',
           required: ['name', 'allergenCategoryId'],
           properties: {
-            name:               { type: 'string', description: 'Required. e.g. Penicillin, Peanuts.' },
-            allergenCategoryId: { type: 'integer', description: 'Required. ID from GET /allergen-categories.' },
-            allergenType:       { type: 'string', enum: ['Drug', 'Food', 'Pollen', 'Dust', 'Pet', 'Fragrance', 'Other'], description: 'Optional.' }
-          }
+            name:               { type: 'string', example: 'Penicillin', description: 'Required. e.g. Penicillin, Peanuts.' },
+            allergenCategoryId: { type: 'integer', example: 1, description: 'Required. ID from GET /allergen-categories.' },
+            allergenType:       { type: 'string', enum: ['Drug', 'Food', 'Pollen', 'Dust', 'Pet', 'Fragrance', 'Other'], example: 'Drug', description: 'Optional.' }
+          },
+          example: { name: 'Penicillin', allergenCategoryId: 1, allergenType: 'Drug' }
         },
         UpdateAllergenRequest: {
           description: 'Update allergen. All fields optional.',
           type: 'object',
           properties: {
-            name:               { type: 'string' },
-            allergenType:       { type: 'string', enum: ['Drug', 'Food', 'Pollen', 'Dust', 'Pet', 'Fragrance', 'Other'], nullable: true },
-            allergenCategoryId: { type: 'integer', description: 'Optional. Move allergen to a different category.' }
-          }
+            name:               { type: 'string', example: 'Amoxicillin' },
+            allergenType:       { type: 'string', enum: ['Drug', 'Food', 'Pollen', 'Dust', 'Pet', 'Fragrance', 'Other'], nullable: true, example: 'Drug' },
+            allergenCategoryId: { type: 'integer', example: 1, description: 'Optional. Move allergen to a different category.' }
+          },
+          example: { name: 'Amoxicillin', allergenType: 'Drug' }
         },
         // ── Excipients (catalog)
         Excipient: {
           description: 'Excipient catalog entry used in allergy reports and trade-name composition.',
           type: 'object',
           properties: {
-            id:          { type: 'integer' },
-            name:        { type: 'string' },
-            description: { type: 'string', nullable: true },
-            isActive:    { type: 'boolean' },
-            createdAt:   { type: 'string', format: 'date-time' },
-            updatedAt:   { type: 'string', format: 'date-time' }
-          }
+            id:          { type: 'integer', example: 3 },
+            name:        { type: 'string', example: 'Lactose' },
+            description: { type: 'string', nullable: true, example: 'Milk sugar used as filler' },
+            isActive:    { type: 'boolean', example: true },
+            createdAt:   { type: 'string', format: 'date-time', example: '2025-01-01T00:00:00.000Z' },
+            updatedAt:   { type: 'string', format: 'date-time', example: '2025-01-01T00:00:00.000Z' }
+          },
+          example: { id: 3, name: 'Lactose', description: 'Milk sugar used as filler', isActive: true }
         },
         CreateExcipientRequest: {
           description: 'Create excipient (Admin).',
           type: 'object',
           required: ['name'],
           properties: {
-            name:        { type: 'string' },
-            description: { type: 'string', nullable: true },
-            isActive:    { type: 'boolean', default: true }
-          }
+            name:        { type: 'string', example: 'Lactose' },
+            description: { type: 'string', nullable: true, example: 'Milk sugar used as filler' },
+            isActive:    { type: 'boolean', example: true, default: true }
+          },
+          example: { name: 'Lactose', description: 'Milk sugar used as filler', isActive: true }
         },
         UpdateExcipientRequest: {
           description: 'Update excipient (Admin). All fields optional.',
           type: 'object',
           properties: {
-            name:        { type: 'string' },
-            description: { type: 'string', nullable: true },
-            isActive:    { type: 'boolean' }
-          }
+            name:        { type: 'string', example: 'Lactose monohydrate' },
+            description: { type: 'string', nullable: true, example: 'Updated description' },
+            isActive:    { type: 'boolean', example: false }
+          },
+          example: { isActive: false }
         },
         // ── Patient allergies (report + relation tables)
         PatientAllergyReportRequest: {
@@ -1248,19 +1452,20 @@ const options: Record<string, unknown> = {
           description: 'Patient allergy report with related allergy links.',
           type: 'object',
           properties: {
-            id:                { type: 'integer' },
-            patientId:         { type: 'integer' },
-            tradeNameId:       { type: 'integer', nullable: true },
-            reaction:          { type: 'string', nullable: true },
-            notes:             { type: 'string', nullable: true },
-            createdAt:         { type: 'string', format: 'date-time' },
-            updatedAt:         { type: 'string', format: 'date-time' },
-            tradeName: { nullable: true, type: 'object', properties: { id: { type: 'integer' }, title: { type: 'string' } } },
-            patientAllergies: { type: 'array', items: { type: 'object', properties: { id: { type: 'integer' }, allergenId: { type: 'integer' } } } },
-            activeSubstancePatientAllergies: { type: 'array', items: { type: 'object', properties: { id: { type: 'integer' }, activeSubstanceId: { type: 'integer' } } } },
-            excipientPatientAllergies: { type: 'array', items: { type: 'object', properties: { id: { type: 'integer' }, excipientId: { type: 'integer' } } } },
-            classificationPatientAllergies: { type: 'array', items: { type: 'object', properties: { id: { type: 'integer' }, classificationId: { type: 'integer' } } } }
-          }
+            id:                { type: 'integer', example: 1 },
+            patientId:         { type: 'integer', example: 5 },
+            tradeNameId:       { type: 'integer', nullable: true, example: 17 },
+            reaction:          { type: 'string', nullable: true, example: 'Rash' },
+            notes:             { type: 'string', nullable: true, example: 'Observed after repeated use' },
+            createdAt:         { type: 'string', format: 'date-time', example: '2025-03-01T10:00:00.000Z' },
+            updatedAt:         { type: 'string', format: 'date-time', example: '2025-03-01T10:00:00.000Z' },
+            tradeName: { nullable: true, type: 'object', properties: { id: { type: 'integer', example: 17 }, title: { type: 'string', example: 'Augmentin 1g' } } },
+            patientAllergies: { type: 'array', items: { type: 'object', properties: { id: { type: 'integer' }, allergenId: { type: 'integer' } } }, example: [{ id: 1, allergenId: 2 }] },
+            activeSubstancePatientAllergies: { type: 'array', items: { type: 'object', properties: { id: { type: 'integer' }, activeSubstanceId: { type: 'integer' } } }, example: [] },
+            excipientPatientAllergies: { type: 'array', items: { type: 'object', properties: { id: { type: 'integer' }, excipientId: { type: 'integer' } } }, example: [] },
+            classificationPatientAllergies: { type: 'array', items: { type: 'object', properties: { id: { type: 'integer' }, classificationId: { type: 'integer' } } }, example: [] }
+          },
+          example: { id: 1, patientId: 5, reaction: 'Rash', notes: 'Observed after repeated use', patientAllergies: [{ id: 1, allergenId: 2 }], activeSubstancePatientAllergies: [], excipientPatientAllergies: [], classificationPatientAllergies: [] }
         },
         // ── Patient diseases
         AddPatientDiseaseRequest: {
@@ -1268,38 +1473,39 @@ const options: Record<string, unknown> = {
           type: 'object',
           required: ['diseaseId', 'severity'],
           properties: {
-            diseaseId:    { type: 'integer', description: 'Required. Get IDs from GET /diseases.' },
-            severity:    { type: 'string', enum: ['None', 'Mild', 'Moderate', 'Severe'], description: 'Required.' },
-            diagnosisDate: { type: 'string', format: 'date-time', description: 'Optional. ISO 8601.' },
-            notes:       { type: 'string', description: 'Optional.' }
+            diseaseId:    { type: 'integer', example: 1, description: 'Required. Get IDs from GET /diseases.' },
+            severity:    { type: 'string', enum: ['None', 'Mild', 'Moderate', 'Severe'], example: 'Moderate', description: 'Required.' },
+            diagnosisDate: { type: 'string', format: 'date-time', example: '2024-01-15T00:00:00.000Z', description: 'Optional. ISO 8601.' },
+            notes:       { type: 'string', example: 'Well controlled with medication', description: 'Optional.' }
           },
-          example: { diseaseId: 1, severity: 'Moderate', diagnosisDate: '2024-01-15T00:00:00.000Z', notes: 'Optional notes' }
+          example: { diseaseId: 1, severity: 'Moderate', diagnosisDate: '2024-01-15T00:00:00.000Z', notes: 'Well controlled with medication' }
         },
-        BatchPatientDiseasesRequest: { type: 'array', minItems: 1, items: { $ref: '#/components/schemas/AddPatientDiseaseRequest' }, description: 'Send multiple current diseases in one request. Body: array of AddPatientDiseaseRequest. Single object also accepted.' },
-        UpdatePatientDiseaseRequest: { description: 'All fields optional. Send only fields to update. severity: None|Mild|Moderate|Severe.', type: 'object', properties: { severity: { type: 'string', enum: ['None', 'Mild', 'Moderate', 'Severe'] }, notes: { type: 'string' } } },
+        BatchPatientDiseasesRequest: { type: 'array', minItems: 1, items: { $ref: '#/components/schemas/AddPatientDiseaseRequest' }, description: 'Send multiple current diseases in one request. Body: array of AddPatientDiseaseRequest. Single object also accepted.', example: [{ diseaseId: 1, severity: 'Moderate' }, { diseaseId: 4, severity: 'Mild' }] },
+        UpdatePatientDiseaseRequest: { description: 'All fields optional. Send only fields to update. severity: None|Mild|Moderate|Severe.', type: 'object', properties: { severity: { type: 'string', enum: ['None', 'Mild', 'Moderate', 'Severe'], example: 'Severe' }, notes: { type: 'string', example: 'Condition worsened' } }, example: { severity: 'Severe', notes: 'Condition worsened' } },
         // ── Patient medicines
-        FrequencyUnit: { type: 'string', enum: ['Hours', 'Days', 'Weeks', 'Months', 'Years'], description: 'Unit for frequency (repetitions per X).' },
-        DurationUnit: { type: 'string', enum: ['Days', 'Weeks', 'Months', 'Years'], description: 'Unit for duration of treatment.' },
+        FrequencyUnit: { type: 'string', enum: ['Hours', 'Days', 'Weeks', 'Months', 'Years'], example: 'Hours', description: 'Unit for frequency (repetitions per X).' },
+        DurationUnit: { type: 'string', enum: ['Days', 'Weeks', 'Months', 'Years'], example: 'Days', description: 'Unit for duration of treatment.' },
         AddPatientMedicineRequest: {
           description: 'One medication. Required: medicineName. Optional: tradeNameId (GET /trade-names/search), dosageAmount, frequencyCount/Period/Unit, durationValue/Unit, startDate, endDate, isOngoing, notes, reminderEnabled, reminderTimes (array of "HH:mm" e.g. ["08:00","14:00","20:00"]).',
           type: 'object',
           required: ['medicineName'],
           properties: {
-            medicineName:     { type: 'string', description: 'Required.' },
-            tradeNameId:     { type: 'integer', description: 'Optional. Get IDs from GET /trade-names/search?q=...' },
-            dosageAmount:    { type: 'number', format: 'float', description: 'Optional. Numeric dose (e.g. 500, 0.5).' },
-            frequencyCount:  { type: 'integer', description: 'Optional. Number of repetitions (e.g. 2 for twice).' },
-            frequencyPeriod: { type: 'integer', description: 'Optional. Every X (e.g. 8 for every 8 hours).' },
+            medicineName:    { type: 'string', example: 'Metformin 500mg', description: 'Required.' },
+            tradeNameId:     { type: 'integer', example: 23, description: 'Optional. Get IDs from GET /trade-names/search?q=...' },
+            dosageAmount:    { type: 'number', format: 'float', example: 500, description: 'Optional. Numeric dose (e.g. 500, 0.5).' },
+            frequencyCount:  { type: 'integer', example: 2, description: 'Optional. Number of repetitions (e.g. 2 for twice).' },
+            frequencyPeriod: { type: 'integer', example: 8, description: 'Optional. Every X (e.g. 8 for every 8 hours).' },
             frequencyUnit:   { $ref: '#/components/schemas/FrequencyUnit' },
-            durationValue:  { type: 'integer', description: 'Optional. Length of treatment (e.g. 7).' },
-            durationUnit:   { $ref: '#/components/schemas/DurationUnit' },
-            startDate:      { type: 'string', format: 'date-time', description: 'Optional.' },
-            endDate:        { type: 'string', format: 'date-time', description: 'Optional.' },
-            isOngoing:      { type: 'boolean', description: 'Optional.' },
-            notes:          { type: 'string', description: 'Optional.' },
-            reminderEnabled: { type: 'boolean', description: 'Optional. Enable in-app medicine reminders.' },
-            reminderTimes:   { type: 'array', items: { type: 'string', example: '08:00' }, description: 'Optional. Daily reminder times in HH:mm (e.g. ["08:00","14:00","20:00"]).' }
-          }
+            durationValue:   { type: 'integer', example: 30, description: 'Optional. Length of treatment (e.g. 7).' },
+            durationUnit:    { $ref: '#/components/schemas/DurationUnit' },
+            startDate:       { type: 'string', format: 'date-time', example: '2025-01-01T00:00:00.000Z', description: 'Optional.' },
+            endDate:         { type: 'string', format: 'date-time', description: 'Optional.' },
+            isOngoing:       { type: 'boolean', example: true, description: 'Optional.' },
+            notes:           { type: 'string', example: 'Take with food', description: 'Optional.' },
+            reminderEnabled: { type: 'boolean', example: true, description: 'Optional. Enable in-app medicine reminders.' },
+            reminderTimes:   { type: 'array', items: { type: 'string', example: '08:00' }, example: ['08:00', '14:00', '20:00'], description: 'Optional. Daily reminder times in HH:mm (e.g. ["08:00","14:00","20:00"]).' }
+          },
+          example: { medicineName: 'Metformin 500mg', tradeNameId: 23, dosageAmount: 500, frequencyCount: 2, frequencyPeriod: 8, frequencyUnit: 'Hours', durationValue: 30, durationUnit: 'Days', isOngoing: true, reminderEnabled: true, reminderTimes: ['08:00', '14:00', '20:00'] }
         },
         UpdatePatientMedicineRequest: {
           description: 'All fields optional. Send only fields to update.',
@@ -1439,211 +1645,304 @@ const options: Record<string, unknown> = {
           type: 'object',
           required: ['medicineName'],
           properties: {
-            medicineName:      { type: 'string', description: 'Required. Trade name title or manual entry.' },
-            tradeNameId:       { type: 'integer', nullable: true, description: 'Optional. Omit if doctor entered manual trade name. From GET /trade-names/search.' },
-            activeSubstanceId: { type: 'integer', nullable: true, description: 'Optional. From API step; can be derived from tradeNameId if not sent.' },
-            dosageAmount:      { type: 'number', nullable: true, description: 'e.g. 5.' },
-            frequencyCount:    { type: 'integer', nullable: true, description: 'e.g. 2 for twice.' },
-            frequencyPeriod:   { type: 'integer', nullable: true, description: 'e.g. 8 for every 8.' },
-            frequencyUnit:     { type: 'string', nullable: true, description: 'e.g. Daily, Weekly (FrequencyUnit).' },
-            durationValue:     { type: 'integer', nullable: true, description: 'e.g. 3.' },
-            durationUnit:      { type: 'string', nullable: true, description: 'e.g. Weeks, Months (DurationUnit).' },
-            startDate:         { type: 'string', format: 'date-time', nullable: true },
+            medicineName:      { type: 'string', example: 'Metformin 500mg', description: 'Required. Trade name title or manual entry.' },
+            tradeNameId:       { type: 'integer', nullable: true, example: 23, description: 'Optional. Omit if doctor entered manual trade name. From GET /trade-names/search.' },
+            activeSubstanceId: { type: 'integer', nullable: true, example: 11, description: 'Optional. From API step; can be derived from tradeNameId if not sent.' },
+            dosageAmount:      { type: 'number', nullable: true, example: 500, description: 'e.g. 5.' },
+            frequencyCount:    { type: 'integer', nullable: true, example: 2, description: 'e.g. 2 for twice.' },
+            frequencyPeriod:   { type: 'integer', nullable: true, example: 8, description: 'e.g. 8 for every 8.' },
+            frequencyUnit:     { type: 'string', nullable: true, example: 'Hours', description: 'e.g. Daily, Weekly (FrequencyUnit).' },
+            durationValue:     { type: 'integer', nullable: true, example: 30, description: 'e.g. 3.' },
+            durationUnit:      { type: 'string', nullable: true, example: 'Days', description: 'e.g. Weeks, Months (DurationUnit).' },
+            startDate:         { type: 'string', format: 'date-time', nullable: true, example: '2025-03-01T00:00:00.000Z' },
             endDate:           { type: 'string', format: 'date-time', nullable: true },
-            notes:             { type: 'string', nullable: true }
-          }
+            notes:             { type: 'string', nullable: true, example: 'Take with food' }
+          },
+          example: { medicineName: 'Metformin 500mg', tradeNameId: 23, dosageAmount: 500, frequencyCount: 2, frequencyPeriod: 8, frequencyUnit: 'Hours', durationValue: 30, durationUnit: 'Days', notes: 'Take with food' }
         },
         CreatePrescriptionRequest: {
           description: 'First Visit: doctorId, patientId, conditionDiagnosis, initialCheckUp (vitals), medicationPlan or items (array of drugs), testResultsOrScans, followUpAppointmentDate. Required: doctorId, patientId, and items or medicationPlan (at least one item with medicineName). Response: prescription with prescriptionMedicines (each with patientMedicine including tradeName, activeSubstance), and warnings.',
           type: 'object',
           required: ['doctorId', 'patientId'],
           properties: {
-            doctorId:                 { type: 'integer', description: 'Required.' },
-            patientId:                { type: 'integer', description: 'Required.' },
+            doctorId:                 { type: 'integer', example: 2, description: 'Required.' },
+            patientId:                { type: 'integer', example: 5, description: 'Required.' },
             items:                    { type: 'array', items: { $ref: '#/components/schemas/MedicationPlanItem' }, description: 'Required for submit. Array of drugs (medicineName required per item).' },
             medicationPlan:           { type: 'array', items: { $ref: '#/components/schemas/MedicationPlanItem' }, description: 'Alias for items. Same structure.' },
-            conditionDiagnosis:       { type: 'string', description: 'Diagnosis of the condition.' },
+            conditionDiagnosis:       { type: 'string', example: 'Type 2 Diabetes Mellitus', description: 'Diagnosis of the condition.' },
             initialCheckUp:           {
               type: 'object',
               description: 'Initial check-up vitals (all optional). Height/weight can be pre-filled from patient if doctor does not measure.',
               properties: {
-                height:             { type: 'number', description: 'e.g. 170 (Cm).' },
-                weight:             { type: 'number', description: 'e.g. 68 (Kg).' },
-                bloodPressure:      { type: 'string', description: 'e.g. 120/80 MmHg.' },
-                bloodGlucose:       { type: 'number', description: 'e.g. 140 Mg/DL.' },
-                bodyTemperature:    { type: 'number', description: 'e.g. 38 °C.' },
-                heartRate:          { type: 'number', description: 'e.g. 100 Bpm.' },
-                respiratoryRate:    { type: 'string', description: 'e.g. 12-20 Breaths/Min.' },
-                oxygenSaturation:   { type: 'number', description: 'e.g. 95 (%).' }
+                height:           { type: 'number', example: 175, description: 'e.g. 170 (Cm).' },
+                weight:           { type: 'number', example: 80, description: 'e.g. 68 (Kg).' },
+                bloodPressure:    { type: 'string', example: '130/85', description: 'e.g. 120/80 MmHg.' },
+                bloodGlucose:     { type: 'number', example: 140, description: 'e.g. 140 Mg/DL.' },
+                bodyTemperature:  { type: 'number', example: 37.2, description: 'e.g. 38 °C.' },
+                heartRate:        { type: 'number', example: 82, description: 'e.g. 100 Bpm.' },
+                respiratoryRate:  { type: 'string', example: '16', description: 'e.g. 12-20 Breaths/Min.' },
+                oxygenSaturation: { type: 'number', example: 98, description: 'e.g. 95 (%).' }
               }
             },
-            testResultsOrScans:       { type: 'array', items: { type: 'string' }, description: 'File names or URLs of uploaded tests/scans.' },
-            followUpAppointmentDate:  { type: 'string', format: 'date-time', description: 'Follow-up appointment date (e.g. DD/MM/YYYY).' },
-            visitId:                  { type: 'integer', nullable: true, description: 'Optional. Link to visit.' },
-            validFrom:                { type: 'string', format: 'date-time', description: 'Optional. Default: now.' },
-            validUntil:               { type: 'string', format: 'date-time', description: 'Optional. Default e.g. 30 days.' },
-            maxRefills:               { type: 'integer', description: 'Optional. Default 0.' },
-            notes:                    { type: 'string', nullable: true, description: 'Optional.' }
-          }
+            testResultsOrScans:       { type: 'array', items: { type: 'string' }, example: ['hba1c_march2025.pdf'], description: 'File names or URLs of uploaded tests/scans.' },
+            followUpAppointmentDate:  { type: 'string', format: 'date-time', example: '2025-04-15T09:00:00.000Z', description: 'Follow-up appointment date.' },
+            visitId:                  { type: 'integer', nullable: true, example: 3, description: 'Optional. Link to visit.' },
+            validFrom:                { type: 'string', format: 'date-time', example: '2025-03-01T00:00:00.000Z', description: 'Optional. Default: now.' },
+            validUntil:               { type: 'string', format: 'date-time', example: '2025-04-01T00:00:00.000Z', description: 'Optional. Default e.g. 30 days.' },
+            maxRefills:               { type: 'integer', example: 2, description: 'Optional. Default 0.' },
+            notes:                    { type: 'string', nullable: true, example: 'Monitor HbA1c in 3 months', description: 'Optional.' }
+          },
+          example: { doctorId: 2, patientId: 5, conditionDiagnosis: 'Type 2 Diabetes Mellitus', items: [{ medicineName: 'Metformin 500mg', tradeNameId: 23, dosageAmount: 500, frequencyCount: 2, frequencyPeriod: 8, frequencyUnit: 'Hours' }], initialCheckUp: { height: 175, weight: 80, bloodPressure: '130/85', bloodGlucose: 140 }, followUpAppointmentDate: '2025-04-15T09:00:00.000Z', maxRefills: 2 }
         },
         AddMedicineToPrescriptionRequest: {
           description: 'Body for POST /prescriptions/:prescriptionId/medicines. One medication plan item (same shape as element of medicationPlan).',
           type: 'object',
           required: ['medicineName'],
           properties: {
-            medicineName:      { type: 'string' },
-            tradeNameId:       { type: 'integer', nullable: true },
-            activeSubstanceId: { type: 'integer', nullable: true },
-            dosageAmount:      { type: 'number', nullable: true },
-            frequencyCount:    { type: 'integer', nullable: true },
-            frequencyPeriod:   { type: 'integer', nullable: true },
-            frequencyUnit:     { type: 'string', nullable: true },
-            durationValue:     { type: 'integer', nullable: true },
-            durationUnit:      { type: 'string', nullable: true },
-            startDate:         { type: 'string', format: 'date-time', nullable: true },
+            medicineName:      { type: 'string', example: 'Atorvastatin 20mg' },
+            tradeNameId:       { type: 'integer', nullable: true, example: 31 },
+            activeSubstanceId: { type: 'integer', nullable: true, example: 15 },
+            dosageAmount:      { type: 'number', nullable: true, example: 20 },
+            frequencyCount:    { type: 'integer', nullable: true, example: 1 },
+            frequencyPeriod:   { type: 'integer', nullable: true, example: 1 },
+            frequencyUnit:     { type: 'string', nullable: true, example: 'Days' },
+            durationValue:     { type: 'integer', nullable: true, example: 90 },
+            durationUnit:      { type: 'string', nullable: true, example: 'Days' },
+            startDate:         { type: 'string', format: 'date-time', nullable: true, example: '2025-03-01T00:00:00.000Z' },
             endDate:           { type: 'string', format: 'date-time', nullable: true },
-            notes:             { type: 'string', nullable: true }
-          }
+            notes:             { type: 'string', nullable: true, example: 'Take at night' }
+          },
+          example: { medicineName: 'Atorvastatin 20mg', tradeNameId: 31, dosageAmount: 20, frequencyCount: 1, frequencyPeriod: 1, frequencyUnit: 'Days', notes: 'Take at night' }
         },
         ConcentrationsResponse: {
           description: 'GET /active-substances/concentrations. Distinct concentration values (e.g. "5 mg", "5 mg/ 20 mg") filtered by classification and/or activeSubstanceId.',
           type: 'object',
-          properties: { concentrations: { type: 'array', items: { type: 'string' } } }
+          properties: { concentrations: { type: 'array', items: { type: 'string', example: '500 mg' } } },
+          example: { concentrations: ['250 mg', '500 mg', '1 g'] }
         },
         BatchPrescriptionsRequest: {
           description: 'Batch: one Prescription per medicine; each prescription gets one PatientMedicine + PrescriptionMedicine. Required: doctorId, patientId, medicines (array). Each medicine: tradeNameId (from GET /trade-names/search), dosage, frequency, duration, instructions, notes. Runs drug-safety and batch-interaction checks.',
           type: 'object',
           required: ['doctorId', 'patientId', 'medicines'],
           properties: {
-            doctorId:   { type: 'integer', description: 'Required.' },
-            patientId:  { type: 'integer', description: 'Required.' },
+            doctorId:   { type: 'integer', example: 2, description: 'Required.' },
+            patientId:  { type: 'integer', example: 5, description: 'Required.' },
             medicines:  {
               type: 'array',
               items: {
                 type: 'object',
                 required: ['tradeNameId'],
                 properties: {
-                  tradeNameId:  { type: 'integer', description: 'From GET /trade-names/search.' },
-                  dosage:       { type: 'string', nullable: true },
-                  frequency:    { type: 'string', nullable: true },
-                  duration:     { type: 'string', nullable: true },
-                  instructions: { type: 'string', nullable: true },
+                  tradeNameId:  { type: 'integer', example: 23, description: 'From GET /trade-names/search.' },
+                  dosage:       { type: 'string', nullable: true, example: '500mg' },
+                  frequency:    { type: 'string', nullable: true, example: 'Twice daily' },
+                  duration:     { type: 'string', nullable: true, example: '30 days' },
+                  instructions: { type: 'string', nullable: true, example: 'Take with food' },
                   notes:        { type: 'string', nullable: true }
                 }
               }
             },
-            validFrom:  { type: 'string', format: 'date-time', nullable: true },
-            validUntil: { type: 'string', format: 'date-time', nullable: true },
-            maxRefills: { type: 'integer', nullable: true }
-          }
+            validFrom:  { type: 'string', format: 'date-time', nullable: true, example: '2025-03-01T00:00:00.000Z' },
+            validUntil: { type: 'string', format: 'date-time', nullable: true, example: '2025-04-01T00:00:00.000Z' },
+            maxRefills: { type: 'integer', nullable: true, example: 3 }
+          },
+          example: { doctorId: 2, patientId: 5, medicines: [{ tradeNameId: 23, dosage: '500mg', frequency: 'Twice daily', duration: '30 days', instructions: 'Take with food' }], validFrom: '2025-03-01T00:00:00.000Z' }
         },
-        UpdatePrescriptionRequest: { description: 'All fields optional. Send only fields to update.', type: 'object', properties: { status: { type: 'string' }, dosage: { type: 'string' }, frequency: { type: 'string' }, duration: { type: 'string' }, instructions: { type: 'string' }, notes: { type: 'string' }, changedBy: { type: 'string' }, conditionDiagnosis: { type: 'string' }, initialCheckUp: { type: 'object' }, testResultsOrScans: { type: 'array', items: { type: 'string' } }, followUpAppointmentDate: { type: 'string', format: 'date-time' } } },
-        CreatePrescriptionVersionRequest: { type: 'object', properties: { changes: { type: 'string' } } },
+        UpdatePrescriptionRequest: { description: 'All fields optional. Send only fields to update.', type: 'object', properties: { status: { type: 'string', example: 'Active' }, dosage: { type: 'string', example: '500mg' }, frequency: { type: 'string', example: 'Twice daily' }, duration: { type: 'string', example: '30 days' }, instructions: { type: 'string', example: 'Take with food' }, notes: { type: 'string', example: 'Monitor kidney function' }, changedBy: { type: 'string', example: 'Dr. Ahmed' }, conditionDiagnosis: { type: 'string', example: 'Type 2 Diabetes' }, initialCheckUp: { type: 'object' }, testResultsOrScans: { type: 'array', items: { type: 'string' } }, followUpAppointmentDate: { type: 'string', format: 'date-time', example: '2025-04-15T09:00:00.000Z' } }, example: { status: 'Active', notes: 'Monitor kidney function', followUpAppointmentDate: '2025-04-15T09:00:00.000Z' } },
+        CreatePrescriptionVersionRequest: { type: 'object', properties: { changes: { type: 'string', example: 'Changed dosage from 250mg to 500mg' } }, example: { changes: 'Changed dosage from 250mg to 500mg' } },
         // ── Appointments
-        CreateAppointmentRequest: { description: 'Required: patientId, doctorId, appointmentDate. Optional: duration, notes. Get doctorId from GET /doctors/search.', type: 'object', required: ['patientId', 'doctorId', 'appointmentDate'], properties: { patientId: { type: 'integer', description: 'Required.' }, doctorId: { type: 'integer', description: 'Required. Get from GET /doctors/search.' }, appointmentDate: { type: 'string', format: 'date-time', description: 'Required. ISO 8601.' }, duration: { type: 'integer', description: 'Optional. Minutes.' }, notes: { type: 'string', description: 'Optional.' } } },
-        UpdateAppointmentRequest: { description: 'All fields optional. Send only fields to update.', type: 'object', properties: { appointmentDate: { type: 'string', format: 'date-time' }, duration: { type: 'integer' }, status: { type: 'string' }, notes: { type: 'string' } } },
+        CreateAppointmentRequest: { description: 'Required: patientId, doctorId, appointmentDate. Optional: duration, notes. Get doctorId from GET /doctors/search.', type: 'object', required: ['patientId', 'doctorId', 'appointmentDate'], properties: { patientId: { type: 'integer', example: 5, description: 'Required.' }, doctorId: { type: 'integer', example: 2, description: 'Required. Get from GET /doctors/search.' }, appointmentDate: { type: 'string', format: 'date-time', example: '2025-04-20T10:00:00.000Z', description: 'Required. ISO 8601.' }, duration: { type: 'integer', example: 30, description: 'Optional. Minutes.' }, notes: { type: 'string', example: 'Annual check-up', description: 'Optional.' } }, example: { patientId: 5, doctorId: 2, appointmentDate: '2025-04-20T10:00:00.000Z', duration: 30, notes: 'Annual check-up' } },
+        UpdateAppointmentRequest: { description: 'All fields optional. Send only fields to update.', type: 'object', properties: { appointmentDate: { type: 'string', format: 'date-time', example: '2025-04-21T11:00:00.000Z' }, duration: { type: 'integer', example: 45 }, status: { type: 'string', example: 'Confirmed' }, notes: { type: 'string', example: 'Rescheduled' } }, example: { appointmentDate: '2025-04-21T11:00:00.000Z', status: 'Confirmed' } },
         // ── Consultations
-        CreateConsultationRequest: { description: 'Required: patientId, doctorId. Optional: consultationDate, notes, diagnosis, followUpRequired, followUpDate. Get doctorId from GET /doctors/search.', type: 'object', required: ['patientId', 'doctorId'], properties: { patientId: { type: 'integer', description: 'Required.' }, doctorId: { type: 'integer', description: 'Required. Get from GET /doctors/search.' }, consultationDate: { type: 'string', format: 'date-time', description: 'Optional.' }, notes: { type: 'string', description: 'Optional.' }, diagnosis: { type: 'string', description: 'Optional.' }, followUpRequired: { type: 'boolean', description: 'Optional.' }, followUpDate: { type: 'string', format: 'date-time', description: 'Optional.' } } },
-        UpdateConsultationRequest: { description: 'All fields optional. Send only fields to update.', type: 'object', properties: { notes: { type: 'string' }, diagnosis: { type: 'string' }, followUpRequired: { type: 'boolean' }, followUpDate: { type: 'string', format: 'date-time' } } },
+        CreateConsultationRequest: { description: 'Required: patientId, doctorId. Optional: consultationDate, notes, diagnosis, followUpRequired, followUpDate. Get doctorId from GET /doctors/search.', type: 'object', required: ['patientId', 'doctorId'], properties: { patientId: { type: 'integer', example: 5, description: 'Required.' }, doctorId: { type: 'integer', example: 2, description: 'Required. Get from GET /doctors/search.' }, consultationDate: { type: 'string', format: 'date-time', example: '2025-04-10T09:00:00.000Z', description: 'Optional.' }, notes: { type: 'string', example: 'Patient reports dizziness', description: 'Optional.' }, diagnosis: { type: 'string', example: 'Hypertension', description: 'Optional.' }, followUpRequired: { type: 'boolean', example: true, description: 'Optional.' }, followUpDate: { type: 'string', format: 'date-time', example: '2025-05-10T09:00:00.000Z', description: 'Optional.' } }, example: { patientId: 5, doctorId: 2, diagnosis: 'Hypertension', followUpRequired: true, followUpDate: '2025-05-10T09:00:00.000Z' } },
+        UpdateConsultationRequest: { description: 'All fields optional. Send only fields to update.', type: 'object', properties: { notes: { type: 'string', example: 'BP improved after medication' }, diagnosis: { type: 'string', example: 'Controlled Hypertension' }, followUpRequired: { type: 'boolean', example: false }, followUpDate: { type: 'string', format: 'date-time' } }, example: { notes: 'BP improved after medication', followUpRequired: false } },
         // ── Visits
-        CreateVisitRequest: { description: 'Required: patientId, doctorId, visitDate. Optional: visitType, diagnosis, treatmentPlan, notes. Get doctorId from GET /doctors/search.', type: 'object', required: ['patientId', 'doctorId', 'visitDate'], properties: { patientId: { type: 'integer', description: 'Required.' }, doctorId: { type: 'integer', description: 'Required. Get from GET /doctors/search.' }, visitDate: { type: 'string', format: 'date-time', description: 'Required. ISO 8601.' }, visitType: { type: 'string', enum: ['FirstVisit', 'FollowUp', 'Emergency', 'Consultation'], description: 'Optional.' }, diagnosis: { type: 'string', description: 'Optional.' }, treatmentPlan: { type: 'string', description: 'Optional.' }, notes: { type: 'string', description: 'Optional.' } } },
-        UpdateVisitRequest: { description: 'All fields optional. Send only fields to update.', type: 'object', properties: { visitDate: { type: 'string', format: 'date-time' }, visitType: { type: 'string' }, diagnosis: { type: 'string' }, treatmentPlan: { type: 'string' }, notes: { type: 'string' } } },
+        CreateVisitRequest: { description: 'Required: patientId, doctorId, visitDate. Optional: visitType, diagnosis, treatmentPlan, notes. Get doctorId from GET /doctors/search.', type: 'object', required: ['patientId', 'doctorId', 'visitDate'], properties: { patientId: { type: 'integer', example: 5, description: 'Required.' }, doctorId: { type: 'integer', example: 2, description: 'Required. Get from GET /doctors/search.' }, visitDate: { type: 'string', format: 'date-time', example: '2025-04-10T10:00:00.000Z', description: 'Required. ISO 8601.' }, visitType: { type: 'string', enum: ['FirstVisit', 'FollowUp', 'Emergency', 'Consultation'], example: 'FollowUp', description: 'Optional.' }, diagnosis: { type: 'string', example: 'Type 2 Diabetes — follow-up', description: 'Optional.' }, treatmentPlan: { type: 'string', example: 'Continue Metformin; add dietary guidance', description: 'Optional.' }, notes: { type: 'string', example: 'Patient tolerating medication well', description: 'Optional.' } }, example: { patientId: 5, doctorId: 2, visitDate: '2025-04-10T10:00:00.000Z', visitType: 'FollowUp', diagnosis: 'Type 2 Diabetes — follow-up' } },
+        UpdateVisitRequest: { description: 'All fields optional. Send only fields to update.', type: 'object', properties: { visitDate: { type: 'string', format: 'date-time' }, visitType: { type: 'string', example: 'Emergency' }, diagnosis: { type: 'string', example: 'Acute hyperglycaemia' }, treatmentPlan: { type: 'string' }, notes: { type: 'string' } }, example: { visitType: 'Emergency', diagnosis: 'Acute hyperglycaemia' } },
         // ── Medical reports
-        CreateMedicalReportRequest: { description: 'Required: patientId, fileName, fileUrl, fileType, uploadedBy. Optional: reportType, reportDate, notes, fileSize. uploadedBy is the user ID (e.g. from GET /auth/me).', type: 'object', required: ['patientId', 'fileName', 'fileUrl', 'fileType', 'uploadedBy'], properties: { patientId: { type: 'integer', description: 'Required.' }, fileName: { type: 'string', description: 'Required.' }, fileUrl: { type: 'string', description: 'Required. URL of uploaded file.' }, fileType: { type: 'string', description: 'Required. MIME type.' }, uploadedBy: { type: 'integer', description: 'Required. User ID from GET /auth/me.' }, reportType: { type: 'string', enum: ['LabTest', 'Imaging', 'Consultation', 'Procedure', 'Other'], description: 'Optional.' }, reportDate: { type: 'string', description: 'Optional.' }, notes: { type: 'string', description: 'Optional.' }, fileSize: { type: 'number', description: 'Optional.' } } },
-        UpdateMedicalReportRequest: { description: 'All fields optional. Send only fields to update.', type: 'object', properties: { notes: { type: 'string' }, reportType: { type: 'string' }, reportDate: { type: 'string' } } },
+        CreateMedicalReportRequest: { description: 'Required: patientId, fileName, fileUrl, fileType, uploadedBy. Optional: reportType, reportDate, notes, fileSize. uploadedBy is the user ID (e.g. from GET /auth/me).', type: 'object', required: ['patientId', 'fileName', 'fileUrl', 'fileType', 'uploadedBy'], properties: { patientId: { type: 'integer', example: 5, description: 'Required.' }, fileName: { type: 'string', example: 'hba1c_march2025.pdf', description: 'Required.' }, fileUrl: { type: 'string', example: '/uploads/reports/hba1c_march2025.pdf', description: 'Required. URL of uploaded file.' }, fileType: { type: 'string', example: 'application/pdf', description: 'Required. MIME type.' }, uploadedBy: { type: 'integer', example: 12, description: 'Required. User ID from GET /auth/me.' }, reportType: { type: 'string', enum: ['LabTest', 'Imaging', 'Consultation', 'Procedure', 'Other'], example: 'LabTest', description: 'Optional.' }, reportDate: { type: 'string', example: '2025-03-15', description: 'Optional.' }, notes: { type: 'string', example: 'HbA1c: 7.2%', description: 'Optional.' }, fileSize: { type: 'number', example: 204800, description: 'Optional.' } }, example: { patientId: 5, fileName: 'hba1c_march2025.pdf', fileUrl: '/uploads/reports/hba1c_march2025.pdf', fileType: 'application/pdf', uploadedBy: 12, reportType: 'LabTest', notes: 'HbA1c: 7.2%' } },
+        UpdateMedicalReportRequest: { description: 'All fields optional. Send only fields to update.', type: 'object', properties: { notes: { type: 'string', example: 'Reviewed by Dr. Ahmed' }, reportType: { type: 'string', example: 'LabTest' }, reportDate: { type: 'string', example: '2025-03-15' } }, example: { notes: 'Reviewed by Dr. Ahmed' } },
         // ── Share links
-        GenerateShareLinkRequest: { type: 'object', properties: { expiresInDays: { type: 'integer', default: 7 } } },
-        UpdateShareLinkRequest: { type: 'object', properties: { expiresAt: { type: 'string', format: 'date-time' } } },
+        GenerateShareLinkRequest: { type: 'object', properties: { expiresInDays: { type: 'integer', example: 7, default: 7 } }, example: { expiresInDays: 7 } },
+        UpdateShareLinkRequest: { type: 'object', properties: { expiresAt: { type: 'string', format: 'date-time', example: '2025-05-01T00:00:00.000Z' } }, example: { expiresAt: '2025-05-01T00:00:00.000Z' } },
         // ── Ratings
-        CreateRatingRequest: { description: 'Required: patientId, ratedType, rating (1–5). For Doctor: include doctorId; for Pharmacist: include pharmacistId. Optional: review.', type: 'object', required: ['patientId', 'ratedType', 'rating'], properties: { patientId: { type: 'integer', description: 'Required.' }, ratedType: { type: 'string', enum: ['Doctor', 'Pharmacist'], description: 'Required.' }, doctorId: { type: 'integer', description: 'Required when ratedType=Doctor.' }, pharmacistId: { type: 'integer', description: 'Required when ratedType=Pharmacist.' }, rating: { type: 'integer', minimum: 1, maximum: 5, description: 'Required. 1–5.' }, review: { type: 'string', description: 'Optional.' } } },
+        CreateRatingRequest: { description: 'Required: patientId, ratedType, rating (1–5). For Doctor: include doctorId; for Pharmacist: include pharmacistId. Optional: review.', type: 'object', required: ['patientId', 'ratedType', 'rating'], properties: { patientId: { type: 'integer', example: 5, description: 'Required.' }, ratedType: { type: 'string', enum: ['Doctor', 'Pharmacist'], example: 'Doctor', description: 'Required.' }, doctorId: { type: 'integer', example: 2, description: 'Required when ratedType=Doctor.' }, pharmacistId: { type: 'integer', description: 'Required when ratedType=Pharmacist.' }, rating: { type: 'integer', minimum: 1, maximum: 5, example: 5, description: 'Required. 1–5.' }, review: { type: 'string', example: 'Very attentive and professional', description: 'Optional.' } }, example: { patientId: 5, ratedType: 'Doctor', doctorId: 2, rating: 5, review: 'Very attentive and professional' } },
         // ── Notifications
-        CreateNotificationRequest: { type: 'object', required: ['userId', 'type', 'title', 'message'], properties: { userId: { type: 'integer' }, type: { type: 'string', enum: ['PrescriptionReady', 'DrugInteraction', 'AppointmentReminder', 'SystemAlert'] }, title: { type: 'string' }, message: { type: 'string' } } },
+        CreateNotificationRequest: { type: 'object', required: ['userId', 'type', 'title', 'message'], properties: { userId: { type: 'integer', example: 12 }, type: { type: 'string', enum: ['PrescriptionReady', 'DrugInteraction', 'AppointmentReminder', 'SystemAlert'], example: 'AppointmentReminder' }, title: { type: 'string', example: 'Appointment Reminder' }, message: { type: 'string', example: 'Your appointment with Dr. Ahmed is tomorrow at 10:00 AM.' } }, example: { userId: 12, type: 'AppointmentReminder', title: 'Appointment Reminder', message: 'Your appointment with Dr. Ahmed is tomorrow at 10:00 AM.' } },
         // ── Drug safety
-        CheckByTradeNameRequest: { description: 'POST /drug-interactions/check-by-trade-name. Run full 8-check warning logic for this patient and drug.', type: 'object', required: ['patientId', 'tradeNameId'], properties: { patientId: { type: 'integer', description: 'Patient to check against (Doctor: any; Patient: must be own id)' }, tradeNameId: { type: 'integer', description: 'Drug trade name ID (from GET /trade-names or search)' } } },
+        CheckByTradeNameRequest: { description: 'POST /drug-interactions/check-by-trade-name. Run full 8-check warning logic for this patient and drug.', type: 'object', required: ['patientId', 'tradeNameId'], properties: { patientId: { type: 'integer', example: 5, description: 'Patient to check against (Doctor: any; Patient: must be own id)' }, tradeNameId: { type: 'integer', example: 23, description: 'Drug trade name ID (from GET /trade-names or search)' } }, example: { patientId: 5, tradeNameId: 23 } },
         CheckByTradeNameResponse: {
           description: 'Response: blocked (true if any check would block prescribing), warnings array, tradeName (id, title, activeSubstanceName).',
           type: 'object',
           properties: {
-            blocked: { type: 'boolean' },
+            blocked: { type: 'boolean', example: true },
             warnings: { type: 'array', items: { $ref: '#/components/schemas/Warning' } },
             tradeName: {
               type: 'object',
               properties: {
-                id: { type: 'integer' },
-                title: { type: 'string' },
-                activeSubstanceName: { type: 'string' }
+                id: { type: 'integer', example: 23 },
+                title: { type: 'string', example: 'Ibuprofen 400mg' },
+                activeSubstanceName: { type: 'string', example: 'Ibuprofen' }
               }
             }
+          },
+          example: { blocked: true, tradeName: { id: 23, title: 'Ibuprofen 400mg', activeSubstanceName: 'Ibuprofen' }, warnings: [{ severity: 'High', type: 'DiseaseContraindication', message: 'Ibuprofen is contraindicated in renal failure.', blocked: true }] }
+        },
+        DrugSafetyCheckRequest: { type: 'object', required: ['patientId', 'activeSubstanceId'], properties: { patientId: { type: 'integer', example: 5 }, activeSubstanceId: { type: 'integer', example: 11 }, tradeNameId: { type: 'integer', example: 23 } }, example: { patientId: 5, activeSubstanceId: 11 } },
+        // ── ADR
+        CreateAdrRequest: { type: 'object', required: ['patientId', 'tradeNameId', 'companyId', 'severity', 'reaction', 'startDate'], properties: { patientId: { type: 'integer', example: 5 }, tradeNameId: { type: 'integer', example: 23 }, companyId: { type: 'integer', example: 1 }, activeSubstanceId: { type: 'integer', example: 11 }, severity: { type: 'string', enum: ['Mild', 'Moderate', 'Severe', 'LifeThreatening'], example: 'Moderate' }, reaction: { type: 'string', example: 'Severe rash and itching' }, startDate: { type: 'string', format: 'date-time', example: '2025-03-10T00:00:00.000Z' }, endDate: { type: 'string', format: 'date-time' }, isAnonymous: { type: 'boolean', example: false } }, example: { patientId: 5, tradeNameId: 23, companyId: 1, severity: 'Moderate', reaction: 'Severe rash and itching', startDate: '2025-03-10T00:00:00.000Z' } },
+        UpdateAdrRequest: { type: 'object', properties: { status: { type: 'string', enum: ['Pending', 'UnderReview', 'Confirmed', 'Rejected'], example: 'Confirmed' }, adminNotes: { type: 'string', example: 'Verified by clinical team' } }, example: { status: 'Confirmed', adminNotes: 'Verified by clinical team' } },
+        // ── Pharma Safety Engine response shapes
+        SafetyWarning: {
+          description: 'A single clinical warning generated by one of the 7 Safety Engine checks.',
+          type: 'object',
+          properties: {
+            checkType:   { type: 'string', enum: ['allergy','disease','contraindication','familyDisease','lifestyle','surgery','drugInteraction','cancerRisk'], example: 'allergy', description: 'Which check triggered this warning.' },
+            severity:    { type: 'string', enum: ['Info','Low','Medium','High','Critical'], example: 'Critical' },
+            statusColor: { type: 'string', enum: ['RED','ORANGE','GREEN'], example: 'RED', description: 'Color contribution of this individual warning.' },
+            message:     { type: 'string', example: 'Patient is allergic to Penicillin (Drug allergy). This drug contains Amoxicillin which belongs to the same group.' },
+            blocked:     { type: 'boolean', example: true, description: 'True when this warning alone is a hard stop (e.g. allergy, autoBlock rule, carcinogenicity, contraindication keyword match).' }
+          },
+          example: { checkType: 'allergy', severity: 'Critical', statusColor: 'RED', message: 'Patient is allergic to Penicillin (Drug allergy). This drug contains Amoxicillin.', blocked: true }
+        },
+        SafetyEvalResult: {
+          description: 'Pharma Safety Engine result attached to each drug in search responses when patientId is provided. null when patientId is omitted.',
+          type: 'object',
+          nullable: true,
+          properties: {
+            statusColor:  { type: 'string', enum: ['RED','ORANGE','GREEN'], example: 'RED', description: 'Aggregated color: RED if any warning is RED, ORANGE if any is ORANGE and none are RED, GREEN if all checks passed.' },
+            blocked:      { type: 'boolean', example: true, description: 'True when at least one warning has blocked=true. UI should prevent prescribing.' },
+            warnings:     { type: 'array', items: { $ref: '#/components/schemas/SafetyWarning' }, description: 'Full list of triggered warnings across all 7 checks.' },
+            filteredData: {
+              type: 'object',
+              description: 'Subset of the drug\'s 183 fields relevant to this specific patient. Always includes fixed fields (excipients, medicationErrors, driving, labTests, ADR severity groups). Adds contextual fields based on patient profile: elderly → specialPopulationElderly + renal + hepatic; pregnant → reproductiveWarningFemale; children → specialPopulationChildren; patient diseases → their mapped ADR columns.',
+              additionalProperties: true
+            }
+          },
+          example: {
+            statusColor: 'ORANGE',
+            blocked: false,
+            warnings: [{ checkType: 'disease', severity: 'Medium', statusColor: 'ORANGE', message: 'Patient has Hypertension. Drug has Vascular ADR data containing relevant keywords.', blocked: false }],
+            filteredData: { excipients: 'Lactose', vascularWarning: 'Hypertension reported in ≥1% of patients.', specialPopulationElderly: 'Reduce dose in elderly patients.' }
           }
         },
-        DrugSafetyCheckRequest: { type: 'object', required: ['patientId', 'activeSubstanceId'], properties: { patientId: { type: 'integer' }, activeSubstanceId: { type: 'integer' }, tradeNameId: { type: 'integer' } } },
-        // ── ADR
-        CreateAdrRequest: { type: 'object', required: ['patientId', 'tradeNameId', 'companyId', 'severity', 'reaction', 'startDate'], properties: { patientId: { type: 'integer' }, tradeNameId: { type: 'integer' }, companyId: { type: 'integer' }, activeSubstanceId: { type: 'integer' }, severity: { type: 'string', enum: ['Mild', 'Moderate', 'Severe', 'LifeThreatening'] }, reaction: { type: 'string' }, startDate: { type: 'string', format: 'date-time' }, endDate: { type: 'string', format: 'date-time' }, isAnonymous: { type: 'boolean' } } },
-        UpdateAdrRequest: { type: 'object', properties: { status: { type: 'string', enum: ['Pending', 'UnderReview', 'Confirmed', 'Rejected'] }, adminNotes: { type: 'string' } } },
         // ── Medicine suggestions
-        CreateMedicineSuggestionRequest: { type: 'object', required: ['tradeName', 'activeSubstance'], properties: { tradeName: { type: 'string' }, activeSubstance: { type: 'string' }, concentration: { type: 'string' }, dosageForm: { type: 'string' }, manufacturer: { type: 'string' }, reason: { type: 'string' } } },
-        ReviewMedicineSuggestionRequest: { type: 'object', properties: { status: { type: 'string' }, reviewNotes: { type: 'string' } } },
+        CreateMedicineSuggestionRequest: { type: 'object', required: ['tradeName', 'activeSubstance'], properties: { tradeName: { type: 'string', example: 'Augmentin 1g' }, activeSubstance: { type: 'string', example: 'Amoxicillin + Clavulanate' }, concentration: { type: 'string', example: '1g' }, dosageForm: { type: 'string', example: 'Tablet' }, manufacturer: { type: 'string', example: 'GSK' }, reason: { type: 'string', example: 'Commonly prescribed, not yet in database' } }, example: { tradeName: 'Augmentin 1g', activeSubstance: 'Amoxicillin + Clavulanate', concentration: '1g', dosageForm: 'Tablet' } },
+        ReviewMedicineSuggestionRequest: { type: 'object', properties: { status: { type: 'string', example: 'Approved' }, reviewNotes: { type: 'string', example: 'Added to database as of 2025-04-01' } }, example: { status: 'Approved', reviewNotes: 'Added to database as of 2025-04-01' } },
         ResolveAddMedicineRequestRequest: {
           description: 'Resolve an add medicine request: provide tradeNameId and/or activeSubstanceId (from admin-created Trade Name or Active Substance). Backend links the PatientMedicine and marks it verified, then marks the request Resolved.',
           type: 'object',
           properties: {
-            tradeNameId:       { type: 'integer', description: 'Optional. ID of the trade name to link (from GET /trade-names or newly created).' },
-            activeSubstanceId: { type: 'integer', description: 'Optional. ID of the active substance to link if only this was missing.' },
-            resolutionNotes:   { type: 'string', description: 'Optional notes for the resolution.' }
-          }
+            tradeNameId:       { type: 'integer', example: 23, description: 'Optional. ID of the trade name to link (from GET /trade-names or newly created).' },
+            activeSubstanceId: { type: 'integer', example: 11, description: 'Optional. ID of the active substance to link if only this was missing.' },
+            resolutionNotes:   { type: 'string', example: 'Matched to existing DB entry for Ibuprofen 400mg', description: 'Optional notes for the resolution.' }
+          },
+          example: { tradeNameId: 23, resolutionNotes: 'Matched to existing DB entry for Ibuprofen 400mg' }
         },
         // ── Active substances (minimal for doc; full schema is large)
-        CreateActiveSubstanceRequest: { type: 'object', required: ['activeSubstance'], properties: { activeSubstance: { type: 'string' }, concentration: { type: 'string' }, classification: { type: 'string' }, dosageForm: { type: 'string' }, indication: { type: 'string' }, pregnancyWarning: { type: 'string' }, lactationWarning: { type: 'string' }, contraindications: {}, isActive: { type: 'boolean' } } },
-        UpdateActiveSubstanceRequest: { type: 'object', properties: { activeSubstance: { type: 'string' }, concentration: { type: 'string' }, classification: { type: 'string' }, isActive: { type: 'boolean' } } },
+        CreateActiveSubstanceRequest: { type: 'object', required: ['activeSubstance'], properties: { activeSubstance: { type: 'string', example: 'Atorvastatin' }, concentration: { type: 'string', example: '20 mg' }, classification: { type: 'string', example: 'Statins' }, dosageForm: { type: 'string', example: 'Tablet' }, indication: { type: 'string', example: 'Hypercholesterolaemia' }, pregnancyWarning: { type: 'string' }, lactationWarning: { type: 'string' }, contraindications: {}, isActive: { type: 'boolean', example: true } }, example: { activeSubstance: 'Atorvastatin', concentration: '20 mg', classification: 'Statins', dosageForm: 'Tablet' } },
+        UpdateActiveSubstanceRequest: { type: 'object', properties: { activeSubstance: { type: 'string', example: 'Atorvastatin' }, concentration: { type: 'string', example: '40 mg' }, classification: { type: 'string', example: 'Statins' }, isActive: { type: 'boolean', example: true } }, example: { concentration: '40 mg' } },
         // ── Trade names
-        CreateTradeNameRequest: { type: 'object', required: ['title', 'activeSubstanceId', 'companyId'], properties: { title: { type: 'string' }, activeSubstanceId: { type: 'integer' }, companyId: { type: 'integer' }, barCode: { type: 'string' }, warningNotification: { type: 'string' }, availabilityStatus: { type: 'string', enum: ['InStock', 'OutOfStock', 'Discontinued', 'Pending'] } } },
-        UpdateTradeNameRequest: { type: 'object', properties: { title: { type: 'string' }, activeSubstanceId: { type: 'integer' }, companyId: { type: 'integer' }, availabilityStatus: { type: 'string' } } },
+        CreateTradeNameRequest: { type: 'object', required: ['title', 'activeSubstanceId', 'companyId'], properties: { title: { type: 'string', example: 'Lipitor 20mg' }, activeSubstanceId: { type: 'integer', example: 15 }, companyId: { type: 'integer', example: 1 }, barCode: { type: 'string', example: '6224000123456' }, warningNotification: { type: 'string' }, availabilityStatus: { type: 'string', enum: ['InStock', 'OutOfStock', 'Discontinued', 'Pending'], example: 'InStock' } }, example: { title: 'Lipitor 20mg', activeSubstanceId: 15, companyId: 1, availabilityStatus: 'InStock' } },
+        UpdateTradeNameRequest: { type: 'object', properties: { title: { type: 'string', example: 'Lipitor 40mg' }, activeSubstanceId: { type: 'integer', example: 15 }, companyId: { type: 'integer', example: 1 }, availabilityStatus: { type: 'string', example: 'InStock' } }, example: { availabilityStatus: 'OutOfStock' } },
         // ── Diseases
-        CreateDiseaseRequest: { type: 'object', required: ['name', 'severity'], properties: { name: { type: 'string' }, severity: { type: 'string', enum: ['None', 'Mild', 'Moderate', 'Severe'] }, description: { type: 'string' } } },
-        UpdateDiseaseRequest: { type: 'object', properties: { name: { type: 'string' }, severity: { type: 'string' }, description: { type: 'string' } } },
-        CreateDiseaseWarningRequest: { type: 'object', required: ['diseaseId', 'activeSubstanceId', 'warningFieldName', 'warningMessage', 'severity'], properties: { diseaseId: { type: 'integer' }, activeSubstanceId: { type: 'integer' }, warningFieldName: { type: 'string' }, warningMessage: { type: 'string' }, severity: { type: 'string', enum: ['Info', 'Low', 'Medium', 'High', 'Critical'] } } },
+        CreateDiseaseRequest: {
+          type: 'object',
+          required: ['name', 'severity'],
+          description: 'Create a disease. Use triggersCancerCheck to flag diseases where family history activates the Cancer Risk check. Use contraindicationKeywords to list strings the Safety Engine scans for in the drug\'s contraindications text (case-insensitive). Use PUT /diseases/body-system-mappings/bulk to set which ActiveSubstance warning fields this disease maps to.',
+          properties: {
+            name:                       { type: 'string', example: 'Chronic Kidney Disease', description: 'Required.' },
+            severity:                   { type: 'string', enum: ['None', 'Mild', 'Moderate', 'Severe'], example: 'Severe', description: 'Required.' },
+            description:                { type: 'string', example: 'Progressive kidney function loss', description: 'Optional.' },
+            triggersCancerCheck:        { type: 'boolean', example: false, default: false, description: 'Optional. When true, having a Father/Mother family history of this disease + a drug with carcinogenicityMutagenicity data → RED (Cancer Risk check).' },
+            contraindicationKeywords:   { type: 'array', items: { type: 'string', example: 'renal failure' }, example: ['renal failure', 'kidney impairment', 'CKD'], description: 'Optional. Keywords the engine scans for (case-insensitive) inside the drug\'s contraindications text. A match → RED (Contraindication Keyword check).' }
+          },
+          example: { name: 'Chronic Kidney Disease', severity: 'Severe', triggersCancerCheck: false, contraindicationKeywords: ['renal failure', 'kidney impairment'] }
+        },
+        UpdateDiseaseRequest: {
+          type: 'object',
+          description: 'Update a disease. All fields optional.',
+          properties: {
+            name:                     { type: 'string', example: 'Chronic Kidney Disease (Stage 3)' },
+            severity:                 { type: 'string', enum: ['None', 'Mild', 'Moderate', 'Severe'], example: 'Severe' },
+            description:              { type: 'string', example: 'Stage 3 CKD with eGFR 30–59' },
+            triggersCancerCheck:      { type: 'boolean', example: true, description: 'Toggle the Cancer Risk check flag.' },
+            contraindicationKeywords: { type: 'array', items: { type: 'string' }, example: ['renal failure', 'CKD', 'kidney disease'], description: 'Replace all contraindication keywords. Send [] to clear.' }
+          },
+          example: { contraindicationKeywords: ['renal failure', 'CKD', 'kidney disease'] }
+        },
+        CreateDiseaseWarningRequest: { type: 'object', required: ['diseaseId', 'activeSubstanceId', 'warningFieldName', 'warningMessage', 'severity'], properties: { diseaseId: { type: 'integer', example: 3 }, activeSubstanceId: { type: 'integer', example: 11 }, warningFieldName: { type: 'string', example: 'renalWarning' }, warningMessage: { type: 'string', example: 'Avoid in CKD patients.' }, severity: { type: 'string', enum: ['Info', 'Low', 'Medium', 'High', 'Critical'], example: 'High' } }, example: { diseaseId: 3, activeSubstanceId: 11, warningFieldName: 'renalWarning', warningMessage: 'Avoid in CKD patients.', severity: 'High' } },
+        // ── Body System Mapping schemas
+        CreateBodySystemMappingRequest: {
+          type: 'object',
+          required: ['diseaseId', 'fieldName'],
+          description: 'Map one disease to one ActiveSubstance warning field. The Safety Engine uses these mappings to know which field to check when a patient has this disease.',
+          properties: {
+            diseaseId: { type: 'integer', example: 3, description: 'Required. Get IDs from GET /diseases.' },
+            fieldName: {
+              type: 'string',
+              example: 'renalWarning',
+              description: 'Required. One of the 24 ActiveSubstanceWarningField enum values.',
+              enum: ['vascularWarning','cardiacWarning','gitWarning','hepaticWarning','renalWarning','nervousSystemWarning','psychiatricWarning','pulmonaryWarning','metabolismWarning','bloodWarning','immuneSystemWarning','infectionWarning','musculoSkeletalWarning','skinConnectiveTissueWarning','eyeDisordersWarning','earDisordersWarning','electrolyteImbalanceWarning','reproductiveWarningFemale','reproductiveWarningMale','specialPopulationElderly','specialPopulationChildren','carcinogenicityMutagenicity','contraindications','medicationErrorWarning']
+            }
+          },
+          example: { diseaseId: 3, fieldName: 'renalWarning' }
+        },
+        BulkBodySystemMappingRequest: {
+          type: 'object',
+          required: ['diseaseId', 'fieldNames'],
+          description: 'Atomically replace all body-system-mappings for a disease. Existing mappings are deleted and the new set is inserted in a single transaction.',
+          properties: {
+            diseaseId:  { type: 'integer', example: 3, description: 'Required.' },
+            fieldNames: { type: 'array', minItems: 1, items: { type: 'string', enum: ['vascularWarning','cardiacWarning','gitWarning','hepaticWarning','renalWarning','nervousSystemWarning','psychiatricWarning','pulmonaryWarning','metabolismWarning','bloodWarning','immuneSystemWarning','infectionWarning','musculoSkeletalWarning','skinConnectiveTissueWarning','eyeDisordersWarning','earDisordersWarning','electrolyteImbalanceWarning','reproductiveWarningFemale','reproductiveWarningMale','specialPopulationElderly','specialPopulationChildren','carcinogenicityMutagenicity','contraindications','medicationErrorWarning'] }, example: ['renalWarning', 'hepaticWarning'], description: 'Required. Full list of warning fields to assign. Replaces existing mappings.' }
+          },
+          example: { diseaseId: 3, fieldNames: ['renalWarning', 'hepaticWarning'] }
+        },
         // ── Disease warning rules
-        CreateDiseaseWarningRuleRequest: { type: 'object', required: ['diseaseId'], properties: { diseaseId: { type: 'integer' }, ruleType: { type: 'string' }, targetActiveSubstanceId: { type: 'integer' }, targetDrugClass: { type: 'string' }, severity: { type: 'string' }, warningMessage: { type: 'string' }, autoBlock: { type: 'boolean' }, requiresOverride: { type: 'boolean' }, requiredMonitoring: { type: 'string' } } },
-        UpdateDiseaseWarningRuleRequest: { type: 'object', properties: { ruleType: { type: 'string' }, targetActiveSubstanceId: { type: 'integer' }, targetDrugClass: { type: 'string' }, severity: { type: 'string' }, warningMessage: { type: 'string' }, autoBlock: { type: 'boolean' }, requiresOverride: { type: 'boolean' }, requiredMonitoring: { type: 'string' } } },
+        CreateDiseaseWarningRuleRequest: { type: 'object', required: ['diseaseId'], properties: { diseaseId: { type: 'integer', example: 3 }, ruleType: { type: 'string', example: 'Contraindication' }, targetActiveSubstanceId: { type: 'integer', example: 11 }, targetDrugClass: { type: 'string', example: 'NSAIDs' }, severity: { type: 'string', example: 'High' }, warningMessage: { type: 'string', example: 'NSAIDs contraindicated in renal failure.' }, autoBlock: { type: 'boolean', example: true }, requiresOverride: { type: 'boolean', example: false }, requiredMonitoring: { type: 'string', example: 'Monitor eGFR' } }, example: { diseaseId: 3, ruleType: 'Contraindication', targetDrugClass: 'NSAIDs', severity: 'High', warningMessage: 'NSAIDs contraindicated in renal failure.', autoBlock: true } },
+        UpdateDiseaseWarningRuleRequest: { type: 'object', properties: { ruleType: { type: 'string' }, targetActiveSubstanceId: { type: 'integer' }, targetDrugClass: { type: 'string' }, severity: { type: 'string' }, warningMessage: { type: 'string' }, autoBlock: { type: 'boolean' }, requiresOverride: { type: 'boolean' }, requiredMonitoring: { type: 'string' } }, example: { autoBlock: false, requiredMonitoring: 'Monitor eGFR monthly' } },
         // ── Companies
-        CreateCompanyRequest: { type: 'object', required: ['name'], properties: { name: { type: 'string' }, address: { type: 'string' }, governorate: { type: 'string' }, country: { type: 'string' }, contactInfo: {}, phoneNumber: { type: 'string' }, email: { type: 'string', format: 'email' }, website: { type: 'string', format: 'uri' } } },
-        UpdateCompanyRequest: { type: 'object', properties: { name: { type: 'string' }, address: { type: 'string' }, phoneNumber: { type: 'string' }, email: { type: 'string' } } },
+        CreateCompanyRequest: { type: 'object', required: ['name'], properties: { name: { type: 'string', example: 'Pfizer Egypt' }, address: { type: 'string', example: '100 Industry St, 6th October City' }, governorate: { type: 'string', example: 'Giza' }, country: { type: 'string', example: 'Egypt' }, contactInfo: {}, phoneNumber: { type: 'string', example: '+20224501000' }, email: { type: 'string', format: 'email', example: 'info@pfizer.eg' }, website: { type: 'string', format: 'uri', example: 'https://www.pfizer.eg' } }, example: { name: 'Pfizer Egypt', governorate: 'Giza', country: 'Egypt', email: 'info@pfizer.eg' } },
+        UpdateCompanyRequest: { type: 'object', properties: { name: { type: 'string', example: 'Pfizer Egypt LLC' }, address: { type: 'string' }, phoneNumber: { type: 'string' }, email: { type: 'string', example: 'contact@pfizer.eg' } }, example: { email: 'contact@pfizer.eg' } },
         // ── Pricing plans
-        CreatePricingPlanRequest: { type: 'object', required: ['title', 'price'], properties: { title: { type: 'string' }, price: { type: 'number' }, salePrice: { type: 'number' }, duration: { type: 'integer' }, features: { type: 'array', items: { type: 'string' } }, isDefault: { type: 'boolean' } } },
-        UpdatePricingPlanRequest: { type: 'object', properties: { title: { type: 'string' }, price: { type: 'number' }, salePrice: { type: 'number' }, duration: { type: 'integer' }, features: { type: 'array', items: { type: 'string' } }, isDefault: { type: 'boolean' }, isActive: { type: 'boolean' } } },
+        CreatePricingPlanRequest: { type: 'object', required: ['title', 'price'], properties: { title: { type: 'string', example: 'Professional' }, price: { type: 'number', example: 199 }, salePrice: { type: 'number', example: 149 }, duration: { type: 'integer', example: 30, description: 'Days' }, features: { type: 'array', items: { type: 'string' }, example: ['Unlimited prescriptions', 'Drug safety engine', 'Priority support'] }, isDefault: { type: 'boolean', example: false } }, example: { title: 'Professional', price: 199, salePrice: 149, duration: 30, features: ['Unlimited prescriptions', 'Drug safety engine'] } },
+        UpdatePricingPlanRequest: { type: 'object', properties: { title: { type: 'string' }, price: { type: 'number', example: 229 }, salePrice: { type: 'number', example: 179 }, duration: { type: 'integer' }, features: { type: 'array', items: { type: 'string' } }, isDefault: { type: 'boolean' }, isActive: { type: 'boolean', example: true } }, example: { price: 229, isActive: true } },
         // ── Subscriptions & payments
-        CreateSubscriptionRequest: { type: 'object', required: ['userId', 'pricingPlanId'], properties: { userId: { type: 'integer' }, pricingPlanId: { type: 'integer' }, autoRenew: { type: 'boolean' } } },
-        UpdateSubscriptionRequest: { type: 'object', properties: { pricingPlanId: { type: 'integer' }, autoRenew: { type: 'boolean' }, status: { type: 'string' } } },
-        CreatePaymentRequest: { type: 'object', required: ['subscriptionId', 'amount'], properties: { subscriptionId: { type: 'integer' }, amount: { type: 'number' }, currency: { type: 'string' }, paymentMethod: { type: 'string' }, transactionId: { type: 'string' } } },
-        UpdatePaymentStatusRequest: { type: 'object', properties: { status: { type: 'string' }, transactionId: { type: 'string' } } },
+        CreateSubscriptionRequest: { type: 'object', required: ['userId', 'pricingPlanId'], properties: { userId: { type: 'integer', example: 7 }, pricingPlanId: { type: 'integer', example: 2 }, autoRenew: { type: 'boolean', example: true } }, example: { userId: 7, pricingPlanId: 2, autoRenew: true } },
+        UpdateSubscriptionRequest: { type: 'object', properties: { pricingPlanId: { type: 'integer', example: 3 }, autoRenew: { type: 'boolean', example: false }, status: { type: 'string', example: 'Active' } }, example: { autoRenew: false } },
+        CreatePaymentRequest: { type: 'object', required: ['subscriptionId', 'amount'], properties: { subscriptionId: { type: 'integer', example: 4 }, amount: { type: 'number', example: 149 }, currency: { type: 'string', example: 'EGP' }, paymentMethod: { type: 'string', example: 'Card' }, transactionId: { type: 'string', example: 'TXN-2025-0001' } }, example: { subscriptionId: 4, amount: 149, currency: 'EGP', paymentMethod: 'Card', transactionId: 'TXN-2025-0001' } },
+        UpdatePaymentStatusRequest: { type: 'object', properties: { status: { type: 'string', example: 'Completed' }, transactionId: { type: 'string', example: 'TXN-2025-0001' } }, example: { status: 'Completed' } },
         // ── Admin
-        CreatePermissionRequest: { type: 'object', required: ['code', 'name'], properties: { code: { type: 'string' }, name: { type: 'string' }, description: { type: 'string' }, adminOnly: { type: 'boolean' } } },
-        AddPermissionToRoleRequest: { type: 'object', required: ['permissionId'], properties: { permissionId: { type: 'integer' } } },
-        RejectDoctorRequest: { type: 'object', properties: { reason: { type: 'string' } } },
-        RejectPharmacistRequest: { type: 'object', properties: { reason: { type: 'string' } } },
+        CreatePermissionRequest: { type: 'object', required: ['code', 'name'], properties: { code: { type: 'string', example: 'MANAGE_USERS' }, name: { type: 'string', example: 'Manage Users' }, description: { type: 'string', example: 'Can create, update, and delete users' }, adminOnly: { type: 'boolean', example: true } }, example: { code: 'MANAGE_USERS', name: 'Manage Users', adminOnly: true } },
+        AddPermissionToRoleRequest: { type: 'object', required: ['permissionId'], properties: { permissionId: { type: 'integer', example: 5 } }, example: { permissionId: 5 } },
+        RejectDoctorRequest: { type: 'object', properties: { reason: { type: 'string', example: 'License number could not be verified with the medical council' } }, example: { reason: 'License number could not be verified with the medical council' } },
+        RejectPharmacistRequest: { type: 'object', properties: { reason: { type: 'string', example: 'License expired' } }, example: { reason: 'License expired' } },
         // ── Admin Side Effects Management
         AdminCreateSideEffectRequest: {
           description: 'Create side effect and optionally link to trade names (drugs). tradeNames = array of TradeName IDs (from GET /trade-names/search).',
           type: 'object',
           required: ['name'],
           properties: {
-            name: { type: 'string', description: 'Required. Side effect name (e.g. Headache).' },
-            nameAr: { type: 'string', description: 'Optional. Arabic name.' },
-            tradeNames: { type: 'array', items: { type: 'integer' }, description: 'Optional. Trade name IDs to link.' }
-          }
+            name: { type: 'string', example: 'Headache', description: 'Required. Side effect name (e.g. Headache).' },
+            nameAr: { type: 'string', example: 'صداع', description: 'Optional. Arabic name.' },
+            tradeNames: { type: 'array', items: { type: 'integer' }, example: [23, 24], description: 'Optional. Trade name IDs to link.' }
+          },
+          example: { name: 'Headache', nameAr: 'صداع', tradeNames: [23] }
         },
         AdminUpdateSideEffectRequest: {
           description: 'Update side effect. All fields optional.',
           type: 'object',
-          properties: { name: { type: 'string' }, nameAr: { type: 'string' } }
+          properties: { name: { type: 'string', example: 'Migraine' }, nameAr: { type: 'string', example: 'صداع نصفي' } },
+          example: { name: 'Migraine' }
         },
         AdminAttachTradeNamesRequest: {
           description: 'Attach trade names (drugs) to side effect. tradeNames = array of TradeName IDs.',
           type: 'object',
           required: ['tradeNames'],
           properties: {
-            tradeNames: { type: 'array', items: { type: 'integer' }, minItems: 1 }
-          }
+            tradeNames: { type: 'array', items: { type: 'integer' }, minItems: 1, example: [23, 24, 25] }
+          },
+          example: { tradeNames: [23, 24, 25] }
         },
         // ── Side effects
         AddSideEffectRequest: {
@@ -1651,27 +1950,30 @@ const options: Record<string, unknown> = {
           type: 'object',
           required: ['medicationId', 'name'],
           properties: {
-            medicationId: { type: 'integer', description: 'Required. PatientMedicine ID (from GET /patient-medicines/patient/:patientId).' },
-            name: { type: 'string', description: 'Required. Name of the side effect (e.g. "Headache").' }
-          }
+            medicationId: { type: 'integer', example: 8, description: 'Required. PatientMedicine ID (from GET /patient-medicines/patient/:patientId).' },
+            name: { type: 'string', example: 'Headache', description: 'Required. Name of the side effect (e.g. "Headache").' }
+          },
+          example: { medicationId: 8, name: 'Headache' }
         },
         ReportSideEffectsRequest: {
           description: 'Report side effects the patient experienced for a medication. Required: medicationId, sideEffects (array of SideEffect IDs).',
           type: 'object',
           required: ['medicationId', 'sideEffects'],
           properties: {
-            medicationId: { type: 'integer', description: 'Required. PatientMedicine ID.' },
-            sideEffects: { type: 'array', items: { type: 'integer' }, description: 'Required. Array of SideEffect IDs (from GET /side-effects/by-medication/:id).' }
-          }
+            medicationId: { type: 'integer', example: 8, description: 'Required. PatientMedicine ID.' },
+            sideEffects: { type: 'array', items: { type: 'integer' }, example: [1, 3], description: 'Required. Array of SideEffect IDs (from GET /side-effects/by-medication/:id).' }
+          },
+          example: { medicationId: 8, sideEffects: [1, 3] }
         },
         SideEffectsByMedicationResponse: {
           description: 'Response for GET /side-effects/by-medication/:id. If the medication\'s company is contracted: { supported: true, sideEffects: [...] }. If NOT contracted: { supported: false, redirect: "https://edaegypt.gov.eg" }.',
           type: 'object',
           properties: {
-            supported: { type: 'boolean' },
-            redirect: { type: 'string', description: 'Only present when supported=false. URL to EDA website.' },
-            sideEffects: { type: 'array', items: { type: 'object', properties: { id: { type: 'integer' }, name: { type: 'string' }, frequency: { type: 'string', nullable: true }, bodySystem: { type: 'string', nullable: true } } }, description: 'Only present when supported=true.' }
-          }
+            supported: { type: 'boolean', example: true },
+            redirect: { type: 'string', example: 'https://edaegypt.gov.eg', description: 'Only present when supported=false. URL to EDA website.' },
+            sideEffects: { type: 'array', items: { type: 'object', properties: { id: { type: 'integer', example: 1 }, name: { type: 'string', example: 'Headache' }, frequency: { type: 'string', nullable: true, example: 'Common' }, bodySystem: { type: 'string', nullable: true, example: 'Nervous System' } } }, description: 'Only present when supported=true.' }
+          },
+          example: { supported: true, sideEffects: [{ id: 1, name: 'Headache', frequency: 'Common', bodySystem: 'Nervous System' }, { id: 3, name: 'Nausea', frequency: 'Very Common', bodySystem: 'Gastrointestinal' }] }
         },
         // ── Patient share token (QR code)
         RedeemShareTokenRequest: {
@@ -1679,56 +1981,59 @@ const options: Record<string, unknown> = {
           type: 'object',
           required: ['token'],
           properties: {
-            token: { type: 'string', format: 'uuid', description: 'Required. The token from the scanned QR code.' }
-          }
+            token: { type: 'string', format: 'uuid', example: 'a3b4c5d6-e7f8-4a9b-0c1d-2e3f4a5b6c7d', description: 'Required. The token from the scanned QR code.' }
+          },
+          example: { token: 'a3b4c5d6-e7f8-4a9b-0c1d-2e3f4a5b6c7d' }
         },
         GenerateShareTokenResponse: {
           description: 'Response after generating a share token. Includes the raw token, expiration info, and QR code as a base64 data URL.',
           type: 'object',
           properties: {
-            message:          { type: 'string' },
-            token:            { type: 'string', format: 'uuid', description: 'The generated secure token.' },
-            expiresAt:        { type: 'string', format: 'date-time', description: 'Token expiration timestamp.' },
-            expiresInMinutes: { type: 'integer', description: 'Token TTL in minutes.' },
-            qrCode:           { type: 'string', description: 'QR code image as base64 data URL (image/png).' }
-          }
+            message:          { type: 'string', example: 'Share token generated successfully' },
+            token:            { type: 'string', format: 'uuid', example: 'a3b4c5d6-e7f8-4a9b-0c1d-2e3f4a5b6c7d', description: 'The generated secure token.' },
+            expiresAt:        { type: 'string', format: 'date-time', example: '2025-04-07T10:30:00.000Z', description: 'Token expiration timestamp.' },
+            expiresInMinutes: { type: 'integer', example: 15, description: 'Token TTL in minutes.' },
+            qrCode:           { type: 'string', example: 'data:image/png;base64,iVBOR...', description: 'QR code image as base64 data URL (image/png).' }
+          },
+          example: { message: 'Share token generated successfully', token: 'a3b4c5d6-e7f8-4a9b-0c1d-2e3f4a5b6c7d', expiresAt: '2025-04-07T10:30:00.000Z', expiresInMinutes: 15 }
         },
         RedeemShareTokenResponse: {
           description: 'Response after successfully redeeming a share token. Includes the new relationship and patient details.',
           type: 'object',
           properties: {
-            message:      { type: 'string' },
+            message:      { type: 'string', example: 'Patient linked to doctor successfully' },
             relationship: { type: 'object', description: 'The created PatientDoctor relationship.' },
             patient:      { type: 'object', description: 'Patient details (id, name, email, age, gender, bloodType, diseases, allergies).' }
-          }
+          },
+          example: { message: 'Patient linked to doctor successfully', relationship: { id: 10, patientId: 5, doctorId: 2, relationshipType: 'PrimaryCare' }, patient: { id: 5, name: 'John Doe', email: 'patient@greenrx.com', age: 45, gender: 'Male' } }
         },
-        VerifyDoctorRequest: { type: 'object', properties: { notes: { type: 'string' } } },
+        VerifyDoctorRequest: { type: 'object', properties: { notes: { type: 'string', example: 'License verified with Egyptian Medical Syndicate' } }, example: { notes: 'License verified with Egyptian Medical Syndicate' } },
         // ── Drug-safety schemas
-        WarningSeverity: {
-          type: 'string',
-          enum: ['Info', 'Low', 'Medium', 'High', 'Critical']
-        },
+        WarningSeverity: { type: 'string', enum: ['Info', 'Low', 'Medium', 'High', 'Critical'], example: 'High' },
         WarningType: {
           type: 'string',
           enum: ['AllergyWarning', 'DiseaseContraindication', 'PregnancyWarning', 'LactationWarning',
                  'PediatricWarning', 'GeriatricWarning', 'RenalWarning', 'HepaticWarning',
-                 'DrugInteraction', 'BatchDrugInteraction', 'FamilyHistoryRisk']
+                 'DrugInteraction', 'BatchDrugInteraction', 'FamilyHistoryRisk'],
+          example: 'AllergyWarning'
         },
         Warning: {
           type: 'object',
           properties: {
             severity: { $ref: '#/components/schemas/WarningSeverity' },
             type:     { $ref: '#/components/schemas/WarningType' },
-            message:  { type: 'string' },
-            blocked:  { type: 'boolean' }
-          }
+            message:  { type: 'string', example: 'Ibuprofen is contraindicated in patients with renal failure.' },
+            blocked:  { type: 'boolean', example: true }
+          },
+          example: { severity: 'High', type: 'DiseaseContraindication', message: 'Ibuprofen is contraindicated in patients with renal failure.', blocked: true }
         },
         WarningResult: {
           type: 'object',
           properties: {
-            blocked:  { type: 'boolean' },
+            blocked:  { type: 'boolean', example: true },
             warnings: { type: 'array', items: { $ref: '#/components/schemas/Warning' } }
-          }
+          },
+          example: { blocked: true, warnings: [{ severity: 'High', type: 'DiseaseContraindication', message: 'Contraindicated in CKD.', blocked: true }] }
         },
         PatientWarningsResponse: {
           description: 'GET /patients/:patientId/warnings. Aggregated warnings for all current medicines (prescriptions + self-reported).',
@@ -1740,14 +2045,18 @@ const options: Record<string, unknown> = {
               items: {
                 type: 'object',
                 properties: {
-                  medicineName: { type: 'string' },
-                  tradeNameId: { type: 'integer' },
-                  activeSubstanceId: { type: 'integer' },
-                  warnings: { type: 'array', items: { $ref: '#/components/schemas/Warning' } }
+                  medicineName:       { type: 'string', example: 'Ibuprofen 400mg' },
+                  tradeNameId:        { type: 'integer', example: 23 },
+                  activeSubstanceId:  { type: 'integer', example: 11 },
+                  warnings:           { type: 'array', items: { $ref: '#/components/schemas/Warning' } }
                 }
               },
               description: 'Warnings grouped by medicine.'
             }
+          },
+          example: {
+            warnings: [{ severity: 'High', type: 'DiseaseContraindication', message: 'Ibuprofen contraindicated in CKD.', blocked: true }],
+            byMedicine: [{ medicineName: 'Ibuprofen 400mg', tradeNameId: 23, activeSubstanceId: 11, warnings: [{ severity: 'High', type: 'DiseaseContraindication', message: 'Ibuprofen contraindicated in CKD.', blocked: true }] }]
           }
         }
       }

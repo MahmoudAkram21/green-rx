@@ -5,6 +5,7 @@ import {
   createActiveSubstanceSchema,
   updateActiveSubstanceSchema,
 } from "../zod/createActiveSubstance.zod";
+import { evaluateDrugSafety, loadPatientContext } from "../services/pharmaSafetyEngine.service";
 
 // Create Active Substance
 export const createActiveSubstance = async (
@@ -190,6 +191,7 @@ export const searchActiveSubstances = async (
       search,
       therapeuticClass,
       classification,
+      patientId,
       page = "1",
       limit = "20",
     } = req.query;
@@ -218,6 +220,8 @@ export const searchActiveSubstances = async (
       };
     }
 
+    const resolvedPatientId = patientId ? parseInt(String(patientId), 10) : null;
+
     // NOTE: companyId/requiresPrescription were removed from ActiveSubstance schema.
 
     const skip = (parseInt(page as string) - 1) * parseInt(limit as string);
@@ -236,8 +240,28 @@ export const searchActiveSubstances = async (
       prisma.activeSubstance.count({ where: whereClause }),
     ]);
 
+    // Attach safety status per result when patientId is provided.
+    // Patient context is loaded ONCE here and passed into every evaluateDrugSafety
+    // call to avoid an N+1 query (one DB hit per substance result).
+    let substancesWithSafety: any[] = substances;
+    if (resolvedPatientId && !Number.isNaN(resolvedPatientId)) {
+      const preloadedPatient = await loadPatientContext(resolvedPatientId);
+      substancesWithSafety = await Promise.all(
+        substances.map(async (sub) => {
+          const safetyStatus = await evaluateDrugSafety({
+            patientId: resolvedPatientId,
+            activeSubstanceId: sub.id,
+            preloadedPatient,
+          });
+          return { ...sub, safetyStatus };
+        })
+      );
+    } else {
+      substancesWithSafety = substances.map((sub) => ({ ...sub, safetyStatus: null }));
+    }
+
     res.json({
-      substances,
+      substances: substancesWithSafety,
       pagination: {
         total,
         page: parseInt(page as string),
