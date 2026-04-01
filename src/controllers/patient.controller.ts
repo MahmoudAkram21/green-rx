@@ -588,7 +588,7 @@ export const addAllergy = async (
             const tradeName = await prisma.tradeName.findMany({
                 where: { id: { in: payload.tradeNameIds } },
             });
-            if (tradeName.length > 0) {
+            if (!(tradeName.length > 0)) {
                 res.status(400).json({
                     error: `Some Trade names are not found`,
                 });

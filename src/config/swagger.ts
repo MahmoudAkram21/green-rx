@@ -1235,7 +1235,7 @@ const options: Record<string, unknown> = {
             notes:             { type: 'string', nullable: true }
           },
           example: {
-            tradeNameId: [17 , 18],
+            tradeNameIds: [17 , 18],
             allergenIds: [2, 5],
             activeSubstanceIds: [12],
             excipientIds: [4],
