@@ -4728,6 +4728,82 @@ async function main() {
   console.log("✅ Created DiseaseBodySystemMapping for Hypertension, CKD, CAD, Diabetes, Allergic Rhinitis");
 
   // ============================================
+  // SECTION 13: TRADE NAME ← → SIDE EFFECT LINKS
+  // ============================================
+  console.log("\n📋 Linking Trade Names to their common side effects...");
+
+  const tradeNameSideEffectLinks = await prisma.tradeNameSideEffect.createMany({
+    data: [
+      // Amoxil (Amoxicillin) → common side effects
+      { tradeNameId: tradeNames[0].id, sideEffectId: sideEffectMap["Nausea"], frequency: "Common" },
+      { tradeNameId: tradeNames[0].id, sideEffectId: sideEffectMap["Diarrhea"], frequency: "Common" },
+      { tradeNameId: tradeNames[0].id, sideEffectId: sideEffectMap["Rash"], frequency: "Uncommon" },
+
+      // Brufen (Ibuprofen) → common side effects
+      { tradeNameId: tradeNames[1].id, sideEffectId: sideEffectMap["Nausea"], frequency: "Common" },
+      { tradeNameId: tradeNames[1].id, sideEffectId: sideEffectMap["Abdominal pain"], frequency: "Common" },
+
+      // Glucophage (Metformin) → common side effects
+      { tradeNameId: tradeNames[2].id, sideEffectId: sideEffectMap["Nausea"], frequency: "Common" },
+      { tradeNameId: tradeNames[2].id, sideEffectId: sideEffectMap["Diarrhea"], frequency: "Common" },
+      { tradeNameId: tradeNames[2].id, sideEffectId: sideEffectMap["Metallic taste"], frequency: "Uncommon" },
+
+      // Norvasc (Amlodipine) → common side effects
+      { tradeNameId: tradeNames[3].id, sideEffectId: sideEffectMap["Edema"], frequency: "Common", bodySystem: "Vascular" },
+      { tradeNameId: tradeNames[3].id, sideEffectId: sideEffectMap["Headache"], frequency: "Uncommon" },
+
+      // Lipitor (Atorvastatin) → common side effects
+      { tradeNameId: tradeNames[4].id, sideEffectId: sideEffectMap["Muscle pain"], frequency: "Common" },
+      { tradeNameId: tradeNames[4].id, sideEffectId: sideEffectMap["Headache"], frequency: "Uncommon" },
+
+      // Panadol (Paracetamol) → common side effects
+      { tradeNameId: tradeNames[5].id, sideEffectId: sideEffectMap["Nausea"], frequency: "Rare" },
+      { tradeNameId: tradeNames[5].id, sideEffectId: sideEffectMap["Rash"], frequency: "Rare" },
+
+      // Aspirin → common side effects
+      { tradeNameId: tradeNames[6].id, sideEffectId: sideEffectMap["Nausea"], frequency: "Common" },
+      { tradeNameId: tradeNames[6].id, sideEffectId: sideEffectMap["Abdominal pain"], frequency: "Common" },
+
+      // Dupixent (Dupilumab) → common side effects
+      { tradeNameId: tradeNames[7].id, sideEffectId: sideEffectMap["Headache"], frequency: "Common" },
+      { tradeNameId: tradeNames[7].id, sideEffectId: sideEffectMap["Nausea"], frequency: "Uncommon" },
+    ],
+    skipDuplicates: true,
+  });
+
+  console.log(`✅ Created ${tradeNameSideEffectLinks.count} Trade Name ↔ Side Effect links`);
+
+  // ============================================
+  // SECTION 14: CONTRACTING COMPANY ↔ TRADE NAME LINKS
+  // ============================================
+  console.log("\n🤝 Linking Contracting Companies to their available Trade Names...");
+
+  const contractingCompanyTradeNameLinks = await prisma.contractingCompanyTradeName.createMany({
+    data: [
+      // MedSupply Egypt (contractingCompanies[0])
+      // Note: Already has links to Brufen, Norvasc, and Lipitor created in Section 11
+      // Adding additional strategic links for complementary products
+      { contractingCompanyId: contractingCompanies[0].id, tradeNameId: tradeNames[0].id }, // MedSupply → Panadol (pain relief complement)
+      { contractingCompanyId: contractingCompanies[0].id, tradeNameId: tradeNames[3].id }, // MedSupply → Glucophage (chronic disease)
+
+      // PharmaDist MENA (contractingCompanies[1])
+      // Note: Already has links to Panadol, Amoxil, and Ventolin created in Section 11
+      // Adding complementary products
+      { contractingCompanyId: contractingCompanies[1].id, tradeNameId: tradeNames[9].id }, // PharmaDist → Cozaar (cardiovascular)
+
+      // NovaDist Corp (contractingCompanies[2])
+      // Note: Already has links to Losec and Zyrtec created in Section 11
+      // Adding complementary products
+      { contractingCompanyId: contractingCompanies[2].id, tradeNameId: tradeNames[6].id }, // NovaDist → Lipitor (cardio)
+      { contractingCompanyId: contractingCompanies[2].id, tradeNameId: tradeNames[1].id }, // NovaDist → Brufen (pain relief)
+      { contractingCompanyId: contractingCompanies[2].id, tradeNameId: tradeNames[4].id }, // NovaDist → Norvasc (cardiovascular)
+    ],
+    skipDuplicates: true,
+  });
+
+  console.log(`✅ Created/linked ${contractingCompanyTradeNameLinks.count} additional Contracting Company ↔ Trade Name relationships`);
+
+  // ============================================
   // FINAL SUMMARY
   // ============================================
   console.log("\n✨ Database seeded successfully!");

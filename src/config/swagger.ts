@@ -515,7 +515,9 @@ s('/patient-share-token/redeem', 'post', [PATIENT_TAGS.SHARE_WITH_DOCTOR, DOCTOR
 // SIDE EFFECTS (My Side Effects)
 s('/side-effects/by-medication/{medicationId}', 'get', [PATIENT_TAGS.SIDE_EFFECTS, DOCTOR_PATIENTS_SECTION], 'Get known side effects for a patient medication. Returns { supported: false, redirect } if the company is not contracted, or { supported: true, sideEffects } otherwise.', true, [p('medicationId')]);
 s('/side-effects/add', 'post', PATIENT_TAGS.SIDE_EFFECTS, 'Add a new side effect name and link it to a medication\'s active substance (Patient only)', true, [], { schemaRef: 'AddSideEffectRequest' }, { '201': 'Side effect created and linked' });
+s('/medicines/{tradeNameId}/side-effects', 'get', [PATIENT_TAGS.SIDE_EFFECTS, DOCTOR_PATIENTS_SECTION], 'Extract pre-defined side effects for a trade name from database. Groups by frequency (VeryCommon, Common, Uncommon, Rare, VeryRare, Unknown). Validates active company contract. Returns 403 if no active contract.', true, [p('tradeNameId')], undefined, { '403': 'No active contract for this medication', '404': 'Trade name not found' });
 s('/my-side-effects', 'post', PATIENT_TAGS.SIDE_EFFECTS, 'Report one or more side effects for a medication (Patient only)', true, [], { schemaRef: 'ReportSideEffectsRequest' }, { '201': 'Side effects reported successfully' });
+s('/my-side-effects/batch', 'post', PATIENT_TAGS.SIDE_EFFECTS, 'Submit multiple side effects at once with severity and optional notes (Patient only). Each side effect includes sideEffectId, severity (Mild|Moderate|Severe), and optional notes. Returns 409 if duplicate, 403 if medicine not in profile.', true, [], { schemaRef: 'SubmitBatchSideEffectsRequest' }, { '201': 'Side effects submitted pending approval', '403': 'Medicine not in your profile', '409': 'Duplicate submission' });
 s('/my-side-effects', 'get', [PATIENT_TAGS.SIDE_EFFECTS, DOCTOR_PATIENTS_SECTION], 'Get all side effects reported by the patient');
 s('/my-side-effects/by-medication/{medicationId}', 'get', [PATIENT_TAGS.SIDE_EFFECTS, DOCTOR_PATIENTS_SECTION], 'Get side effects reported by the patient for a specific medication', true, [p('medicationId')]);
 
@@ -1974,6 +1976,109 @@ const options: Record<string, unknown> = {
             sideEffects: { type: 'array', items: { type: 'object', properties: { id: { type: 'integer', example: 1 }, name: { type: 'string', example: 'Headache' }, frequency: { type: 'string', nullable: true, example: 'Common' }, bodySystem: { type: 'string', nullable: true, example: 'Nervous System' } } }, description: 'Only present when supported=true.' }
           },
           example: { supported: true, sideEffects: [{ id: 1, name: 'Headache', frequency: 'Common', bodySystem: 'Nervous System' }, { id: 3, name: 'Nausea', frequency: 'Very Common', bodySystem: 'Gastrointestinal' }] }
+        },
+        SubmitBatchSideEffectsRequest: {
+          description: 'Submit multiple side effects at once with severity and optional notes. Each side effect includes sideEffectId, severity level, and optional patient notes.',
+          type: 'object',
+          required: ['medicationId', 'sideEffects'],
+          properties: {
+            medicationId: { type: 'integer', example: 5, description: 'Required. PatientMedicine ID.' },
+            sideEffects: {
+              type: 'array',
+              minItems: 1,
+              maxItems: 50,
+              items: {
+                type: 'object',
+                required: ['sideEffectId', 'severity'],
+                properties: {
+                  sideEffectId: { type: 'integer', example: 101, description: 'Required. SideEffect ID from GET /medicines/:tradeNameId/side-effects' },
+                  severity: { type: 'string', enum: ['Mild', 'Moderate', 'Severe'], example: 'Moderate', description: 'Required. Severity level of the side effect.' },
+                  notes: { type: 'string', maxLength: 500, nullable: true, example: 'Occurred after 2 hours of taking medication', description: 'Optional. Patient description or additional notes about the side effect.' }
+                }
+              },
+              description: 'Required. Array of side effects to submit (1-50 items).'
+            }
+          },
+          example: {
+            medicationId: 5,
+            sideEffects: [
+              { sideEffectId: 101, severity: 'Moderate', notes: 'Occurred after 2 hours of taking medication' },
+              { sideEffectId: 103, severity: 'Mild', notes: null }
+            ]
+          }
+        },
+        SubmitBatchSideEffectsResponse: {
+          description: 'Response after submitting multiple side effects. Returns confirmation with list of submitted side effects.',
+          type: 'object',
+          properties: {
+            success: { type: 'boolean', example: true },
+            message: { type: 'string', example: '2 side effects submitted pending approval' },
+            submitted: { type: 'integer', example: 2, description: 'Number of side effects successfully submitted.' },
+            sideEffects: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  id: { type: 'integer', example: 45 },
+                  name: { type: 'string', example: 'Headache' },
+                  severity: { type: 'string', example: 'Moderate' },
+                  notes: { type: 'string', nullable: true, example: 'Occurred after 2 hours of taking medication' },
+                  status: { type: 'string', example: 'Pending', description: 'Always Pending until admin approves.' }
+                }
+              },
+              description: 'List of successfully submitted side effects.'
+            }
+          },
+          example: {
+            success: true,
+            message: '2 side effects submitted pending approval',
+            submitted: 2,
+            sideEffects: [
+              { id: 45, name: 'Headache', severity: 'Moderate', notes: 'Occurred after 2 hours of taking medication', status: 'Pending' },
+              { id: 46, name: 'Nausea', severity: 'Mild', notes: null, status: 'Pending' }
+            ]
+          }
+        },
+        ExtractSideEffectsResponse: {
+          description: 'Response when extracting side effects for a trade name. Groups side effects by frequency (VeryCommon, Common, Uncommon, Rare, VeryRare, Unknown). Only includes Approved side effects. Requires active company contract.',
+          type: 'object',
+          properties: {
+            success: { type: 'boolean', example: true },
+            medicineId: { type: 'integer', example: 5 },
+            tradeName: { type: 'string', example: 'Crestor 5mg' },
+            hasContract: { type: 'boolean', example: true },
+            sideEffects: {
+              type: 'object',
+              properties: {
+                veryCommon: { type: 'array', items: { type: 'object', properties: { id: { type: 'integer' }, name: { type: 'string' }, nameAr: { type: 'string', nullable: true }, frequency: { type: 'string' }, bodySystem: { type: 'string', nullable: true } } } },
+                common: { type: 'array', items: { type: 'object', properties: { id: { type: 'integer' }, name: { type: 'string' }, nameAr: { type: 'string', nullable: true }, frequency: { type: 'string' }, bodySystem: { type: 'string', nullable: true } } } },
+                uncommon: { type: 'array', items: { type: 'object', properties: { id: { type: 'integer' }, name: { type: 'string' }, nameAr: { type: 'string', nullable: true }, frequency: { type: 'string' }, bodySystem: { type: 'string', nullable: true } } } },
+                rare: { type: 'array', items: { type: 'object', properties: { id: { type: 'integer' }, name: { type: 'string' }, nameAr: { type: 'string', nullable: true }, frequency: { type: 'string' }, bodySystem: { type: 'string', nullable: true } } } },
+                veryRare: { type: 'array', items: { type: 'object', properties: { id: { type: 'integer' }, name: { type: 'string' }, nameAr: { type: 'string', nullable: true }, frequency: { type: 'string' }, bodySystem: { type: 'string', nullable: true } } } },
+                unknown: { type: 'array', items: { type: 'object', properties: { id: { type: 'integer' }, name: { type: 'string' }, nameAr: { type: 'string', nullable: true }, frequency: { type: 'string' }, bodySystem: { type: 'string', nullable: true } } } }
+              },
+              description: 'Side effects grouped by frequency category.'
+            }
+          },
+          example: {
+            success: true,
+            medicineId: 5,
+            tradeName: 'Crestor 5mg',
+            hasContract: true,
+            sideEffects: {
+              veryCommon: [
+                { id: 101, name: 'Headache', nameAr: 'صداع', frequency: 'VeryCommon', bodySystem: 'Nervous System' },
+                { id: 102, name: 'Dizziness', nameAr: 'دوخة', frequency: 'VeryCommon', bodySystem: 'Nervous System' }
+              ],
+              common: [
+                { id: 103, name: 'Nausea', nameAr: 'غثيان', frequency: 'Common', bodySystem: 'GIT' }
+              ],
+              uncommon: [],
+              rare: [],
+              veryRare: [],
+              unknown: []
+            }
+          }
         },
         // ── Patient share token (QR code)
         RedeemShareTokenRequest: {

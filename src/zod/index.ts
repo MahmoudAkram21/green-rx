@@ -72,3 +72,10 @@ export {
   updateNotificationSchema,
 } from "./notification.zod";
 
+// Side Effect Submission Schemas
+export {
+  submitSideEffectItemSchema,
+  submitBatchSideEffectsSchema,
+  getPatientSideEffectsSchema,
+} from "./sideEffectSubmission.zod";
+

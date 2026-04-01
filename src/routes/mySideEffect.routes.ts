@@ -3,6 +3,7 @@ import {
     reportSideEffects,
     getMySideEffects,
     getMySideEffectsByMedication,
+    reportBatchSideEffects,
 } from '../controllers/sideEffect.controller';
 import { authenticate, authorize } from '../middleware/auth.middleware';
 import { UserRole } from '../../generated/client/client';
@@ -13,6 +14,7 @@ router.use(authenticate);
 router.use(authorize([UserRole.Patient]));
 
 router.post('/', reportSideEffects);
+router.post('/batch', reportBatchSideEffects);
 router.get('/', getMySideEffects);
 router.get('/by-medication/:medicationId', getMySideEffectsByMedication);
 
