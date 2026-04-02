@@ -6,7 +6,9 @@ import {
     searchTradeNames,
     searchTradeNamesByImage,
     updateTradeName,
-    deleteTradeName
+    deleteTradeName,
+    viewInstructionPdf,
+    getInstructionPdfStats
 } from '../controllers/tradeName.controller';
 import { authenticate, authorize } from '../middleware/auth.middleware';
 import { uploadImageMemory } from '../config/multer.config';
@@ -25,5 +27,9 @@ router.post('/search-by-image', uploadImageMemory.single('image'), searchTradeNa
 router.get('/:id', getTradeNameById);
 router.put('/:id', authorize([UserRole.Admin, UserRole.SuperAdmin, UserRole.Company]), updateTradeName);
 router.delete('/:id', authorize([UserRole.Admin, UserRole.SuperAdmin]), deleteTradeName);
+
+// Instruction PDF routes
+router.post('/:tradeNameId/instruction-pdf/view', authorize([UserRole.Doctor, UserRole.Admin]), viewInstructionPdf);
+router.get('/:tradeNameId/instruction-pdf/stats', authorize([UserRole.Doctor, UserRole.Admin, UserRole.Company]), getInstructionPdfStats);
 
 export default router;

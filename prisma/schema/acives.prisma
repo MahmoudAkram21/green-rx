@@ -256,12 +256,23 @@ model TradeName {
   tradeNameSideEffects         TradeNameSideEffect[]
   excipientTradeName           ExcipientTradeName[]
   tradnamePatientAllergies     TradenamePatientAllergy[]
+  companyInstructionsPdf       InstructionPdf?
 
   @@index([title])
   @@index([activeSubstanceId])
   @@index([companyId])
   @@index([availabilityStatus])
   @@map("trade_names")
+}
+
+model InstructionPdf {
+  id          Int       @id @default(autoincrement())
+  content     String
+  views       Int       @default(0)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  tradeNameId Int       @unique
+  tradeName   TradeName @relation(fields: [tradeNameId], references: [id], onDelete: Cascade)
 }
 
 model Excipient {

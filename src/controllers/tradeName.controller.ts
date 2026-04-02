@@ -18,7 +18,8 @@ export const createTradeName = async (req: Request, res: Response, next: NextFun
                 },
                 company: {
                     select: { name: true }
-                }
+                },
+                companyInstructionsPdf: true
             }
         });
 
@@ -51,7 +52,8 @@ export const listTradeNames = async (req: Request, res: Response, next: NextFunc
             prisma.tradeName.findMany({
                 include: {
                     activeSubstance: { select: { name: true, id: true } },
-                    company: { select: { name: true, id: true } }
+                    company: { select: { name: true, id: true } },
+                    companyInstructionsPdf: true
                 },
                 orderBy: { title: 'asc' },
                 skip,
@@ -96,7 +98,8 @@ export const getTradeNameById = async (req: Request, res: Response, next: NextFu
                 adverseReactions: {
                     take: 10,
                     orderBy: { createdAt: 'desc' }
-                }
+                },
+                companyInstructionsPdf: true
             }
         });
 
@@ -152,7 +155,8 @@ export const searchTradeNamesByImage = async (req: Request, res: Response, next:
                                   dosageForm: true
                               }
                           },
-                          company: { select: { id: true, name: true } }
+                          company: { select: { id: true, name: true } },
+                          companyInstructionsPdf: true
                       }
                   })
                 : Promise.resolve([]),
@@ -276,6 +280,7 @@ export const searchTradeNames = async (req: Request, res: Response, next: NextFu
                         select: { id: true, name: true, classificationId: true, dosageForm: true }
                     },
                     company: { select: { id: true, name: true } },
+                    companyInstructionsPdf: true,
                     // Excipients needed for allergy check when patient context is present
                     ...(resolvedPatientId
                         ? {
@@ -374,6 +379,114 @@ export const deleteTradeName = async (req: Request, res: Response, next: NextFun
             res.status(404).json({ error: 'Trade name not found' });
             return;
         }
+        next(error);
+    }
+};
+
+/**
+ * View and increment the InstructionPdf view counter
+ * POST /trade-names/:tradeNameId/instruction-pdf/view
+ * Doctors call this endpoint to view the PDF and increment the views counter
+ */
+export const viewInstructionPdf = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { tradeNameId } = req.params;
+        const id = parseInt(tradeNameId);
+
+        if (isNaN(id)) {
+            res.status(400).json({ error: 'Invalid trade name ID' });
+            return;
+        }
+
+        // Get the instruction PDF and increment views
+        const instructionPdf = await prisma.instructionPdf.findUnique({
+            where: { tradeNameId: id }
+        });
+
+        if (!instructionPdf) {
+            res.status(404).json({ error: 'Instruction PDF not found for this medicine' });
+            return;
+        }
+
+        // Increment the views counter
+        const updatedPdf = await prisma.instructionPdf.update({
+            where: { tradeNameId: id },
+            data: {
+                views: {
+                    increment: 1
+                }
+            },
+            include: {
+                tradeName: {
+                    select: {
+                        id: true,
+                        title: true
+                    }
+                }
+            }
+        });
+
+        res.json({
+            success: true,
+            instructionPdf: {
+                id: updatedPdf.id,
+                content: updatedPdf.content,
+                views: updatedPdf.views,
+                tradeNameId: updatedPdf.tradeNameId,
+                tradeName: updatedPdf.tradeName,
+                createdAt: updatedPdf.createdAt,
+                updatedAt: updatedPdf.updatedAt
+            }
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+/**
+ * Get InstructionPdf view count statistics
+ * GET /trade-names/:tradeNameId/instruction-pdf/stats
+ * Returns view count without incrementing
+ */
+export const getInstructionPdfStats = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { tradeNameId } = req.params;
+        const id = parseInt(tradeNameId);
+
+        if (isNaN(id)) {
+            res.status(400).json({ error: 'Invalid trade name ID' });
+            return;
+        }
+
+        const instructionPdf = await prisma.instructionPdf.findUnique({
+            where: { tradeNameId: id },
+            include: {
+                tradeName: {
+                    select: {
+                        id: true,
+                        title: true
+                    }
+                }
+            }
+        });
+
+        if (!instructionPdf) {
+            res.status(404).json({ error: 'Instruction PDF not found for this medicine' });
+            return;
+        }
+
+        res.json({
+            success: true,
+            stats: {
+                id: instructionPdf.id,
+                views: instructionPdf.views,
+                tradeNameId: instructionPdf.tradeNameId,
+                tradeName: instructionPdf.tradeName,
+                createdAt: instructionPdf.createdAt,
+                updatedAt: instructionPdf.updatedAt
+            }
+        });
+    } catch (error) {
         next(error);
     }
 };

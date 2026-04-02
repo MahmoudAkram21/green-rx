@@ -515,7 +515,11 @@ s('/patient-share-token/redeem', 'post', [PATIENT_TAGS.SHARE_WITH_DOCTOR, DOCTOR
 // SIDE EFFECTS (My Side Effects)
 s('/side-effects/by-medication/{medicationId}', 'get', [PATIENT_TAGS.SIDE_EFFECTS, DOCTOR_PATIENTS_SECTION], 'Get known side effects for a patient medication. Returns { supported: false, redirect } if the company is not contracted, or { supported: true, sideEffects } otherwise.', true, [p('medicationId')]);
 s('/side-effects/add', 'post', PATIENT_TAGS.SIDE_EFFECTS, 'Add a new side effect name and link it to a medication\'s active substance (Patient only)', true, [], { schemaRef: 'AddSideEffectRequest' }, { '201': 'Side effect created and linked' });
-s('/medicines/{tradeNameId}/side-effects', 'get', [PATIENT_TAGS.SIDE_EFFECTS, DOCTOR_PATIENTS_SECTION], 'Extract pre-defined side effects for a trade name from database. Groups by frequency (VeryCommon, Common, Uncommon, Rare, VeryRare, Unknown). Validates active company contract. Returns 403 if no active contract.', true, [p('tradeNameId')], undefined, { '403': 'No active contract for this medication', '404': 'Trade name not found' });
+s('/medicines/{tradeNameId}/side-effects', 'get', [PATIENT_TAGS.SIDE_EFFECTS, DOCTOR_PATIENTS_SECTION], 'Extract pre-defined side effects for a trade name from database. Groups by frequency (VeryCommon, Common, Uncommon, Rare, VeryRare, Unknown). Validates active company contract. Returns 403 if no active contract. Includes InstructionPdf if available.', true, [p('tradeNameId')], undefined, { '403': 'No active contract for this medication', '404': 'Trade name not found' });
+
+// INSTRUCTION PDF (Medicine instructions)
+s('/trade-names/{tradeNameId}/instruction-pdf/view', 'post', [DOCTOR_TAGS.DRUG_SAFETY, DOCTOR_PATIENTS_SECTION], 'View instruction PDF for a medicine and increment the view counter. Doctors use this endpoint to access the PDF and track views.', true, [p('tradeNameId')], undefined, { '404': 'Instruction PDF not found for this medicine' });
+s('/trade-names/{tradeNameId}/instruction-pdf/stats', 'get', [DOCTOR_TAGS.DRUG_SAFETY, DOCTOR_PATIENTS_SECTION, ADMIN_TAG], 'Get view count statistics for an instruction PDF without incrementing the counter. Use to check how many doctors have viewed the instruction.', true, [p('tradeNameId')], undefined, { '404': 'Instruction PDF not found for this medicine' });
 s('/my-side-effects', 'post', PATIENT_TAGS.SIDE_EFFECTS, 'Report one or more side effects for a medication (Patient only)', true, [], { schemaRef: 'ReportSideEffectsRequest' }, { '201': 'Side effects reported successfully' });
 s('/my-side-effects/batch', 'post', PATIENT_TAGS.SIDE_EFFECTS, 'Submit multiple side effects at once with severity and optional notes (Patient only). Each side effect includes sideEffectId, severity (Mild|Moderate|Severe), and optional notes. Returns 409 if duplicate, 403 if medicine not in profile.', true, [], { schemaRef: 'SubmitBatchSideEffectsRequest' }, { '201': 'Side effects submitted pending approval', '403': 'Medicine not in your profile', '409': 'Duplicate submission' });
 s('/my-side-effects', 'get', [PATIENT_TAGS.SIDE_EFFECTS, DOCTOR_PATIENTS_SECTION], 'Get all side effects reported by the patient');
@@ -2162,6 +2166,65 @@ const options: Record<string, unknown> = {
           example: {
             warnings: [{ severity: 'High', type: 'DiseaseContraindication', message: 'Ibuprofen contraindicated in CKD.', blocked: true }],
             byMedicine: [{ medicineName: 'Ibuprofen 400mg', tradeNameId: 23, activeSubstanceId: 11, warnings: [{ severity: 'High', type: 'DiseaseContraindication', message: 'Ibuprofen contraindicated in CKD.', blocked: true }] }]
+          }
+        },
+        // ── Instruction PDF schemas
+        InstructionPdfData: {
+          description: 'Instruction PDF object with metadata and view count.',
+          type: 'object',
+          properties: {
+            id: { type: 'integer', example: 1, description: 'PDF record ID' },
+            content: { type: 'string', example: 'PDF content or base64 encoded data...', description: 'PDF content or base64 string' },
+            views: { type: 'integer', example: 42, description: 'Total number of times doctors have viewed this PDF' },
+            tradeNameId: { type: 'integer', example: 5, description: 'Associated TradeName ID' },
+            tradeName: {
+              type: 'object',
+              properties: {
+                id: { type: 'integer', example: 5 },
+                title: { type: 'string', example: 'Crestor 5mg' }
+              }
+            },
+            createdAt: { type: 'string', format: 'date-time', example: '2026-04-01T10:30:00.000Z' },
+            updatedAt: { type: 'string', format: 'date-time', example: '2026-04-02T15:45:00.000Z' }
+          }
+        },
+        ViewInstructionPdfResponse: {
+          description: 'Response after viewing and incrementing the instruction PDF counter.',
+          type: 'object',
+          properties: {
+            success: { type: 'boolean', example: true },
+            instructionPdf: { $ref: '#/components/schemas/InstructionPdfData' }
+          },
+          example: {
+            success: true,
+            instructionPdf: {
+              id: 1,
+              content: 'PDF content or base64...',
+              views: 43,
+              tradeNameId: 5,
+              tradeName: { id: 5, title: 'Crestor 5mg' },
+              createdAt: '2026-04-01T10:30:00.000Z',
+              updatedAt: '2026-04-02T15:45:00.000Z'
+            }
+          }
+        },
+        GetInstructionPdfStatsResponse: {
+          description: 'Response containing instruction PDF statistics without incrementing views.',
+          type: 'object',
+          properties: {
+            success: { type: 'boolean', example: true },
+            stats: { $ref: '#/components/schemas/InstructionPdfData' }
+          },
+          example: {
+            success: true,
+            stats: {
+              id: 1,
+              views: 42,
+              tradeNameId: 5,
+              tradeName: { id: 5, title: 'Crestor 5mg' },
+              createdAt: '2026-04-01T10:30:00.000Z',
+              updatedAt: '2026-04-02T15:45:00.000Z'
+            }
           }
         }
       }

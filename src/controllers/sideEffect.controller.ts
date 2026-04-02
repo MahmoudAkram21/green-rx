@@ -333,6 +333,7 @@ export const getSideEffectsByTradeName = async (req: Request, res: Response, nex
                         },
                     },
                 },
+                companyInstructionsPdf: true
             },
         });
 
@@ -396,6 +397,13 @@ export const getSideEffectsByTradeName = async (req: Request, res: Response, nex
             medicineId: tradeName.id,
             tradeName: tradeName.title,
             hasContract: true,
+            instructionPdf: tradeName.companyInstructionsPdf ? {
+                id: tradeName.companyInstructionsPdf.id,
+                content: tradeName.companyInstructionsPdf.content,
+                views: tradeName.companyInstructionsPdf.views,
+                createdAt: tradeName.companyInstructionsPdf.createdAt,
+                updatedAt: tradeName.companyInstructionsPdf.updatedAt
+            } : null,
             sideEffects: sideEffectsGrouped,
         });
     } catch (error) {
