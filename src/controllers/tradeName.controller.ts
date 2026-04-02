@@ -430,7 +430,7 @@ export const viewInstructionPdf = async (req: Request, res: Response, next: Next
             success: true,
             instructionPdf: {
                 id: updatedPdf.id,
-                content: updatedPdf.content,
+                url: updatedPdf.url,
                 views: updatedPdf.views,
                 tradeNameId: updatedPdf.tradeNameId,
                 tradeName: updatedPdf.tradeName,

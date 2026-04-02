@@ -399,7 +399,7 @@ export const getSideEffectsByTradeName = async (req: Request, res: Response, nex
             hasContract: true,
             instructionPdf: tradeName.companyInstructionsPdf ? {
                 id: tradeName.companyInstructionsPdf.id,
-                content: tradeName.companyInstructionsPdf.content,
+                url: tradeName.companyInstructionsPdf.url,
                 views: tradeName.companyInstructionsPdf.views,
                 createdAt: tradeName.companyInstructionsPdf.createdAt,
                 updatedAt: tradeName.companyInstructionsPdf.updatedAt

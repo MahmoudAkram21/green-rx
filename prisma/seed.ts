@@ -76,6 +76,7 @@ async function main() {
   await prisma.batchHistory.deleteMany();
   await prisma.contractingCompanyTradeName.deleteMany();
   await prisma.contractingCompany.deleteMany();
+  await prisma.instructionPdf.deleteMany();
   await prisma.tradeName.deleteMany();
   await prisma.medicineAlternative.deleteMany();
   await prisma.medicationSideEffect.deleteMany();
@@ -397,6 +398,38 @@ async function main() {
     }),
   ]);
   console.log(`✅ Created ${tradeNames.length} trade names`);
+
+  // ============================================
+  // SECTION 3.0.5: INSTRUCTION PDFs
+  // ============================================
+  console.log("\n📄 Creating instruction PDFs...");
+  const instructionPdfs = await Promise.all([
+    prisma.instructionPdf.create({
+      data: {
+        tradeNameId: tradeNames[0].id, // Panadol
+        url: "https://cdn.example.com/instructions/panadol.pdf",
+      },
+    }),
+    prisma.instructionPdf.create({
+      data: {
+        tradeNameId: tradeNames[1].id, // Brufen
+        url: "https://cdn.example.com/instructions/brufen.pdf",
+      },
+    }),
+    prisma.instructionPdf.create({
+      data: {
+        tradeNameId: tradeNames[6].id, // Lipitor
+        url: "https://cdn.example.com/instructions/lipitor.pdf",
+      },
+    }),
+    prisma.instructionPdf.create({
+      data: {
+        tradeNameId: tradeNames[7].id, // Ventolin
+        url: "https://cdn.example.com/instructions/ventolin.pdf",
+      },
+    }),
+  ]);
+  console.log(`✅ Created ${instructionPdfs.length} instruction PDFs`);
 
   // ============================================
   // SECTION 3.1: EXCIPIENTS
