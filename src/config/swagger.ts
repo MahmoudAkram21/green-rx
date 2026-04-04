@@ -515,11 +515,11 @@ s('/patient-share-token/redeem', 'post', [PATIENT_TAGS.SHARE_WITH_DOCTOR, DOCTOR
 // SIDE EFFECTS (My Side Effects)
 s('/side-effects/by-medication/{medicationId}', 'get', [PATIENT_TAGS.SIDE_EFFECTS, DOCTOR_PATIENTS_SECTION], 'Get known side effects for a patient medication. Returns { supported: false, redirect } if the company is not contracted, or { supported: true, sideEffects } otherwise.', true, [p('medicationId')]);
 s('/side-effects/add', 'post', PATIENT_TAGS.SIDE_EFFECTS, 'Add a new side effect name and link it to a medication\'s active substance (Patient only)', true, [], { schemaRef: 'AddSideEffectRequest' }, { '201': 'Side effect created and linked' });
-s('/medicines/{tradeNameId}/side-effects', 'get', [PATIENT_TAGS.SIDE_EFFECTS, DOCTOR_PATIENTS_SECTION], 'Extract pre-defined side effects for a trade name from database. Groups by frequency (VeryCommon, Common, Uncommon, Rare, VeryRare, Unknown). Validates active company contract. Returns 403 if no active contract. Includes InstructionPdf if available.', true, [p('tradeNameId')], undefined, { '403': 'No active contract for this medication', '404': 'Trade name not found' });
+s('/medicines/{tradeNameId}/side-effects', 'get', [PATIENT_TAGS.SIDE_EFFECTS, DOCTOR_PATIENTS_SECTION], 'Extract pre-defined side effects for a trade name from database. Groups by frequency (VeryCommon, Common, Uncommon, Rare, VeryRare, Unknown). Validates active company contract. Returns 403 if no active contract. Includes instructionPdf (id, url, views, timestamps) when the trade name has companyInstructionsPdf; null otherwise.', true, [p('tradeNameId')], undefined, { '403': 'No active contract for this medication', '404': 'Trade name not found' }, 'ExtractSideEffectsResponse');
 
 // INSTRUCTION PDF (Medicine instructions)
-s('/trade-names/{tradeNameId}/instruction-pdf/view', 'post', [DOCTOR_TAGS.DRUG_SAFETY, DOCTOR_PATIENTS_SECTION], 'View instruction PDF for a medicine and increment the view counter. Doctors use this endpoint to access the PDF and track views.', true, [p('tradeNameId')], undefined, { '404': 'Instruction PDF not found for this medicine' });
-s('/trade-names/{tradeNameId}/instruction-pdf/stats', 'get', [DOCTOR_TAGS.DRUG_SAFETY, DOCTOR_PATIENTS_SECTION, ADMIN_TAG], 'Get view count statistics for an instruction PDF without incrementing the counter. Use to check how many doctors have viewed the instruction.', true, [p('tradeNameId')], undefined, { '404': 'Instruction PDF not found for this medicine' });
+s('/trade-names/{tradeNameId}/instruction-pdf/view', 'post', [DOCTOR_TAGS.DRUG_SAFETY, DOCTOR_PATIENTS_SECTION], 'View instruction PDF for a medicine and increment the view counter. Doctor or Admin: call this when opening the PDF so views are tracked. Returns PDF metadata including url (not file bytes).', true, [p('tradeNameId')], undefined, { '404': 'Instruction PDF not found for this medicine' }, 'ViewInstructionPdfResponse');
+s('/trade-names/{tradeNameId}/instruction-pdf/stats', 'get', [DOCTOR_TAGS.DRUG_SAFETY, DOCTOR_PATIENTS_SECTION, ADMIN_TAG], 'Get view count statistics for an instruction PDF without incrementing the counter. Authorized: Doctor, Admin, or Company (company users see stats for their products).', true, [p('tradeNameId')], undefined, { '404': 'Instruction PDF not found for this medicine' }, 'GetInstructionPdfStatsResponse');
 s('/my-side-effects', 'post', PATIENT_TAGS.SIDE_EFFECTS, 'Report one or more side effects for a medication (Patient only)', true, [], { schemaRef: 'ReportSideEffectsRequest' }, { '201': 'Side effects reported successfully' });
 s('/my-side-effects/batch', 'post', PATIENT_TAGS.SIDE_EFFECTS, 'Submit multiple side effects at once with severity and optional notes (Patient only). Each side effect includes sideEffectId, severity (Mild|Moderate|Severe), and optional notes. Returns 409 if duplicate, 403 if medicine not in profile.', true, [], { schemaRef: 'SubmitBatchSideEffectsRequest' }, { '201': 'Side effects submitted pending approval', '403': 'Medicine not in your profile', '409': 'Duplicate submission' });
 s('/my-side-effects', 'get', [PATIENT_TAGS.SIDE_EFFECTS, DOCTOR_PATIENTS_SECTION], 'Get all side effects reported by the patient');
@@ -837,11 +837,13 @@ if (paths['/active-substances/search']?.get) {
 // GET /trade-names/search: document 200 response (with safetyStatus shape)
 if (paths['/trade-names/search']?.get) {
   paths['/trade-names/search'].get.responses['200'] = {
-    description: 'Paginated list of trade names. Each item includes a `safetyStatus` field (SafetyEvalResult) when patientId is supplied, otherwise null.',
+    description:
+      'Paginated trade names. Each element is a full `TradeName` (id, title, activeSubstance, company, companyInstructionsPdf, optional excipientTradeName when `patientId` is set) plus `safetyStatus`: a `SafetyEvalResult` when `patientId` query is provided, otherwise `null`.',
     content: {
       'application/json': {
         schema: {
           type: 'object',
+          required: ['tradeNames', 'pagination'],
           properties: {
             tradeNames: {
               type: 'array',
@@ -850,6 +852,7 @@ if (paths['/trade-names/search']?.get) {
                   { $ref: '#/components/schemas/TradeName' },
                   {
                     type: 'object',
+                    required: ['safetyStatus'],
                     properties: {
                       safetyStatus: { $ref: '#/components/schemas/SafetyEvalResult' }
                     }
@@ -858,6 +861,74 @@ if (paths['/trade-names/search']?.get) {
               }
             },
             pagination: { $ref: '#/components/schemas/Pagination' }
+          }
+        },
+        example: {
+          tradeNames: [
+            {
+              id: 12,
+              title: 'Crestor 5mg',
+              activeSubstanceId: 7,
+              companyId: 2,
+              warningNotification: null,
+              barCode: '6224000123456',
+              availabilityStatus: 'InStock',
+              isActive: true,
+              createdAt: '2026-01-15T08:00:00.000Z',
+              updatedAt: '2026-03-01T12:00:00.000Z',
+              deletedAt: null,
+              activeSubstance: {
+                id: 7,
+                name: 'Rosuvastatin',
+                classificationId: 4,
+                dosageForm: 'Tablet'
+              },
+              company: { id: 2, name: 'AstraZeneca' },
+              companyInstructionsPdf: {
+                id: 1,
+                url: 'https://storage.example.com/instructions/crestor.pdf',
+                views: 3,
+                tradeNameId: 12,
+                createdAt: '2026-04-01T10:00:00.000Z',
+                updatedAt: '2026-04-01T10:00:00.000Z'
+              },
+              excipientTradeName: [
+                {
+                  id: 50,
+                  excipientId: 3,
+                  tradeNameId: 12,
+                  isActive: true,
+                  createdAt: '2026-01-10T00:00:00.000Z',
+                  updatedAt: '2026-01-10T00:00:00.000Z',
+                  excipient: { id: 3, name: 'Lactose' }
+                }
+              ],
+              safetyStatus: {
+                statusColor: 'ORANGE',
+                blocked: false,
+                warnings: [
+                  {
+                    checkType: 'disease',
+                    severity: 'Medium',
+                    statusColor: 'ORANGE',
+                    message:
+                      'Patient has Hypertension. Drug has Vascular ADR data containing relevant keywords.',
+                    blocked: false
+                  }
+                ],
+                filteredData: {
+                  excipients: 'Lactose',
+                  vascularWarning: 'Hypertension reported in ≥1% of patients.',
+                  specialPopulationElderly: 'Reduce dose in elderly patients.'
+                }
+              }
+            }
+          ],
+          pagination: {
+            total: 48,
+            page: 1,
+            limit: 20,
+            totalPages: 3
           }
         }
       }
@@ -1851,6 +1922,111 @@ const options: Record<string, unknown> = {
         // ── Trade names
         CreateTradeNameRequest: { type: 'object', required: ['title', 'activeSubstanceId', 'companyId'], properties: { title: { type: 'string', example: 'Lipitor 20mg' }, activeSubstanceId: { type: 'integer', example: 15 }, companyId: { type: 'integer', example: 1 }, barCode: { type: 'string', example: '6224000123456' }, warningNotification: { type: 'string' }, availabilityStatus: { type: 'string', enum: ['InStock', 'OutOfStock', 'Discontinued', 'Pending'], example: 'InStock' } }, example: { title: 'Lipitor 20mg', activeSubstanceId: 15, companyId: 1, availabilityStatus: 'InStock' } },
         UpdateTradeNameRequest: { type: 'object', properties: { title: { type: 'string', example: 'Lipitor 40mg' }, activeSubstanceId: { type: 'integer', example: 15 }, companyId: { type: 'integer', example: 1 }, availabilityStatus: { type: 'string', example: 'InStock' } }, example: { availabilityStatus: 'OutOfStock' } },
+        Pagination: {
+          description: 'Pagination metadata for search/list endpoints (GET /trade-names/search, GET /active-substances/search, GET /trade-names, etc.).',
+          type: 'object',
+          required: ['total', 'page', 'limit', 'totalPages'],
+          properties: {
+            total:      { type: 'integer', example: 48, description: 'Total rows matching filters across all pages.' },
+            page:       { type: 'integer', example: 1, description: 'Current page number (1-based).' },
+            limit:      { type: 'integer', example: 20, description: 'Page size.' },
+            totalPages: { type: 'integer', example: 3, description: 'Total number of pages.' }
+          }
+        },
+        TradeNameCompanyInstructionPdf: {
+          description: 'Instruction PDF row linked via TradeName.companyInstructionsPdf.',
+          type: 'object',
+          properties: {
+            id:          { type: 'integer', example: 1 },
+            url:         { type: 'string', format: 'uri', example: 'https://storage.example.com/instructions/crestor.pdf' },
+            views:       { type: 'integer', example: 3 },
+            tradeNameId: { type: 'integer', example: 12 },
+            createdAt:   { type: 'string', format: 'date-time', example: '2026-04-01T10:00:00.000Z' },
+            updatedAt:   { type: 'string', format: 'date-time', example: '2026-04-01T10:00:00.000Z' }
+          }
+        },
+        ExcipientTradeNameRow: {
+          description: 'Excipient–trade-name link. Returned on GET /trade-names/search when `patientId` is provided (allergy-aware safety checks). Omitted when `patientId` is absent.',
+          type: 'object',
+          properties: {
+            id:          { type: 'integer', example: 50 },
+            excipientId: { type: 'integer', example: 3 },
+            tradeNameId: { type: 'integer', example: 12 },
+            isActive:    { type: 'boolean', example: true },
+            createdAt:   { type: 'string', format: 'date-time' },
+            updatedAt:   { type: 'string', format: 'date-time' },
+            excipient:   {
+              type: 'object',
+              properties: {
+                id:   { type: 'integer', example: 3 },
+                name: { type: 'string', example: 'Lactose' }
+              }
+            }
+          }
+        },
+        ActiveSubstance: {
+          description: 'Active substance row from GET /active-substances/search. Responses include the full Prisma model; listed properties are the main ones clients use. Always includes `_count.tradeNames`.',
+          type: 'object',
+          properties: {
+            id:               { type: 'integer', example: 11 },
+            name:             { type: 'string', example: 'Atorvastatin' },
+            classificationId: { type: 'integer', example: 2 },
+            concentration:    { type: 'string', example: '20 mg' },
+            dosageForm:       { type: 'string', example: 'Tablet' },
+            isActive:         { type: 'boolean', example: true },
+            createdAt:        { type: 'string', format: 'date-time' },
+            updatedAt:        { type: 'string', format: 'date-time' },
+            _count:           {
+              type: 'object',
+              properties: {
+                tradeNames: { type: 'integer', example: 4, description: 'How many trade names reference this substance.' }
+              }
+            }
+          },
+          additionalProperties: true
+        },
+        TradeName: {
+          description: 'Trade name row as returned by GET /trade-names/search, GET /trade-names (list), POST /trade-names/search-by-image, and create responses. GET /trade-names/search merges `safetyStatus` (see allOf in that path). With `patientId`, responses include `excipientTradeName`; without it, that field is omitted.',
+          type: 'object',
+          properties: {
+            id:                  { type: 'integer', example: 12 },
+            title:               { type: 'string', example: 'Crestor 5mg' },
+            activeSubstanceId:   { type: 'integer', example: 7 },
+            companyId:           { type: 'integer', nullable: true, example: 2 },
+            warningNotification: { type: 'string', nullable: true, description: 'Optional notice shown to doctors.' },
+            barCode:             { type: 'string', nullable: true, example: '6224000123456' },
+            availabilityStatus:  { type: 'string', enum: ['InStock', 'OutOfStock', 'Discontinued', 'Pending'], example: 'InStock' },
+            isActive:            { type: 'boolean', example: true },
+            createdAt:           { type: 'string', format: 'date-time', example: '2026-01-15T08:00:00.000Z' },
+            updatedAt:           { type: 'string', format: 'date-time', example: '2026-03-01T12:00:00.000Z' },
+            deletedAt:           { type: 'string', format: 'date-time', nullable: true },
+            activeSubstance:     {
+              type: 'object',
+              properties: {
+                id:               { type: 'integer', example: 7 },
+                name:             { type: 'string', example: 'Rosuvastatin' },
+                classificationId: { type: 'integer', example: 4 },
+                dosageForm:       { type: 'string', example: 'Tablet' }
+              }
+            },
+            company:             {
+              type: 'object',
+              nullable: true,
+              properties: {
+                id:   { type: 'integer', example: 2 },
+                name: { type: 'string', example: 'AstraZeneca' }
+              }
+            },
+            companyInstructionsPdf: {
+              nullable: true,
+              allOf: [{ $ref: '#/components/schemas/TradeNameCompanyInstructionPdf' }]
+            },
+            excipientTradeName: {
+              type: 'array',
+              items: { $ref: '#/components/schemas/ExcipientTradeNameRow' }
+            }
+          }
+        },
         // ── Diseases
         CreateDiseaseRequest: {
           type: 'object',
@@ -2051,6 +2227,18 @@ const options: Record<string, unknown> = {
             medicineId: { type: 'integer', example: 5 },
             tradeName: { type: 'string', example: 'Crestor 5mg' },
             hasContract: { type: 'boolean', example: true },
+            instructionPdf: {
+              nullable: true,
+              description: 'Company instruction PDF linked to this trade name (Prisma relation companyInstructionsPdf). Null when none is configured.',
+              type: 'object',
+              properties: {
+                id: { type: 'integer', example: 1 },
+                url: { type: 'string', format: 'uri', example: 'https://storage.example.com/instructions/crestor.pdf' },
+                views: { type: 'integer', example: 12 },
+                createdAt: { type: 'string', format: 'date-time' },
+                updatedAt: { type: 'string', format: 'date-time' }
+              }
+            },
             sideEffects: {
               type: 'object',
               properties: {
@@ -2069,6 +2257,13 @@ const options: Record<string, unknown> = {
             medicineId: 5,
             tradeName: 'Crestor 5mg',
             hasContract: true,
+            instructionPdf: {
+              id: 1,
+              url: 'https://storage.example.com/instructions/crestor.pdf',
+              views: 12,
+              createdAt: '2026-04-01T10:30:00.000Z',
+              updatedAt: '2026-04-02T15:45:00.000Z'
+            },
             sideEffects: {
               veryCommon: [
                 { id: 101, name: 'Headache', nameAr: 'صداع', frequency: 'VeryCommon', bodySystem: 'Nervous System' },
@@ -2170,12 +2365,12 @@ const options: Record<string, unknown> = {
         },
         // ── Instruction PDF schemas
         InstructionPdfData: {
-          description: 'Instruction PDF object with metadata and view count.',
+          description: 'Instruction PDF row: stored file URL and view counter (POST .../instruction-pdf/view increments views). Does not return raw PDF bytes.',
           type: 'object',
           properties: {
-            id: { type: 'integer', example: 1, description: 'PDF record ID' },
-            content: { type: 'string', example: 'PDF content or base64 encoded data...', description: 'PDF content or base64 string' },
-            views: { type: 'integer', example: 42, description: 'Total number of times doctors have viewed this PDF' },
+            id: { type: 'integer', example: 1, description: 'InstructionPdf record ID' },
+            url: { type: 'string', format: 'uri', example: 'https://storage.example.com/instructions/crestor.pdf', description: 'Location of the PDF (e.g. S3 or CDN URL)' },
+            views: { type: 'integer', example: 42, description: 'Times POST .../instruction-pdf/view succeeded for this trade name' },
             tradeNameId: { type: 'integer', example: 5, description: 'Associated TradeName ID' },
             tradeName: {
               type: 'object',
@@ -2199,7 +2394,7 @@ const options: Record<string, unknown> = {
             success: true,
             instructionPdf: {
               id: 1,
-              content: 'PDF content or base64...',
+              url: 'https://storage.example.com/instructions/crestor.pdf',
               views: 43,
               tradeNameId: 5,
               tradeName: { id: 5, title: 'Crestor 5mg' },
@@ -2219,6 +2414,7 @@ const options: Record<string, unknown> = {
             success: true,
             stats: {
               id: 1,
+              url: 'https://storage.example.com/instructions/crestor.pdf',
               views: 42,
               tradeNameId: 5,
               tradeName: { id: 5, title: 'Crestor 5mg' },
