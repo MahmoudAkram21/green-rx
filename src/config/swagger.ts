@@ -152,7 +152,7 @@ s('/users/{id}', 'delete', ADMIN_TAG, 'Delete user by ID', true, [p('id')]);
 // ═══════════════════════════════════════════════════
 s('/patients', 'get', ADMIN_TAG, 'Get all patients (Admin/SuperAdmin only)');
 s('/patients', 'post', PATIENT_TAGS.PROFILE, 'Create or update patient profile', true, [], { schemaRef: 'CreatePatientRequest' });
-s('/patients/me/full', 'get', PATIENT_TAGS.PROFILE, 'Get my full details (patient only). Same structure as GET /doctors/{doctorId}/patients/{patientId}: profile, vitals, medicalHistories, familyHistories, patientDiseases, patientLifestyles, patientAllergies, surgicalHistories, visits, medicalReports, name, email, phone, bodyMassIndex. No path params; use Bearer token.', true);
+s('/patients/me/full', 'get', PATIENT_TAGS.PROFILE, 'Get my full details (patient only). Same structure as GET /doctors/{doctorId}/patients/{patientId} (without `relationship`): profile, vitals, medicalHistories, familyHistories, patientDiseases, patientLifestyles, patientAllergies, surgicalHistories, visits, medicalReports, **prescriptions** (full history, newest first, with medicines and prescribing doctor), name, email, phone, bodyMassIndex. No path params; use Bearer token.', true);
 s('/patients/{id}', 'get', PATIENT_TAGS.PROFILE, 'Get patient by ID', true, [p('id')]);
 s('/patients/user/{userId}', 'get', PATIENT_TAGS.PROFILE, 'Get patient by user ID', true, [p('userId')]);
 
@@ -219,7 +219,7 @@ s('/doctors/{doctorId}/clinics/{clinicId}', 'patch', [DOCTOR_TAGS.MY_PATIENTS, D
 s('/doctors/{doctorId}/clinics/{clinicId}', 'delete', [DOCTOR_TAGS.MY_PATIENTS, DOCTOR_PATIENTS_SECTION], 'Delete a doctor clinic', true, [p('doctorId'), p('clinicId')]);
 s('/doctors/{doctorId}/patients/search', 'get', [DOCTOR_TAGS.MY_PATIENTS, DOCTOR_PATIENTS_SECTION], 'Search for patient by name (among doctor\'s assigned patients only)', true, [p('doctorId'), q('name', 'Patient name or partial name to search (also accepts "q")')]);
 s('/doctors/{doctorId}/patients/warnings', 'get', [WARNING_SYSTEM_SECTION, DOCTOR_TAGS.MY_PATIENTS, DOCTOR_PATIENTS_SECTION, DOCTOR_TAGS.DRUG_SAFETY], 'Get all warnings for patients linked to this doctor. Returns { warnings: [ { patientId, name, patientName, email, type, severity, message, ... } ] } — one entry per warning with patient info on each.', true, [p('doctorId')]);
-s('/doctors/{doctorId}/patients/{patientId}', 'get', [DOCTOR_TAGS.MY_PATIENTS, DOCTOR_PATIENTS_SECTION], 'Get full details of a patient (profile, vitals, health status, visit files). Only for patients linked to this doctor.', true, [p('doctorId'), p('patientId')]);
+s('/doctors/{doctorId}/patients/{patientId}', 'get', [DOCTOR_TAGS.MY_PATIENTS, DOCTOR_PATIENTS_SECTION], 'Get full details of a linked patient: profile, vitals, medicalHistories, familyHistories, patientDiseases, patientLifestyles, allergyReports, surgicalHistories, visits, medicalReports, **prescriptions** (all prescribers, newest first, with prescriptionMedicines and doctor), plus `relationship` (type, dates, isActive). Returns 404 if not linked.', true, [p('doctorId'), p('patientId')]);
 s('/doctors/{doctorId}/patients', 'get', [DOCTOR_TAGS.MY_PATIENTS, DOCTOR_PATIENTS_SECTION], 'Get patients assigned to doctor (My patients)', true, [p('doctorId')]);
 s('/doctors/{doctorId}/patients', 'post', [PATIENT_TAGS.SHARE_WITH_DOCTOR, DOCTOR_TAGS.MY_PATIENTS, DOCTOR_PATIENTS_SECTION], 'Assign a patient to doctor', true, [p('doctorId')], { schemaRef: 'AssignPatientRequest' });
 s('/doctors/{doctorId}/patients/{patientId}', 'delete', [DOCTOR_TAGS.MY_PATIENTS, DOCTOR_PATIENTS_SECTION], 'Remove patient from doctor', true, [p('doctorId'), p('patientId')]);
@@ -299,7 +299,7 @@ s('/add-medicine-requests/{id}', 'get', ADMIN_TAG, 'Get add medicine request by 
 s('/add-medicine-requests/{id}/resolve', 'patch', ADMIN_TAG, 'Resolve request: link trade name/active substance and mark PatientMedicine verified', true, [p('id')], { schemaRef: 'ResolveAddMedicineRequestRequest' });
 
 // PRESCRIPTIONS
-s('/prescriptions', 'get', [PATIENT_TAGS.PRESCRIPTIONS, DOCTOR_TAGS.PRESCRIPTIONS, DOCTOR_PATIENTS_SECTION], 'List prescriptions scoped by role: Doctor sees only their own, Patient sees only theirs, Admin can filter freely via patientId/doctorId query params. Requires Doctor, Patient, or Admin role.', true, [q('patientId', 'Admin only — filter by patient ID'), q('doctorId', 'Admin only — filter by doctor ID')]);
+s('/prescriptions', 'get', [PATIENT_TAGS.PRESCRIPTIONS, DOCTOR_TAGS.PRESCRIPTIONS, DOCTOR_PATIENTS_SECTION], 'List prescriptions with pagination. **Doctor:** always scoped to their own prescriptions; optional **patientId** narrows to one linked patient (403 if not linked). **Patient:** only their prescriptions. **Admin/SuperAdmin:** optional patientId and doctorId filters. Query: status, page, limit.', true, [q('patientId', 'Doctor: filter to one linked patient. Admin: filter by patient ID.'), q('doctorId', 'Admin/SuperAdmin only — filter by doctor ID'), q('status', 'Draft | Pending | Approved | Filled | Cancelled'), q('page'), q('limit')]);
 s('/prescriptions', 'post', [DOCTOR_TAGS.PRESCRIPTIONS, DOCTOR_PATIENTS_SECTION, DOCTOR_ADD_DRUG_SECTION], 'Create prescription. Doctor only. doctorId is resolved automatically from the JWT token (do NOT pass doctorId in body when calling as Doctor). Required: patientId, items or medicationPlan; each item: medicineName (required), tradeNameId?, activeSubstanceId?, dosageAmount?, frequencyCount?, durationValue?, etc. Runs drug-safety check. First Visit fields: conditionDiagnosis, initialCheckUp, testResultsOrScans, followUpAppointmentDate.', true, [], { schemaRef: 'CreatePrescriptionRequest' });
 s('/prescriptions/batch', 'post', [DOCTOR_TAGS.PRESCRIPTIONS, DOCTOR_PATIENTS_SECTION], 'Batch-create prescriptions: one Prescription per medicine, each with one PatientMedicine + PrescriptionMedicine. Runs drug-safety and batch-interaction checks. Doctor only. doctorId is resolved from JWT token — do NOT pass it in body.', true, [], { schemaRef: 'BatchPrescriptionsRequest' });
 s('/prescriptions/interactions/{alertId}/acknowledge', 'put', [WARNING_SYSTEM_SECTION, PATIENT_TAGS.PRESCRIPTIONS, PATIENT_TAGS.DRUG_SAFETY, DOCTOR_TAGS.DRUG_SAFETY, DOCTOR_PATIENTS_SECTION], 'Acknowledge a drug interaction alert. The acknowledgedBy field (doctor or patient) is derived automatically from the caller\'s role — no need to pass it in the request body. Requires Doctor or Patient role.', true, [p('alertId')]);
@@ -801,6 +801,35 @@ if (paths['/doctors/me/stats']?.get) {
     description: 'Doctor statistics (patients, prescriptions, consultations, appointments, visits, ratings, clinics, averageRating).',
     content: { 'application/json': { schema: { $ref: '#/components/schemas/DoctorMeStatsResponse' } } }
   };
+}
+
+// GET /patients/me/full: full profile including prescription history
+if (paths['/patients/me/full']?.get) {
+  paths['/patients/me/full'].get.responses['200'] = {
+    description: 'Patient full details including prescriptions (newest first).',
+    content: { 'application/json': { schema: { $ref: '#/components/schemas/PatientMeFullResponse' } } }
+  };
+}
+
+// GET /doctors/:doctorId/patients/:patientId: full chart + relationship + prescriptions
+if (paths['/doctors/{doctorId}/patients/{patientId}']?.get) {
+  paths['/doctors/{doctorId}/patients/{patientId}'].get.responses['200'] = {
+    description: 'Linked patient full file with prescription history and doctor–patient relationship metadata.',
+    content: { 'application/json': { schema: { $ref: '#/components/schemas/DoctorPatientProfileResponse' } } }
+  };
+  paths['/doctors/{doctorId}/patients/{patientId}'].get.responses['404'] = {
+    description: 'Patient not found or not linked to this doctor'
+  };
+}
+
+// GET /prescriptions: paginated list (doctor may pass patientId when linked)
+if (paths['/prescriptions']?.get) {
+  paths['/prescriptions'].get.responses['200'] = {
+    description: 'Paginated prescriptions. Doctor: own prescriptions only; optional patientId when linked. Patient: own only. Admin: optional filters.',
+    content: { 'application/json': { schema: { $ref: '#/components/schemas/PrescriptionsListResponse' } } }
+  };
+  paths['/prescriptions'].get.responses['403'] = { description: 'Doctor requested patientId for a patient not linked to them' };
+  paths['/prescriptions'].get.responses['400'] = { description: 'Invalid patientId' };
 }
 
 // GET /active-substances/search: document 200 response (with safetyStatus shape)
@@ -1790,6 +1819,118 @@ const options: Record<string, unknown> = {
             notes:             { type: 'string', nullable: true, example: 'Take at night' }
           },
           example: { medicineName: 'Atorvastatin 20mg', tradeNameId: 31, dosageAmount: 20, frequencyCount: 1, frequencyPeriod: 1, frequencyUnit: 'Days', notes: 'Take at night' }
+        },
+        PrescriptionListItem: {
+          description:
+            'Prescription with nested medicines and alerts. **GET /prescriptions** includes nested `patient` on each row. **GET /patients/me/full** and **GET /doctors/.../patients/...** embed rows under `patient.prescriptions` without nested `patient` on each prescription.',
+          type: 'object',
+          properties: {
+            id:                 { type: 'integer', example: 42 },
+            doctorId:           { type: 'integer', example: 2 },
+            patientId:          { type: 'integer', example: 5 },
+            visitId:            { type: 'integer', nullable: true },
+            status:             { type: 'string', enum: ['Draft', 'Pending', 'Approved', 'Filled', 'Cancelled'], example: 'Approved' },
+            prescriptionDate: { type: 'string', format: 'date-time' },
+            validFrom:          { type: 'string', format: 'date-time' },
+            validUntil:         { type: 'string', format: 'date-time' },
+            notes:              { type: 'string', nullable: true },
+            conditionDiagnosis: { type: 'string', nullable: true },
+            maxRefills:         { type: 'integer', example: 0 },
+            doctor: {
+              type: 'object',
+              properties: {
+                id:               { type: 'integer', example: 2 },
+                name:             { type: 'string', example: 'Dr. Ahmed Hassan' },
+                specialization:   { type: 'string', nullable: true, example: 'Internal Medicine' }
+              }
+            },
+            patient: {
+              type: 'object',
+              nullable: true,
+              description: 'Included on GET /prescriptions; omitted when prescription is nested under patient full details.',
+              properties: {
+                id:   { type: 'integer', example: 5 },
+                age:  { type: 'integer', nullable: true, example: 45 },
+                user: { type: 'object', properties: { name: { type: 'string', example: 'John Doe' } } }
+              }
+            },
+            visit: {
+              type: 'object',
+              nullable: true,
+              properties: {
+                id:         { type: 'integer' },
+                visitDate:  { type: 'string', format: 'date-time' },
+                visitType:  { type: 'string' },
+                isNewVisit: { type: 'boolean' }
+              }
+            },
+            prescriptionMedicines: {
+              type: 'array',
+              description: 'Ordered by sortOrder; each entry includes patientMedicine (dosage, frequency, tradeName, activeSubstance, etc.).',
+              items: {
+                type: 'object',
+                properties: {
+                  id:                { type: 'integer' },
+                  prescriptionId:    { type: 'integer' },
+                  patientMedicineId: { type: 'integer' },
+                  sortOrder:         { type: 'integer', example: 0 },
+                  patientMedicine:   { type: 'object', additionalProperties: true }
+                }
+              }
+            },
+            drugInteractionAlerts: { type: 'array', items: { type: 'object', additionalProperties: true } }
+          },
+          additionalProperties: true
+        },
+        PrescriptionsListResponse: {
+          description: 'GET /prescriptions paginated response.',
+          type: 'object',
+          required: ['prescriptions', 'pagination'],
+          properties: {
+            prescriptions: { type: 'array', items: { $ref: '#/components/schemas/PrescriptionListItem' } },
+            pagination:    { $ref: '#/components/schemas/Pagination' }
+          }
+        },
+        PatientMeFullResponse: {
+          description: 'GET /patients/me/full — patient-only. Same `patient` object shape as doctor profile response, without `relationship`.',
+          type: 'object',
+          required: ['patient'],
+          properties: {
+            patient: {
+              type: 'object',
+              description:
+                'Full patient record: flattened name/email/phone, bodyMassIndex, medicalHistories, familyHistories, patientDiseases, patientLifestyles, allergyReports, surgicalHistories, visits, medicalReports, and **prescriptions** (newest first).',
+              properties: {
+                prescriptions: { type: 'array', items: { $ref: '#/components/schemas/PrescriptionListItem' } }
+              },
+              additionalProperties: true
+            }
+          }
+        },
+        DoctorPatientProfileResponse: {
+          description: 'GET /doctors/{doctorId}/patients/{patientId} — full chart for a linked patient.',
+          type: 'object',
+          required: ['patient', 'relationship'],
+          properties: {
+            patient: {
+              type: 'object',
+              description:
+                'Same fields as GET /patients/me/full. **prescriptions** lists this patient’s prescription history (all doctors), newest first.',
+              properties: {
+                prescriptions: { type: 'array', items: { $ref: '#/components/schemas/PrescriptionListItem' } }
+              },
+              additionalProperties: true
+            },
+            relationship: {
+              type: 'object',
+              properties: {
+                relationshipType: { type: 'string', example: 'PrimaryCare', description: 'RelationshipType enum' },
+                startDate:        { type: 'string', format: 'date-time' },
+                endDate:          { type: 'string', format: 'date-time', nullable: true },
+                isActive:         { type: 'boolean', example: true }
+              }
+            }
+          }
         },
         ConcentrationsResponse: {
           description: 'GET /active-substances/concentrations. Distinct concentration values (e.g. "5 mg", "5 mg/ 20 mg") filtered by classification and/or activeSubstanceId.',

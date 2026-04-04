@@ -382,6 +382,23 @@ export const getPrescriptions = async (req: Request, res: Response) => {
         const { role, doctorId: tokenDoctorId, patientId: tokenPatientId } = await resolveProfileIds(req);
         if (role === UserRole.Doctor) {
             where.doctorId = tokenDoctorId!;
+            if (patientId !== undefined && patientId !== '') {
+                const pid = parseInt(String(patientId), 10);
+                if (Number.isNaN(pid)) {
+                    return res.status(400).json({ message: 'Invalid patientId' });
+                }
+                const link = await prisma.patientDoctor.findUnique({
+                    where: {
+                        patientId_doctorId: { patientId: pid, doctorId: tokenDoctorId! }
+                    }
+                });
+                if (!link) {
+                    return res.status(403).json({
+                        message: 'You can only list prescriptions for patients linked to your practice'
+                    });
+                }
+                where.patientId = pid;
+            }
         } else if (role === UserRole.Patient) {
             where.patientId = tokenPatientId!;
         } else {
