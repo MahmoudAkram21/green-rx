@@ -652,6 +652,34 @@ if (paths['/import/active-substances']?.post) {
   };
 }
 
+// POST /patient-medicines/patient/:patientId — JSON body (explicit example aligned with AddPatientMedicineRequest)
+if (paths['/patient-medicines/patient/{patientId}']?.post) {
+  paths['/patient-medicines/patient/{patientId}'].post.requestBody = {
+    required: true,
+    content: {
+      'application/json': {
+        schema: { $ref: '#/components/schemas/AddPatientMedicineRequest' },
+        example: {
+          medicineName: 'Metformin 500mg',
+          tradeNameId: 23,
+          dosageAmount: 500,
+          frequencyCount: 2,
+          frequencyPeriod: 8,
+          frequencyUnit: 'Hours',
+          durationValue: 30,
+          durationUnit: 'Days',
+          startDate: '2026-01-01T08:00:00.000Z',
+          endDate: '2026-07-01T23:59:59.000Z',
+          isOngoing: true,
+          notes: 'Take with food',
+          reminderEnabled: true,
+          reminderTimes: ['08:00', '14:00', '20:00']
+        }
+      }
+    }
+  };
+}
+
 // Upload medicine image: multipart with file field "image" (AI extracts trade name, active substance, concentration, dosage form)
 if (paths['/patient-medicines/patient/{patientId}/upload-image']?.post) {
   paths['/patient-medicines/patient/{patientId}/upload-image'].post.summary = 'Upload medicine image (AI extracts full drug data; response includes extracted + matched drug details, warnings)';
@@ -830,6 +858,56 @@ if (paths['/prescriptions']?.get) {
   };
   paths['/prescriptions'].get.responses['403'] = { description: 'Doctor requested patientId for a patient not linked to them' };
   paths['/prescriptions'].get.responses['400'] = { description: 'Invalid patientId' };
+}
+
+// POST /prescriptions — explicit `examples` so Swagger UI "Example Value" matches schema (avoids auto-sample from per-property examples)
+if (paths['/prescriptions']?.post) {
+  const prescriptionCreateSampleMedication = {
+    medicineName: 'Metformin 500mg',
+    tradeNameId: 23,
+    dosageAmount: 500,
+    frequencyCount: 2,
+    frequencyPeriod: 8,
+    frequencyUnit: 'Hours',
+    durationValue: 30,
+    durationUnit: 'Days',
+    notes: 'Take with food'
+  };
+  const prescriptionCreateSampleCommon = {
+    patientId: 5,
+    conditionDiagnosis: 'Type 2 Diabetes Mellitus',
+    initialCheckUp: { height: 175, weight: 80, bloodPressure: '130/85', bloodGlucose: 140 },
+    testResultsOrScans: ['hba1c_march2026.pdf'],
+    followUpAppointmentDate: '2026-04-15T09:00:00.000Z',
+    maxRefills: 2,
+    notes: 'Monitor HbA1c in 3 months'
+  };
+  paths['/prescriptions'].post.requestBody = {
+    required: true,
+    content: {
+      'application/json': {
+        schema: { $ref: '#/components/schemas/CreatePrescriptionRequest' },
+        examples: {
+          usingItems: {
+            summary: 'Using items[] (recommended)',
+            description: 'Send a non-empty **items** array. Do not duplicate the same drugs under **medicationPlan**.',
+            value: {
+              ...prescriptionCreateSampleCommon,
+              items: [prescriptionCreateSampleMedication]
+            }
+          },
+          usingMedicationPlan: {
+            summary: 'Using medicationPlan[] (alias)',
+            description: 'Same payload shape as **items**; only the property name changes.',
+            value: {
+              ...prescriptionCreateSampleCommon,
+              medicationPlan: [prescriptionCreateSampleMedication]
+            }
+          }
+        }
+      }
+    }
+  };
 }
 
 // GET /active-substances/search: document 200 response (with safetyStatus shape)
@@ -1592,26 +1670,47 @@ const options: Record<string, unknown> = {
         FrequencyUnit: { type: 'string', enum: ['Hours', 'Days', 'Weeks', 'Months', 'Years'], example: 'Hours', description: 'Unit for frequency (repetitions per X).' },
         DurationUnit: { type: 'string', enum: ['Days', 'Weeks', 'Months', 'Years'], example: 'Days', description: 'Unit for duration of treatment.' },
         AddPatientMedicineRequest: {
-          description: 'One medication. Required: medicineName. Optional: tradeNameId (GET /trade-names/search), dosageAmount, frequencyCount/Period/Unit, durationValue/Unit, startDate, endDate, isOngoing, notes, reminderEnabled, reminderTimes (array of "HH:mm" e.g. ["08:00","14:00","20:00"]).',
+          description:
+            'JSON body for POST /patient-medicines/patient/:patientId. Required: **medicineName**. Optional: **tradeNameId** (from GET /trade-names/search — backend resolves activeSubstanceId). Same field names and types as the server expects (see PatientMedicine / FrequencyUnit / DurationUnit enums). **reminderTimes**: strings must match HH:mm (e.g. 08:00); invalid entries are dropped server-side.',
           type: 'object',
           required: ['medicineName'],
           properties: {
-            medicineName:    { type: 'string', example: 'Metformin 500mg', description: 'Required.' },
-            tradeNameId:     { type: 'integer', example: 23, description: 'Optional. Get IDs from GET /trade-names/search?q=...' },
-            dosageAmount:    { type: 'number', format: 'float', example: 500, description: 'Optional. Numeric dose (e.g. 500, 0.5).' },
-            frequencyCount:  { type: 'integer', example: 2, description: 'Optional. Number of repetitions (e.g. 2 for twice).' },
-            frequencyPeriod: { type: 'integer', example: 8, description: 'Optional. Every X (e.g. 8 for every 8 hours).' },
-            frequencyUnit:   { $ref: '#/components/schemas/FrequencyUnit' },
-            durationValue:   { type: 'integer', example: 30, description: 'Optional. Length of treatment (e.g. 7).' },
-            durationUnit:    { $ref: '#/components/schemas/DurationUnit' },
-            startDate:       { type: 'string', format: 'date-time', example: '2025-01-01T00:00:00.000Z', description: 'Optional.' },
-            endDate:         { type: 'string', format: 'date-time', description: 'Optional.' },
-            isOngoing:       { type: 'boolean', example: true, description: 'Optional.' },
+            medicineName:    { type: 'string', example: 'Metformin 500mg', description: 'Required. Display name; often matches trade name title.' },
+            tradeNameId:     { type: 'integer', example: 23, description: 'Optional. When set, must exist in DB; active substance is derived automatically.' },
+            dosageAmount:    { type: 'number', example: 500, description: 'Optional. Numeric dose (e.g. 500, 0.5).' },
+            frequencyCount:  { type: 'integer', example: 2, description: 'Optional. Repetitions per frequency period (e.g. 2 for twice).' },
+            frequencyPeriod: { type: 'integer', example: 8, description: 'Optional. Spacing (e.g. 8 with Hours = every 8 hours).' },
+            frequencyUnit:   { type: 'string', enum: ['Hours', 'Days', 'Weeks', 'Months', 'Years'], example: 'Hours', description: 'Optional. Must match Prisma FrequencyUnit.' },
+            durationValue:   { type: 'integer', example: 30, description: 'Optional. Treatment length (e.g. 30).' },
+            durationUnit:    { type: 'string', enum: ['Days', 'Weeks', 'Months', 'Years'], example: 'Days', description: 'Optional. Must match Prisma DurationUnit.' },
+            startDate:       { type: 'string', format: 'date-time', example: '2026-01-01T08:00:00.000Z', description: 'Optional. ISO 8601.' },
+            endDate:         { type: 'string', format: 'date-time', nullable: true, example: '2026-07-01T23:59:59.000Z', description: 'Optional. ISO 8601.' },
+            isOngoing:       { type: 'boolean', example: true, description: 'Optional. Default true if omitted.' },
             notes:           { type: 'string', example: 'Take with food', description: 'Optional.' },
-            reminderEnabled: { type: 'boolean', example: true, description: 'Optional. Enable in-app medicine reminders.' },
-            reminderTimes:   { type: 'array', items: { type: 'string', example: '08:00' }, example: ['08:00', '14:00', '20:00'], description: 'Optional. Daily reminder times in HH:mm (e.g. ["08:00","14:00","20:00"]).' }
+            reminderEnabled: { type: 'boolean', example: true, description: 'Optional. Default false if omitted.' },
+            reminderTimes:   {
+              type: 'array',
+              items: { type: 'string', pattern: '^([01]?[0-9]|2[0-3]):[0-5][0-9]$', example: '08:00' },
+              example: ['08:00', '14:00', '20:00'],
+              description: 'Optional. Daily slots HH:mm (24h). Server keeps only strings matching /^\\d{1,2}:\\d{2}$/.'
+            }
           },
-          example: { medicineName: 'Metformin 500mg', tradeNameId: 23, dosageAmount: 500, frequencyCount: 2, frequencyPeriod: 8, frequencyUnit: 'Hours', durationValue: 30, durationUnit: 'Days', isOngoing: true, reminderEnabled: true, reminderTimes: ['08:00', '14:00', '20:00'] }
+          example: {
+            medicineName: 'Metformin 500mg',
+            tradeNameId: 23,
+            dosageAmount: 500,
+            frequencyCount: 2,
+            frequencyPeriod: 8,
+            frequencyUnit: 'Hours',
+            durationValue: 30,
+            durationUnit: 'Days',
+            startDate: '2026-01-01T08:00:00.000Z',
+            endDate: '2026-07-01T23:59:59.000Z',
+            isOngoing: true,
+            notes: 'Take with food',
+            reminderEnabled: true,
+            reminderTimes: ['08:00', '14:00', '20:00']
+          }
         },
         UpdatePatientMedicineRequest: {
           description: 'All fields optional. Send only fields to update.',
@@ -1747,58 +1846,90 @@ const options: Record<string, unknown> = {
         },
         // ── Prescriptions (First Visit: Prescription + PatientMedicine + PrescriptionMedicine)
         MedicationPlanItem: {
-          description: 'One drug in medicationPlan or items. medicineName required; use tradeNameId when selected from system, or omit for manual trade name.',
+          description:
+            'Single drug line inside the items or medicationPlan array for POST /prescriptions. medicineName is required. tradeNameId is optional (use GET /trade-names/search); when tradeNameId is set, the server can set activeSubstanceId from the trade name. See the schema example below for a full row; the operation also lists named request examples (usingItems / usingMedicationPlan).',
           type: 'object',
           required: ['medicineName'],
           properties: {
-            medicineName:      { type: 'string', example: 'Metformin 500mg', description: 'Required. Trade name title or manual entry.' },
-            tradeNameId:       { type: 'integer', nullable: true, example: 23, description: 'Optional. Omit if doctor entered manual trade name. From GET /trade-names/search.' },
-            activeSubstanceId: { type: 'integer', nullable: true, example: 11, description: 'Optional. From API step; can be derived from tradeNameId if not sent.' },
-            dosageAmount:      { type: 'number', nullable: true, example: 500, description: 'e.g. 5.' },
-            frequencyCount:    { type: 'integer', nullable: true, example: 2, description: 'e.g. 2 for twice.' },
-            frequencyPeriod:   { type: 'integer', nullable: true, example: 8, description: 'e.g. 8 for every 8.' },
-            frequencyUnit:     { type: 'string', nullable: true, example: 'Hours', description: 'e.g. Daily, Weekly (FrequencyUnit).' },
-            durationValue:     { type: 'integer', nullable: true, example: 30, description: 'e.g. 3.' },
-            durationUnit:      { type: 'string', nullable: true, example: 'Days', description: 'e.g. Weeks, Months (DurationUnit).' },
-            startDate:         { type: 'string', format: 'date-time', nullable: true, example: '2025-03-01T00:00:00.000Z' },
+            medicineName:      { type: 'string', description: 'Required. Trade name title or manual entry.' },
+            tradeNameId:       { type: 'integer', nullable: true, description: 'Optional. From GET /trade-names/search.' },
+            activeSubstanceId: { type: 'integer', nullable: true, description: 'Optional; derived from tradeNameId when omitted.' },
+            dosageAmount:      { type: 'number', nullable: true, description: 'Optional dose amount.' },
+            frequencyCount:    { type: 'integer', nullable: true, description: 'Optional. Repetitions per period.' },
+            frequencyPeriod:   { type: 'integer', nullable: true, description: 'Optional. E.g. every 8 with Hours.' },
+            frequencyUnit:     { type: 'string', enum: ['Hours', 'Days', 'Weeks', 'Months', 'Years'], nullable: true, description: 'Optional. Prisma FrequencyUnit.' },
+            durationValue:     { type: 'integer', nullable: true, description: 'Optional. Treatment length.' },
+            durationUnit:      { type: 'string', enum: ['Days', 'Weeks', 'Months', 'Years'], nullable: true, description: 'Optional. Prisma DurationUnit.' },
+            startDate:         { type: 'string', format: 'date-time', nullable: true },
             endDate:           { type: 'string', format: 'date-time', nullable: true },
-            notes:             { type: 'string', nullable: true, example: 'Take with food' }
+            notes:             { type: 'string', nullable: true }
           },
-          example: { medicineName: 'Metformin 500mg', tradeNameId: 23, dosageAmount: 500, frequencyCount: 2, frequencyPeriod: 8, frequencyUnit: 'Hours', durationValue: 30, durationUnit: 'Days', notes: 'Take with food' }
+          example: {
+            medicineName: 'Metformin 500mg',
+            tradeNameId: 23,
+            dosageAmount: 500,
+            frequencyCount: 2,
+            frequencyPeriod: 8,
+            frequencyUnit: 'Hours',
+            durationValue: 30,
+            durationUnit: 'Days',
+            notes: 'Take with food'
+          }
         },
         CreatePrescriptionRequest: {
-          description: 'First Visit: doctorId, patientId, conditionDiagnosis, initialCheckUp (vitals), medicationPlan or items (array of drugs), testResultsOrScans, followUpAppointmentDate. Required: doctorId, patientId, and items or medicationPlan (at least one item with medicineName). Response: prescription with prescriptionMedicines (each with patientMedicine including tradeName, activeSubstance), and warnings.',
+          description:
+            'Request body for POST /prescriptions (doctor JWT only). Do not send doctorId; the prescribing doctor is taken from the token. Required: patientId, plus a non-empty items array or a non-empty medicationPlan array (same MedicationPlanItem shape; use one array, not two copies of the same drugs). Each array element needs medicineName. Optional First Visit fields: conditionDiagnosis, initialCheckUp, testResultsOrScans, followUpAppointmentDate. The server runs drug-safety checks and may respond with 400 and blocked or warnings.',
           type: 'object',
-          required: ['doctorId', 'patientId'],
+          required: ['patientId'],
           properties: {
-            doctorId:                 { type: 'integer', example: 2, description: 'Required.' },
-            patientId:                { type: 'integer', example: 5, description: 'Required.' },
-            items:                    { type: 'array', items: { $ref: '#/components/schemas/MedicationPlanItem' }, description: 'Required for submit. Array of drugs (medicineName required per item).' },
-            medicationPlan:           { type: 'array', items: { $ref: '#/components/schemas/MedicationPlanItem' }, description: 'Alias for items. Same structure.' },
-            conditionDiagnosis:       { type: 'string', example: 'Type 2 Diabetes Mellitus', description: 'Diagnosis of the condition.' },
-            initialCheckUp:           {
+            patientId:               { type: 'integer', description: 'Required. Patient receiving the prescription.' },
+            items:                   { type: 'array', minItems: 1, items: { $ref: '#/components/schemas/MedicationPlanItem' }, description: 'Either this or medicationPlan (non-empty array). Same item shape as medicationPlan.' },
+            medicationPlan:          { type: 'array', minItems: 1, items: { $ref: '#/components/schemas/MedicationPlanItem' }, description: 'Alias of items. Send one or the other.' },
+            conditionDiagnosis:      { type: 'string', description: 'Optional. First Visit.' },
+            initialCheckUp:          {
               type: 'object',
-              description: 'Initial check-up vitals (all optional). Height/weight can be pre-filled from patient if doctor does not measure.',
+              description: 'Optional. Vitals object (all fields optional).',
               properties: {
-                height:           { type: 'number', example: 175, description: 'e.g. 170 (Cm).' },
-                weight:           { type: 'number', example: 80, description: 'e.g. 68 (Kg).' },
-                bloodPressure:    { type: 'string', example: '130/85', description: 'e.g. 120/80 MmHg.' },
-                bloodGlucose:     { type: 'number', example: 140, description: 'e.g. 140 Mg/DL.' },
-                bodyTemperature:  { type: 'number', example: 37.2, description: 'e.g. 38 °C.' },
-                heartRate:        { type: 'number', example: 82, description: 'e.g. 100 Bpm.' },
-                respiratoryRate:  { type: 'string', example: '16', description: 'e.g. 12-20 Breaths/Min.' },
-                oxygenSaturation: { type: 'number', example: 98, description: 'e.g. 95 (%).' }
+                height:           { type: 'number' },
+                weight:           { type: 'number' },
+                bloodPressure:    { type: 'string' },
+                bloodGlucose:     { type: 'number' },
+                bodyTemperature:  { type: 'number' },
+                heartRate:        { type: 'number' },
+                respiratoryRate:  { type: 'string' },
+                oxygenSaturation: { type: 'number' }
               }
             },
-            testResultsOrScans:       { type: 'array', items: { type: 'string' }, example: ['hba1c_march2025.pdf'], description: 'File names or URLs of uploaded tests/scans.' },
-            followUpAppointmentDate:  { type: 'string', format: 'date-time', example: '2025-04-15T09:00:00.000Z', description: 'Follow-up appointment date.' },
-            visitId:                  { type: 'integer', nullable: true, example: 3, description: 'Optional. Link to visit.' },
-            validFrom:                { type: 'string', format: 'date-time', example: '2025-03-01T00:00:00.000Z', description: 'Optional. Default: now.' },
-            validUntil:               { type: 'string', format: 'date-time', example: '2025-04-01T00:00:00.000Z', description: 'Optional. Default e.g. 30 days.' },
-            maxRefills:               { type: 'integer', example: 2, description: 'Optional. Default 0.' },
-            notes:                    { type: 'string', nullable: true, example: 'Monitor HbA1c in 3 months', description: 'Optional.' }
+            testResultsOrScans:      { type: 'array', items: { type: 'string' }, description: 'Optional. File names or URLs.' },
+            followUpAppointmentDate: { type: 'string', format: 'date-time', description: 'Optional.' },
+            visitId:                 { type: 'integer', nullable: true, description: 'Optional. Must belong to this doctor and patient.' },
+            validFrom:               { type: 'string', format: 'date-time', description: 'Optional. Default: now.' },
+            validUntil:              { type: 'string', format: 'date-time', description: 'Optional. Default ~30 days.' },
+            maxRefills:              { type: 'integer', description: 'Optional. Default 0.' },
+            notes:                   { type: 'string', nullable: true, description: 'Optional prescription notes.' }
           },
-          example: { doctorId: 2, patientId: 5, conditionDiagnosis: 'Type 2 Diabetes Mellitus', items: [{ medicineName: 'Metformin 500mg', tradeNameId: 23, dosageAmount: 500, frequencyCount: 2, frequencyPeriod: 8, frequencyUnit: 'Hours' }], initialCheckUp: { height: 175, weight: 80, bloodPressure: '130/85', bloodGlucose: 140 }, followUpAppointmentDate: '2025-04-15T09:00:00.000Z', maxRefills: 2 }
+          example: {
+            patientId: 5,
+            items: [
+              {
+                medicineName: 'Metformin 500mg',
+                tradeNameId: 23,
+                dosageAmount: 500,
+                frequencyCount: 2,
+                frequencyPeriod: 8,
+                frequencyUnit: 'Hours',
+                durationValue: 30,
+                durationUnit: 'Days',
+                notes: 'Take with food'
+              }
+            ],
+            conditionDiagnosis: 'Type 2 Diabetes Mellitus',
+            initialCheckUp: { height: 175, weight: 80, bloodPressure: '130/85', bloodGlucose: 140 },
+            testResultsOrScans: ['hba1c_march2026.pdf'],
+            followUpAppointmentDate: '2026-04-15T09:00:00.000Z',
+            maxRefills: 2,
+            notes: 'Monitor HbA1c in 3 months'
+          }
         },
         AddMedicineToPrescriptionRequest: {
           description: 'Body for POST /prescriptions/:prescriptionId/medicines. One medication plan item (same shape as element of medicationPlan).',
