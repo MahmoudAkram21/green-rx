@@ -3,6 +3,7 @@ import {
     createPrescription,
     createBatchPrescriptions,
     getPrescriptions,
+    getLatestPrescriptionForPatient,
     getPrescriptionById,
     updatePrescription,
     deletePrescription,
@@ -22,6 +23,11 @@ router.use(authenticate);
 router.post('/', authorize([UserRole.Doctor]), createPrescription);
 router.post('/batch', authorize([UserRole.Doctor]), createBatchPrescriptions);
 router.get('/', authorize([UserRole.Doctor, UserRole.Patient, UserRole.Admin]), getPrescriptions);
+router.get(
+    '/patient/:patientId/latest',
+    authorize([UserRole.Doctor]),
+    getLatestPrescriptionForPatient
+);
 router.put('/interactions/:alertId/acknowledge', authorize([UserRole.Doctor, UserRole.Patient]), acknowledgeDrugInteraction);
 router.post('/:prescriptionId/medicines', authorize([UserRole.Doctor]), addMedicineToPrescription);
 router.get('/:prescriptionId/interactions', authorize([UserRole.Doctor, UserRole.Patient, UserRole.Admin]), getDrugInteractionAlerts);

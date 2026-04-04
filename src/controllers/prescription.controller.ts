@@ -38,6 +38,31 @@ const prescriptionIncludeWithMedicinesAndVisit = {
     prescriptionVersions: { orderBy: { version: 'desc' as const } }
 };
 
+/** Same nested shape as GET /prescriptions/:id (medicines, patient context, alerts, versions). */
+const prescriptionDetailInclude = {
+    doctor: { include: { user: { select: { email: true, role: true } } } },
+    patient: {
+        include: {
+            user: { select: { email: true } },
+            allergyReports: true,
+            patientDiseases: { include: { disease: true } }
+        }
+    },
+    visit: { select: { id: true, visitDate: true, visitType: true, isNewVisit: true } },
+    prescriptionMedicines: {
+        orderBy: { sortOrder: 'asc' as const },
+        include: {
+            patientMedicine: {
+                include: { tradeName: { include: { activeSubstance: true, company: true } }, activeSubstance: true }
+            }
+        }
+    },
+    drugInteractionAlerts: {
+        include: { interactingMedicine: { include: { activeSubstance: true } } }
+    },
+    prescriptionVersions: { orderBy: { version: 'desc' as const } }
+};
+
 export type MedicationPlanItem = {
     medicineName: string;
     tradeNameId?: number | null;
@@ -450,6 +475,48 @@ export const getPrescriptions = async (req: Request, res: Response) => {
     }
 };
 
+// Latest prescription by the current doctor for a linked patient (e.g. open for edit via PUT /prescriptions/:id)
+export const getLatestPrescriptionForPatient = async (req: Request, res: Response) => {
+    try {
+        const { patientId } = req.params;
+        const pid = parseInt(patientId, 10);
+        if (!Number.isFinite(pid)) {
+            return res.status(400).json({ message: 'Invalid patientId' });
+        }
+
+        const { role, doctorId: tokenDoctorId } = await resolveProfileIds(req);
+        if (role !== UserRole.Doctor || tokenDoctorId == null) {
+            return res.status(403).json({ message: 'Only doctors can use this endpoint' });
+        }
+
+        const link = await prisma.patientDoctor.findUnique({
+            where: { patientId_doctorId: { patientId: pid, doctorId: tokenDoctorId } }
+        });
+        if (!link) {
+            return res.status(403).json({
+                message: 'You can only load prescriptions for patients linked to your practice'
+            });
+        }
+
+        const prescription = await prisma.prescription.findFirst({
+            where: { patientId: pid, doctorId: tokenDoctorId },
+            orderBy: [{ prescriptionDate: 'desc' }, { id: 'desc' }],
+            include: prescriptionDetailInclude
+        });
+
+        if (!prescription) {
+            return res.status(404).json({
+                message: 'No prescription found for this patient from your account'
+            });
+        }
+
+        return res.json(prescription);
+    } catch (error) {
+        console.error('Error fetching latest prescription for patient:', error);
+        return res.status(500).json({ message: 'Error fetching latest prescription', error });
+    }
+};
+
 // Get prescription by ID
 export const getPrescriptionById = async (req: Request, res: Response) => {
     try {
@@ -457,29 +524,7 @@ export const getPrescriptionById = async (req: Request, res: Response) => {
 
         const prescription = await prisma.prescription.findUnique({
             where: { id: parseInt(id) },
-            include: {
-                doctor: { include: { user: { select: { email: true, role: true } } } },
-                patient: {
-                    include: {
-                        user: { select: { email: true } },
-                        allergyReports: true,
-                        patientDiseases: { include: { disease: true } }
-                    }
-                },
-                visit: { select: { id: true, visitDate: true, visitType: true, isNewVisit: true } },
-                prescriptionMedicines: {
-                    orderBy: { sortOrder: 'asc' },
-                    include: {
-                        patientMedicine: {
-                            include: { tradeName: { include: { activeSubstance: true, company: true } }, activeSubstance: true }
-                        }
-                    }
-                },
-                drugInteractionAlerts: {
-                    include: { interactingMedicine: { include: { activeSubstance: true } } }
-                },
-                prescriptionVersions: { orderBy: { version: 'desc' } }
-            }
+            include: prescriptionDetailInclude
         });
 
         if (!prescription) {

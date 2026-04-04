@@ -300,6 +300,7 @@ s('/add-medicine-requests/{id}/resolve', 'patch', ADMIN_TAG, 'Resolve request: l
 
 // PRESCRIPTIONS
 s('/prescriptions', 'get', [PATIENT_TAGS.PRESCRIPTIONS, DOCTOR_TAGS.PRESCRIPTIONS, DOCTOR_PATIENTS_SECTION], 'List prescriptions with pagination. **Doctor:** always scoped to their own prescriptions; optional **patientId** narrows to one linked patient (403 if not linked). **Patient:** only their prescriptions. **Admin/SuperAdmin:** optional patientId and doctorId filters. Query: status, page, limit.', true, [q('patientId', 'Doctor: filter to one linked patient. Admin: filter by patient ID.'), q('doctorId', 'Admin/SuperAdmin only — filter by doctor ID'), q('status', 'Draft | Pending | Approved | Filled | Cancelled'), q('page'), q('limit')]);
+s('/prescriptions/patient/{patientId}/latest', 'get', [DOCTOR_TAGS.PRESCRIPTIONS, DOCTOR_PATIENTS_SECTION], 'Doctor only. Newest prescription you issued for this patient (prescriptionDate desc, then id). Same JSON as GET /prescriptions/{id}; use returned id with PUT /prescriptions/{id} for notes, status, First Visit fields, etc. Add drugs with POST /prescriptions/{id}/medicines. Requires patient–doctor link.', true, [p('patientId')], undefined, { '403': 'Patient not linked to your practice', '404': 'No prescription from this doctor for this patient' });
 s('/prescriptions', 'post', [DOCTOR_TAGS.PRESCRIPTIONS, DOCTOR_PATIENTS_SECTION, DOCTOR_ADD_DRUG_SECTION], 'Create prescription. Doctor only. doctorId is resolved automatically from the JWT token (do NOT pass doctorId in body when calling as Doctor). Required: patientId, items or medicationPlan; each item: medicineName (required), tradeNameId?, activeSubstanceId?, dosageAmount?, frequencyCount?, durationValue?, etc. Runs drug-safety check. First Visit fields: conditionDiagnosis, initialCheckUp, testResultsOrScans, followUpAppointmentDate.', true, [], { schemaRef: 'CreatePrescriptionRequest' });
 s('/prescriptions/batch', 'post', [DOCTOR_TAGS.PRESCRIPTIONS, DOCTOR_PATIENTS_SECTION], 'Batch-create prescriptions: one Prescription per medicine, each with one PatientMedicine + PrescriptionMedicine. Runs drug-safety and batch-interaction checks. Doctor only. doctorId is resolved from JWT token — do NOT pass it in body.', true, [], { schemaRef: 'BatchPrescriptionsRequest' });
 s('/prescriptions/interactions/{alertId}/acknowledge', 'put', [WARNING_SYSTEM_SECTION, PATIENT_TAGS.PRESCRIPTIONS, PATIENT_TAGS.DRUG_SAFETY, DOCTOR_TAGS.DRUG_SAFETY, DOCTOR_PATIENTS_SECTION], 'Acknowledge a drug interaction alert. The acknowledgedBy field (doctor or patient) is derived automatically from the caller\'s role — no need to pass it in the request body. Requires Doctor or Patient role.', true, [p('alertId')]);
@@ -847,6 +848,18 @@ if (paths['/doctors/{doctorId}/patients/{patientId}']?.get) {
   };
   paths['/doctors/{doctorId}/patients/{patientId}'].get.responses['404'] = {
     description: 'Patient not found or not linked to this doctor'
+  };
+}
+
+// GET /prescriptions/patient/:patientId/latest — full prescription for doctor edit flow
+if (paths['/prescriptions/patient/{patientId}/latest']?.get) {
+  paths['/prescriptions/patient/{patientId}/latest'].get.responses['200'] = {
+    description: 'Full prescription object (same fields as GET /prescriptions/{id}): prescriptionMedicines with patientMedicine, patient allergies/diseases, drugInteractionAlerts, prescriptionVersions, visit, etc.',
+    content: {
+      'application/json': {
+        schema: { type: 'object', additionalProperties: true, description: 'Prescription with relations; mirror GET /prescriptions/{id}.' }
+      }
+    }
   };
 }
 
