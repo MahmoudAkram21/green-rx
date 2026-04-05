@@ -11,7 +11,7 @@ import {
 } from '../zod/doctor.zod';
 import { computeBmi } from '../utils/bmi.util';
 import { haversineDistanceKm } from '../utils/geo.util';
-import { patientFullDetailsInclude, mapPatientToFullDetailsPayload } from '../utils/patientFullDetails.util';
+import { patientFullDetailsIncludeForDoctor, mapPatientToFullDetailsPayload } from '../utils/patientFullDetails.util';
 import { getNearbyDoctorsRadiusKm } from './settings.controller';
 import { getAggregatedWarningsForPatient } from './patient.controller';
 
@@ -865,7 +865,7 @@ export const getPatientDetailsForDoctor = async (req: Request, res: Response, ne
                 patientId_doctorId: { patientId: patId, doctorId: docId }
             },
             include: {
-                patient: { include: patientFullDetailsInclude }
+                patient: { include: patientFullDetailsIncludeForDoctor(docId) }
             }
         });
 

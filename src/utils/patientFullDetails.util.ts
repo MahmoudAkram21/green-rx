@@ -39,6 +39,20 @@ export const patientFullDetailsInclude = {
     prescriptions: prescriptionsForFullProfile
 } as const;
 
+/**
+ * Same as patientFullDetailsInclude but prescriptions are limited to those issued by the given doctor
+ * (for GET /doctors/:doctorId/patients/:patientId).
+ */
+export function patientFullDetailsIncludeForDoctor(doctorId: number) {
+    return {
+        ...patientFullDetailsInclude,
+        prescriptions: {
+            where: { doctorId },
+            ...prescriptionsForFullProfile
+        }
+    };
+}
+
 type PatientWithFullDetails = {
     user: { name: string | null; email: string; phone: string | null } | null;
     weight?: unknown;
