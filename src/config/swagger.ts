@@ -125,7 +125,7 @@ s('/health', 'get', ADMIN_TAG, 'Health check', false);
 // ═══════════════════════════════════════════════════
 // AUTH  →  /api/auth/*
 // ═══════════════════════════════════════════════════
-s('/auth/register', 'post', AUTH_TAGS, 'Register a new user', false, [], { schemaRef: 'RegisterRequest' }, { '201': 'User created — OTP sent to email' }, 'RegisterResponse');
+s('/auth/register', 'post', AUTH_TAGS, 'Register a new user. For Doctor and Pharmacist, the server may use AI (Gemini) to read the license image; if it extracts a non-empty number that does not match the submitted licenseNumber (after normalization), registration fails with 400 and the temp upload is removed. If the API key is missing, the request fails, or the image is unreadable, registration still succeeds and the response may include licenseNumberVerification: not_checked and a hint.', false, [], { schemaRef: 'RegisterRequest' }, { '201': 'User created — OTP sent to email', '400': 'Validation error (Zod issues) or license number on the image does not match the number you entered' }, 'RegisterResponse');
 s('/auth/login', 'post', AUTH_TAGS, 'Login and receive tokens. Returns 200 with tokens on success. Returns 200 with { name, email, role, isActive: false } (no tokens) when account is deactivated — handle this case by showing an "account inactive" screen without storing tokens.', false, [], { schemaRef: 'LoginRequest' }, { '401': 'Invalid credentials (wrong email or password)' }, 'LoginResponse');
 s('/auth/refresh', 'post', AUTH_TAGS, 'Refresh access token', false, [], { schemaRef: 'RefreshTokenRequest' }, {}, 'RefreshTokenResponse');
 s('/auth/logout', 'post', AUTH_TAGS, 'Logout (invalidate token)', true, [], undefined, {}, 'MessageResponse');
@@ -545,6 +545,35 @@ if (paths['/auth/register']?.post) {
     content: {
       'multipart/form-data': {
         schema: { $ref: '#/components/schemas/RegisterRequest' }
+      }
+    }
+  };
+  paths['/auth/register'].post.responses['201'] = {
+    description:
+      'User created — OTP sent to email. For Doctor/Pharmacist only: may include licenseNumberVerification (matched when AI read matches the submitted number; not_checked when AI was skipped, failed, or returned nothing readable) and optional hint suggesting a clearer image.',
+    content: {
+      'application/json': {
+        schema: { $ref: '#/components/schemas/RegisterResponse' }
+      }
+    }
+  };
+  paths['/auth/register'].post.responses['400'] = {
+    description:
+      'Validation failed (body often returns { error: Zod issue array }) or license mismatch for Doctor/Pharmacist ({ error: string } when the number read from the image does not match licenseNumber).',
+    content: {
+      'application/json': {
+        schema: {
+          type: 'object',
+          properties: {
+            error: {
+              description: 'Either a human-readable string (e.g. license mismatch) or Zod validation issues array',
+              oneOf: [
+                { type: 'string' },
+                { type: 'array', items: { type: 'object' } }
+              ]
+            }
+          }
+        }
       }
     }
   };
@@ -1122,12 +1151,21 @@ const options: Record<string, unknown> = {
       schemas: {
         // ── Auth response bodies
         RegisterResponse: {
-          description: 'Returned after successful registration. Use otpToken as Bearer token when calling POST /otp/verify. The otp field is only present outside production (dev/staging helper for mobile testing).',
+          description: 'Returned after successful registration. Use otpToken as Bearer token when calling POST /otp/verify. The otp field is only present outside production (dev/staging helper for mobile testing). For Doctor and Pharmacist, licenseNumberVerification and hint are present when a license image was uploaded.',
           type: 'object',
           properties: {
             message:  { type: 'string', example: 'User registered successfully and OTP sent to email' },
             otpToken: { type: 'string', description: 'Short-lived JWT. Use as Bearer token when calling POST /otp/verify and POST /otp/resend.', example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...' },
-            otp:      { type: 'integer', description: 'Dev/staging only — the actual OTP for quick testing. Not present in production.', example: 482910 }
+            otp:      { type: 'integer', description: 'Dev/staging only — the actual OTP for quick testing. Not present in production.', example: 482910 },
+            licenseNumberVerification: {
+              type: 'string',
+              enum: ['matched', 'not_checked'],
+              description: 'Doctor/Pharmacist only. matched = AI read a license number that matches the submitted value after normalization. not_checked = AI unavailable, failed, unreadable image, or empty extraction — registration proceeded for admin review.'
+            },
+            hint: {
+              type: 'string',
+              description: 'Doctor/Pharmacist only, optional. Shown with not_checked to suggest uploading a clearer license image later.'
+            }
           },
           example: {
             message: 'User registered successfully and OTP sent to email',
@@ -1163,7 +1201,7 @@ const options: Record<string, unknown> = {
 
         // ── Auth request bodies
         RegisterRequest: {
-          description: 'Create a new user account. Send as multipart/form-data when role=Doctor or Pharmacist. Required: email, password. Optional: role (default Patient), name, phone. When role=Patient, a patient profile is auto-created and the response includes user.patientId. When role=Doctor: name, licenseNumber, specialization, and licenseImage (file) are required; license image is stored under uploads/doctor-licenses/ and the URL is saved as licenseImageUrl on the Doctor profile. When role=Pharmacist: name, licenseNumber, and licenseImage (file) are required; license image is stored under uploads/pharmacist-licenses/ and the URL is saved as licenseImageUrl on the Pharmacist profile. Response includes user.doctorId or user.pharmacistId when applicable.',
+          description: 'Create a new user account. Send as multipart/form-data when role=Doctor or Pharmacist. Required: email, password. Optional: role (default Patient), name, phone. When role=Patient, a patient profile is auto-created and the response includes user.patientId. When role=Doctor: name, licenseNumber, specialization, and licenseImage (file) are required; license image is stored under uploads/doctor-licenses/ and the URL is saved as licenseImageUrl on the Doctor profile. When role=Pharmacist: name, licenseNumber, and licenseImage (file) are required; license image is stored under uploads/pharmacist-licenses/ and the URL is saved as licenseImageUrl on the Pharmacist profile. For Doctor/Pharmacist, the server may verify licenseNumber against text extracted from licenseImage via Gemini; mismatch returns 400. Response includes user.doctorId or user.pharmacistId when applicable.',
           type: 'object',
           required: ['email', 'password'],
           properties: {

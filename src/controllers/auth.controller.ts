@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from "express";
+import { readFile } from "fs/promises";
 import { z } from "zod";
 import { prisma } from "../lib/prisma";
 import { hashPassword, comparePassword } from "../utils/password.util";
@@ -20,6 +21,10 @@ import {
   verifyEmailSchema,
 } from "../zod/auth.zod";
 import { cleanupFile, moveLicenseToRoleFolder } from "../config/multer.config";
+import {
+  extractLicenseNumberFromImage,
+  normalizeLicenseNumberForCompare,
+} from "../services/licenseImageExtraction.service";
 import { computeBmi } from "../utils/bmi.util";
 import { sendOtpEmail } from "../services/mail.service";
 import emailOtpRepository from "../repositories/mail.repository";
@@ -107,6 +112,57 @@ export const register = async (
           error: "A pharmacist with this license number is already registered",
         });
         return;
+      }
+    }
+
+    const LICENSE_VERIFY_HINT =
+      "We could not read the license number from your image. Registration was accepted and an administrator will review your license. If possible, upload a higher-resolution image when updating your profile.";
+
+    let licenseVerificationExtra:
+      | { licenseNumberVerification: "matched" | "not_checked"; hint?: string }
+      | undefined;
+
+    if (
+      (role === UserRole.Doctor || role === UserRole.Pharmacist) &&
+      req.file?.path &&
+      licenseNumber
+    ) {
+      try {
+        const buf = await readFile(req.file.path);
+        const mime = req.file.mimetype || "image/jpeg";
+        const extracted = await extractLicenseNumberFromImage(buf, mime);
+        if (extracted) {
+          const nUser = normalizeLicenseNumberForCompare(licenseNumber.trim());
+          const nImg = normalizeLicenseNumberForCompare(extracted);
+          if (nUser.length > 0 && nImg.length > 0 && nUser !== nImg) {
+            try {
+              cleanupFile(req.file.path);
+            } catch (_) {}
+            res.status(400).json({
+              error:
+                "License number on the image does not match the number you entered. Please correct the number or upload a clearer image of your license.",
+            });
+            return;
+          }
+          if (nUser.length > 0 && nImg.length > 0 && nUser === nImg) {
+            licenseVerificationExtra = { licenseNumberVerification: "matched" };
+          } else {
+            licenseVerificationExtra = {
+              licenseNumberVerification: "not_checked",
+              hint: LICENSE_VERIFY_HINT,
+            };
+          }
+        } else {
+          licenseVerificationExtra = {
+            licenseNumberVerification: "not_checked",
+            hint: LICENSE_VERIFY_HINT,
+          };
+        }
+      } catch {
+        licenseVerificationExtra = {
+          licenseNumberVerification: "not_checked",
+          hint: LICENSE_VERIFY_HINT,
+        };
       }
     }
 
@@ -209,6 +265,7 @@ export const register = async (
       message: "User registered successfully and OTP sent to email",
       otpToken,
       ...(process.env.NODE_ENV !== "production" ? { otp } : {}),
+      ...(licenseVerificationExtra ?? {}),
     });
   } catch (error: any) {
     if (req.file?.path) {
