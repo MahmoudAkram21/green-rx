@@ -6,6 +6,7 @@ import {
   updateActiveSubstanceSchema,
 } from "../zod/createActiveSubstance.zod";
 import { evaluateDrugSafety, loadPatientContext } from "../services/pharmaSafetyEngine.service";
+import { extractLang, serializeActiveSubstance } from "../utils/translateJson.util";
 
 // Create Active Substance
 export const createActiveSubstance = async (
@@ -64,7 +65,8 @@ export const getActiveSubstanceById = async (
       return;
     }
 
-    res.json(activeSubstance);
+    const lang = extractLang(req);
+    res.json(serializeActiveSubstance(activeSubstance, lang));
   } catch (error) {
     next(error);
   }
@@ -260,8 +262,20 @@ export const searchActiveSubstances = async (
       substancesWithSafety = substances.map((sub) => ({ ...sub, safetyStatus: null }));
     }
 
+    const lang = extractLang(req);
+    const serialized = substancesWithSafety.map((sub) => {
+      const base = serializeActiveSubstance(sub, lang);
+      if (base.safetyStatus?.filteredData) {
+        base.safetyStatus = {
+          ...base.safetyStatus,
+          filteredData: serializeActiveSubstance(base.safetyStatus.filteredData, lang),
+        };
+      }
+      return base;
+    });
+
     res.json({
-      substances: substancesWithSafety,
+      substances: serialized,
       pagination: {
         total,
         page: parseInt(page as string),
