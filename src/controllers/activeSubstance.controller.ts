@@ -7,6 +7,7 @@ import {
 } from "../zod/createActiveSubstance.zod";
 import { evaluateDrugSafety, loadPatientContext } from "../services/pharmaSafetyEngine.service";
 import { extractLang, serializeActiveSubstance } from "../utils/translateJson.util";
+import { extractSideEffects } from "../services/sideEffectExtract.service";
 
 // Create Active Substance
 export const createActiveSubstance = async (
@@ -421,6 +422,34 @@ export const getDrugInteractions = async (
     });
 
     res.json(interactions);
+  } catch (error) {
+    next(error);
+  }
+};
+
+// Get Side Effects for Active Substance (on-the-fly from JSON fields)
+export const getActiveSubstanceSideEffects = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { id } = req.params;
+    const activeSubstanceId = parseInt(id);
+
+    if (isNaN(activeSubstanceId)) {
+      res.status(400).json({ error: "Invalid active substance ID" });
+      return;
+    }
+
+    const result = await extractSideEffects(activeSubstanceId);
+
+    if (!result) {
+      res.status(404).json({ error: "Active substance not found" });
+      return;
+    }
+
+    res.json(result);
   } catch (error) {
     next(error);
   }

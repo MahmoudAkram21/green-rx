@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { prisma } from '../lib/prisma';
 import { SideEffectCreatedBy, SideEffectStatus } from '../../generated/client/client';
+import { extractSideEffects } from '../services/sideEffectExtract.service';
 
 const EDA_REDIRECT_URL = 'https://edaegypt.gov.eg';
 
@@ -359,38 +360,8 @@ export const getSideEffectsByTradeName = async (req: Request, res: Response, nex
             return;
         }
 
-        // 3. Extract side effects from TradeNameSideEffect table
-        const sideEffectLinks = await prisma.tradeNameSideEffect.findMany({
-            where: {
-                tradeNameId,
-                sideEffect: {
-                    status: SideEffectStatus.Approved,
-                },
-            },
-            include: {
-                sideEffect: true,
-            },
-            orderBy: [
-                { frequency: 'asc' },
-                { sideEffect: { name: 'asc' } },
-            ],
-        });
-
-        // 4. Group by frequency
-        const frequencyOrder = ['VeryCommon', 'Common', 'Uncommon', 'Rare', 'VeryRare', 'Unknown'];
-        const sideEffectsGrouped: Record<string, any[]> = {};
-
-        frequencyOrder.forEach((freq) => {
-            sideEffectsGrouped[freq.toLowerCase()] = sideEffectLinks
-                .filter((link) => link.frequency === freq)
-                .map((link) => ({
-                    id: link.sideEffect.id,
-                    name: link.sideEffect.name,
-                    nameAr: link.sideEffect.nameAr,
-                    frequency: link.frequency,
-                    bodySystem: link.bodySystem,
-                }));
-        });
+        // 3. Extract side effects on-the-fly from ActiveSubstance JSON fields
+        const extracted = await extractSideEffects(tradeName.activeSubstanceId);
 
         res.json({
             success: true,
@@ -402,9 +373,16 @@ export const getSideEffectsByTradeName = async (req: Request, res: Response, nex
                 url: tradeName.companyInstructionsPdf.url,
                 views: tradeName.companyInstructionsPdf.views,
                 createdAt: tradeName.companyInstructionsPdf.createdAt,
-                updatedAt: tradeName.companyInstructionsPdf.updatedAt
+                updatedAt: tradeName.companyInstructionsPdf.updatedAt,
             } : null,
-            sideEffects: sideEffectsGrouped,
+            sideEffects: extracted?.sideEffects ?? {
+                veryCommon: [],
+                common:     [],
+                uncommon:   [],
+                rare:       [],
+                veryRare:   [],
+                unknown:    [],
+            },
         });
     } catch (error) {
         next(error);

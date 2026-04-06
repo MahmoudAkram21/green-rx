@@ -8,7 +8,8 @@ import {
     searchActiveSubstances,
     updateActiveSubstance,
     deleteActiveSubstance,
-    getDrugInteractions
+    getDrugInteractions,
+    getActiveSubstanceSideEffects,
 } from '../controllers/activeSubstance.controller';
 import { authenticate, authorize } from '../middleware/auth.middleware';
 import { UserRole } from '../../generated/client/client';
@@ -30,5 +31,8 @@ router.delete('/:id', authorize([UserRole.Admin, UserRole.SuperAdmin]), deleteAc
 
 // Drug Interactions
 router.get('/:id/interactions', getDrugInteractions);
+
+// Side Effects (on-the-fly from ActiveSubstance JSON fields)
+router.get('/:id/side-effects', getActiveSubstanceSideEffects);
 
 export default router;
