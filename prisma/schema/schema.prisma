@@ -810,8 +810,9 @@ model Pharmacist {
   deletedAt         DateTime?
 
   // Relations
-  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  ratings Rating[]
+  user                User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  ratings             Rating[]
+  shareTokensRedeemed PatientShareToken[]
 
   @@index([isVerified])
   @@index([licenseNumber])
@@ -873,18 +874,20 @@ model PatientShareLink {
 
 // QR-code based patient-to-doctor sharing
 model PatientShareToken {
-  id             Int       @id @default(autoincrement())
-  patientId      Int
-  token          String    @unique
-  expiresAt      DateTime
-  used           Boolean   @default(false)
-  usedAt         DateTime?
-  usedByDoctorId Int?
-  createdAt      DateTime  @default(now())
+  id                 Int       @id @default(autoincrement())
+  patientId          Int
+  token              String    @unique
+  expiresAt          DateTime
+  used               Boolean   @default(false)
+  usedAt             DateTime?
+  usedByDoctorId     Int?
+  usedByPharmacistId Int?
+  createdAt          DateTime  @default(now())
 
   // Relations
-  patient Patient @relation(fields: [patientId], references: [id], onDelete: Cascade)
-  doctor  Doctor? @relation(fields: [usedByDoctorId], references: [id], onDelete: SetNull)
+  patient    Patient     @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  doctor     Doctor?     @relation(fields: [usedByDoctorId], references: [id], onDelete: SetNull)
+  pharmacist Pharmacist? @relation(fields: [usedByPharmacistId], references: [id], onDelete: SetNull)
 
   @@index([token])
   @@index([expiresAt])
