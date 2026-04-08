@@ -1,6 +1,10 @@
 import { Request, Response, NextFunction } from 'express';
 import { prisma } from '../lib/prisma';
-import { SideEffectCreatedBy, SideEffectStatus } from '../../generated/client/client';
+import {
+    PatientSideEffectSeverity,
+    SideEffectCreatedBy,
+    SideEffectStatus,
+} from '../../generated/client/client';
 import { extractSideEffects } from '../services/sideEffectExtract.service';
 
 const EDA_REDIRECT_URL = 'https://edaegypt.gov.eg';
@@ -169,23 +173,105 @@ export const addSideEffect = async (req: Request, res: Response, next: NextFunct
     }
 };
 
+type NormalizedReportItem = {
+    sideEffectId: number;
+    severity: PatientSideEffectSeverity | null;
+    notes: string | null;
+};
+
+function normalizeReportSideEffectItems(raw: unknown[]): NormalizedReportItem[] | { error: string; message: string } {
+    const items: NormalizedReportItem[] = [];
+    const seen = new Set<number>();
+
+    for (const el of raw) {
+        if (el === null || typeof el !== 'object' || Array.isArray(el) || !('sideEffectId' in el)) {
+            return {
+                error: 'INVALID_SIDE_EFFECT_FORMAT',
+                message:
+                    'Each item must be an object { sideEffectId, severity?: Mild|Moderate|Severe, notes?: string }',
+            };
+        }
+
+        const o = el as Record<string, unknown>;
+        const sideEffectId = o.sideEffectId;
+        if (typeof sideEffectId !== 'number' || !Number.isInteger(sideEffectId) || sideEffectId < 1) {
+            return { error: 'INVALID_SIDE_EFFECT_ID', message: 'sideEffectId must be a positive integer' };
+        }
+        if (seen.has(sideEffectId)) {
+            continue;
+        }
+        seen.add(sideEffectId);
+
+        let severity: PatientSideEffectSeverity | null = null;
+        if (o.severity !== undefined && o.severity !== null) {
+            if (typeof o.severity !== 'string') {
+                return { error: 'INVALID_SEVERITY', message: 'severity must be Mild, Moderate, or Severe' };
+            }
+            if (
+                o.severity !== PatientSideEffectSeverity.Mild &&
+                o.severity !== PatientSideEffectSeverity.Moderate &&
+                o.severity !== PatientSideEffectSeverity.Severe
+            ) {
+                return { error: 'INVALID_SEVERITY', message: 'Severity must be Mild, Moderate, or Severe' };
+            }
+            severity = o.severity as PatientSideEffectSeverity;
+        }
+
+        let notes: string | null = null;
+        if (o.notes !== undefined && o.notes !== null) {
+            if (typeof o.notes !== 'string') {
+                return { error: 'INVALID_NOTES', message: 'notes must be a string when provided' };
+            }
+            const t = o.notes.trim();
+            notes = t.length > 0 ? t : null;
+        }
+
+        items.push({ sideEffectId, severity, notes });
+    }
+
+    if (items.length === 0) {
+        return { error: 'INVALID_SIDE_EFFECTS', message: 'sideEffects must be a non-empty array' };
+    }
+
+    return items;
+}
+
+/** POST /my-side-effects — report approved side effects for a medicine (optional severity & notes per item). */
 export const reportSideEffects = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { medicationId, sideEffects } = req.body;
         const userId = req.user!.userId;
 
         if (!medicationId || typeof medicationId !== 'number') {
-            res.status(400).json({ error: 'medicationId (number) is required' });
+            res.status(400).json({
+                success: false,
+                error: 'INVALID_MEDICATION_ID',
+                message: 'medicationId (number) is required',
+            });
             return;
         }
         if (!Array.isArray(sideEffects) || sideEffects.length === 0) {
-            res.status(400).json({ error: 'sideEffects must be a non-empty array of IDs' });
+            res.status(400).json({
+                success: false,
+                error: 'INVALID_SIDE_EFFECTS',
+                message: 'sideEffects must be a non-empty array of { sideEffectId, severity?, notes? }',
+            });
+            return;
+        }
+
+        const normalized = normalizeReportSideEffectItems(sideEffects);
+        if (!Array.isArray(normalized)) {
+            res.status(400).json({ success: false, ...normalized });
             return;
         }
 
         const patient = await prisma.patient.findUnique({ where: { userId } });
         if (!patient) {
-            res.status(404).json({ error: 'Patient profile not found' });
+            res.status(404).json({
+                success: false,
+                error: 'PATIENT_NOT_FOUND',
+                message: 'Patient profile not found',
+            });
             return;
         }
 
@@ -193,32 +279,78 @@ export const reportSideEffects = async (req: Request, res: Response, next: NextF
             where: { id: medicationId, patientId: patient.id },
         });
         if (!patientMedicine) {
-            res.status(404).json({ error: 'Medication not found or does not belong to you' });
+            res.status(403).json({
+                success: false,
+                error: 'MEDICINE_NOT_IN_PROFILE',
+                message: 'This medicine is not in your medication profile',
+            });
             return;
         }
 
+        const sideEffectIds = normalized.map((i) => i.sideEffectId);
         const existingSideEffects = await prisma.sideEffect.findMany({
-            where: { id: { in: sideEffects }, status: SideEffectStatus.Approved },
+            where: { id: { in: sideEffectIds }, status: SideEffectStatus.Approved },
         });
-        if (existingSideEffects.length !== sideEffects.length) {
+        if (existingSideEffects.length !== sideEffectIds.length) {
             const found = new Set(existingSideEffects.map((s) => s.id));
-            const missing = sideEffects.filter((id: number) => !found.has(id));
-            res.status(400).json({ error: 'Some side effect IDs do not exist or are not approved yet', missing });
+            const missing = sideEffectIds.filter((id: number) => !found.has(id));
+            res.status(400).json({
+                success: false,
+                error: 'SIDE_EFFECTS_NOT_FOUND',
+                message: 'Some side effect IDs do not exist or are not approved yet',
+                missing,
+            });
             return;
         }
 
-        const result = await prisma.patientSideEffect.createMany({
-            data: sideEffects.map((sideEffectId: number) => ({
+        const existingSubmissions = await prisma.patientSideEffect.findMany({
+            where: {
                 patientId: patient.id,
                 patientMedicineId: medicationId,
-                sideEffectId,
-            })),
-            skipDuplicates: true,
+                sideEffectId: { in: sideEffectIds },
+            },
         });
 
+        if (existingSubmissions.length > 0) {
+            const duplicateIds = existingSubmissions.map((s) => s.sideEffectId);
+            res.status(409).json({
+                success: false,
+                error: 'DUPLICATE_SUBMISSION',
+                message: `${duplicateIds.length} of these side effects were already reported`,
+                duplicates: duplicateIds,
+            });
+            return;
+        }
+
+        const byId = new Map(normalized.map((i) => [i.sideEffectId, i]));
+        const results = await Promise.all(
+            sideEffectIds.map((sideEffectId: number) => {
+                const item = byId.get(sideEffectId)!;
+                return prisma.patientSideEffect.create({
+                    data: {
+                        patientId: patient.id,
+                        patientMedicineId: medicationId,
+                        sideEffectId,
+                        severity: item.severity,
+                        notes: item.notes,
+                        reportedAt: new Date(),
+                    },
+                    include: { sideEffect: true },
+                });
+            })
+        );
+
         res.status(201).json({
-            message: 'Side effects reported successfully',
-            reportedCount: result.count,
+            success: true,
+            message: `${results.length} side effect(s) reported successfully`,
+            submitted: results.length,
+            reportedCount: results.length,
+            sideEffects: results.map((r) => ({
+                id: r.id,
+                name: r.sideEffect.name,
+                severity: r.severity,
+                notes: r.notes,
+            })),
         });
     } catch (error) {
         next(error);
@@ -389,155 +521,3 @@ export const getSideEffectsByTradeName = async (req: Request, res: Response, nex
     }
 };
 
-/**
- * ENHANCED ENDPOINT: Submit multiple side effects with severity and notes in batch
- * POST /my-side-effects/batch
- * Accepts array of side effects with severity and optional notes
- */
-export const reportBatchSideEffects = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-        const { medicationId, sideEffects } = req.body;
-        const userId = req.user!.userId;
-
-        // 1. Validate request format
-        if (!medicationId || typeof medicationId !== 'number') {
-            res.status(400).json({
-                success: false,
-                error: 'INVALID_MEDICATION_ID',
-                message: 'medicationId (number) is required',
-            });
-            return;
-        }
-
-        if (!Array.isArray(sideEffects) || sideEffects.length === 0) {
-            res.status(400).json({
-                success: false,
-                error: 'INVALID_SIDE_EFFECTS',
-                message: 'sideEffects must be a non-empty array with {sideEffectId, severity, notes?}',
-            });
-            return;
-        }
-
-        // Validate each side effect object
-        for (const se of sideEffects) {
-            if (!se.sideEffectId || !se.severity) {
-                res.status(400).json({
-                    success: false,
-                    error: 'INVALID_SIDE_EFFECT_FORMAT',
-                    message: 'Each side effect must have sideEffectId and severity (Mild|Moderate|Severe)',
-                });
-                return;
-            }
-            if (!['Mild', 'Moderate', 'Severe'].includes(se.severity)) {
-                res.status(400).json({
-                    success: false,
-                    error: 'INVALID_SEVERITY',
-                    message: 'Severity must be Mild, Moderate, or Severe',
-                });
-                return;
-            }
-        }
-
-        // 2. Get patient
-        const patient = await prisma.patient.findUnique({ where: { userId } });
-        if (!patient) {
-            res.status(404).json({
-                success: false,
-                error: 'PATIENT_NOT_FOUND',
-                message: 'Patient profile not found',
-            });
-            return;
-        }
-
-        // 3. Verify patient owns the medication
-        const patientMedicine = await prisma.patientMedicine.findFirst({
-            where: { id: medicationId, patientId: patient.id },
-        });
-
-        if (!patientMedicine) {
-            res.status(403).json({
-                success: false,
-                error: 'MEDICINE_NOT_IN_PROFILE',
-                message: 'This medicine is not in your medication profile',
-            });
-            return;
-        }
-
-        // 4. Verify all side effects exist and are approved
-        const sideEffectIds = sideEffects.map((se: any) => se.sideEffectId);
-        const existingSideEffects = await prisma.sideEffect.findMany({
-            where: {
-                id: { in: sideEffectIds },
-                status: SideEffectStatus.Approved,
-            },
-        });
-
-        if (existingSideEffects.length !== sideEffectIds.length) {
-            const found = new Set(existingSideEffects.map((s) => s.id));
-            const missing = sideEffectIds.filter((id: number) => !found.has(id));
-            res.status(400).json({
-                success: false,
-                error: 'SIDE_EFFECTS_NOT_FOUND',
-                message: 'Some side effect IDs do not exist or are not approved yet',
-                missing,
-            });
-            return;
-        }
-
-        // 5. Check for duplicates
-        const existingSubmissions = await prisma.patientSideEffect.findMany({
-            where: {
-                patientId: patient.id,
-                patientMedicineId: medicationId,
-                sideEffectId: { in: sideEffectIds },
-            },
-        });
-
-        if (existingSubmissions.length > 0) {
-            const duplicateIds = existingSubmissions.map((s) => s.sideEffectId);
-            res.status(409).json({
-                success: false,
-                error: 'DUPLICATE_SUBMISSION',
-                message: `${duplicateIds.length} of these side effects were already reported`,
-                duplicates: duplicateIds,
-            });
-            return;
-        }
-
-        // 6. Create PatientSideEffect records for each submitted side effect
-        const sideEffectMap = new Map(sideEffects.map((se: any) => [se.sideEffectId, se]));
-
-        const results = await Promise.all(
-            sideEffectIds.map((sideEffectId: number) =>
-                prisma.patientSideEffect.create({
-                    data: {
-                        patientId: patient.id,
-                        patientMedicineId: medicationId,
-                        sideEffectId,
-                        severity: sideEffectMap.get(sideEffectId)?.severity,
-                        notes: sideEffectMap.get(sideEffectId)?.notes || null,
-                        reportedAt: new Date(),
-                    },
-                    include: {
-                        sideEffect: true,
-                    },
-                })
-            )
-        );
-
-        res.status(201).json({
-            success: true,
-            message: `${results.length} side effects submitted pending approval`,
-            submitted: results.length,
-            sideEffects: results.map((r) => ({
-                id: r.id,
-                name: r.sideEffect.name,
-                severity: r.severity,
-                notes: r.notes,
-                status: 'Pending',
-            })),
-        });
-    } catch (error) {
-        next(error);
-    }
-};

@@ -62,7 +62,7 @@ model PatientSideEffect {
   patientId         Int
   patientMedicineId Int
   sideEffectId      Int
-  severity          String? // Mild, Moderate, Severe
+  severity          PatientSideEffectSeverity?
   notes             String?
   reportedAt        DateTime @default(now())
   createdAt         DateTime @default(now())

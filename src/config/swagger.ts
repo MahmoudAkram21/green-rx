@@ -521,8 +521,7 @@ s('/medicines/{tradeNameId}/side-effects', 'get', [PATIENT_TAGS.SIDE_EFFECTS, DO
 // INSTRUCTION PDF (Medicine instructions)
 s('/trade-names/{tradeNameId}/instruction-pdf/view', 'post', [DOCTOR_TAGS.DRUG_SAFETY, DOCTOR_PATIENTS_SECTION], 'View instruction PDF for a medicine and increment the view counter. Doctor or Admin: call this when opening the PDF so views are tracked. Returns PDF metadata including url (not file bytes).', true, [p('tradeNameId')], undefined, { '404': 'Instruction PDF not found for this medicine' }, 'ViewInstructionPdfResponse');
 s('/trade-names/{tradeNameId}/instruction-pdf/stats', 'get', [DOCTOR_TAGS.DRUG_SAFETY, DOCTOR_PATIENTS_SECTION, ADMIN_TAG], 'Get view count statistics for an instruction PDF without incrementing the counter. Authorized: Doctor, Admin, or Company (company users see stats for their products).', true, [p('tradeNameId')], undefined, { '404': 'Instruction PDF not found for this medicine' }, 'GetInstructionPdfStatsResponse');
-s('/my-side-effects', 'post', PATIENT_TAGS.SIDE_EFFECTS, 'Report one or more side effects for a medication (Patient only)', true, [], { schemaRef: 'ReportSideEffectsRequest' }, { '201': 'Side effects reported successfully' });
-s('/my-side-effects/batch', 'post', PATIENT_TAGS.SIDE_EFFECTS, 'Submit multiple side effects at once with severity and optional notes (Patient only). Each side effect includes sideEffectId, severity (Mild|Moderate|Severe), and optional notes. Returns 409 if duplicate, 403 if medicine not in profile.', true, [], { schemaRef: 'SubmitBatchSideEffectsRequest' }, { '201': 'Side effects submitted pending approval', '403': 'Medicine not in your profile', '409': 'Duplicate submission' });
+s('/my-side-effects', 'post', PATIENT_TAGS.SIDE_EFFECTS, 'Report one or more **approved** side effects for a medication (Patient). Replaces legacy POST /my-side-effects/batch (removed). Body: `medicationId`, `sideEffects` — array of `{ sideEffectId, severity?, notes? }` (required `sideEffectId`; `severity` is optional `PatientSideEffectSeverity`). **403** if medicine not in profile; **409** if any effect was already reported for this medicine.', true, [], { schemaRef: 'ReportSideEffectsRequest' }, { '201': 'Created — see ReportSideEffectsResponse', '400': 'Validation or unknown/unapproved side effect ids', '403': 'Medicine not in profile', '404': 'Patient profile not found', '409': 'Duplicate submission' });
 s('/my-side-effects', 'get', [PATIENT_TAGS.SIDE_EFFECTS, DOCTOR_PATIENTS_SECTION], 'Get all side effects reported by the patient');
 s('/my-side-effects/by-medication/{medicationId}', 'get', [PATIENT_TAGS.SIDE_EFFECTS, DOCTOR_PATIENTS_SECTION], 'Get side effects reported by the patient for a specific medication', true, [p('medicationId')]);
 
@@ -537,6 +536,31 @@ s('/export/trade-names', 'get', ADMIN_TAG, 'Export trade names to Excel');
 s('/export/diseases', 'get', ADMIN_TAG, 'Export diseases to Excel');
 s('/export/companies', 'get', ADMIN_TAG, 'Export companies to Excel');
 s('/export/history', 'get', ADMIN_TAG, 'Get export history');
+
+// POST /my-side-effects — OpenAPI response bodies (201 + structured errors)
+if (paths['/my-side-effects']?.post) {
+  paths['/my-side-effects'].post.responses['201'] = {
+    description: 'Created. Each reported row is stored on PatientSideEffect with optional severity (Prisma enum) and notes.',
+    content: { 'application/json': { schema: { $ref: '#/components/schemas/ReportSideEffectsResponse' } } }
+  };
+  const err = { $ref: '#/components/schemas/ReportMySideEffectsErrorResponse' };
+  paths['/my-side-effects'].post.responses['400'] = {
+    description: 'Bad request — invalid body, invalid severity, or one or more side effect ids missing or not Approved.',
+    content: { 'application/json': { schema: err } }
+  };
+  paths['/my-side-effects'].post.responses['403'] = {
+    description: 'Medication id does not belong to this patient.',
+    content: { 'application/json': { schema: err } }
+  };
+  paths['/my-side-effects'].post.responses['404'] = {
+    description: 'Authenticated user has no patient profile.',
+    content: { 'application/json': { schema: err } }
+  };
+  paths['/my-side-effects'].post.responses['409'] = {
+    description: 'One or more side effects were already reported for this patient + medication.',
+    content: { 'application/json': { schema: err } }
+  };
+}
 
 // Register accepts multipart when role=Doctor or Pharmacist (license image)
 if (paths['/auth/register']?.post) {
@@ -2450,6 +2474,26 @@ const options: Record<string, unknown> = {
           example: { tradeNames: [23, 24, 25] }
         },
         // ── Side effects
+        PatientSideEffectSeverity: {
+          type: 'string',
+          enum: ['Mild', 'Moderate', 'Severe'],
+          description: 'Prisma `PatientSideEffectSeverity` on `PatientSideEffect.severity` (nullable in DB).'
+        },
+        ReportMySideEffectsErrorResponse: {
+          description: 'Error body for POST /my-side-effects (success is false when present).',
+          type: 'object',
+          properties: {
+            success: { type: 'boolean', example: false },
+            error: {
+              type: 'string',
+              example: 'DUPLICATE_SUBMISSION',
+              description: 'Machine code e.g. INVALID_MEDICATION_ID, INVALID_SIDE_EFFECTS, INVALID_SIDE_EFFECT_FORMAT, INVALID_SIDE_EFFECT_ID, INVALID_SEVERITY, INVALID_NOTES, SIDE_EFFECTS_NOT_FOUND, MEDICINE_NOT_IN_PROFILE, PATIENT_NOT_FOUND, DUPLICATE_SUBMISSION.'
+            },
+            message: { type: 'string', example: 'This medicine is not in your medication profile' },
+            missing: { type: 'array', items: { type: 'integer' }, description: 'Side effect ids not found or not approved (error SIDE_EFFECTS_NOT_FOUND).' },
+            duplicates: { type: 'array', items: { type: 'integer' }, description: 'Already-reported side effect ids (error DUPLICATE_SUBMISSION).' }
+          }
+        },
         AddSideEffectRequest: {
           description: 'Add a new side effect and link it to a medication. Required: medicationId (PatientMedicine id), name.',
           type: 'object',
@@ -2460,15 +2504,73 @@ const options: Record<string, unknown> = {
           },
           example: { medicationId: 8, name: 'Headache' }
         },
+        ReportSideEffectItemRequest: {
+          description: 'One approved side effect to attach to the patient’s medication report.',
+          type: 'object',
+          required: ['sideEffectId'],
+          properties: {
+            sideEffectId: { type: 'integer', minimum: 1, example: 101, description: 'Required. Approved SideEffect ID.' },
+            severity: { allOf: [{ $ref: '#/components/schemas/PatientSideEffectSeverity' }], nullable: true, description: 'Optional. Omit or null if unknown.' },
+            notes: { type: 'string', maxLength: 500, nullable: true, description: 'Optional patient notes.' }
+          }
+        },
         ReportSideEffectsRequest: {
-          description: 'Report side effects the patient experienced for a medication. Required: medicationId, sideEffects (array of SideEffect IDs).',
+          description: 'Report side effects for a medication. Required: medicationId, sideEffects (non-empty array). Each item is ReportSideEffectItemRequest — only objects with sideEffectId (raw integer array items are not accepted).',
           type: 'object',
           required: ['medicationId', 'sideEffects'],
           properties: {
             medicationId: { type: 'integer', example: 8, description: 'Required. PatientMedicine ID.' },
-            sideEffects: { type: 'array', items: { type: 'integer' }, example: [1, 3], description: 'Required. Array of SideEffect IDs (from GET /side-effects/by-medication/:id).' }
+            sideEffects: {
+              type: 'array',
+              minItems: 1,
+              items: { $ref: '#/components/schemas/ReportSideEffectItemRequest' },
+              example: [
+                { sideEffectId: 1 },
+                { sideEffectId: 3, severity: 'Mild', notes: 'After meals' }
+              ]
+            }
           },
-          example: { medicationId: 8, sideEffects: [1, 3] }
+          example: {
+            medicationId: 8,
+            sideEffects: [
+              { sideEffectId: 1 },
+              { sideEffectId: 3, severity: 'Moderate', notes: null }
+            ]
+          }
+        },
+        ReportSideEffectsResponse: {
+          description: '201 response for POST /my-side-effects.',
+          type: 'object',
+          required: ['success', 'message', 'submitted', 'sideEffects'],
+          properties: {
+            success: { type: 'boolean', example: true },
+            message: { type: 'string', example: '2 side effect(s) reported successfully' },
+            submitted: { type: 'integer', example: 2 },
+            reportedCount: { type: 'integer', example: 2, description: 'Same as submitted (backward compatibility).' },
+            sideEffects: {
+              type: 'array',
+              items: {
+                type: 'object',
+                required: ['id', 'name'],
+                properties: {
+                  id: { type: 'integer', description: 'PatientSideEffect row id', example: 45 },
+                  name: { type: 'string', description: 'SideEffect.name', example: 'Headache' },
+                  severity: { allOf: [{ $ref: '#/components/schemas/PatientSideEffectSeverity' }], nullable: true },
+                  notes: { type: 'string', nullable: true }
+                }
+              }
+            }
+          },
+          example: {
+            success: true,
+            message: '2 side effect(s) reported successfully',
+            submitted: 2,
+            reportedCount: 2,
+            sideEffects: [
+              { id: 45, name: 'Headache', severity: 'Moderate', notes: 'Evening dose' },
+              { id: 46, name: 'Nausea', severity: null, notes: null }
+            ]
+          }
         },
         SideEffectsByMedicationResponse: {
           description: 'Response for GET /side-effects/by-medication/:id. If the medication\'s company is contracted: { supported: true, sideEffects: [...] }. If NOT contracted: { supported: false, redirect: "https://edaegypt.gov.eg" }.',
@@ -2479,68 +2581,6 @@ const options: Record<string, unknown> = {
             sideEffects: { type: 'array', items: { type: 'object', properties: { id: { type: 'integer', example: 1 }, name: { type: 'string', example: 'Headache' }, frequency: { type: 'string', nullable: true, example: 'Common' }, bodySystem: { type: 'string', nullable: true, example: 'Nervous System' } } }, description: 'Only present when supported=true.' }
           },
           example: { supported: true, sideEffects: [{ id: 1, name: 'Headache', frequency: 'Common', bodySystem: 'Nervous System' }, { id: 3, name: 'Nausea', frequency: 'Very Common', bodySystem: 'Gastrointestinal' }] }
-        },
-        SubmitBatchSideEffectsRequest: {
-          description: 'Submit multiple side effects at once with severity and optional notes. Each side effect includes sideEffectId, severity level, and optional patient notes.',
-          type: 'object',
-          required: ['medicationId', 'sideEffects'],
-          properties: {
-            medicationId: { type: 'integer', example: 5, description: 'Required. PatientMedicine ID.' },
-            sideEffects: {
-              type: 'array',
-              minItems: 1,
-              maxItems: 50,
-              items: {
-                type: 'object',
-                required: ['sideEffectId', 'severity'],
-                properties: {
-                  sideEffectId: { type: 'integer', example: 101, description: 'Required. SideEffect ID from GET /medicines/:tradeNameId/side-effects' },
-                  severity: { type: 'string', enum: ['Mild', 'Moderate', 'Severe'], example: 'Moderate', description: 'Required. Severity level of the side effect.' },
-                  notes: { type: 'string', maxLength: 500, nullable: true, example: 'Occurred after 2 hours of taking medication', description: 'Optional. Patient description or additional notes about the side effect.' }
-                }
-              },
-              description: 'Required. Array of side effects to submit (1-50 items).'
-            }
-          },
-          example: {
-            medicationId: 5,
-            sideEffects: [
-              { sideEffectId: 101, severity: 'Moderate', notes: 'Occurred after 2 hours of taking medication' },
-              { sideEffectId: 103, severity: 'Mild', notes: null }
-            ]
-          }
-        },
-        SubmitBatchSideEffectsResponse: {
-          description: 'Response after submitting multiple side effects. Returns confirmation with list of submitted side effects.',
-          type: 'object',
-          properties: {
-            success: { type: 'boolean', example: true },
-            message: { type: 'string', example: '2 side effects submitted pending approval' },
-            submitted: { type: 'integer', example: 2, description: 'Number of side effects successfully submitted.' },
-            sideEffects: {
-              type: 'array',
-              items: {
-                type: 'object',
-                properties: {
-                  id: { type: 'integer', example: 45 },
-                  name: { type: 'string', example: 'Headache' },
-                  severity: { type: 'string', example: 'Moderate' },
-                  notes: { type: 'string', nullable: true, example: 'Occurred after 2 hours of taking medication' },
-                  status: { type: 'string', example: 'Pending', description: 'Always Pending until admin approves.' }
-                }
-              },
-              description: 'List of successfully submitted side effects.'
-            }
-          },
-          example: {
-            success: true,
-            message: '2 side effects submitted pending approval',
-            submitted: 2,
-            sideEffects: [
-              { id: 45, name: 'Headache', severity: 'Moderate', notes: 'Occurred after 2 hours of taking medication', status: 'Pending' },
-              { id: 46, name: 'Nausea', severity: 'Mild', notes: null, status: 'Pending' }
-            ]
-          }
         },
         ExtractSideEffectsResponse: {
           description: 'Response when extracting side effects for a trade name. Groups side effects by frequency (VeryCommon, Common, Uncommon, Rare, VeryRare, Unknown). Only includes Approved side effects. Requires active company contract.',

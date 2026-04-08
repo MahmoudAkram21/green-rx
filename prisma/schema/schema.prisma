@@ -180,6 +180,11 @@ enum SideEffectStatus {
   Pending
 }
 
+enum PatientSideEffectSeverity {
+  Mild
+  Moderate
+  Severe
+}
 
 enum SurgeryTimeframe {
   THREE_MONTHS
