@@ -519,7 +519,7 @@ s('/patient-share-token/redeem', 'post', [PATIENT_TAGS.SHARE_WITH_DOCTOR, DOCTOR
 
 // SIDE EFFECTS (My Side Effects)
 s('/side-effects/by-medication/{medicationId}', 'get', [PATIENT_TAGS.SIDE_EFFECTS, DOCTOR_PATIENTS_SECTION], 'Get known side effects for a patient medication. If **supported: true**, returns **sideEffects**. If **supported: false**, returns **redirect** (see `patientSideEffectsFallbackRedirectUrl`), **reason** (`NO_COMPANY` | `NO_ACTIVE_CONTRACT`), and **message**. **400** invalid id; **404** medication not found.', true, [p('medicationId')], undefined, { '400': 'Invalid medicationId', '404': 'Medication not found' }, 'SideEffectsByMedicationResponse');
-s('/side-effects/add', 'post', PATIENT_TAGS.SIDE_EFFECTS, 'Add a new side effect name and link it to a medication (Patient). **400** validation; **403** trade name without company (+ **redirect**); **404** no patient profile or medication not yours.', true, [], { schemaRef: 'AddSideEffectRequest' }, { '201': 'Created — see AddSideEffectResponse', '400': 'Missing name or medicationId', '403': 'Trade name has no company', '404': 'Patient or medication' });
+s('/side-effects/add', 'post', PATIENT_TAGS.SIDE_EFFECTS, 'Add a new side effect **name** and link it to a medication (Patient). Optional **severity** (`PatientSideEffectSeverity`) and **notes** on the `PatientSideEffect` row. **400** validation; **403** trade name without company (+ **redirect**); **404** no patient profile or medication not yours.', true, [], { schemaRef: 'AddSideEffectRequest' }, { '201': 'Created — see AddSideEffectResponse', '400': 'Missing name or medicationId', '403': 'Trade name has no company', '404': 'Patient or medication' });
 s('/medicines/{tradeNameId}/side-effects', 'get', [PATIENT_TAGS.SIDE_EFFECTS, DOCTOR_PATIENTS_SECTION], 'Extract pre-defined side effects for a trade name. **403** with **redirect** if trade name has no company (**NO_COMPANY**) or no active contract (**NO_ACTIVE_CONTRACT**). Includes instructionPdf when present.', true, [p('tradeNameId')], undefined, { '403': 'No company or no active contract — see error body + redirect', '404': 'Trade name not found' }, 'ExtractSideEffectsResponse');
 
 // INSTRUCTION PDF (Medicine instructions)
@@ -579,7 +579,7 @@ if (paths['/side-effects/add']?.post) {
     properties: { error: { type: 'string', example: 'name is required' } }
   };
   paths['/side-effects/add'].post.responses['400'] = {
-    description: 'Validation — e.g. missing **name** or **medicationId** (must be number).',
+    description: 'Validation — missing **name** or **medicationId**, or invalid **severity** / **notes**.',
     content: { 'application/json': { schema: addErr } }
   };
   paths['/side-effects/add'].post.responses['404'] = {
@@ -2641,19 +2641,21 @@ const options: Record<string, unknown> = {
           }
         },
         AddSideEffectRequest: {
-          description: 'Add a new side effect and link it to a medication. Required: medicationId (PatientMedicine id), name. Not allowed when the medicine’s trade name has no **company** (403 + redirect).',
+          description: 'Add a new side effect and link it to a medication. Required: medicationId, name. Optional: severity, notes (stored on PatientSideEffect). Omit severity/notes to leave null on **create**; on **update** (same patient+medicine+effect), only sent fields are updated. Not allowed when the medicine’s trade name has no **company** (403 + redirect).',
           type: 'object',
           required: ['medicationId', 'name'],
           properties: {
             medicationId: { type: 'integer', minimum: 1, example: 8, description: 'Required. PatientMedicine ID for this patient.' },
-            name: { type: 'string', example: 'Headache', description: 'Required. Name of the side effect (e.g. "Headache").' }
+            name: { type: 'string', example: 'Headache', description: 'Required. Name of the side effect (e.g. "Headache").' },
+            severity: { allOf: [{ $ref: '#/components/schemas/PatientSideEffectSeverity' }], nullable: true, description: 'Optional. Omit for unknown; null clears on update if key present.' },
+            notes: { type: 'string', maxLength: 500, nullable: true, description: 'Optional patient notes.' }
           },
-          example: { medicationId: 8, name: 'Headache' }
+          example: { medicationId: 8, name: 'Headache', severity: 'Moderate', notes: 'After evening dose' }
         },
         AddSideEffectResponse: {
           description: '201 response for POST /side-effects/add.',
           type: 'object',
-          required: ['message', 'sideEffect'],
+          required: ['message', 'sideEffect', 'patientSideEffect'],
           properties: {
             message: { type: 'string', example: 'Side effect created and linked to medication. Pending admin approval to appear in the app.' },
             sideEffect: {
@@ -2668,6 +2670,17 @@ const options: Record<string, unknown> = {
                 createdByUserId: { type: 'integer', nullable: true },
                 createdAt: { type: 'string', format: 'date-time' },
                 updatedAt: { type: 'string', format: 'date-time' }
+              }
+            },
+            patientSideEffect: {
+              type: 'object',
+              required: ['id', 'reportedAt'],
+              description: 'Patient report row for this medication + side effect.',
+              properties: {
+                id: { type: 'integer', example: 1001 },
+                severity: { allOf: [{ $ref: '#/components/schemas/PatientSideEffectSeverity' }], nullable: true },
+                notes: { type: 'string', nullable: true },
+                reportedAt: { type: 'string', format: 'date-time' }
               }
             }
           }

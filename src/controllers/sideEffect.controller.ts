@@ -94,6 +94,46 @@ export const getSideEffectsByMedication = async (req: Request, res: Response, ne
     }
 };
 
+function parseAddSideEffectSeverityNotes(body: Record<string, unknown>):
+    | {
+          ok: true;
+          severity: PatientSideEffectSeverity | null | undefined;
+          notes: string | null | undefined;
+      }
+    | { ok: false; error: string } {
+    let severity: PatientSideEffectSeverity | null | undefined = undefined;
+    if (Object.prototype.hasOwnProperty.call(body, 'severity')) {
+        if (body.severity === null) {
+            severity = null;
+        } else if (typeof body.severity === 'string') {
+            if (
+                body.severity !== PatientSideEffectSeverity.Mild &&
+                body.severity !== PatientSideEffectSeverity.Moderate &&
+                body.severity !== PatientSideEffectSeverity.Severe
+            ) {
+                return { ok: false, error: 'severity must be Mild, Moderate, or Severe' };
+            }
+            severity = body.severity as PatientSideEffectSeverity;
+        } else {
+            return { ok: false, error: 'severity must be Mild, Moderate, Severe, or null' };
+        }
+    }
+
+    let notes: string | null | undefined = undefined;
+    if (Object.prototype.hasOwnProperty.call(body, 'notes')) {
+        if (body.notes === null) {
+            notes = null;
+        } else if (typeof body.notes === 'string') {
+            const t = body.notes.trim();
+            notes = t.length > 0 ? t : null;
+        } else {
+            return { ok: false, error: 'notes must be a string or null when provided' };
+        }
+    }
+
+    return { ok: true, severity, notes };
+}
+
 export const addSideEffect = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { medicationId, name } = req.body;
@@ -106,6 +146,13 @@ export const addSideEffect = async (req: Request, res: Response, next: NextFunct
             res.status(400).json({ error: 'medicationId (number) is required' });
             return;
         }
+
+        const parsedSn = parseAddSideEffectSeverityNotes(req.body as Record<string, unknown>);
+        if (!parsedSn.ok) {
+            res.status(400).json({ error: parsedSn.error });
+            return;
+        }
+        const { severity: sevIn, notes: notesIn } = parsedSn;
 
         const patient = await prisma.patient.findUnique({ where: { userId: req.user!.userId } });
         if (!patient) {
@@ -168,27 +215,47 @@ export const addSideEffect = async (req: Request, res: Response, next: NextFunct
             });
         }
 
-        if (patient) {
-            await prisma.patientSideEffect.upsert({
-                where: {
-                    patientId_patientMedicineId_sideEffectId: {
-                        patientId: patient.id,
-                        patientMedicineId: medicationId,
-                        sideEffectId: sideEffect.id,
-                    },
-                },
-                create: {
+        const createSeverity = sevIn === undefined ? null : sevIn;
+        const createNotes = notesIn === undefined ? null : notesIn;
+        const updateData: {
+            severity?: PatientSideEffectSeverity | null;
+            notes?: string | null;
+            reportedAt?: Date;
+        } = {};
+        if (sevIn !== undefined) updateData.severity = sevIn;
+        if (notesIn !== undefined) updateData.notes = notesIn;
+        if (sevIn !== undefined || notesIn !== undefined) {
+            updateData.reportedAt = new Date();
+        }
+
+        const patientSideEffect = await prisma.patientSideEffect.upsert({
+            where: {
+                patientId_patientMedicineId_sideEffectId: {
                     patientId: patient.id,
                     patientMedicineId: medicationId,
                     sideEffectId: sideEffect.id,
                 },
-                update: {},
-            });
-        }
+            },
+            create: {
+                patientId: patient.id,
+                patientMedicineId: medicationId,
+                sideEffectId: sideEffect.id,
+                severity: createSeverity,
+                notes: createNotes,
+                reportedAt: new Date(),
+            },
+            update: Object.keys(updateData).length > 0 ? updateData : {},
+        });
 
         res.status(201).json({
             message: 'Side effect created and linked to medication. Pending admin approval to appear in the app.',
             sideEffect,
+            patientSideEffect: {
+                id: patientSideEffect.id,
+                severity: patientSideEffect.severity,
+                notes: patientSideEffect.notes,
+                reportedAt: patientSideEffect.reportedAt,
+            },
         });
     } catch (error) {
         next(error);
