@@ -4,9 +4,29 @@ import { prisma } from '../lib/prisma';
 
 const LOGO_KEY = 'logo';
 const NEARBY_DOCTORS_RADIUS_KM_KEY = 'nearbyDoctorsRadiusKm';
+/** SuperAdmin-configured URL when in-app side effects are unavailable (e.g. trade name has no company). */
+export const PATIENT_SIDE_EFFECTS_FALLBACK_REDIRECT_KEY = 'patientSideEffectsFallbackRedirectUrl';
+const DEFAULT_SIDE_EFFECTS_FALLBACK_REDIRECT = 'https://edaegypt.gov.eg';
 const DEFAULT_RADIUS_KM = 50;
 const MIN_RADIUS_KM = 1;
 const MAX_RADIUS_KM = 500;
+
+/** Resolved URL shown to patients when side-effect features redirect them (no company / no contract). */
+export async function getPatientSideEffectsFallbackRedirectUrl(): Promise<string> {
+    const row = await prisma.appSetting.findUnique({
+        where: { key: PATIENT_SIDE_EFFECTS_FALLBACK_REDIRECT_KEY },
+        select: { valueText: true },
+    });
+    const raw = row?.valueText?.trim();
+    if (!raw) return DEFAULT_SIDE_EFFECTS_FALLBACK_REDIRECT;
+    try {
+        const u = new URL(raw);
+        if (u.protocol !== 'http:' && u.protocol !== 'https:') return DEFAULT_SIDE_EFFECTS_FALLBACK_REDIRECT;
+        return raw;
+    } catch {
+        return DEFAULT_SIDE_EFFECTS_FALLBACK_REDIRECT;
+    }
+}
 
 /** Read nearby doctors radius (km) from AppSetting; used by GET /doctors/nearby and GET /settings/nearby-doctors-radius */
 export async function getNearbyDoctorsRadiusKm(): Promise<number> {
@@ -115,6 +135,60 @@ export async function putNearbyDoctorsRadius(req: Request, res: Response, next: 
             update: { valueText: String(body.radiusKm) }
         });
         res.json({ radiusKm: body.radiusKm, message: 'Nearby doctors radius updated.' });
+    } catch (error) {
+        if (error instanceof z.ZodError) {
+            res.status(400).json({ error: error.issues });
+            return;
+        }
+        next(error);
+    }
+}
+
+const putPatientSideEffectsFallbackRedirectSchema = z.object({
+    redirectUrl: z.string().trim().min(1).max(2048).refine((s) => {
+        try {
+            const u = new URL(s);
+            return u.protocol === 'http:' || u.protocol === 'https:';
+        } catch {
+            return false;
+        }
+    }, 'Must be a valid http(s) URL'),
+});
+
+/** GET /settings/patient-side-effects-fallback-redirect — Admin / SuperAdmin. Effective URL (stored or default). */
+export async function getPatientSideEffectsFallbackRedirectSetting(
+    _req: Request,
+    res: Response,
+    next: NextFunction
+): Promise<void> {
+    try {
+        const redirectUrl = await getPatientSideEffectsFallbackRedirectUrl();
+        res.json({ redirectUrl });
+    } catch (error) {
+        next(error);
+    }
+}
+
+/** PUT /settings/patient-side-effects-fallback-redirect — SuperAdmin only. */
+export async function putPatientSideEffectsFallbackRedirectSetting(
+    req: Request,
+    res: Response,
+    next: NextFunction
+): Promise<void> {
+    try {
+        const body = putPatientSideEffectsFallbackRedirectSchema.parse(req.body);
+        await prisma.appSetting.upsert({
+            where: { key: PATIENT_SIDE_EFFECTS_FALLBACK_REDIRECT_KEY },
+            create: {
+                key: PATIENT_SIDE_EFFECTS_FALLBACK_REDIRECT_KEY,
+                valueText: body.redirectUrl,
+            },
+            update: { valueText: body.redirectUrl },
+        });
+        res.json({
+            redirectUrl: body.redirectUrl,
+            message: 'Patient side-effects fallback redirect URL updated.',
+        });
     } catch (error) {
         if (error instanceof z.ZodError) {
             res.status(400).json({ error: error.issues });

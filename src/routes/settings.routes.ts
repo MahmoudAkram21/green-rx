@@ -32,4 +32,18 @@ router.put(
     settingsController.putNearbyDoctorsRadius
 );
 
+// Where to send patients when in-app side effects are unavailable (e.g. trade name has no company). SuperAdmin sets URL.
+router.get(
+    '/patient-side-effects-fallback-redirect',
+    authenticate,
+    authorize([UserRole.Admin, UserRole.SuperAdmin]),
+    settingsController.getPatientSideEffectsFallbackRedirectSetting
+);
+router.put(
+    '/patient-side-effects-fallback-redirect',
+    authenticate,
+    authorize([UserRole.SuperAdmin]),
+    settingsController.putPatientSideEffectsFallbackRedirectSetting
+);
+
 export default router;

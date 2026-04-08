@@ -6,8 +6,7 @@ import {
     SideEffectStatus,
 } from '../../generated/client/client';
 import { extractSideEffects } from '../services/sideEffectExtract.service';
-
-const EDA_REDIRECT_URL = 'https://edaegypt.gov.eg';
+import { getPatientSideEffectsFallbackRedirectUrl } from './settings.controller';
 
 export const getSideEffectsByMedication = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -41,13 +40,25 @@ export const getSideEffectsByMedication = async (req: Request, res: Response, ne
         }
 
         if (!patientMedicine.tradeName || !patientMedicine.tradeName.company) {
-            res.json({ supported: false, redirect: EDA_REDIRECT_URL });
+            const redirect = await getPatientSideEffectsFallbackRedirectUrl();
+            res.json({
+                supported: false,
+                redirect,
+                reason: 'NO_COMPANY',
+                message: 'This medicine is not linked to a manufacturer. Open the link for more information.',
+            });
             return;
         }
 
         const hasContract = patientMedicine.tradeName.company.contractingCompanies.length > 0;
         if (!hasContract) {
-            res.json({ supported: false, redirect: EDA_REDIRECT_URL });
+            const redirect = await getPatientSideEffectsFallbackRedirectUrl();
+            res.json({
+                supported: false,
+                redirect,
+                reason: 'NO_ACTIVE_CONTRACT',
+                message: 'Side effects are not available in the app for this medicine. Open the link for more information.',
+            });
             return;
         }
 
@@ -104,11 +115,22 @@ export const addSideEffect = async (req: Request, res: Response, next: NextFunct
 
         const patientMedicine = await prisma.patientMedicine.findFirst({
             where: { id: medicationId, patientId: patient.id },
-            include: { tradeName: true },
+            include: { tradeName: { include: { company: true } } },
         });
 
         if (!patientMedicine) {
             res.status(404).json({ error: 'Medication not found or does not belong to you' });
+            return;
+        }
+
+        if (patientMedicine.tradeName && !patientMedicine.tradeName.company) {
+            const redirect = await getPatientSideEffectsFallbackRedirectUrl();
+            res.status(403).json({
+                error: 'SIDE_EFFECTS_TRADE_NAME_NO_COMPANY',
+                message:
+                    'This medicine is not linked to a manufacturer. You cannot add side effects here; open the link for more information.',
+                redirect,
+            });
             return;
         }
 
@@ -277,12 +299,25 @@ export const reportSideEffects = async (req: Request, res: Response, next: NextF
 
         const patientMedicine = await prisma.patientMedicine.findFirst({
             where: { id: medicationId, patientId: patient.id },
+            include: { tradeName: { include: { company: true } } },
         });
         if (!patientMedicine) {
             res.status(403).json({
                 success: false,
                 error: 'MEDICINE_NOT_IN_PROFILE',
                 message: 'This medicine is not in your medication profile',
+            });
+            return;
+        }
+
+        if (patientMedicine.tradeName && !patientMedicine.tradeName.company) {
+            const redirect = await getPatientSideEffectsFallbackRedirectUrl();
+            res.status(403).json({
+                success: false,
+                error: 'SIDE_EFFECTS_TRADE_NAME_NO_COMPANY',
+                message:
+                    'This medicine is not linked to a manufacturer. Reporting side effects here is not available; open the link for more information.',
+                redirect,
             });
             return;
         }
@@ -439,7 +474,6 @@ export const getSideEffectsByTradeName = async (req: Request, res: Response, nex
     try {
         const tradeNameId = parseInt(req.params.tradeNameId);
 
-        console.log("mahmoud", tradeNameId,)
         if (isNaN(tradeNameId)) {
             res.status(400).json({
                 success: false,
@@ -479,15 +513,26 @@ export const getSideEffectsByTradeName = async (req: Request, res: Response, nex
             return;
         }
 
-        // 2. Check active contract with company
-        const hasActiveContract =
-            tradeName.company && tradeName.company.contractingCompanies.length > 0;
+        const redirect = await getPatientSideEffectsFallbackRedirectUrl();
+
+        if (!tradeName.company) {
+            res.status(403).json({
+                success: false,
+                error: 'NO_COMPANY',
+                message: 'This medicine is not linked to a manufacturer. Open the link for more information.',
+                redirect,
+            });
+            return;
+        }
+
+        const hasActiveContract = tradeName.company.contractingCompanies.length > 0;
 
         if (!hasActiveContract) {
             res.status(403).json({
                 success: false,
                 error: 'NO_ACTIVE_CONTRACT',
-                message: 'No active contract for this medication',
+                message: 'No active contract for this medication. Open the link for more information.',
+                redirect,
             });
             return;
         }

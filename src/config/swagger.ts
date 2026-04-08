@@ -77,6 +77,8 @@ const PHARMACIST_TAGS = {
 const WARNING_SYSTEM_SECTION = '⚠️ Warning System (Pharma Safety Engine)';
 
 const ADMIN_TAG = 'System & Admin';
+/** Use with settings routes that only **SuperAdmin** may call (PUT). Shown as a second tag for filtering in Swagger UI. */
+const SUPERADMIN_SETTINGS_WRITE_TAG = 'SuperAdmin — settings write';
 
 /** Optional custom responses: e.g. { 201: 'Created', 204: 'No Content' } */
 const s = (
@@ -508,20 +510,22 @@ s('/settings/logo', 'get', ADMIN_TAG, 'Get application logo (public)', false);
 s('/settings/logo', 'post', ADMIN_TAG, 'Upload / update application logo (Admin)');
 s('/settings/nearby-doctors-radius', 'get', ADMIN_TAG, 'Get nearby doctors search radius in km (Admin). Used by GET /doctors/nearby.', true);
 s('/settings/nearby-doctors-radius', 'put', ADMIN_TAG, 'Set nearby doctors search radius in km (Admin). Body: { radiusKm: number } (1–500).', true, [], { schemaRef: 'PutNearbyDoctorsRadiusRequest' });
+s('/settings/patient-side-effects-fallback-redirect', 'get', ADMIN_TAG, 'Get the **effective** patient fallback URL (`AppSetting.key` = `patientSideEffectsFallbackRedirectUrl`). If unset or invalid, the server uses `https://edaegypt.gov.eg`. **Auth:** Admin or SuperAdmin.', true);
+s('/settings/patient-side-effects-fallback-redirect', 'put', [ADMIN_TAG, SUPERADMIN_SETTINGS_WRITE_TAG], 'Set patient fallback URL (`patientSideEffectsFallbackRedirectUrl`) — **http** or **https** only. **Auth: SuperAdmin only** (Admin receives 403). Patients get this `redirect` when GET /side-effects/by-medication returns `supported: false`, GET /medicines/:id/side-effects returns 403, or POST /side-effects/add | POST /my-side-effects refuse a trade name without a company.', true, [], { schemaRef: 'PutPatientSideEffectsFallbackRedirectRequest' });
 
 // PATIENT SHARE TOKEN (QR Code sharing)
 s('/patient-share-token/generate', 'post', [PATIENT_TAGS.SHARE_WITH_DOCTOR, DOCTOR_TAGS.MY_PATIENTS, DOCTOR_PATIENTS_SECTION], 'Generate a secure QR code token for sharing profile with a doctor (Patient only). Returns token + QR code base64 data URL. Token expires in 10 minutes.', true, [], undefined, { '201': 'Token generated successfully (token, expiresAt, qrCode base64)' });
 s('/patient-share-token/redeem', 'post', [PATIENT_TAGS.SHARE_WITH_DOCTOR, DOCTOR_TAGS.MY_PATIENTS, DOCTOR_PATIENTS_SECTION], 'Redeem a patient share QR token (Doctor only). Validates token, creates patient-doctor relationship, sends notifications, returns patient details.', true, [], { schemaRef: 'RedeemShareTokenRequest' }, { '201': 'Patient linked successfully', '404': 'Invalid token or profile not found', '409': 'Patient already linked to this doctor', '410': 'Token expired or already used' });
 
 // SIDE EFFECTS (My Side Effects)
-s('/side-effects/by-medication/{medicationId}', 'get', [PATIENT_TAGS.SIDE_EFFECTS, DOCTOR_PATIENTS_SECTION], 'Get known side effects for a patient medication. Returns { supported: false, redirect } if the company is not contracted, or { supported: true, sideEffects } otherwise.', true, [p('medicationId')]);
-s('/side-effects/add', 'post', PATIENT_TAGS.SIDE_EFFECTS, 'Add a new side effect name and link it to a medication\'s active substance (Patient only)', true, [], { schemaRef: 'AddSideEffectRequest' }, { '201': 'Side effect created and linked' });
-s('/medicines/{tradeNameId}/side-effects', 'get', [PATIENT_TAGS.SIDE_EFFECTS, DOCTOR_PATIENTS_SECTION], 'Extract pre-defined side effects for a trade name from database. Groups by frequency (VeryCommon, Common, Uncommon, Rare, VeryRare, Unknown). Validates active company contract. Returns 403 if no active contract. Includes instructionPdf (id, url, views, timestamps) when the trade name has companyInstructionsPdf; null otherwise.', true, [p('tradeNameId')], undefined, { '403': 'No active contract for this medication', '404': 'Trade name not found' }, 'ExtractSideEffectsResponse');
+s('/side-effects/by-medication/{medicationId}', 'get', [PATIENT_TAGS.SIDE_EFFECTS, DOCTOR_PATIENTS_SECTION], 'Get known side effects for a patient medication. If **supported: true**, returns **sideEffects**. If **supported: false**, returns **redirect** (see `patientSideEffectsFallbackRedirectUrl`), **reason** (`NO_COMPANY` | `NO_ACTIVE_CONTRACT`), and **message**. **400** invalid id; **404** medication not found.', true, [p('medicationId')], undefined, { '400': 'Invalid medicationId', '404': 'Medication not found' }, 'SideEffectsByMedicationResponse');
+s('/side-effects/add', 'post', PATIENT_TAGS.SIDE_EFFECTS, 'Add a new side effect name and link it to a medication (Patient). **400** validation; **403** trade name without company (+ **redirect**); **404** no patient profile or medication not yours.', true, [], { schemaRef: 'AddSideEffectRequest' }, { '201': 'Created — see AddSideEffectResponse', '400': 'Missing name or medicationId', '403': 'Trade name has no company', '404': 'Patient or medication' });
+s('/medicines/{tradeNameId}/side-effects', 'get', [PATIENT_TAGS.SIDE_EFFECTS, DOCTOR_PATIENTS_SECTION], 'Extract pre-defined side effects for a trade name. **403** with **redirect** if trade name has no company (**NO_COMPANY**) or no active contract (**NO_ACTIVE_CONTRACT**). Includes instructionPdf when present.', true, [p('tradeNameId')], undefined, { '403': 'No company or no active contract — see error body + redirect', '404': 'Trade name not found' }, 'ExtractSideEffectsResponse');
 
 // INSTRUCTION PDF (Medicine instructions)
 s('/trade-names/{tradeNameId}/instruction-pdf/view', 'post', [DOCTOR_TAGS.DRUG_SAFETY, DOCTOR_PATIENTS_SECTION], 'View instruction PDF for a medicine and increment the view counter. Doctor or Admin: call this when opening the PDF so views are tracked. Returns PDF metadata including url (not file bytes).', true, [p('tradeNameId')], undefined, { '404': 'Instruction PDF not found for this medicine' }, 'ViewInstructionPdfResponse');
 s('/trade-names/{tradeNameId}/instruction-pdf/stats', 'get', [DOCTOR_TAGS.DRUG_SAFETY, DOCTOR_PATIENTS_SECTION, ADMIN_TAG], 'Get view count statistics for an instruction PDF without incrementing the counter. Authorized: Doctor, Admin, or Company (company users see stats for their products).', true, [p('tradeNameId')], undefined, { '404': 'Instruction PDF not found for this medicine' }, 'GetInstructionPdfStatsResponse');
-s('/my-side-effects', 'post', PATIENT_TAGS.SIDE_EFFECTS, 'Report one or more **approved** side effects for a medication (Patient). Replaces legacy POST /my-side-effects/batch (removed). Body: `medicationId`, `sideEffects` — array of `{ sideEffectId, severity?, notes? }` (required `sideEffectId`; `severity` is optional `PatientSideEffectSeverity`). **403** if medicine not in profile; **409** if any effect was already reported for this medicine.', true, [], { schemaRef: 'ReportSideEffectsRequest' }, { '201': 'Created — see ReportSideEffectsResponse', '400': 'Validation or unknown/unapproved side effect ids', '403': 'Medicine not in profile', '404': 'Patient profile not found', '409': 'Duplicate submission' });
+s('/my-side-effects', 'post', PATIENT_TAGS.SIDE_EFFECTS, 'Report one or more **approved** side effects for a medication (Patient). Body: `medicationId`, `sideEffects` array of `{ sideEffectId, severity?, notes? }`. **403** if medicine not in profile, or trade name has no company (**redirect** in body); **409** if duplicate.', true, [], { schemaRef: 'ReportSideEffectsRequest' }, { '201': 'Created — see ReportSideEffectsResponse', '400': 'Validation or unknown/unapproved side effect ids', '403': 'Not in profile or trade name without company', '404': 'Patient profile not found', '409': 'Duplicate submission' });
 s('/my-side-effects', 'get', [PATIENT_TAGS.SIDE_EFFECTS, DOCTOR_PATIENTS_SECTION], 'Get all side effects reported by the patient');
 s('/my-side-effects/by-medication/{medicationId}', 'get', [PATIENT_TAGS.SIDE_EFFECTS, DOCTOR_PATIENTS_SECTION], 'Get side effects reported by the patient for a specific medication', true, [p('medicationId')]);
 
@@ -549,7 +553,7 @@ if (paths['/my-side-effects']?.post) {
     content: { 'application/json': { schema: err } }
   };
   paths['/my-side-effects'].post.responses['403'] = {
-    description: 'Medication id does not belong to this patient.',
+    description: 'Medicine not in profile (MEDICINE_NOT_IN_PROFILE) or trade name has no company (SIDE_EFFECTS_TRADE_NAME_NO_COMPANY); latter includes redirect URL.',
     content: { 'application/json': { schema: err } }
   };
   paths['/my-side-effects'].post.responses['404'] = {
@@ -559,6 +563,110 @@ if (paths['/my-side-effects']?.post) {
   paths['/my-side-effects'].post.responses['409'] = {
     description: 'One or more side effects were already reported for this patient + medication.',
     content: { 'application/json': { schema: err } }
+  };
+}
+
+if (paths['/side-effects/add']?.post) {
+  paths['/side-effects/add'].post.responses['201'] = {
+    description: 'Side effect linked to medication; new names may be Pending until admin approves.',
+    content: {
+      'application/json': { schema: { $ref: '#/components/schemas/AddSideEffectResponse' } }
+    }
+  };
+  const addErr = {
+    type: 'object',
+    required: ['error'],
+    properties: { error: { type: 'string', example: 'name is required' } }
+  };
+  paths['/side-effects/add'].post.responses['400'] = {
+    description: 'Validation — e.g. missing **name** or **medicationId** (must be number).',
+    content: { 'application/json': { schema: addErr } }
+  };
+  paths['/side-effects/add'].post.responses['404'] = {
+    description: 'Patient profile missing or medicationId not in this patient’s list.',
+    content: { 'application/json': { schema: addErr } }
+  };
+  paths['/side-effects/add'].post.responses['403'] = {
+    description: 'Trade name is not linked to a manufacturer.',
+    content: {
+      'application/json': { schema: { $ref: '#/components/schemas/SideEffectTradeNameNoCompanyResponse' } }
+    }
+  };
+}
+
+if (paths['/side-effects/by-medication/{medicationId}']?.get) {
+  const simpleErr = {
+    type: 'object',
+    required: ['error'],
+    properties: { error: { type: 'string', example: 'Medication not found' } }
+  };
+  paths['/side-effects/by-medication/{medicationId}'].get.responses['400'] = {
+    description: 'Invalid medicationId path param.',
+    content: { 'application/json': { schema: simpleErr } }
+  };
+  paths['/side-effects/by-medication/{medicationId}'].get.responses['404'] = {
+    description: 'No PatientMedicine with this id.',
+    content: { 'application/json': { schema: simpleErr } }
+  };
+}
+
+if (paths['/medicines/{tradeNameId}/side-effects']?.get) {
+  paths['/medicines/{tradeNameId}/side-effects'].get.responses['403'] = {
+    description: 'NO_COMPANY or NO_ACTIVE_CONTRACT — open redirect for patient guidance.',
+    content: {
+      'application/json': { schema: { $ref: '#/components/schemas/MedicineSideEffectsRedirect403Response' } }
+    }
+  };
+}
+
+if (paths['/settings/patient-side-effects-fallback-redirect']?.get) {
+  paths['/settings/patient-side-effects-fallback-redirect'].get.responses['200'] = {
+    description: 'Effective fallback URL (stored or default).',
+    content: {
+      'application/json': { schema: { $ref: '#/components/schemas/GetPatientSideEffectsFallbackRedirectResponse' } }
+    }
+  };
+}
+if (paths['/settings/patient-side-effects-fallback-redirect']?.put) {
+  paths['/settings/patient-side-effects-fallback-redirect'].put.responses['200'] = {
+    description: 'URL saved.',
+    content: {
+      'application/json': {
+        schema: {
+          type: 'object',
+          required: ['redirectUrl', 'message'],
+          properties: {
+            redirectUrl: { type: 'string', format: 'uri' },
+            message: { type: 'string' }
+          }
+        }
+      }
+    }
+  };
+  paths['/settings/patient-side-effects-fallback-redirect'].put.responses['400'] = {
+    description: 'Body validation failed (e.g. not a valid http(s) URL). Body is typically `{ error: ZodIssue[] }`.',
+    content: {
+      'application/json': {
+        schema: {
+          type: 'object',
+          properties: {
+            error: { description: 'Zod validation issues array', type: 'array', items: { type: 'object' } }
+          }
+        }
+      }
+    }
+  };
+  paths['/settings/patient-side-effects-fallback-redirect'].put.responses['403'] = {
+    description: 'Non–SuperAdmin token (e.g. Admin role).',
+    content: {
+      'application/json': {
+        schema: {
+          type: 'object',
+          required: ['error'],
+          properties: { error: { type: 'string', example: 'Forbidden: Insufficient permissions' } }
+        }
+      }
+    }
   };
 }
 
@@ -1134,6 +1242,7 @@ const options: Record<string, unknown> = {
     ],
     tags: [
       { name: ADMIN_TAG, description: 'Health, users, admin, settings, import/export' },
+      { name: SUPERADMIN_SETTINGS_WRITE_TAG, description: 'SuperAdmin-only mutating settings (e.g. patient side-effects fallback URL). Admin JWT receives 403 Forbidden.' },
       { name: WARNING_SYSTEM_SECTION, description: 'All endpoints that participate in the Warning System / Pharma Safety Engine (safetyStatus RED/ORANGE/GREEN, warnings, blocked, filteredData) + interaction alerts + ADR.' },
       { name: PATIENT_TAGS.AUTH, description: 'Authentication (Patient)' },
       { name: PATIENT_TAGS.PROFILE, description: 'Personal info and profile' },
@@ -1536,6 +1645,42 @@ const options: Record<string, unknown> = {
           required: ['radiusKm'],
           properties: { radiusKm: { type: 'integer', minimum: 1, maximum: 500, example: 10, description: 'Radius in kilometres (1–500)' } },
           example: { radiusKm: 10 }
+        },
+        PutPatientSideEffectsFallbackRedirectRequest: {
+          description: 'Persist `valueText` on `AppSetting` row **key** = `patientSideEffectsFallbackRedirectUrl`. Callable only by **SuperAdmin**.',
+          type: 'object',
+          required: ['redirectUrl'],
+          properties: {
+            redirectUrl: { type: 'string', format: 'uri', maxLength: 2048, example: 'https://example.com/patient/guidance', description: 'http(s) URL shown to patients when side-effect flows redirect them.' }
+          },
+          example: { redirectUrl: 'https://example.com/patient/guidance' }
+        },
+        GetPatientSideEffectsFallbackRedirectResponse: {
+          description: 'Same URL patients receive in API `redirect` fields after server validation (default `https://edaegypt.gov.eg` if key missing/invalid).',
+          type: 'object',
+          required: ['redirectUrl'],
+          properties: {
+            redirectUrl: { type: 'string', format: 'uri', example: 'https://edaegypt.gov.eg', description: 'Resolved fallback; not necessarily equal to raw DB value if invalid.' }
+          }
+        },
+        SideEffectTradeNameNoCompanyResponse: {
+          type: 'object',
+          required: ['error', 'message', 'redirect'],
+          properties: {
+            error: { type: 'string', example: 'SIDE_EFFECTS_TRADE_NAME_NO_COMPANY' },
+            message: { type: 'string' },
+            redirect: { type: 'string', format: 'uri', description: 'SuperAdmin-configured fallback (or default EDA).' }
+          }
+        },
+        MedicineSideEffectsRedirect403Response: {
+          type: 'object',
+          required: ['success', 'error', 'message', 'redirect'],
+          properties: {
+            success: { type: 'boolean', example: false },
+            error: { type: 'string', enum: ['NO_COMPANY', 'NO_ACTIVE_CONTRACT'], example: 'NO_COMPANY' },
+            message: { type: 'string' },
+            redirect: { type: 'string', format: 'uri' }
+          }
         },
         AssignPatientRequest: {
           description: 'Assign patient to doctor. Required: patientId, relationshipType. Optional: startDate, endDate. Used in POST /doctors/:doctorId/patients.',
@@ -2487,22 +2632,45 @@ const options: Record<string, unknown> = {
             error: {
               type: 'string',
               example: 'DUPLICATE_SUBMISSION',
-              description: 'Machine code e.g. INVALID_MEDICATION_ID, INVALID_SIDE_EFFECTS, INVALID_SIDE_EFFECT_FORMAT, INVALID_SIDE_EFFECT_ID, INVALID_SEVERITY, INVALID_NOTES, SIDE_EFFECTS_NOT_FOUND, MEDICINE_NOT_IN_PROFILE, PATIENT_NOT_FOUND, DUPLICATE_SUBMISSION.'
+              description: 'Machine code e.g. INVALID_MEDICATION_ID, INVALID_SIDE_EFFECTS, INVALID_SIDE_EFFECT_FORMAT, INVALID_SIDE_EFFECT_ID, INVALID_SEVERITY, INVALID_NOTES, SIDE_EFFECTS_NOT_FOUND, MEDICINE_NOT_IN_PROFILE, SIDE_EFFECTS_TRADE_NAME_NO_COMPANY, PATIENT_NOT_FOUND, DUPLICATE_SUBMISSION.'
             },
             message: { type: 'string', example: 'This medicine is not in your medication profile' },
+            redirect: { type: 'string', format: 'uri', description: 'Present when error is SIDE_EFFECTS_TRADE_NAME_NO_COMPANY.' },
             missing: { type: 'array', items: { type: 'integer' }, description: 'Side effect ids not found or not approved (error SIDE_EFFECTS_NOT_FOUND).' },
             duplicates: { type: 'array', items: { type: 'integer' }, description: 'Already-reported side effect ids (error DUPLICATE_SUBMISSION).' }
           }
         },
         AddSideEffectRequest: {
-          description: 'Add a new side effect and link it to a medication. Required: medicationId (PatientMedicine id), name.',
+          description: 'Add a new side effect and link it to a medication. Required: medicationId (PatientMedicine id), name. Not allowed when the medicine’s trade name has no **company** (403 + redirect).',
           type: 'object',
           required: ['medicationId', 'name'],
           properties: {
-            medicationId: { type: 'integer', example: 8, description: 'Required. PatientMedicine ID (from GET /patient-medicines/patient/:patientId).' },
+            medicationId: { type: 'integer', minimum: 1, example: 8, description: 'Required. PatientMedicine ID for this patient.' },
             name: { type: 'string', example: 'Headache', description: 'Required. Name of the side effect (e.g. "Headache").' }
           },
           example: { medicationId: 8, name: 'Headache' }
+        },
+        AddSideEffectResponse: {
+          description: '201 response for POST /side-effects/add.',
+          type: 'object',
+          required: ['message', 'sideEffect'],
+          properties: {
+            message: { type: 'string', example: 'Side effect created and linked to medication. Pending admin approval to appear in the app.' },
+            sideEffect: {
+              type: 'object',
+              description: 'Created or existing SideEffect row (may be Pending if patient-submitted).',
+              properties: {
+                id: { type: 'integer', example: 42 },
+                name: { type: 'string', example: 'Headache' },
+                nameAr: { type: 'string', nullable: true },
+                createdBy: { type: 'string', enum: ['Admin', 'Patient'] },
+                status: { type: 'string', enum: ['Approved', 'Pending'] },
+                createdByUserId: { type: 'integer', nullable: true },
+                createdAt: { type: 'string', format: 'date-time' },
+                updatedAt: { type: 'string', format: 'date-time' }
+              }
+            }
+          }
         },
         ReportSideEffectItemRequest: {
           description: 'One approved side effect to attach to the patient’s medication report.',
@@ -2573,12 +2741,14 @@ const options: Record<string, unknown> = {
           }
         },
         SideEffectsByMedicationResponse: {
-          description: 'Response for GET /side-effects/by-medication/:id. If the medication\'s company is contracted: { supported: true, sideEffects: [...] }. If NOT contracted: { supported: false, redirect: "https://edaegypt.gov.eg" }.',
+          description: 'Response for GET /side-effects/by-medication/:id. If **supported: true**, `sideEffects` lists approved rows. If **supported: false**, use **redirect** (SuperAdmin setting `patientSideEffectsFallbackRedirectUrl`, default https://edaegypt.gov.eg), **reason**, and **message**.',
           type: 'object',
           properties: {
             supported: { type: 'boolean', example: true },
-            redirect: { type: 'string', example: 'https://edaegypt.gov.eg', description: 'Only present when supported=false. URL to EDA website.' },
-            sideEffects: { type: 'array', items: { type: 'object', properties: { id: { type: 'integer', example: 1 }, name: { type: 'string', example: 'Headache' }, frequency: { type: 'string', nullable: true, example: 'Common' }, bodySystem: { type: 'string', nullable: true, example: 'Nervous System' } } }, description: 'Only present when supported=true.' }
+            redirect: { type: 'string', format: 'uri', description: 'When supported=false. Patient should open this URL.' },
+            reason: { type: 'string', enum: ['NO_COMPANY', 'NO_ACTIVE_CONTRACT'], description: 'When supported=false.' },
+            message: { type: 'string', description: 'Human-readable hint when supported=false.' },
+            sideEffects: { type: 'array', items: { type: 'object', properties: { id: { type: 'integer', example: 1 }, name: { type: 'string', example: 'Headache' }, frequency: { type: 'string', nullable: true, example: 'Common' }, bodySystem: { type: 'string', nullable: true, example: 'Nervous System' } } }, description: 'Only when supported=true.' }
           },
           example: { supported: true, sideEffects: [{ id: 1, name: 'Headache', frequency: 'Common', bodySystem: 'Nervous System' }, { id: 3, name: 'Nausea', frequency: 'Very Common', bodySystem: 'Gastrointestinal' }] }
         },
