@@ -125,10 +125,20 @@ export const getActivePatientDiseases = async (req: Request, res: Response) => {
     }
 };
 
-// Update patient disease (severity, notes)
+// Update patient disease (severity, notes) — own rows only (Patient role enforced in routes)
 export const updatePatientDiseaseStatus = async (req: Request, res: Response) => {
     try {
         const id = parseInt(req.params.id);
+        const ownId = res.locals.ownPatientId as number;
+        if (ownId == null) {
+            return res.status(500).json({ error: 'Internal error' });
+        }
+
+        const existing = await prisma.patientDisease.findUnique({ where: { id } });
+        if (!existing || existing.patientId !== ownId) {
+            return res.status(404).json({ error: 'Patient disease not found' });
+        }
+
         const { severity, notes } = req.body;
 
         const updated = await prisma.patientDisease.update({
@@ -149,10 +159,19 @@ export const updatePatientDiseaseStatus = async (req: Request, res: Response) =>
     }
 };
 
-// Delete patient disease
+// Delete patient disease — own rows only
 export const deletePatientDisease = async (req: Request, res: Response) => {
     try {
         const id = parseInt(req.params.id);
+        const ownId = res.locals.ownPatientId as number;
+        if (ownId == null) {
+            return res.status(500).json({ error: 'Internal error' });
+        }
+
+        const existing = await prisma.patientDisease.findUnique({ where: { id } });
+        if (!existing || existing.patientId !== ownId) {
+            return res.status(404).json({ error: 'Patient disease not found' });
+        }
 
         await prisma.patientDisease.delete({
             where: { id }

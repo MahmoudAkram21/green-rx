@@ -280,10 +280,11 @@ s('/excipients/{id}', 'put', ADMIN_TAG, 'Update excipient (Admin)', true, [p('id
 s('/excipients/{id}', 'delete', ADMIN_TAG, 'Soft-delete excipient by setting isActive=false (Admin)', true, [p('id')], undefined, { '200': 'Success', '204': 'No Content' });
 
 // PATIENT DISEASES (Current diseases)
-s('/patient-diseases/patient/{patientId}', 'get', [PATIENT_TAGS.CURRENT_DISEASES, DOCTOR_PATIENTS_SECTION], 'Get diseases for a patient', true, [p('patientId')]);
-s('/patient-diseases/patient/{patientId}', 'post', PATIENT_TAGS.CURRENT_DISEASES, 'Add current diseases (single object or array)', true, [p('patientId')], { schemaRef: 'BatchPatientDiseasesRequest' });
-s('/patient-diseases/{id}', 'patch', PATIENT_TAGS.CURRENT_DISEASES, 'Update patient disease (severity, notes)', true, [p('id')], { schemaRef: 'UpdatePatientDiseaseRequest' });
-s('/patient-diseases/{id}', 'delete', PATIENT_TAGS.CURRENT_DISEASES, 'Remove patient disease', true, [p('id')]);
+s('/patient-diseases/patient/{patientId}', 'get', PATIENT_TAGS.CURRENT_DISEASES, 'Get **your** current diseases. **Patient only.** `patientId` must be your numeric id or **`me`**.', true, [p('patientId')], undefined, { '403': 'patientId is not you', '404': 'Patient profile not found' });
+s('/patient-diseases/patient/{patientId}', 'post', PATIENT_TAGS.CURRENT_DISEASES, 'Add/update current diseases (single object or array). **Patient only.** `patientId` = your id or **`me`**.', true, [p('patientId')], { schemaRef: 'BatchPatientDiseasesRequest' }, { '403': 'patientId is not you', '404': 'Patient profile not found' });
+s('/patient-diseases/patient/{patientId}/active', 'get', PATIENT_TAGS.CURRENT_DISEASES, 'List current diseases (same payload shape as GET without /active; ordered by severity). **Patient only.** `patientId` = your id or **`me`**.', true, [p('patientId')], undefined, { '403': 'patientId is not you', '404': 'Patient profile not found' });
+s('/patient-diseases/{id}', 'patch', PATIENT_TAGS.CURRENT_DISEASES, 'Update **your** patient disease row (severity, notes). **Patient only.**', true, [p('id')], { schemaRef: 'UpdatePatientDiseaseRequest' }, { '404': 'Not found or not yours' });
+s('/patient-diseases/{id}', 'delete', PATIENT_TAGS.CURRENT_DISEASES, 'Remove **your** patient disease row. **Patient only.**', true, [p('id')], undefined, { '404': 'Not found or not yours' });
 
 // PATIENT MEDICINES (My medications)
 s('/patient-medicines/patient/{patientId}', 'get', [PATIENT_TAGS.MEDICATIONS, DOCTOR_PATIENTS_SECTION], 'List all medicines for a patient', true, [p('patientId')]);
