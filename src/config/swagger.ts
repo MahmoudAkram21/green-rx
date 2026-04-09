@@ -164,7 +164,7 @@ s('/patients/{patientId}/medical-history', 'post', PATIENT_TAGS.PROFILE, 'Add me
 
 // PATIENTS — Family History
 s('/patients/{patientId}/family-history', 'get', PATIENT_TAGS.FAMILY_HISTORY, 'Get family history entries', true, [p('patientId')]);
-s('/patients/{patientId}/family-history', 'post', PATIENT_TAGS.FAMILY_HISTORY, 'Add family history entries (single object or array)', true, [p('patientId')], { schemaRef: 'BatchFamilyHistoryRequest' });
+s('/patients/{patientId}/family-history', 'post', PATIENT_TAGS.FAMILY_HISTORY, 'Replace family history: body is the full list (single object or array). Omitted entries are removed. Empty array clears all.', true, [p('patientId')], { schemaRef: 'BatchFamilyHistoryRequest' });
 
 // FAMILY RELATIONS (enum options for family history dropdown)
 s('/family-relations', 'get', [PATIENT_TAGS.FAMILY_HISTORY, ADMIN_TAG], 'List family relation enum values for dropdowns (Father, Mother, Sibling, etc.)', true);
@@ -281,7 +281,7 @@ s('/excipients/{id}', 'delete', ADMIN_TAG, 'Soft-delete excipient by setting isA
 
 // PATIENT DISEASES (Current diseases)
 s('/patient-diseases/patient/{patientId}', 'get', PATIENT_TAGS.CURRENT_DISEASES, 'Get **your** current diseases. **Patient only.** `patientId` must be your numeric id or **`me`**.', true, [p('patientId')], undefined, { '403': 'patientId is not you', '404': 'Patient profile not found' });
-s('/patient-diseases/patient/{patientId}', 'post', PATIENT_TAGS.CURRENT_DISEASES, 'Add/update current diseases (single object or array). **Patient only.** `patientId` = your id or **`me`**.', true, [p('patientId')], { schemaRef: 'BatchPatientDiseasesRequest' }, { '403': 'patientId is not you', '404': 'Patient profile not found' });
+s('/patient-diseases/patient/{patientId}', 'post', PATIENT_TAGS.CURRENT_DISEASES, 'Replace current diseases: body is the full list (single object or array). Omitted diseases are removed. Duplicate diseaseId in one request keeps the last. Empty array clears all. **Patient only.** `patientId` = your id or **`me`**.', true, [p('patientId')], { schemaRef: 'BatchPatientDiseasesRequest' }, { '403': 'patientId is not you', '404': 'Patient profile not found' });
 s('/patient-diseases/patient/{patientId}/active', 'get', PATIENT_TAGS.CURRENT_DISEASES, 'List current diseases (same payload shape as GET without /active; ordered by severity). **Patient only.** `patientId` = your id or **`me`**.', true, [p('patientId')], undefined, { '403': 'patientId is not you', '404': 'Patient profile not found' });
 s('/patient-diseases/{id}', 'patch', PATIENT_TAGS.CURRENT_DISEASES, 'Update **your** patient disease row (severity, notes). **Patient only.**', true, [p('id')], { schemaRef: 'UpdatePatientDiseaseRequest' }, { '404': 'Not found or not yours' });
 s('/patient-diseases/{id}', 'delete', PATIENT_TAGS.CURRENT_DISEASES, 'Remove **your** patient disease row. **Patient only.**', true, [p('id')], undefined, { '404': 'Not found or not yours' });
@@ -521,7 +521,7 @@ s('/patient-share-token/redeem', 'post', [PATIENT_TAGS.SHARE_WITH_DOCTOR, DOCTOR
 // SIDE EFFECTS (My Side Effects)
 s('/side-effects/by-medication/{medicationId}', 'get', [PATIENT_TAGS.SIDE_EFFECTS, DOCTOR_PATIENTS_SECTION], 'Get known side effects for a patient medication. If **supported: true**, returns **sideEffects**. If **supported: false**, returns **redirect** (see `patientSideEffectsFallbackRedirectUrl`), **reason** (`NO_COMPANY` | `NO_ACTIVE_CONTRACT`), and **message**. **400** invalid id; **404** medication not found.', true, [p('medicationId')], undefined, { '400': 'Invalid medicationId', '404': 'Medication not found' }, 'SideEffectsByMedicationResponse');
 s('/side-effects/add', 'post', PATIENT_TAGS.SIDE_EFFECTS, 'Add a new side effect **name** and link it to a medication (Patient). Optional **severity** (`PatientSideEffectSeverity`) and **notes** on the `PatientSideEffect` row. **400** validation; **403** trade name without company (+ **redirect**); **404** no patient profile or medication not yours.', true, [], { schemaRef: 'AddSideEffectRequest' }, { '201': 'Created — see AddSideEffectResponse', '400': 'Missing name or medicationId', '403': 'Trade name has no company', '404': 'Patient or medication' });
-s('/medicines/{tradeNameId}/side-effects', 'get', [PATIENT_TAGS.SIDE_EFFECTS, DOCTOR_PATIENTS_SECTION], 'Extract pre-defined side effects for a trade name. **403** with **redirect** if trade name has no company (**NO_COMPANY**) or no active contract (**NO_ACTIVE_CONTRACT**). Includes instructionPdf when present.', true, [p('tradeNameId')], undefined, { '403': 'No company or no active contract — see error body + redirect', '404': 'Trade name not found' }, 'ExtractSideEffectsResponse');
+s('/medicines/{tradeNameId}/side-effects', 'get', [PATIENT_TAGS.SIDE_EFFECTS, DOCTOR_PATIENTS_SECTION], 'Extract pre-defined side effects for a trade name. Allowed when the trade name has an **active manufacturer** (company), or an **active contracting-company** row (manufacturer-level or linked to this trade name). **403** **NO_COMPANY** if no manufacturer; **NO_ACTIVE_CONTRACT** if manufacturer is inactive/deleted. Includes instructionPdf when present.', true, [p('tradeNameId')], undefined, { '403': 'No company or inactive manufacturer — see error body + redirect', '404': 'Trade name not found' }, 'ExtractSideEffectsResponse');
 
 // INSTRUCTION PDF (Medicine instructions)
 s('/trade-names/{tradeNameId}/instruction-pdf/view', 'post', [DOCTOR_TAGS.DRUG_SAFETY, DOCTOR_PATIENTS_SECTION], 'View instruction PDF for a medicine and increment the view counter. Doctor or Admin: call this when opening the PDF so views are tracked. Returns PDF metadata including url (not file bytes).', true, [p('tradeNameId')], undefined, { '404': 'Instruction PDF not found for this medicine' }, 'ViewInstructionPdfResponse');
@@ -1536,7 +1536,7 @@ const options: Record<string, unknown> = {
           },
           example: { diseaseId: 8, relation: 'Father', severity: 'Severe', notes: 'Diagnosed at age 60' }
         },
-        BatchFamilyHistoryRequest: { type: 'array', minItems: 1, items: { $ref: '#/components/schemas/FamilyHistoryRequest' }, description: 'Send multiple family history entries in one request. Body: array of FamilyHistoryRequest.', example: [{ diseaseId: 8, relation: 'Father', severity: 'Severe' }, { diseaseId: 10, relation: 'Mother', severity: 'Moderate' }] },
+        BatchFamilyHistoryRequest: { type: 'array', minItems: 0, items: { $ref: '#/components/schemas/FamilyHistoryRequest' }, description: 'Full replacement list for this patient. Replaces all existing family history; send [] to clear. Single object is also accepted (wrapped as one element).', example: [{ diseaseId: 8, relation: 'Father', severity: 'Severe' }, { diseaseId: 10, relation: 'Mother', severity: 'Moderate' }] },
         SurgicalHistoryRequest: {
           description: 'One surgical history entry. Required: organId (from GET /operations). Use "me" as patientId for the logged-in patient.',
           type: 'object',
@@ -1885,7 +1885,7 @@ const options: Record<string, unknown> = {
           },
           example: { diseaseId: 1, severity: 'Moderate', diagnosisDate: '2024-01-15T00:00:00.000Z', notes: 'Well controlled with medication' }
         },
-        BatchPatientDiseasesRequest: { type: 'array', minItems: 1, items: { $ref: '#/components/schemas/AddPatientDiseaseRequest' }, description: 'Send multiple current diseases in one request. Body: array of AddPatientDiseaseRequest. Single object also accepted.', example: [{ diseaseId: 1, severity: 'Moderate' }, { diseaseId: 4, severity: 'Mild' }] },
+        BatchPatientDiseasesRequest: { type: 'array', minItems: 0, items: { $ref: '#/components/schemas/AddPatientDiseaseRequest' }, description: 'Full replacement list for this patient. Replaces all current diseases; send [] to clear. Duplicate diseaseId in the array: last wins. Single object also accepted.', example: [{ diseaseId: 1, severity: 'Moderate' }, { diseaseId: 4, severity: 'Mild' }] },
         UpdatePatientDiseaseRequest: { description: 'All fields optional. Send only fields to update. severity: None|Mild|Moderate|Severe.', type: 'object', properties: { severity: { type: 'string', enum: ['None', 'Mild', 'Moderate', 'Severe'], example: 'Severe' }, notes: { type: 'string', example: 'Condition worsened' } }, example: { severity: 'Severe', notes: 'Condition worsened' } },
         // ── Patient medicines
         FrequencyUnit: { type: 'string', enum: ['Hours', 'Days', 'Weeks', 'Months', 'Years'], example: 'Hours', description: 'Unit for frequency (repetitions per X).' },

@@ -2,11 +2,40 @@ import { Request, Response, NextFunction } from 'express';
 import { prisma } from '../lib/prisma';
 import {
     PatientSideEffectSeverity,
+    Prisma,
     SideEffectCreatedBy,
     SideEffectStatus,
 } from '../../generated/client/client';
 import { extractSideEffects } from '../services/sideEffectExtract.service';
 import { getPatientSideEffectsFallbackRedirectUrl } from './settings.controller';
+
+/** Prisma filter: active contracting row, not past expiry (null expiry = open-ended). */
+const activeContractingCompanyFilter: Prisma.ContractingCompanyWhereInput = {
+    isActive: true,
+    OR: [{ expiryDate: null }, { expiryDate: { gte: new Date() } }],
+};
+
+/**
+ * Side effects may be shown if there is an explicit EDA-style contract for this trade name
+ * or manufacturer, or if the trade name is linked to an active manufacturer (company) record.
+ */
+function tradeNameAllowsSideEffectsDisclosure(tradeName: {
+    contractingCompanyTradeNames: { id: number }[];
+    company: null | {
+        isActive: boolean;
+        deletedAt: Date | null;
+        contractingCompanies: { id: number }[];
+    };
+}): boolean {
+    if (!tradeName.company) return false;
+    if (
+        tradeName.contractingCompanyTradeNames.length > 0 ||
+        tradeName.company.contractingCompanies.length > 0
+    ) {
+        return true;
+    }
+    return tradeName.company.isActive && tradeName.company.deletedAt == null;
+}
 
 export const getSideEffectsByMedication = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -21,10 +50,16 @@ export const getSideEffectsByMedication = async (req: Request, res: Response, ne
             include: {
                 tradeName: {
                     include: {
+                        contractingCompanyTradeNames: {
+                            where: {
+                                contractingCompany: activeContractingCompanyFilter,
+                            },
+                            take: 1,
+                        },
                         company: {
                             include: {
                                 contractingCompanies: {
-                                    where: { isActive: true },
+                                    where: activeContractingCompanyFilter,
                                     take: 1,
                                 },
                             },
@@ -50,7 +85,7 @@ export const getSideEffectsByMedication = async (req: Request, res: Response, ne
             return;
         }
 
-        const hasContract = patientMedicine.tradeName.company.contractingCompanies.length > 0;
+        const hasContract = tradeNameAllowsSideEffectsDisclosure(patientMedicine.tradeName);
         if (!hasContract) {
             const redirect = await getPatientSideEffectsFallbackRedirectUrl();
             res.json({
@@ -554,20 +589,21 @@ export const getSideEffectsByTradeName = async (req: Request, res: Response, nex
         const tradeName = await prisma.tradeName.findUnique({
             where: { id: tradeNameId },
             include: {
+                contractingCompanyTradeNames: {
+                    where: {
+                        contractingCompany: activeContractingCompanyFilter,
+                    },
+                    take: 1,
+                },
                 company: {
                     include: {
                         contractingCompanies: {
-                            where: {
-                                isActive: true,
-                                expiryDate: {
-                                    gte: new Date(),
-                                },
-                            },
+                            where: activeContractingCompanyFilter,
                             take: 1,
                         },
                     },
                 },
-                companyInstructionsPdf: true
+                companyInstructionsPdf: true,
             },
         });
 
@@ -592,7 +628,7 @@ export const getSideEffectsByTradeName = async (req: Request, res: Response, nex
             return;
         }
 
-        const hasActiveContract = tradeName.company.contractingCompanies.length > 0;
+        const hasActiveContract = tradeNameAllowsSideEffectsDisclosure(tradeName);
 
         if (!hasActiveContract) {
             res.status(403).json({

@@ -15,7 +15,7 @@ export const addPatientDisease = async (req: Request, res: Response, next: NextF
         const patientId = parseInt(req.params.patientId);
         const raw = req.body;
         const items = normalizeToArray(raw);
-        const validatedItems = z.array(addPatientDiseaseSchema).min(1).parse(items);
+        const validatedItems = z.array(addPatientDiseaseSchema).parse(items);
 
         const patient = await prisma.patient.findUnique({
             where: { id: patientId }
@@ -25,35 +25,34 @@ export const addPatientDisease = async (req: Request, res: Response, next: NextF
             return res.status(404).json({ error: 'Patient not found' });
         }
 
-        const results: Awaited<ReturnType<typeof prisma.patientDisease.create>>[] = [];
-
+        const byDiseaseId = new Map<number, (typeof validatedItems)[number]>();
         for (const v of validatedItems) {
-            const { diseaseId, diagnosisDate, severity, notes } = v;
+            byDiseaseId.set(v.diseaseId, v);
+        }
+        const uniqueItems = [...byDiseaseId.values()];
 
-            const disease = await prisma.disease.findUnique({
-                where: { id: diseaseId }
+        const diseaseIds = [...byDiseaseId.keys()];
+        if (diseaseIds.length > 0) {
+            const existingDiseases = await prisma.disease.findMany({
+                where: { id: { in: diseaseIds } },
+                select: { id: true }
             });
-            if (!disease) {
-                return res.status(404).json({ error: `Disease not found: ${diseaseId}` });
+            const found = new Set(existingDiseases.map((d) => d.id));
+            const missing = diseaseIds.filter((id) => !found.has(id));
+            if (missing.length > 0) {
+                return res.status(404).json({ error: `Disease not found: ${missing.join(', ')}` });
             }
+        }
 
-            const existing = await prisma.patientDisease.findFirst({
-                where: { patientId, diseaseId }
-            });
-
-            if (existing) {
-                const updated = await prisma.patientDisease.update({
-                    where: { id: existing.id },
-                    data: {
-                        diagnosisDate: diagnosisDate ? new Date(diagnosisDate) : existing.diagnosisDate,
-                        severity: severity ?? existing.severity,
-                        notes: notes !== undefined ? notes : existing.notes
-                    },
-                    include: { disease: true }
-                });
-                results.push(updated);
-            } else {
-                const created = await prisma.patientDisease.create({
+        const results = await prisma.$transaction(async (tx) => {
+            await tx.patientDisease.deleteMany({ where: { patientId } });
+            if (uniqueItems.length === 0) {
+                return [] as Awaited<ReturnType<typeof prisma.patientDisease.create>>[];
+            }
+            const created: Awaited<ReturnType<typeof prisma.patientDisease.create>>[] = [];
+            for (const v of uniqueItems) {
+                const { diseaseId, diagnosisDate, severity, notes } = v;
+                const row = await tx.patientDisease.create({
                     data: {
                         patientId,
                         diseaseId,
@@ -63,14 +62,21 @@ export const addPatientDisease = async (req: Request, res: Response, next: NextF
                     },
                     include: { disease: true }
                 });
-                results.push(created);
+                created.push(row);
             }
-        }
+            return created;
+        });
 
         return res.status(201).json(
             results.length === 1
                 ? results[0]
-                : { message: `${results.length} diseases added/updated`, patientDiseases: results }
+                : {
+                      message:
+                          results.length === 0
+                              ? 'All current diseases cleared'
+                              : `${results.length} disease(s) saved`,
+                      patientDiseases: results
+                  }
         );
     } catch (error) {
         if (error instanceof z.ZodError) {

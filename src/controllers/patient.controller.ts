@@ -362,9 +362,9 @@ export const addFamilyHistory = async (
         const raw = req.body;
         const items = Array.isArray(raw) ? raw : [raw];
         const validatedItems = z.array(familyHistorySchema).parse(items);
-        console.log(raw);
+        const pid = parseInt(patientId);
         const patient = await prisma.patient.findUnique({
-            where: { id: parseInt(patientId) },
+            where: { id: pid },
         });
 
         if (!patient) {
@@ -372,50 +372,48 @@ export const addFamilyHistory = async (
             return;
         }
 
-        if (validatedItems.length === 0) {
-            res
-                .status(400)
-                .json({ error: "At least one family history entry is required" });
-            return;
-        }
-
-        const uniqueDiseaseIds = [
-            ...new Set(validatedItems.map((v) => v.diseaseId)),
-        ];
-        const existingDiseases = await prisma.disease.findMany({
-            where: { id: { in: uniqueDiseaseIds } },
-            select: { id: true },
-        });
-        const existingDiseaseIdSet = new Set(existingDiseases.map((d) => d.id));
-        const missingDiseaseIds = uniqueDiseaseIds.filter(
-            (id) => !existingDiseaseIdSet.has(id),
-        );
-        if (missingDiseaseIds.length > 0) {
-            res.status(400).json({
-                error: "Invalid diseaseId(s)",
-                missingDiseaseIds,
+        const uniqueDiseaseIds = [...new Set(validatedItems.map((v) => v.diseaseId))];
+        if (uniqueDiseaseIds.length > 0) {
+            const existingDiseases = await prisma.disease.findMany({
+                where: { id: { in: uniqueDiseaseIds } },
+                select: { id: true },
             });
-            return;
+            const existingDiseaseIdSet = new Set(existingDiseases.map((d) => d.id));
+            const missingDiseaseIds = uniqueDiseaseIds.filter(
+                (id) => !existingDiseaseIdSet.has(id),
+            );
+            if (missingDiseaseIds.length > 0) {
+                res.status(400).json({
+                    error: "Invalid diseaseId(s)",
+                    missingDiseaseIds,
+                });
+                return;
+            }
         }
 
         const data = validatedItems.map((v) => ({
-            patientId: parseInt(patientId),
+            patientId: pid,
             diseaseId: v.diseaseId,
             relation: v.relation,
             severity: v.severity,
             notes: v.notes,
         }));
-        console.log(data);
 
-        const familyHistories = await prisma.familyHistory.createManyAndReturn({
-            data,
+        const familyHistories = await prisma.$transaction(async (tx) => {
+            await tx.familyHistory.deleteMany({ where: { patientId: pid } });
+            if (data.length === 0) {
+                return [];
+            }
+            return tx.familyHistory.createManyAndReturn({ data });
         });
 
         res.status(201).json({
             message:
-                familyHistories.length === 1
-                    ? "Family history added successfully"
-                    : `${familyHistories.length} family history entries added successfully`,
+                familyHistories.length === 0
+                    ? "Family history cleared"
+                    : familyHistories.length === 1
+                      ? "Family history saved successfully"
+                      : `${familyHistories.length} family history entries saved successfully`,
             count: familyHistories.length,
             familyHistories,
         });
