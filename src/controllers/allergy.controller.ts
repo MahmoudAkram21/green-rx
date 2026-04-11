@@ -10,9 +10,39 @@ export const getAllergiesByPatient = async (req: Request, res: Response) => {
             where: { patientId: parseInt(patientId) },
             orderBy: { createdAt: 'desc' },
             include: {
-                patientAllergies: { include: { allergen: { select: { id: true, name: true }, include: { allergenCategory: true } } } },
-                activeSubstancePatientAllergies: { include: { activeSubstance: { select: { id: true, name: true, classificationId: true } } } },
-                tradeName: { select: { id: true, tradeName: { select: { title: true, activeSubstanceId: true, activeSubstance: { select: { id: true, name: true, classificationId: true } } } } } },
+                patientAllergies: {
+                    include: {
+                        allergen: {
+                            select: {
+                                id: true,
+                                name: true,
+                                allergenCategory: true,
+                            },
+                        },
+                    },
+                },
+                activeSubstancePatientAllergies: {
+                    include: {
+                        activeSubstance: {
+                            select: { id: true, name: true, classificationId: true },
+                        },
+                    },
+                },
+                tradeName: {
+                    select: {
+                        id: true,
+                        tradeNameId: true,
+                        tradeName: {
+                            select: {
+                                title: true,
+                                activeSubstanceId: true,
+                                activeSubstance: {
+                                    select: { id: true, name: true, classificationId: true },
+                                },
+                            },
+                        },
+                    },
+                },
             },
         });
 
