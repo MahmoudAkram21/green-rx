@@ -6,7 +6,7 @@ import {
     SideEffectCreatedBy,
     SideEffectStatus,
 } from '../../generated/client/client';
-import { extractSideEffects } from '../services/sideEffectExtract.service';
+import { extractSideEffects, type ExtractedSideEffects } from '../services/sideEffectExtract.service';
 import { getPatientSideEffectsFallbackRedirectUrl } from './settings.controller';
 
 /** Prisma filter: active contracting row, not past expiry (null expiry = open-ended). */
@@ -19,6 +19,29 @@ const activeContractingCompanyFilter: Prisma.ContractingCompanyWhereInput = {
  * Side effects may be shown if there is an explicit EDA-style contract for this trade name
  * or manufacturer, or if the trade name is linked to an active manufacturer (company) record.
  */
+/** Flatten grouped extract output for merging into GET /side-effects/by-medication. */
+function flattenExtractedForMerge(extracted: ExtractedSideEffects): Array<{
+    name: string;
+    bodySystem: string;
+    frequency: string;
+}> {
+    const tiers: Array<{ tier: keyof ExtractedSideEffects['sideEffects']; frequency: string }> = [
+        { tier: 'veryCommon', frequency: 'VeryCommon' },
+        { tier: 'common', frequency: 'Common' },
+        { tier: 'uncommon', frequency: 'Uncommon' },
+        { tier: 'rare', frequency: 'Rare' },
+        { tier: 'veryRare', frequency: 'VeryRare' },
+        { tier: 'unknown', frequency: 'Unknown' },
+    ];
+    const out: Array<{ name: string; bodySystem: string; frequency: string }> = [];
+    for (const { tier, frequency } of tiers) {
+        for (const e of extracted.sideEffects[tier]) {
+            out.push({ name: e.name, bodySystem: e.bodySystem, frequency });
+        }
+    }
+    return out;
+}
+
 function tradeNameAllowsSideEffectsDisclosure(tradeName: {
     contractingCompanyTradeNames: { id: number }[];
     company: null | {
@@ -114,15 +137,44 @@ export const getSideEffectsByMedication = async (req: Request, res: Response, ne
             orderBy: { sideEffect: { name: 'asc' } },
         });
 
+        const catalogRows = records.map((r) => ({
+            id: r.sideEffect.id as number,
+            name: r.sideEffect.name,
+            nameAr: r.sideEffect.nameAr,
+            frequency: r.frequency,
+            bodySystem: r.bodySystem,
+        }));
+
+        const seenNames = new Set(catalogRows.map((s) => s.name.trim().toLowerCase()));
+        const merged: Array<{
+            id: number | null;
+            name: string;
+            nameAr: string | null;
+            frequency: string | null;
+            bodySystem: string | null;
+        }> = [...catalogRows];
+
+        const extracted = await extractSideEffects(activeSubstanceId);
+        if (extracted) {
+            for (const row of flattenExtractedForMerge(extracted)) {
+                const key = row.name.trim().toLowerCase();
+                if (seenNames.has(key)) continue;
+                seenNames.add(key);
+                merged.push({
+                    id: null,
+                    name: row.name,
+                    nameAr: null,
+                    frequency: row.frequency,
+                    bodySystem: row.bodySystem,
+                });
+            }
+        }
+
+        merged.sort((a, b) => a.name.localeCompare(b.name));
+
         res.json({
             supported: true,
-            sideEffects: records.map((r) => ({
-                id: r.sideEffect.id,
-                name: r.sideEffect.name,
-                nameAr: r.sideEffect.nameAr,
-                frequency: r.frequency,
-                bodySystem: r.bodySystem,
-            })),
+            sideEffects: merged,
         });
     } catch (error) {
         next(error);

@@ -169,10 +169,10 @@ s('/patients/{patientId}/family-history', 'post', PATIENT_TAGS.FAMILY_HISTORY, '
 // FAMILY RELATIONS (enum options for family history dropdown)
 s('/family-relations', 'get', [PATIENT_TAGS.FAMILY_HISTORY, ADMIN_TAG], 'List family relation enum values for dropdowns (Father, Mother, Sibling, etc.)', true);
 
-// PATIENTS — Surgical History
-s('/patients/{patientId}/surgeries', 'get', PATIENT_TAGS.SURGERIES, 'Get previous surgeries (patientId can be "me" for logged-in patient). Same **patientId** access rules as GET medical-history.', true, [p('patientId')], undefined, { '403': 'Cannot access this patient resource' });
-s('/patients/{patientId}/surgeries', 'post', PATIENT_TAGS.SURGERIES, 'Add or update surgical history (patientId can be "me"). Body: one object or array. **Create:** { organId, surgeryTimeframe }. **Update:** { id, organId?, surgeryTimeframe? } (id from GET …/surgeries; at least one of organId/surgeryTimeframe). Same **patientId** access rules.', true, [p('patientId')], { schemaRef: 'BatchSurgicalHistoryRequest' }, { '403': 'Cannot access this patient resource' });
-s('/patients/surgeries/{id}', 'delete', PATIENT_TAGS.SURGERIES, 'Delete a surgical history entry', true, [p('id')]);
+// PATIENTS — Surgical History (no PUT: updates use POST with `id` in body)
+s('/patients/{patientId}/surgeries', 'get', PATIENT_TAGS.SURGERIES, 'List previous surgeries (patientId may be `me`). Same **patientId** access rules as GET medical-history. Each row: `id`, `organ`, `surgeryTimeframe`, timestamps.', true, [p('patientId')], undefined, { '403': 'Cannot access this patient resource' });
+s('/patients/{patientId}/surgeries', 'post', PATIENT_TAGS.SURGERIES, '**Add or update** surgical history (single object or array). **Create:** `{ organId, surgeryTimeframe }` — `organId` from **GET /operations**. **Update:** `{ id, organId?, surgeryTimeframe? }` where `id` is the row id from GET …/surgeries (include at least one of organId/surgeryTimeframe). **Removed:** `PUT /patients/{patientId}/surgeries/{id}` — do not use. Returns **201** if the batch is inserts only, **200** if any item was an update.', true, [p('patientId')], { schemaRef: 'SurgicalHistoryPostRequest' }, { '403': 'Cannot access this patient resource' });
+s('/patients/surgeries/{id}', 'delete', PATIENT_TAGS.SURGERIES, 'Delete one surgical history row by its `id` (not patientId-scoped path). Same auth as POST.', true, [p('id')], undefined, { '403': 'Forbidden', '404': 'Row not found' });
 
 // PATIENTS — Lifestyle (catalog: GET /lifestyles; patient answers below)
 s('/patients/{patientId}/lifestyle', 'get', PATIENT_TAGS.LIFESTYLE, 'Get patient lifestyle answers (patientId can be "me"). Same **patientId** access rules as GET medical-history.', true, [p('patientId')], undefined, { '403': 'Cannot access this patient resource' });
@@ -511,21 +511,21 @@ s('/settings/logo', 'post', ADMIN_TAG, 'Upload / update application logo (Admin)
 s('/settings/nearby-doctors-radius', 'get', ADMIN_TAG, 'Get nearby doctors search radius in km (Admin). Used by GET /doctors/nearby.', true);
 s('/settings/nearby-doctors-radius', 'put', ADMIN_TAG, 'Set nearby doctors search radius in km (Admin). Body: { radiusKm: number } (1–500).', true, [], { schemaRef: 'PutNearbyDoctorsRadiusRequest' });
 s('/settings/patient-side-effects-fallback-redirect', 'get', ADMIN_TAG, 'Get the **effective** patient fallback URL (`AppSetting.key` = `patientSideEffectsFallbackRedirectUrl`). If unset or invalid, the server uses `https://edaegypt.gov.eg`. **Auth:** Admin or SuperAdmin.', true);
-s('/settings/patient-side-effects-fallback-redirect', 'put', [ADMIN_TAG, SUPERADMIN_SETTINGS_WRITE_TAG], 'Set patient fallback URL (`patientSideEffectsFallbackRedirectUrl`) — **http** or **https** only. **Auth: SuperAdmin only** (Admin receives 403). Patients get this `redirect` when GET /side-effects/by-medication returns `supported: false`, GET /medicines/:id/side-effects returns 403, or POST /side-effects/add | POST /my-side-effects refuse a trade name without a company.', true, [], { schemaRef: 'PutPatientSideEffectsFallbackRedirectRequest' });
+s('/settings/patient-side-effects-fallback-redirect', 'put', [ADMIN_TAG, SUPERADMIN_SETTINGS_WRITE_TAG], 'Set patient fallback URL (`patientSideEffectsFallbackRedirectUrl`) — **http** or **https** only. **Auth: SuperAdmin only** (Admin receives 403). Patients get this `redirect` when GET /side-effects/by-medication returns `supported: false`, GET /medicines/:id/side-effects returns 403, or POST `/side-effects/add` / POST `/my-side-effects` refuse a trade name without a company.', true, [], { schemaRef: 'PutPatientSideEffectsFallbackRedirectRequest' });
 
 // PATIENT SHARE TOKEN (QR Code sharing)
 s('/patient-share-token/generate', 'post', [PATIENT_TAGS.SHARE_WITH_DOCTOR, DOCTOR_TAGS.MY_PATIENTS, DOCTOR_PATIENTS_SECTION], 'Generate a secure QR code token for sharing profile with a doctor (Patient only). Returns token + QR code base64 data URL. Token expires in 10 minutes.', true, [], undefined, { '201': 'Token generated successfully (token, expiresAt, qrCode base64)' });
 s('/patient-share-token/redeem', 'post', [PATIENT_TAGS.SHARE_WITH_DOCTOR, DOCTOR_TAGS.MY_PATIENTS, DOCTOR_PATIENTS_SECTION], 'Redeem a patient share QR token (Doctor only). Validates token, creates patient-doctor relationship, sends notifications, returns patient details.', true, [], { schemaRef: 'RedeemShareTokenRequest' }, { '201': 'Patient linked successfully', '404': 'Invalid token or profile not found', '409': 'Patient already linked to this doctor', '410': 'Token expired or already used' });
 
 // SIDE EFFECTS (My Side Effects)
-s('/side-effects/by-medication/{medicationId}', 'get', [PATIENT_TAGS.SIDE_EFFECTS, DOCTOR_PATIENTS_SECTION], 'Get known side effects for a medicine. **`medicationId` may be:** (1) **`PatientMedicine.id`** from GET `/patient-medicines/patient/{patientId}` (my list), or (2) **`TradeName.id`** from GET `/trade-names/search` (catalog). Same contract/company rules apply. If **supported: true**, returns **sideEffects**. If **supported: false**, returns **redirect**, **reason** (`NO_COMPANY` | `NO_ACTIVE_CONTRACT`), **message**. **404** if id matches neither table (body may include **hint**). **Note:** POST `/my-side-effects` still requires **PatientMedicine.id** only.', true, [p('medicationId')], undefined, { '400': 'Invalid medicationId', '404': 'No PatientMedicine or TradeName for this id' }, 'SideEffectsByMedicationResponse');
+s('/side-effects/by-medication/{medicationId}', 'get', [PATIENT_TAGS.SIDE_EFFECTS, DOCTOR_PATIENTS_SECTION], 'Get side effects for a medicine: **approved** catalog rows (**id** set) **plus** active-substance extract strings not in the catalog (**id: null**). **`medicationId` may be:** (1) **`PatientMedicine.id`** from GET `/patient-medicines/patient/{patientId}`, or (2) **`TradeName.id`** from GET `/trade-names/search`. Same contract/company rules apply. If **supported: false**, returns **redirect**, **reason**, **message**. **404** if id matches neither table. **Reporting:** POST `/my-side-effects` with **`medicationId` = PatientMedicine.id**; each item uses **`sideEffectId`** when **id** is present **or** **`{ name }`** when **id** is null.', true, [p('medicationId')], undefined, { '400': 'Invalid medicationId', '404': 'No PatientMedicine or TradeName for this id' }, 'SideEffectsByMedicationResponse');
 s('/side-effects/add', 'post', PATIENT_TAGS.SIDE_EFFECTS, 'Add a new side effect **name** and link it to a medication (Patient). Optional **severity** (`PatientSideEffectSeverity`) and **notes** on the `PatientSideEffect` row. **400** validation; **403** trade name without company (+ **redirect**); **404** no patient profile or medication not yours.', true, [], { schemaRef: 'AddSideEffectRequest' }, { '201': 'Created — see AddSideEffectResponse', '400': 'Missing name or medicationId', '403': 'Trade name has no company', '404': 'Patient or medication' });
-s('/medicines/{tradeNameId}/side-effects', 'get', [PATIENT_TAGS.SIDE_EFFECTS, DOCTOR_PATIENTS_SECTION], 'Extract pre-defined side effects for a trade name. Allowed when the trade name has an **active manufacturer** (company), or an **active contracting-company** row (manufacturer-level or linked to this trade name). **403** **NO_COMPANY** if no manufacturer; **NO_ACTIVE_CONTRACT** if manufacturer is inactive/deleted. Includes instructionPdf when present.', true, [p('tradeNameId')], undefined, { '403': 'No company or inactive manufacturer — see error body + redirect', '404': 'Trade name not found' }, 'ExtractSideEffectsResponse');
+s('/medicines/{tradeNameId}/side-effects', 'get', [PATIENT_TAGS.SIDE_EFFECTS, DOCTOR_PATIENTS_SECTION], '**Extract** side-effect **names** from the trade name’s **active substance** structured fields (computed on read — **no** `sideEffectId` on each string). Response groups strings by frequency tier (`veryCommon`, `common`, …). Allowed when the trade name has an **active manufacturer** or qualifying **contracting-company** link. **403** NO_COMPANY / NO_ACTIVE_CONTRACT (+ **redirect**). To **report** these to your profile, POST `/my-side-effects` with **`{ name, severity?, notes? }`** (same spelling as returned). Includes **instructionPdf** when present.', true, [p('tradeNameId')], undefined, { '403': 'No company or inactive manufacturer — see error body + redirect', '404': 'Trade name not found' }, 'ExtractSideEffectsResponse');
 
 // INSTRUCTION PDF (Medicine instructions)
 s('/trade-names/{tradeNameId}/instruction-pdf/view', 'post', [DOCTOR_TAGS.DRUG_SAFETY, DOCTOR_PATIENTS_SECTION], 'View instruction PDF for a medicine and increment the view counter. Doctor or Admin: call this when opening the PDF so views are tracked. Returns PDF metadata including url (not file bytes).', true, [p('tradeNameId')], undefined, { '404': 'Instruction PDF not found for this medicine' }, 'ViewInstructionPdfResponse');
 s('/trade-names/{tradeNameId}/instruction-pdf/stats', 'get', [DOCTOR_TAGS.DRUG_SAFETY, DOCTOR_PATIENTS_SECTION, ADMIN_TAG], 'Get view count statistics for an instruction PDF without incrementing the counter. Authorized: Doctor, Admin, or Company (company users see stats for their products).', true, [p('tradeNameId')], undefined, { '404': 'Instruction PDF not found for this medicine' }, 'GetInstructionPdfStatsResponse');
-s('/my-side-effects', 'post', PATIENT_TAGS.SIDE_EFFECTS, 'Report side effects for a medication (Patient). Body: `medicationId`, `sideEffects` array. Each item: **`{ sideEffectId, severity?, notes? }`** (catalog id — must be **Approved**) **or** **`{ name, severity?, notes? }`** when there is no id (e.g. strings from GET `/medicines/:tradeNameId/side-effects`). Names are resolved to catalog rows (created **Pending** if new). **403** if medicine not in profile, or trade name has no company (**redirect** in body); **409** if duplicate.', true, [], { schemaRef: 'ReportSideEffectsRequest' }, { '201': 'Created — see ReportSideEffectsResponse', '400': 'Validation or unknown/unapproved side effect ids', '403': 'Not in profile or trade name without company', '404': 'Patient profile not found', '409': 'Duplicate submission' });
+s('/my-side-effects', 'post', PATIENT_TAGS.SIDE_EFFECTS, 'Report side effects for a medication (Patient). Body: **`medicationId`** (PatientMedicine id), **`sideEffects`** array. Each element is **exactly one** of: **`{ sideEffectId, severity?, notes? }`** (catalog id — must be **Approved**), or **`{ name, severity?, notes? }`** when there is **no** id (e.g. copy **name** from GET `/medicines/:tradeNameId/side-effects`). Server **finds or creates** `SideEffect` by name and links the active substance. **403** not in profile or no company (**redirect**); **409** duplicate patient report.', true, [], { schemaRef: 'ReportSideEffectsRequest' }, { '201': 'Created — see ReportSideEffectsResponse', '400': 'Invalid body, format, severity/notes, or unapproved/missing sideEffectId(s)', '403': 'Not in profile or trade name without company', '404': 'Patient profile not found', '409': 'Duplicate submission' });
 s('/my-side-effects', 'get', [PATIENT_TAGS.SIDE_EFFECTS, DOCTOR_PATIENTS_SECTION], 'Get all side effects reported by the patient');
 s('/my-side-effects/by-medication/{medicationId}', 'get', [PATIENT_TAGS.SIDE_EFFECTS, DOCTOR_PATIENTS_SECTION], 'Get side effects reported by the patient for a specific medication', true, [p('medicationId')]);
 
@@ -544,12 +544,14 @@ s('/export/history', 'get', ADMIN_TAG, 'Get export history');
 // POST /my-side-effects — OpenAPI response bodies (201 + structured errors)
 if (paths['/my-side-effects']?.post) {
   paths['/my-side-effects'].post.responses['201'] = {
-    description: 'Created. Each reported row is stored on PatientSideEffect with optional severity (Prisma enum) and notes.',
+    description:
+      'Created. Each new `PatientSideEffect` row; response lists stored **name** (from catalog) and optional **severity** / **notes**. Works for items submitted with **sideEffectId** or resolved **name**.',
     content: { 'application/json': { schema: { $ref: '#/components/schemas/ReportSideEffectsResponse' } } }
   };
   const err = { $ref: '#/components/schemas/ReportMySideEffectsErrorResponse' };
   paths['/my-side-effects'].post.responses['400'] = {
-    description: 'Bad request — invalid body, invalid severity, or one or more side effect ids missing or not Approved.',
+    description:
+      'Bad request — invalid `medicationId` / empty `sideEffects`; item must have **exactly one** of `sideEffectId` or `name`; invalid severity/notes; **SIDE_EFFECTS_NOT_FOUND** when a supplied **sideEffectId** is missing or not **Approved** (name path does not use this check).',
     content: { 'application/json': { schema: err } }
   };
   paths['/my-side-effects'].post.responses['403'] = {
@@ -611,6 +613,13 @@ if (paths['/side-effects/by-medication/{medicationId}']?.get) {
 }
 
 if (paths['/medicines/{tradeNameId}/side-effects']?.get) {
+  paths['/medicines/{tradeNameId}/side-effects'].get.responses['200'] = {
+    description:
+      'Extracted `{ name, bodySystem }` lists per frequency bucket — **no** per-item `sideEffectId`. Use **POST** `/my-side-effects` with `{ name }` to report.',
+    content: {
+      'application/json': { schema: { $ref: '#/components/schemas/ExtractSideEffectsResponse' } }
+    }
+  };
   paths['/medicines/{tradeNameId}/side-effects'].get.responses['403'] = {
     description: 'NO_COMPANY or NO_ACTIVE_CONTRACT — open redirect for patient guidance.',
     content: {
@@ -1225,6 +1234,33 @@ if (paths['/drug-interactions/check-by-trade-name']?.post) {
   };
 }
 
+// Surgical history POST: 200 vs 201; strip legacy PUT if swagger-jsdoc merged it from an old comment
+const surgeriesPath = paths['/patients/{patientId}/surgeries'];
+if (surgeriesPath?.post) {
+  surgeriesPath.post.responses = {
+    '200': {
+      description:
+        'At least one body item included `id` (update). JSON: `message`, `count`, `surgicalHistories` (each includes `organ`).',
+      content: { 'application/json': { schema: { type: 'object' } } },
+    },
+    '201': {
+      description:
+        'All items were new rows (no `id`). JSON: `message`, `count`, `surgicalHistories` (each includes `organ`).',
+      content: { 'application/json': { schema: { type: 'object' } } },
+    },
+    '400': { description: 'Validation (Zod) or duplicate organ for this patient (unique patientId + organId).' },
+    '403': { description: 'Cannot access this patient resource.' },
+    '404': { description: 'Patient not found, or update `id` does not belong to this patient.' },
+  };
+}
+const legacySurgeryPut = paths['/patients/{patientId}/surgeries/{id}'];
+if (legacySurgeryPut?.put) {
+  delete legacySurgeryPut.put;
+  if (Object.keys(legacySurgeryPut).length === 0) {
+    delete paths['/patients/{patientId}/surgeries/{id}'];
+  }
+}
+
 // ═══════════════════════════════════════════════════════
 // OpenAPI definition
 // ═══════════════════════════════════════════════════════
@@ -1247,7 +1283,7 @@ const options: Record<string, unknown> = {
       { name: PATIENT_TAGS.AUTH, description: 'Authentication (Patient)' },
       { name: PATIENT_TAGS.PROFILE, description: 'Personal info and profile' },
       { name: PATIENT_TAGS.ALLERGIES, description: 'Allergies' },
-      { name: PATIENT_TAGS.SURGERIES, description: 'Previous surgeries' },
+      { name: PATIENT_TAGS.SURGERIES, description: 'Previous surgeries: GET list, POST add/update (no separate PUT), DELETE by id.' },
       { name: PATIENT_TAGS.FAMILY_HISTORY, description: 'Family health history' },
       { name: PATIENT_TAGS.CURRENT_DISEASES, description: 'Current diseases' },
       { name: PATIENT_TAGS.LIFESTYLE, description: 'Lifestyle' },
@@ -1260,7 +1296,7 @@ const options: Record<string, unknown> = {
       { name: PATIENT_TAGS.RATINGS, description: 'Ratings' },
       { name: PATIENT_TAGS.NOTIFICATIONS, description: 'Notifications' },
       { name: PATIENT_TAGS.SUBSCRIPTION_PAYMENTS, description: 'Subscription and payments' },
-      { name: PATIENT_TAGS.SIDE_EFFECTS, description: 'Report and view medication side effects' },
+      { name: PATIENT_TAGS.SIDE_EFFECTS, description: 'Medication side effects: GET by-medication (catalog **id** or extract **id: null**), GET extract (names only), POST add (single custom name), POST my-side-effects (batch — **sideEffectId or name** per item), GET reported lists.' },
       { name: DOCTOR_TAGS.AUTH, description: 'Authentication (Doctor)' },
       { name: DOCTOR_PATIENTS_SECTION, description: 'All doctor capabilities with patients: list/search/get details, assign/remove, prescriptions, visits, consultations, medical reports, drug safety, view patient allergies/diseases/medicines.' },
       { name: DOCTOR_ADD_DRUG_SECTION, description: 'Add A New Drug screen: Step 1 — GET /active-substances/classifications. Step 2 — GET /active-substances/search (API, filter by classification). Step 3 — GET /active-substances/concentrations (Conc for this API). Step 4 — GET /active-substances/dosage-forms. Step 5 — GET /trade-names/search (classification, API, concentration, dosage form). Step 6 — POST /prescriptions with medicationPlan (each item: medicineName required, tradeNameId? or manual; creates Prescription + PatientMedicine + PrescriptionMedicine). Optional: POST /prescriptions/:prescriptionId/medicines to add one drug to a draft prescription.' },
@@ -1537,29 +1573,36 @@ const options: Record<string, unknown> = {
         },
         BatchFamilyHistoryRequest: { type: 'array', minItems: 0, items: { $ref: '#/components/schemas/FamilyHistoryRequest' }, description: 'Full replacement list for this patient. Replaces all existing family history; send [] to clear. Single object is also accepted (wrapped as one element).', example: [{ diseaseId: 8, relation: 'Father', severity: 'Severe' }, { diseaseId: 10, relation: 'Mother', severity: 'Moderate' }] },
         SurgicalHistoryRequest: {
-          description: 'One surgical history entry. **Create:** organId + surgeryTimeframe required. **Update:** include id (row id from GET …/surgeries) plus at least one of organId or surgeryTimeframe.',
+          description:
+            'One upsert item for **POST /patients/{patientId}/surgeries** only (there is **no** `PUT …/surgeries/{id}`). **Create:** `organId` + `surgeryTimeframe`. **Update:** `id` + at least one of `organId`, `surgeryTimeframe`.',
           type: 'object',
           properties: {
-            id: { type: 'integer', example: 12, description: 'If set, updates this row; must belong to patientId in the path.' },
-            organId: { type: 'integer', example: 2, description: 'Organ id (catalog). Required for create; optional for update.' },
+            id: { type: 'integer', example: 12, description: 'SurgicalHistory row id from GET …/surgeries. Omit for create.' },
+            organId: { type: 'integer', example: 2, description: 'Organ id — same catalog as **GET /operations** (each item is an organ).' },
             surgeryTimeframe: {
               type: 'string',
               enum: ['THREE_MONTHS', 'SIX_MONTHS', 'MORE_THAN_SIX_MONTHS'],
               example: 'THREE_MONTHS',
-              description: 'Required for create; optional for update.',
+              description: 'Required when creating; optional on update if changing only the other field.',
             },
           },
           example: { organId: 2, surgeryTimeframe: 'THREE_MONTHS' }
         },
-        BatchSurgicalHistoryRequest: {
-          description: 'One or more surgical history entries (single object or array). Mix create and update objects. GET …/surgeries returns each row with id and organ: { id, name }.',
-          type: 'array',
-          minItems: 1,
-          items: { $ref: '#/components/schemas/SurgicalHistoryRequest' },
-          example: [
-            { organId: 2, surgeryTimeframe: 'THREE_MONTHS' },
-            { id: 12, surgeryTimeframe: 'SIX_MONTHS' }
-          ]
+        SurgicalHistoryPostRequest: {
+          description:
+            'POST /patients/{patientId}/surgeries body: **one** object or a **non-empty array** of `SurgicalHistoryRequest`. Mix creates and updates in one call. **201** when all items are creates, **200** when any item is an update.',
+          oneOf: [
+            { $ref: '#/components/schemas/SurgicalHistoryRequest' },
+            {
+              type: 'array',
+              minItems: 1,
+              items: { $ref: '#/components/schemas/SurgicalHistoryRequest' },
+              example: [
+                { organId: 2, surgeryTimeframe: 'THREE_MONTHS' },
+                { id: 12, surgeryTimeframe: 'SIX_MONTHS' },
+              ],
+            },
+          ],
         },
         CreateLifestyleRequest: {
           description: 'Create lifestyle question (catalog). activeSubstanceField must be one of the ActiveSubstance field names used for warnings (e.g. interactionAlcohol, interactionXanthines). See backend enum ACTIVE_SUBSTANCE_LIFESTYLE_FIELDS.',
@@ -2685,7 +2728,7 @@ const options: Record<string, unknown> = {
         },
         ReportSideEffectItemRequest: {
           description:
-            'One side effect to report. **Either** `sideEffectId` (approved catalog row) **or** `name` (plain text, e.g. from extracted medicine data). Do not send both.',
+            'One side effect to report. **Either** `sideEffectId` (when GET `/side-effects/by-medication/{id}` lists **`id`**) **or** `name` (when that list has **`id: null`**, or from GET `/medicines/{tradeNameId}/side-effects`). **Do not send both.**',
           oneOf: [
             {
               type: 'object',
@@ -2701,7 +2744,7 @@ const options: Record<string, unknown> = {
               type: 'object',
               required: ['name'],
               properties: {
-                name: { type: 'string', minLength: 1, maxLength: 200, example: 'Headache', description: 'Side effect name when no catalog id (e.g. from GET /medicines/:id/side-effects).' },
+                name: { type: 'string', minLength: 1, maxLength: 200, example: 'Headache', description: 'Exact label to report when the UI only has text (extracted list). Server resolves/creates catalog row.' },
                 severity: { allOf: [{ $ref: '#/components/schemas/PatientSideEffectSeverity' }], nullable: true, description: 'Optional.' },
                 notes: { type: 'string', maxLength: 500, nullable: true, description: 'Optional patient notes.' },
               },
@@ -2711,7 +2754,7 @@ const options: Record<string, unknown> = {
         },
         ReportSideEffectsRequest: {
           description:
-            'Report side effects for a medication. Required: medicationId, sideEffects (non-empty array). Mix `{ sideEffectId }` (approved only) and `{ name }` (no id) in the same request if needed.',
+            'Report side effects for a medication. Required: **medicationId** (PatientMedicine id), **sideEffects** (non-empty array). You may mix `{ sideEffectId }` (approved catalog only) and `{ name }` (no id) in one request.',
           type: 'object',
           required: ['medicationId', 'sideEffects'],
           properties: {
@@ -2735,7 +2778,7 @@ const options: Record<string, unknown> = {
           },
         },
         ReportSideEffectsResponse: {
-          description: '201 response for POST /my-side-effects.',
+          description: '201 response for POST `/my-side-effects` (whether items used **sideEffectId** or **name**).',
           type: 'object',
           required: ['success', 'message', 'submitted', 'sideEffects'],
           properties: {
@@ -2769,19 +2812,61 @@ const options: Record<string, unknown> = {
           }
         },
         SideEffectsByMedicationResponse: {
-          description: 'Response for GET /side-effects/by-medication/:id. If **supported: true**, `sideEffects` lists approved rows. If **supported: false**, use **redirect** (SuperAdmin setting `patientSideEffectsFallbackRedirectUrl`, default https://edaegypt.gov.eg), **reason**, and **message**.',
+          description:
+            'Response for GET /side-effects/by-medication/:id. If **supported: true**, `sideEffects` merges **approved** catalog rows (each has **id** → POST `/my-side-effects` with `sideEffectId`) with **active-substance extract** strings not yet in the catalog (**id: null** → POST with `{ name }`). Catalog wins on duplicate **name** (case-insensitive). If **supported: false**, use **redirect** (SuperAdmin `patientSideEffectsFallbackRedirectUrl`, default https://edaegypt.gov.eg), **reason**, and **message**.',
           type: 'object',
           properties: {
             supported: { type: 'boolean', example: true },
             redirect: { type: 'string', format: 'uri', description: 'When supported=false. Patient should open this URL.' },
             reason: { type: 'string', enum: ['NO_COMPANY', 'NO_ACTIVE_CONTRACT'], description: 'When supported=false.' },
             message: { type: 'string', description: 'Human-readable hint when supported=false.' },
-            sideEffects: { type: 'array', items: { type: 'object', properties: { id: { type: 'integer', example: 1 }, name: { type: 'string', example: 'Headache' }, frequency: { type: 'string', nullable: true, example: 'Common' }, bodySystem: { type: 'string', nullable: true, example: 'Nervous System' } } }, description: 'Only when supported=true.' }
+            sideEffects: {
+              type: 'array',
+              description: 'Only when supported=true. Sorted by **name**.',
+              items: {
+                type: 'object',
+                required: ['name'],
+                properties: {
+                  id: {
+                    type: 'integer',
+                    nullable: true,
+                    example: 1,
+                    description: 'Catalog `SideEffect.id` when linked; **null** for extract-only rows (report with POST `{ name }`).'
+                  },
+                  name: { type: 'string', example: 'Headache' },
+                  nameAr: { type: 'string', nullable: true, example: 'صداع' },
+                  frequency: { type: 'string', nullable: true, example: 'Common' },
+                  bodySystem: { type: 'string', nullable: true, example: 'Nervous System' }
+                }
+              }
+            }
           },
-          example: { supported: true, sideEffects: [{ id: 1, name: 'Headache', frequency: 'Common', bodySystem: 'Nervous System' }, { id: 3, name: 'Nausea', frequency: 'Very Common', bodySystem: 'Gastrointestinal' }] }
+          example: {
+            supported: true,
+            sideEffects: [
+              { id: 1, name: 'Headache', nameAr: 'صداع', frequency: 'Common', bodySystem: 'Nervous System' },
+              { id: null, name: 'Somnolence', nameAr: null, frequency: 'Common', bodySystem: 'Nervous System' },
+              { id: 3, name: 'Nausea', nameAr: null, frequency: 'Very Common', bodySystem: 'Gastrointestinal' }
+            ]
+          }
+        },
+        ExtractedSideEffectEntry: {
+          description:
+            'One string read from the active substance’s side-effect field map. **No** `sideEffectId` — use this **name** (and optional severity/notes) in POST `/my-side-effects` as `{ name }`.',
+          type: 'object',
+          required: ['name', 'bodySystem'],
+          properties: {
+            name: { type: 'string', example: 'Headache' },
+            bodySystem: {
+              type: 'string',
+              example: 'NervousSystem',
+              description: 'Bucket from the extraction map (e.g. GIT, NervousSystem, Cardiac).',
+            },
+          },
         },
         ExtractSideEffectsResponse: {
-          description: 'Response when extracting side effects for a trade name. Groups side effects by frequency (VeryCommon, Common, Uncommon, Rare, VeryRare, Unknown). Only includes Approved side effects. Requires active company contract.',
+          description:
+            'GET `/medicines/{tradeNameId}/side-effects`. Side-effect strings are **derived on read** from active-substance JSON-style fields (not necessarily rows in `side_effects`). Grouped by frequency tier. Requires active manufacturer / contract (else 403).',
           type: 'object',
           properties: {
             success: { type: 'boolean', example: true },
@@ -2803,14 +2888,14 @@ const options: Record<string, unknown> = {
             sideEffects: {
               type: 'object',
               properties: {
-                veryCommon: { type: 'array', items: { type: 'object', properties: { id: { type: 'integer' }, name: { type: 'string' }, nameAr: { type: 'string', nullable: true }, frequency: { type: 'string' }, bodySystem: { type: 'string', nullable: true } } } },
-                common: { type: 'array', items: { type: 'object', properties: { id: { type: 'integer' }, name: { type: 'string' }, nameAr: { type: 'string', nullable: true }, frequency: { type: 'string' }, bodySystem: { type: 'string', nullable: true } } } },
-                uncommon: { type: 'array', items: { type: 'object', properties: { id: { type: 'integer' }, name: { type: 'string' }, nameAr: { type: 'string', nullable: true }, frequency: { type: 'string' }, bodySystem: { type: 'string', nullable: true } } } },
-                rare: { type: 'array', items: { type: 'object', properties: { id: { type: 'integer' }, name: { type: 'string' }, nameAr: { type: 'string', nullable: true }, frequency: { type: 'string' }, bodySystem: { type: 'string', nullable: true } } } },
-                veryRare: { type: 'array', items: { type: 'object', properties: { id: { type: 'integer' }, name: { type: 'string' }, nameAr: { type: 'string', nullable: true }, frequency: { type: 'string' }, bodySystem: { type: 'string', nullable: true } } } },
-                unknown: { type: 'array', items: { type: 'object', properties: { id: { type: 'integer' }, name: { type: 'string' }, nameAr: { type: 'string', nullable: true }, frequency: { type: 'string' }, bodySystem: { type: 'string', nullable: true } } } }
+                veryCommon: { type: 'array', items: { $ref: '#/components/schemas/ExtractedSideEffectEntry' } },
+                common: { type: 'array', items: { $ref: '#/components/schemas/ExtractedSideEffectEntry' } },
+                uncommon: { type: 'array', items: { $ref: '#/components/schemas/ExtractedSideEffectEntry' } },
+                rare: { type: 'array', items: { $ref: '#/components/schemas/ExtractedSideEffectEntry' } },
+                veryRare: { type: 'array', items: { $ref: '#/components/schemas/ExtractedSideEffectEntry' } },
+                unknown: { type: 'array', items: { $ref: '#/components/schemas/ExtractedSideEffectEntry' } },
               },
-              description: 'Side effects grouped by frequency category.'
+              description: 'Buckets of `{ name, bodySystem }` entries. Tier key implies frequency (VeryCommon, Common, …).',
             }
           },
           example: {
@@ -2827,12 +2912,10 @@ const options: Record<string, unknown> = {
             },
             sideEffects: {
               veryCommon: [
-                { id: 101, name: 'Headache', nameAr: 'صداع', frequency: 'VeryCommon', bodySystem: 'Nervous System' },
-                { id: 102, name: 'Dizziness', nameAr: 'دوخة', frequency: 'VeryCommon', bodySystem: 'Nervous System' }
+                { name: 'Headache', bodySystem: 'NervousSystem' },
+                { name: 'Dizziness', bodySystem: 'NervousSystem' }
               ],
-              common: [
-                { id: 103, name: 'Nausea', nameAr: 'غثيان', frequency: 'Common', bodySystem: 'GIT' }
-              ],
+              common: [{ name: 'Nausea', bodySystem: 'GIT' }],
               uncommon: [],
               rare: [],
               veryRare: [],
