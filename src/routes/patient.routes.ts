@@ -23,8 +23,7 @@ import {
 import {
     getSurgicalHistories,
     addSurgicalHistory,
-    deleteSurgicalHistory,
-    updateSurgicalHistory
+    deleteSurgicalHistory
 } from '../controllers/surgicalHistory.controller';
 import { authenticate, authorize } from '../middleware/auth.middleware';
 import { assertAccessToPatientData } from '../middleware/patientResourceAccess.middleware';
@@ -80,7 +79,6 @@ router.post('/:patientId/family-history', authorize([UserRole.Patient, UserRole.
 // Surgical History
 router.get('/:patientId/surgeries', getSurgicalHistories);
 router.post('/:patientId/surgeries', authorize([UserRole.Patient, UserRole.Doctor, UserRole.Admin, UserRole.SuperAdmin]), addSurgicalHistory);
-router.put('/:patientId/surgeries/:id', authorize([UserRole.Patient, UserRole.Doctor, UserRole.Admin, UserRole.SuperAdmin]), updateSurgicalHistory);
 router.delete('/surgeries/:id', authorize([UserRole.Patient, UserRole.Doctor, UserRole.Admin, UserRole.SuperAdmin]), deleteSurgicalHistory);
 
 // Lifestyle (catalog: GET /lifestyles; patient answers below)

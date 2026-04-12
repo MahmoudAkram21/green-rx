@@ -15,7 +15,8 @@ export const getAllUsers = async (_req: Request, res: Response, next: NextFuncti
         patient: { select: { id: true } },
         doctor: { select: { name: true } },
         pharmacist: { select: { name: true } }
-      }
+      },
+      orderBy: { createdAt: 'desc' }
     });
     res.json(users.map(omitPassword));
   } catch (error) {
