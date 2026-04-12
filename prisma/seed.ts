@@ -4255,15 +4255,19 @@ async function main() {
       },
     }),
 
-    // Rule 3: Critical - Pregnancy + ACE Inhibitors
+    // Rule 3: Hypertension + Losartan (substance-specific; not global to all drugs)
+    // Production DBs seeded before this change: delete or update any disease_warning_rules
+    // rows that still tie pregnancy Category D text to Asthma with REQUIRE_MONITORING + autoBlock.
     prisma.diseaseWarningRule.create({
       data: {
-        diseaseId: diseases[2]?.id || diseases[0].id,
-        ruleType: "REQUIRE_MONITORING",
-        severity: "Critical",
+        diseaseId: diseases[1].id, // Hypertension
+        ruleType: "WARN_ACTIVE_SUBSTANCE",
+        targetActiveSubstanceId:
+          activeSubstances.find((a) => a.name === "Losartan")?.id ?? activeSubstances[9].id,
+        severity: "High",
         warningMessage:
-          "🔴 PREGNANCY CATEGORY D: Fetal toxicity risk. Contraindicated in 2nd and 3rd trimesters.",
-        autoBlock: true,
+          "Hypertension on Losartan (ARB): contraindicated in pregnancy (especially 2nd/3rd trimester). Confirm pregnancy status when clinically relevant.",
+        autoBlock: false,
         requiresOverride: false,
         createdBy: superAdmin.id,
       },

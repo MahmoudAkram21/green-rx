@@ -184,34 +184,50 @@ export async function checkAllergyConflicts(input: AllergyCheckInput): Promise<A
     }
   }
 
-  // ── 2. Trade name FK match ───────────────────────────────────────────────────
-  if (resolvedTradeNameId && report.tradeNameId) {
+  // ── 2. Trade name FK match (TradenamePatientAllergy join rows; report.tradeNameId may be null)
+  if (resolvedTradeNameId) {
+    const joinLinks = report.tradeName ?? [];
+    const hasJoinForResolved = joinLinks.some(
+      (tn) => (tn.tradeNameId ?? tn.tradeName?.id) === resolvedTradeNameId,
+    );
+    const legacyReportTnId = report.tradeNameId;
+    if (
+      legacyReportTnId != null &&
+      legacyReportTnId === resolvedTradeNameId &&
+      !hasJoinForResolved
+    ) {
+      conflicts.push({
+        type: 'trade_name',
+        matchedId: resolvedTradeNameId,
+        matchedName: tradeName?.title ?? `Trade#${resolvedTradeNameId}`,
+        reaction: report.reaction,
+        reason: `Patient has a documented allergy to trade name "${tradeName?.title ?? `#${resolvedTradeNameId}`}".`,
+      });
+    }
 
-
-
-    // Direct trade name match
-    report.tradeName.forEach(tn => {
-      if (tn.id  === resolvedTradeNameId) {
+    for (const tn of joinLinks) {
+      const linkedTradeId = tn.tradeNameId ?? tn.tradeName?.id ?? null;
+      if (linkedTradeId === resolvedTradeNameId) {
         conflicts.push({
           type: 'trade_name',
-          matchedId: tn.id,
-          matchedName: tn.tradeName.title ?? `TN#${tn.id}`,
+          matchedId: linkedTradeId,
+          matchedName: tn.tradeName?.title ?? `Trade#${linkedTradeId}`,
           reaction: report.reaction,
-          reason: `Patient has a documented allergy to trade name "${tn.tradeName.title}".`,
+          reason: `Patient has a documented allergy to trade name "${tn.tradeName?.title ?? `#${linkedTradeId}`}".`,
         });
-      }else if (
+      } else if (
         activeSubstance &&
-        tn.tradeName.activeSubstance?.id === activeSubstance.id
+        tn.tradeName?.activeSubstance?.id === activeSubstance.id
       ) {
         conflicts.push({
           type: 'trade_name',
-          matchedId: tn.id,
-          matchedName: tn.tradeName.title ?? `TN#${report.tradeNameId}`,
+          matchedId: linkedTradeId,
+          matchedName: tn.tradeName?.title ?? `Trade#${linkedTradeId ?? ''}`,
           reaction: report.reaction,
-          reason: `Patient has a documented allergy to "${tn.tradeName.title}" which contains the same active substance.`,
+          reason: `Patient has a documented allergy to "${tn.tradeName?.title}" which contains the same active substance.`,
         });
       }
-    });
+    }
   }
 
   // ── 3. Classification match ──────────────────────────────────────────────────

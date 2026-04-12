@@ -27,6 +27,7 @@ import {
     updateSurgicalHistory
 } from '../controllers/surgicalHistory.controller';
 import { authenticate, authorize } from '../middleware/auth.middleware';
+import { assertAccessToPatientData } from '../middleware/patientResourceAccess.middleware';
 import { UserRole } from '../../generated/client/client';
 import { prisma } from '../lib/prisma';
 
@@ -43,7 +44,6 @@ router.use(async (req, res, next) => {
   if ((isMe || isOwnUserId) && req.user?.role === 'Patient') {
     try {
       const patient = await prisma.patient.findUnique({ where: { userId: req.user!.userId } });
-      console.log("patient", patient);
       if (!patient) {
         res.status(404).json({ error: 'Patient not found' });
         return;
@@ -55,6 +55,11 @@ router.use(async (req, res, next) => {
     }
   }
   next();
+});
+
+const enforcePatientResourceAccess = assertAccessToPatientData('patientId');
+router.param('patientId', (req, res, next) => {
+    enforcePatientResourceAccess(req, res, next);
 });
 
 // Patient Profile

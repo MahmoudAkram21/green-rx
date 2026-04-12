@@ -363,6 +363,8 @@ function checkDiseases(
         rule.ruleType === 'REQUIRE_SPECIALIST_APPROVAL' ||
         rule.ruleType === 'ADJUST_DOSAGE'
       ) {
+        // Policy A (default): these rule types apply to every drug for the disease (e.g. CKD monitoring).
+        // Narrowing to targetActiveSubstanceId only would require data model / product changes for each rule.
         applies = true;
       }
 

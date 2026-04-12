@@ -10,12 +10,39 @@ import {
     getUnverifiedMedicines,
 } from '../controllers/patientMedicine.controller';
 import { authenticate, authorize } from '../middleware/auth.middleware';
+import { assertAccessToPatientData } from '../middleware/patientResourceAccess.middleware';
 import { uploadMedicineImage } from '../config/multer.config';
 import { UserRole } from '../../generated/client/client';
+import { prisma } from '../lib/prisma';
 
 const router = express.Router();
 
 router.use(authenticate);
+
+router.use(async (req, res, next) => {
+    const patientId = req.params.patientId;
+    const isMe = patientId === 'me';
+    const isOwnUserId = req.user?.role === 'Patient' && String(req.user.userId) === patientId;
+    if ((isMe || isOwnUserId) && req.user?.role === 'Patient') {
+        try {
+            const patient = await prisma.patient.findUnique({ where: { userId: req.user!.userId } });
+            if (!patient) {
+                res.status(404).json({ error: 'Patient not found' });
+                return;
+            }
+            req.params.patientId = String(patient.id);
+        } catch (e) {
+            next(e);
+            return;
+        }
+    }
+    next();
+});
+
+const enforcePatientMedicinePatientAccess = assertAccessToPatientData('patientId');
+router.param('patientId', (req, res, next) => {
+    enforcePatientMedicinePatientAccess(req, res, next);
+});
 
 // Admin: list all unverified image-uploaded medicines
 router.get(

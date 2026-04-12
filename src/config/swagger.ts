@@ -159,25 +159,25 @@ s('/patients/{id}', 'get', PATIENT_TAGS.PROFILE, 'Get patient by ID', true, [p('
 s('/patients/user/{userId}', 'get', PATIENT_TAGS.PROFILE, 'Get patient by user ID', true, [p('userId')]);
 
 // PATIENTS — Medical History
-s('/patients/{patientId}/medical-history', 'get', PATIENT_TAGS.PROFILE, 'Get medical history entries', true, [p('patientId')]);
-s('/patients/{patientId}/medical-history', 'post', PATIENT_TAGS.PROFILE, 'Add medical history (one or multiple diseases)', true, [p('patientId')], { schemaRef: 'BatchMedicalHistoryRequest' });
+s('/patients/{patientId}/medical-history', 'get', PATIENT_TAGS.PROFILE, 'Get medical history entries. **Access:** Patient = own id or `me`; Doctor = active patient-doctor link; Admin/SuperAdmin = any. **403** otherwise (incl. Pharmacist).', true, [p('patientId')], undefined, { '403': 'Cannot access this patient resource' });
+s('/patients/{patientId}/medical-history', 'post', PATIENT_TAGS.PROFILE, 'Add medical history (one or multiple diseases). Same **patientId** access rules as GET.', true, [p('patientId')], { schemaRef: 'BatchMedicalHistoryRequest' }, { '403': 'Cannot access this patient resource' });
 
 // PATIENTS — Family History
-s('/patients/{patientId}/family-history', 'get', PATIENT_TAGS.FAMILY_HISTORY, 'Get family history entries', true, [p('patientId')]);
-s('/patients/{patientId}/family-history', 'post', PATIENT_TAGS.FAMILY_HISTORY, 'Replace family history: body is the full list (single object or array). Omitted entries are removed. Empty array clears all.', true, [p('patientId')], { schemaRef: 'BatchFamilyHistoryRequest' });
+s('/patients/{patientId}/family-history', 'get', PATIENT_TAGS.FAMILY_HISTORY, 'Get family history entries. Same **patientId** access rules as GET /patients/{patientId}/medical-history.', true, [p('patientId')], undefined, { '403': 'Cannot access this patient resource' });
+s('/patients/{patientId}/family-history', 'post', PATIENT_TAGS.FAMILY_HISTORY, 'Replace family history: body is the full list (single object or array). Omitted entries are removed. Empty array clears all. Same **patientId** access rules as GET medical-history.', true, [p('patientId')], { schemaRef: 'BatchFamilyHistoryRequest' }, { '403': 'Cannot access this patient resource' });
 
 // FAMILY RELATIONS (enum options for family history dropdown)
 s('/family-relations', 'get', [PATIENT_TAGS.FAMILY_HISTORY, ADMIN_TAG], 'List family relation enum values for dropdowns (Father, Mother, Sibling, etc.)', true);
 
 // PATIENTS — Surgical History
-s('/patients/{patientId}/surgeries', 'get', PATIENT_TAGS.SURGERIES, 'Get previous surgeries (patientId can be "me" for logged-in patient)', true, [p('patientId')]);
-s('/patients/{patientId}/surgeries', 'post', PATIENT_TAGS.SURGERIES, 'Add surgical history (patientId can be "me"; body: organId from GET /operations)', true, [p('patientId')], { schemaRef: 'BatchSurgicalHistoryRequest' });
-s('/patients/{patientId}/surgeries/{id}', 'put', PATIENT_TAGS.SURGERIES, 'Update a surgical history entry', true, [p('patientId'), p('id')], { schemaRef: 'UpdateSurgicalHistoryRequest' });
+s('/patients/{patientId}/surgeries', 'get', PATIENT_TAGS.SURGERIES, 'Get previous surgeries (patientId can be "me" for logged-in patient). Same **patientId** access rules as GET medical-history.', true, [p('patientId')], undefined, { '403': 'Cannot access this patient resource' });
+s('/patients/{patientId}/surgeries', 'post', PATIENT_TAGS.SURGERIES, 'Add surgical history (patientId can be "me"; body: organId from GET /operations). Same **patientId** access rules.', true, [p('patientId')], { schemaRef: 'BatchSurgicalHistoryRequest' }, { '403': 'Cannot access this patient resource' });
+s('/patients/{patientId}/surgeries/{id}', 'put', PATIENT_TAGS.SURGERIES, 'Update a surgical history entry. Same **patientId** access rules.', true, [p('patientId'), p('id')], { schemaRef: 'UpdateSurgicalHistoryRequest' }, { '403': 'Cannot access this patient resource' });
 s('/patients/surgeries/{id}', 'delete', PATIENT_TAGS.SURGERIES, 'Delete a surgical history entry', true, [p('id')]);
 
 // PATIENTS — Lifestyle (catalog: GET /lifestyles; patient answers below)
-s('/patients/{patientId}/lifestyle', 'get', PATIENT_TAGS.LIFESTYLE, 'Get patient lifestyle answers (patientId can be "me")', true, [p('patientId')]);
-s('/patients/{patientId}/lifestyle', 'post', PATIENT_TAGS.LIFESTYLE, 'Add or update lifestyle answers — body: array of { lifestyleId, value } (lifestyleId from GET /lifestyles)', true, [p('patientId')], { schemaRef: 'BatchPatientLifestyleRequest' });
+s('/patients/{patientId}/lifestyle', 'get', PATIENT_TAGS.LIFESTYLE, 'Get patient lifestyle answers (patientId can be "me"). Same **patientId** access rules as GET medical-history.', true, [p('patientId')], undefined, { '403': 'Cannot access this patient resource' });
+s('/patients/{patientId}/lifestyle', 'post', PATIENT_TAGS.LIFESTYLE, 'Add or update lifestyle answers — body: array of { lifestyleId, value } (lifestyleId from GET /lifestyles). Same **patientId** access rules.', true, [p('patientId')], { schemaRef: 'BatchPatientLifestyleRequest' }, { '403': 'Cannot access this patient resource' });
 s('/patients/lifestyle/{patientLifestyleId}', 'delete', PATIENT_TAGS.LIFESTYLE, 'Remove one lifestyle entry (PatientLifestyle id)', true, [p('patientLifestyleId')]);
 
 // LIFESTYLES (catalog — Admin CRUD; patients use GET for lifestyle questions and POST .../lifestyle to submit answers)
@@ -195,12 +195,12 @@ s('/operations/{id}', 'put', ADMIN_TAG, 'Update an organ (Admin)', true, [p('id'
 s('/operations/{id}', 'delete', ADMIN_TAG, 'Delete an organ (Admin)', true, [p('id')], undefined, { '200': 'Success', '204': 'No Content' });
 
 // PATIENTS — Children
-s('/patients/{patientId}/children', 'get', PATIENT_TAGS.PROFILE, 'Get child profiles for patient', true, [p('patientId')]);
-s('/patients/{patientId}/children', 'post', PATIENT_TAGS.PROFILE, 'Add a child profile', true, [p('patientId')], { schemaRef: 'ChildProfileRequest' });
+s('/patients/{patientId}/children', 'get', PATIENT_TAGS.PROFILE, 'Get child profiles for patient. Same **patientId** access rules as GET medical-history.', true, [p('patientId')], undefined, { '403': 'Cannot access this patient resource' });
+s('/patients/{patientId}/children', 'post', PATIENT_TAGS.PROFILE, 'Add a child profile. Same **patientId** access rules.', true, [p('patientId')], { schemaRef: 'ChildProfileRequest' }, { '403': 'Cannot access this patient resource' });
 s('/patients/children/{childId}', 'delete', PATIENT_TAGS.PROFILE, 'Delete a child profile', true, [p('childId')]);
 
 // PATIENTS — All warnings (aggregated for current prescriptions + self-reported medicines)
-s('/patients/{patientId}/warnings', 'get', [WARNING_SYSTEM_SECTION, PATIENT_TAGS.DRUG_SAFETY, PATIENT_TAGS.MEDICATIONS, DOCTOR_PATIENTS_SECTION], 'Get all warnings for a patient (all types: allergies, disease, interactions, etc.) for current prescriptions and self-reported medicines', true, [p('patientId')]);
+s('/patients/{patientId}/warnings', 'get', [WARNING_SYSTEM_SECTION, PATIENT_TAGS.DRUG_SAFETY, PATIENT_TAGS.MEDICATIONS, DOCTOR_PATIENTS_SECTION], 'Get all warnings for a patient (all types: allergies, disease, interactions, etc.) for current prescriptions and self-reported medicines. Same **patientId** access rules as GET medical-history.', true, [p('patientId')], undefined, { '403': 'Cannot access this patient resource' });
 
 // DOCTORS
 s('/doctors', 'post', [DOCTOR_TAGS.MY_PATIENTS, DOCTOR_PATIENTS_SECTION], 'Create or update doctor profile', true, [], { schemaRef: 'CreateDoctorRequest' });
@@ -241,11 +241,11 @@ s('/patient-doctors/{id}', 'put', [PATIENT_TAGS.SHARE_WITH_DOCTOR, DOCTOR_TAGS.M
 s('/patient-doctors/{id}/end', 'post', [PATIENT_TAGS.SHARE_WITH_DOCTOR, DOCTOR_TAGS.MY_PATIENTS, DOCTOR_PATIENTS_SECTION], 'End a patient-doctor relationship', true, [p('id')]);
 
 // ALLERGIES (patient allergy records — read-only here; add/delete under /patients)
-s('/allergies/patient/{patientId}', 'get', [PATIENT_TAGS.ALLERGIES, DOCTOR_PATIENTS_SECTION], 'Get all allergies for a patient (PatientAllergy with allergen name)', true, [p('patientId')]);
+s('/allergies/patient/{patientId}', 'get', [PATIENT_TAGS.ALLERGIES, DOCTOR_PATIENTS_SECTION], 'Get all allergies for a patient (PatientAllergy with allergen name). **Access:** Patient = own id or `me` only; Doctor = active patient-doctor link; Admin/SuperAdmin = any. **403** otherwise. Pharmacist role is not supported on this route.', true, [p('patientId')], undefined, { '403': 'Not your patient / not linked / pharmacist forbidden' });
 s('/allergies/patient/{patientId}/critical', 'get', [PATIENT_TAGS.ALLERGIES, DOCTOR_PATIENTS_SECTION], 'Get critical allergies for a patient', true, [p('patientId')]);
-s('/allergies/check/{patientId}/{medicineId}', 'get', [PATIENT_TAGS.ALLERGIES, DOCTOR_PATIENTS_SECTION], 'Check if medicine conflicts with patient allergies', true, [p('patientId'), p('medicineId')]);
-s('/patients/{patientId}/allergies', 'post', PATIENT_TAGS.ALLERGIES, 'Create or replace the patient allergy report. Body supports optional tradeNameId plus arrays: allergenIds, activeSubstanceIds, excipientIds, classificationIds. At least one of these must be provided. Optional: reaction, notes.', true, [p('patientId')], { schemaRef: 'PatientAllergyReportRequest' });
-s('/patients/{patientId}/allergies/batch', 'post', PATIENT_TAGS.ALLERGIES, 'Alias of POST /patients/{patientId}/allergies (same request body).', true, [p('patientId')], { schemaRef: 'PatientAllergyReportRequest' });
+s('/allergies/check/{patientId}/{medicineId}', 'get', [PATIENT_TAGS.ALLERGIES, DOCTOR_PATIENTS_SECTION], 'Check if medicine conflicts with patient allergies. Same access rules as GET /allergies/patient/{patientId}. **403** if caller cannot access that patientId.', true, [p('patientId'), p('medicineId')], undefined, { '403': 'Not your patient / not linked / pharmacist forbidden' });
+s('/patients/{patientId}/allergies', 'post', PATIENT_TAGS.ALLERGIES, 'Create or replace the patient allergy report. Body supports optional tradeNameId plus arrays: allergenIds, activeSubstanceIds, excipientIds, classificationIds. At least one of these must be provided. Optional: reaction, notes. Same **patientId** access rules as GET medical-history.', true, [p('patientId')], { schemaRef: 'PatientAllergyReportRequest' }, { '403': 'Cannot access this patient resource' });
+s('/patients/{patientId}/allergies/batch', 'post', PATIENT_TAGS.ALLERGIES, 'Alias of POST /patients/{patientId}/allergies (same request body). Same **patientId** access rules.', true, [p('patientId')], { schemaRef: 'PatientAllergyReportRequest' }, { '403': 'Cannot access this patient resource' });
 s('/patients/allergies/{allergyId}', 'delete', PATIENT_TAGS.ALLERGIES, 'Remove allergy from patient (PatientAllergy id)', true, [p('allergyId')]);
 
 // ALLERGEN CATEGORIES (catalog — GET for patient/doctor dropdown; Admin CRUD)
@@ -287,9 +287,9 @@ s('/patient-diseases/{id}', 'patch', PATIENT_TAGS.CURRENT_DISEASES, 'Update **yo
 s('/patient-diseases/{id}', 'delete', PATIENT_TAGS.CURRENT_DISEASES, 'Remove **your** patient disease row. **Patient only.**', true, [p('id')], undefined, { '404': 'Not found or not yours' });
 
 // PATIENT MEDICINES (My medications)
-s('/patient-medicines/patient/{patientId}', 'get', [PATIENT_TAGS.MEDICATIONS, DOCTOR_PATIENTS_SECTION], 'List all medicines for a patient', true, [p('patientId')]);
+s('/patient-medicines/patient/{patientId}', 'get', [PATIENT_TAGS.MEDICATIONS, DOCTOR_PATIENTS_SECTION], 'List all medicines for a patient. **patientId** access: own/`me` (Patient), linked doctor (Doctor), Admin/SuperAdmin; **403** Pharmacist and others.', true, [p('patientId')], undefined, { '403': 'Cannot access this patient resource' });
 s('/patient-medicines/{id}', 'get', [PATIENT_TAGS.MEDICATIONS, DOCTOR_PATIENTS_SECTION], 'Get a patient medicine by ID', true, [p('id')]);
-s('/patient-medicines/patient/{patientId}', 'post', PATIENT_TAGS.MEDICATIONS, 'Add a medicine to patient (runs risk check; response includes warnings and blocked)', true, [p('patientId')], { schemaRef: 'AddPatientMedicineRequest' });
+s('/patient-medicines/patient/{patientId}', 'post', PATIENT_TAGS.MEDICATIONS, 'Add a medicine to patient (runs risk check; response includes warnings and blocked). Same **patientId** access rules as GET.', true, [p('patientId')], { schemaRef: 'AddPatientMedicineRequest' }, { '403': 'Cannot access this patient resource' });
 s('/patient-medicines/patient/{patientId}/upload-image', 'post', PATIENT_TAGS.MEDICATIONS, 'Upload medicine image (runs risk check; response includes warnings and blocked)', true, [p('patientId')]);
 s('/patient-medicines/{id}', 'patch', PATIENT_TAGS.MEDICATIONS, 'Update a patient medicine', true, [p('id')], { schemaRef: 'UpdatePatientMedicineRequest' });
 s('/patient-medicines/{id}', 'delete', PATIENT_TAGS.MEDICATIONS, 'Delete a patient medicine', true, [p('id')]);
@@ -386,7 +386,7 @@ s('/batch-check', 'post', [WARNING_SYSTEM_SECTION, PATIENT_TAGS.MEDICATIONS, PAT
 s('/drug-interactions/check-by-trade-name', 'post', [WARNING_SYSTEM_SECTION, DOCTOR_TAGS.DRUG_SAFETY, PATIENT_TAGS.DRUG_SAFETY, DOCTOR_PATIENTS_SECTION], 'Run full warning check for a drug by trade name ID. Returns blocked flag and all warnings (allergy, disease, lifestyle, pregnancy, lactation, age, organ, drug-drug). Doctor: any patient; Patient: own patientId only.', true, [], { schemaRef: 'CheckByTradeNameRequest' });
 s('/drug-interactions/check', 'post', [WARNING_SYSTEM_SECTION, DOCTOR_TAGS.DRUG_SAFETY, DOCTOR_PATIENTS_SECTION], 'Check drug safety before prescribing', true, [], { schemaRef: 'DrugSafetyCheckRequest' });
 s('/drug-interactions/prescription/{prescriptionId}', 'get', [WARNING_SYSTEM_SECTION, PATIENT_TAGS.DRUG_SAFETY, DOCTOR_TAGS.DRUG_SAFETY, DOCTOR_PATIENTS_SECTION], 'Get interaction alerts for a prescription', false, [p('prescriptionId')]);
-s('/drug-interactions/patient/{patientId}', 'get', [WARNING_SYSTEM_SECTION, PATIENT_TAGS.DRUG_SAFETY, DOCTOR_PATIENTS_SECTION], 'Get prescription-linked drug interaction alerts only (stored DrugInteractionAlert for this patient). For aggregated warnings including self-reported medicines use GET /patients/:patientId/warnings.', true, [p('patientId')]);
+s('/drug-interactions/patient/{patientId}', 'get', [WARNING_SYSTEM_SECTION, PATIENT_TAGS.DRUG_SAFETY, DOCTOR_PATIENTS_SECTION], 'Get prescription-linked drug interaction alerts only (stored DrugInteractionAlert for this patient). For aggregated warnings including self-reported medicines use GET /patients/:patientId/warnings. **patientId** access: own/`me` (Patient), linked doctor, Admin/SuperAdmin; **403** otherwise.', true, [p('patientId')], undefined, { '403': 'Cannot access this patient resource' });
 s('/drug-interactions/{id}/acknowledge-doctor', 'patch', [WARNING_SYSTEM_SECTION, DOCTOR_TAGS.DRUG_SAFETY, DOCTOR_PATIENTS_SECTION], 'Doctor acknowledges an interaction alert', false, [p('id')]);
 s('/drug-interactions/{id}/acknowledge-patient', 'patch', [WARNING_SYSTEM_SECTION, PATIENT_TAGS.DRUG_SAFETY], 'Patient acknowledges an interaction alert', false, [p('id')]);
 
@@ -519,7 +519,7 @@ s('/patient-share-token/generate', 'post', [PATIENT_TAGS.SHARE_WITH_DOCTOR, DOCT
 s('/patient-share-token/redeem', 'post', [PATIENT_TAGS.SHARE_WITH_DOCTOR, DOCTOR_TAGS.MY_PATIENTS, DOCTOR_PATIENTS_SECTION], 'Redeem a patient share QR token (Doctor only). Validates token, creates patient-doctor relationship, sends notifications, returns patient details.', true, [], { schemaRef: 'RedeemShareTokenRequest' }, { '201': 'Patient linked successfully', '404': 'Invalid token or profile not found', '409': 'Patient already linked to this doctor', '410': 'Token expired or already used' });
 
 // SIDE EFFECTS (My Side Effects)
-s('/side-effects/by-medication/{medicationId}', 'get', [PATIENT_TAGS.SIDE_EFFECTS, DOCTOR_PATIENTS_SECTION], 'Get known side effects for a patient medication. If **supported: true**, returns **sideEffects**. If **supported: false**, returns **redirect** (see `patientSideEffectsFallbackRedirectUrl`), **reason** (`NO_COMPANY` | `NO_ACTIVE_CONTRACT`), and **message**. **400** invalid id; **404** medication not found.', true, [p('medicationId')], undefined, { '400': 'Invalid medicationId', '404': 'Medication not found' }, 'SideEffectsByMedicationResponse');
+s('/side-effects/by-medication/{medicationId}', 'get', [PATIENT_TAGS.SIDE_EFFECTS, DOCTOR_PATIENTS_SECTION], 'Get known side effects for a medicine. **`medicationId` may be:** (1) **`PatientMedicine.id`** from GET `/patient-medicines/patient/{patientId}` (my list), or (2) **`TradeName.id`** from GET `/trade-names/search` (catalog). Same contract/company rules apply. If **supported: true**, returns **sideEffects**. If **supported: false**, returns **redirect**, **reason** (`NO_COMPANY` | `NO_ACTIVE_CONTRACT`), **message**. **404** if id matches neither table (body may include **hint**). **Note:** POST `/my-side-effects` still requires **PatientMedicine.id** only.', true, [p('medicationId')], undefined, { '400': 'Invalid medicationId', '404': 'No PatientMedicine or TradeName for this id' }, 'SideEffectsByMedicationResponse');
 s('/side-effects/add', 'post', PATIENT_TAGS.SIDE_EFFECTS, 'Add a new side effect **name** and link it to a medication (Patient). Optional **severity** (`PatientSideEffectSeverity`) and **notes** on the `PatientSideEffect` row. **400** validation; **403** trade name without company (+ **redirect**); **404** no patient profile or medication not yours.', true, [], { schemaRef: 'AddSideEffectRequest' }, { '201': 'Created — see AddSideEffectResponse', '400': 'Missing name or medicationId', '403': 'Trade name has no company', '404': 'Patient or medication' });
 s('/medicines/{tradeNameId}/side-effects', 'get', [PATIENT_TAGS.SIDE_EFFECTS, DOCTOR_PATIENTS_SECTION], 'Extract pre-defined side effects for a trade name. Allowed when the trade name has an **active manufacturer** (company), or an **active contracting-company** row (manufacturer-level or linked to this trade name). **403** **NO_COMPANY** if no manufacturer; **NO_ACTIVE_CONTRACT** if manufacturer is inactive/deleted. Includes instructionPdf when present.', true, [p('tradeNameId')], undefined, { '403': 'No company or inactive manufacturer — see error body + redirect', '404': 'Trade name not found' }, 'ExtractSideEffectsResponse');
 

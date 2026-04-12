@@ -254,7 +254,7 @@ async function checkDiseaseWarningRules(patient: any, activeSubstanceId: number)
       } else if (rule.ruleType === WarningRuleType.BLOCK_DRUG_CLASS || 
                  rule.ruleType === WarningRuleType.REQUIRE_MONITORING ||
                  rule.ruleType === WarningRuleType.REQUIRE_SPECIALIST_APPROVAL) {
-        // These apply to all medicines for this disease
+        // Policy A: applies to all medicines for this disease (keep in sync with pharmaSafetyEngine.checkDiseases).
         ruleApplies = true;
       }
 
