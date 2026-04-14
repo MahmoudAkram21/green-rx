@@ -171,7 +171,7 @@ s('/family-relations', 'get', [PATIENT_TAGS.FAMILY_HISTORY, ADMIN_TAG], 'List fa
 
 // PATIENTS — Surgical History (no PUT: updates use POST with `id` in body)
 s('/patients/{patientId}/surgeries', 'get', PATIENT_TAGS.SURGERIES, 'List previous surgeries (patientId may be `me`). Same **patientId** access rules as GET medical-history. Each row: `id`, `organ`, `surgeryTimeframe`, timestamps.', true, [p('patientId')], undefined, { '403': 'Cannot access this patient resource' });
-s('/patients/{patientId}/surgeries', 'post', PATIENT_TAGS.SURGERIES, '**Add or update** surgical history (single object or array). **Create:** `{ organId, surgeryTimeframe }` — `organId` from **GET /operations**. **Update:** `{ id, organId?, surgeryTimeframe? }` where `id` is the row id from GET …/surgeries (include at least one of organId/surgeryTimeframe). **Removed:** `PUT /patients/{patientId}/surgeries/{id}` — do not use. Returns **201** if the batch is inserts only, **200** if any item was an update.', true, [p('patientId')], { schemaRef: 'SurgicalHistoryPostRequest' }, { '403': 'Cannot access this patient resource' });
+s('/patients/{patientId}/surgeries', 'post', PATIENT_TAGS.SURGERIES, '**Full sync** surgical history (single object or array). The body is the **complete** list to keep: upsert each item, then **delete** any existing row for this patient **not** referenced by the final set (by `id`, or by `organId` for new-shaped items). **`[]`** clears all. **Create:** `{ organId, surgeryTimeframe }`. **Update:** `{ id, organId?, surgeryTimeframe? }` (at least one of organId/surgeryTimeframe). **Removed:** `PUT …/surgeries/{id}`. **201** = inserts only, no deletions; **200** = updates, deletions, or clear.', true, [p('patientId')], { schemaRef: 'SurgicalHistoryPostRequest' }, { '403': 'Cannot access this patient resource' });
 s('/patients/surgeries/{id}', 'delete', PATIENT_TAGS.SURGERIES, 'Delete one surgical history row by its `id` (not patientId-scoped path). Same auth as POST.', true, [p('id')], undefined, { '403': 'Forbidden', '404': 'Row not found' });
 
 // PATIENTS — Lifestyle (catalog: GET /lifestyles; patient answers below)
@@ -1241,12 +1241,12 @@ if (surgeriesPath?.post) {
   surgeriesPath.post.responses = {
     '200': {
       description:
-        'At least one body item included `id` (update). JSON: `message`, `count`, `surgicalHistories` (each includes `organ`).',
+        'Sync: at least one row was updated, and/or at least one previous row was removed, and/or body was `[]` (clear). JSON: `message`, `count`, `deletedCount`, `surgicalHistories` (each includes `organ`).',
       content: { 'application/json': { schema: { type: 'object' } } },
     },
     '201': {
       description:
-        'All items were new rows (no `id`). JSON: `message`, `count`, `surgicalHistories` (each includes `organ`).',
+        'Only new rows were added; nothing removed and no in-place updates. JSON: `message`, `count`, `deletedCount` (0), `surgicalHistories`.',
       content: { 'application/json': { schema: { type: 'object' } } },
     },
     '400': { description: 'Validation (Zod) or duplicate organ for this patient (unique patientId + organId).' },
@@ -1284,7 +1284,7 @@ const options: Record<string, unknown> = {
       { name: PATIENT_TAGS.AUTH, description: 'Authentication (Patient)' },
       { name: PATIENT_TAGS.PROFILE, description: 'Personal info and profile' },
       { name: PATIENT_TAGS.ALLERGIES, description: 'Allergies' },
-      { name: PATIENT_TAGS.SURGERIES, description: 'Previous surgeries: GET list, POST add/update (no separate PUT), DELETE by id.' },
+      { name: PATIENT_TAGS.SURGERIES, description: 'Previous surgeries: GET list, POST full sync (body replaces list; `[]` clears), DELETE by id.' },
       { name: PATIENT_TAGS.FAMILY_HISTORY, description: 'Family health history' },
       { name: PATIENT_TAGS.CURRENT_DISEASES, description: 'Current diseases' },
       { name: PATIENT_TAGS.LIFESTYLE, description: 'Lifestyle' },
@@ -1575,7 +1575,7 @@ const options: Record<string, unknown> = {
         BatchFamilyHistoryRequest: { type: 'array', minItems: 0, items: { $ref: '#/components/schemas/FamilyHistoryRequest' }, description: 'Full replacement list for this patient. Replaces all existing family history; send [] to clear. Single object is also accepted (wrapped as one element).', example: [{ diseaseId: 8, relation: 'Father', severity: 'Severe' }, { diseaseId: 10, relation: 'Mother', severity: 'Moderate' }] },
         SurgicalHistoryRequest: {
           description:
-            'One upsert item for **POST /patients/{patientId}/surgeries** only (there is **no** `PUT …/surgeries/{id}`). **Create:** `organId` + `surgeryTimeframe`. **Update:** `id` + at least one of `organId`, `surgeryTimeframe`.',
+            'One item in the **POST /patients/{patientId}/surgeries** sync body (no `PUT …/surgeries/{id}`). **Create:** `organId` + `surgeryTimeframe` (no `id`). **Update:** `id` + at least one of `organId`, `surgeryTimeframe`. Rows you omit from the array are **removed** after the sync (except when using `[]` alone, which clears all).',
           type: 'object',
           properties: {
             id: { type: 'integer', example: 12, description: 'SurgicalHistory row id from GET …/surgeries. Omit for create.' },
@@ -1591,12 +1591,12 @@ const options: Record<string, unknown> = {
         },
         SurgicalHistoryPostRequest: {
           description:
-            'POST /patients/{patientId}/surgeries body: **one** object or a **non-empty array** of `SurgicalHistoryRequest`. Mix creates and updates in one call. **201** when all items are creates, **200** when any item is an update.',
+            'POST /patients/{patientId}/surgeries body: **one** object, an **array** (may be **empty** to clear all), or items mixing creates and updates. After applying the list, **deletes** any prior surgery row for this patient not kept. **201** = inserts only; **200** = any update, removal, or clear.',
           oneOf: [
             { $ref: '#/components/schemas/SurgicalHistoryRequest' },
             {
               type: 'array',
-              minItems: 1,
+              minItems: 0,
               items: { $ref: '#/components/schemas/SurgicalHistoryRequest' },
               example: [
                 { organId: 2, surgeryTimeframe: 'THREE_MONTHS' },

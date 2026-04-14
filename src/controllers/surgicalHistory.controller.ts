@@ -4,6 +4,16 @@ import { prisma } from '../lib/prisma';
 import surgicalHistoryRepository from '../repositories/surgicalHistory.reposiory';
 import { surgicalHistoryUpsertItemSchema } from '../zod/surgicalHistory.zod';
 
+class SurgicalSyncError extends Error {
+  constructor(
+    public statusCode: number,
+    message: string
+  ) {
+    super(message);
+    this.name = 'SurgicalSyncError';
+  }
+}
+
 export const getSurgicalHistories = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const patientId = parseInt(req.params.patientId, 10);
@@ -15,8 +25,11 @@ export const getSurgicalHistories = async (req: Request, res: Response, next: Ne
 };
 
 /**
- * POST /patients/:patientId/surgeries — add and update surgical history.
- * Body: one object or array. Create: { organId, surgeryTimeframe }. Update: { id, organId?, surgeryTimeframe? }.
+ * POST /patients/:patientId/surgeries — **full sync** of surgical history.
+ * Body: one object, a non-empty array, or **`[]`** to clear all.
+ * After upserts, any existing row for this patient whose `id` was not kept is **deleted**.
+ * Create: `{ organId, surgeryTimeframe }`. Update: `{ id, organId?, surgeryTimeframe? }`.
+ * New entry without `id` but with an `organId` already on file updates that row’s timeframe.
  */
 export const addSurgicalHistory = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -31,69 +44,127 @@ export const addSurgicalHistory = async (req: Request, res: Response, next: Next
       return;
     }
 
-    if (validatedItems.length === 0) {
-      res.status(400).json({ error: 'At least one surgical history entry is required' });
-      return;
-    }
+    const { surgicalHistories, statusCode, deletedCount } = await prisma.$transaction(async (tx) => {
+      if (validatedItems.length === 0) {
+        const del = await tx.surgicalHistory.deleteMany({ where: { patientId } });
+        const list = await tx.surgicalHistory.findMany({
+          where: { patientId },
+          orderBy: { createdAt: 'desc' },
+          include: { organ: true },
+        });
+        return { surgicalHistories: list, statusCode: 200 as const, deletedCount: del.count };
+      }
 
-    const surgicalHistories = [];
+      const newEntries = validatedItems.filter((x) => x.id == null);
+      const newOrganIds = newEntries.map((x) => x.organId!);
+      if (new Set(newOrganIds).size !== newOrganIds.length) {
+        throw new SurgicalSyncError(400, 'Duplicate organId for new entries in the same request');
+      }
 
-    for (const v of validatedItems) {
-      if (v.organId != null) {
-        const organ = await prisma.organ.findUnique({ where: { id: v.organId } });
-        if (!organ) {
-          res.status(400).json({ error: `Organ with id ${v.organId} not found` });
-          return;
+      const processedIds = new Set<number>();
+      let anyUpdate = false;
+
+      for (const v of validatedItems) {
+        if (v.organId != null) {
+          const organ = await tx.organ.findUnique({ where: { id: v.organId } });
+          if (!organ) {
+            throw new SurgicalSyncError(400, `Organ with id ${v.organId} not found`);
+          }
+        }
+
+        if (v.id != null) {
+          const existing = await tx.surgicalHistory.findFirst({
+            where: { id: v.id, patientId },
+          });
+          if (!existing) {
+            throw new SurgicalSyncError(404, 'Surgical history not found for this patient');
+          }
+          anyUpdate = true;
+
+          if (v.organId !== undefined && v.organId !== existing.organId) {
+            const clash = await tx.surgicalHistory.findFirst({
+              where: { patientId, organId: v.organId, NOT: { id: v.id } },
+            });
+            if (clash) {
+              throw new SurgicalSyncError(
+                400,
+                'Another surgical history already uses this organ for this patient'
+              );
+            }
+          }
+
+          await tx.surgicalHistory.update({
+            where: { id: v.id },
+            data: {
+              ...(v.organId !== undefined ? { organId: v.organId } : {}),
+              ...(v.surgeryTimeframe !== undefined ? { surgeryTimeframe: v.surgeryTimeframe } : {}),
+            },
+          });
+          processedIds.add(v.id);
+        } else {
+          const existingByOrgan = await tx.surgicalHistory.findFirst({
+            where: { patientId, organId: v.organId! },
+          });
+          if (existingByOrgan) {
+            await tx.surgicalHistory.update({
+              where: { id: existingByOrgan.id },
+              data: { surgeryTimeframe: v.surgeryTimeframe! },
+            });
+            processedIds.add(existingByOrgan.id);
+            anyUpdate = true;
+          } else {
+            const created = await tx.surgicalHistory.create({
+              data: {
+                patientId,
+                organId: v.organId!,
+                surgeryTimeframe: v.surgeryTimeframe!,
+              },
+            });
+            processedIds.add(created.id);
+          }
         }
       }
 
-      if (v.id != null) {
-        const existing = await prisma.surgicalHistory.findFirst({
-          where: { id: v.id, patientId },
-        });
-        if (!existing) {
-          res.status(404).json({ error: 'Surgical history not found for this patient' });
-          return;
-        }
+      const delResult = await tx.surgicalHistory.deleteMany({
+        where: { patientId, id: { notIn: [...processedIds] } },
+      });
 
-        const updateData: { organId?: number; surgeryTimeframe?: (typeof v)['surgeryTimeframe'] } = {};
-        if (v.organId !== undefined) updateData.organId = v.organId;
-        if (v.surgeryTimeframe !== undefined) updateData.surgeryTimeframe = v.surgeryTimeframe;
+      const list = await tx.surgicalHistory.findMany({
+        where: { patientId },
+        orderBy: { createdAt: 'desc' },
+        include: { organ: true },
+      });
 
-        await surgicalHistoryRepository.updateSurgicalHistory(v.id, updateData);
-        const full = await prisma.surgicalHistory.findUnique({
-          where: { id: v.id },
-          include: { organ: true },
-        });
-        if (full) surgicalHistories.push(full);
-      } else {
-        const created = await prisma.surgicalHistory.create({
-          data: {
-            patientId,
-            organId: v.organId!,
-            surgeryTimeframe: v.surgeryTimeframe!,
-          },
-          include: { organ: true },
-        });
-        surgicalHistories.push(created);
-      }
-    }
+      const code = delResult.count > 0 || anyUpdate ? 200 : 201;
+      return {
+        surgicalHistories: list,
+        statusCode: code,
+        deletedCount: delResult.count,
+      };
+    });
 
-    const hasUpdate = validatedItems.some((x) => x.id != null);
-    const statusCode = hasUpdate ? 200 : 201;
+    const msg =
+      validatedItems.length === 0
+        ? 'All surgical history cleared'
+        : statusCode === 200
+          ? 'Surgical history synced successfully'
+          : surgicalHistories.length === 1
+            ? 'Surgical history added successfully'
+            : `${surgicalHistories.length} surgical history entries added successfully`;
 
     res.status(statusCode).json({
-      message: hasUpdate
-        ? 'Surgical history saved successfully'
-        : surgicalHistories.length === 1
-          ? 'Surgical history added successfully'
-          : `${surgicalHistories.length} surgical history entries added successfully`,
+      message: msg,
       count: surgicalHistories.length,
+      deletedCount,
       surgicalHistories,
     });
   } catch (error: unknown) {
     if (error instanceof z.ZodError) {
       res.status(400).json({ error: error.issues });
+      return;
+    }
+    if (error instanceof SurgicalSyncError) {
+      res.status(error.statusCode).json({ error: error.message });
       return;
     }
     const err = error as { code?: string };

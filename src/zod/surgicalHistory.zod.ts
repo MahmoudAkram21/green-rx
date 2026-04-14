@@ -6,7 +6,10 @@ export const updateSurgicalHistorySchema = z.object({
   surgeryTimeframe: z.nativeEnum(SurgeryTimeframe).optional(),
 });
 
-/** POST /patients/:patientId/surgeries — create without `id`, update with `id` + at least one field to change. */
+/**
+ * POST /patients/:patientId/surgeries — full sync payload item.
+ * Create: `organId` + `surgeryTimeframe` (no `id`). Update: `id` + at least one of `organId`, `surgeryTimeframe`.
+ */
 export const surgicalHistoryUpsertItemSchema = z
   .object({
     id: z.coerce.number().int().positive().optional(),
