@@ -1,11 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { prisma } from '../lib/prisma';
-import {
-    PatientSideEffectSeverity,
-    Prisma,
-    SideEffectCreatedBy,
-    SideEffectStatus,
-} from '../../generated/client/client';
+import { PatientSideEffectSeverity, Prisma, SideEffectStatus } from '../../generated/client/client';
 import { extractSideEffects, type ExtractedSideEffects } from '../services/sideEffectExtract.service';
 import { getPatientSideEffectsFallbackRedirectUrl } from './settings.controller';
 
@@ -59,6 +54,49 @@ function tradeNameAllowsSideEffectsDisclosure(tradeName: {
     }
     return tradeName.company.isActive && tradeName.company.deletedAt == null;
 }
+
+const patientMedicineForSideEffectInclude = {
+    tradeName: { include: { company: true } },
+} as const;
+
+type PatientMedicineForSideEffect = Prisma.PatientMedicineGetPayload<{
+    include: typeof patientMedicineForSideEffectInclude;
+}>;
+
+/**
+ * `medicationId` may be **PatientMedicine.id** or **TradeName.id** when exactly one profile row uses that trade name.
+ */
+async function resolvePatientMedicineForSideEffectReporting(
+    patientId: number,
+    medicationId: number
+): Promise<
+    | { ok: true; patientMedicine: PatientMedicineForSideEffect }
+    | { ok: false; reason: 'not_found' | 'ambiguous' }
+> {
+    const byId = await prisma.patientMedicine.findFirst({
+        where: { id: medicationId, patientId },
+        include: patientMedicineForSideEffectInclude,
+    });
+    if (byId) {
+        return { ok: true, patientMedicine: byId };
+    }
+
+    const byTrade = await prisma.patientMedicine.findMany({
+        where: { tradeNameId: medicationId, patientId },
+        include: patientMedicineForSideEffectInclude,
+        orderBy: { id: 'desc' },
+    });
+    if (byTrade.length === 0) {
+        return { ok: false, reason: 'not_found' };
+    }
+    if (byTrade.length > 1) {
+        return { ok: false, reason: 'ambiguous' };
+    }
+    return { ok: true, patientMedicine: byTrade[0] };
+}
+
+const ambiguousMedicationIdMessage =
+    'More than one medicine in your profile uses this trade name. Use medicationId = the PatientMedicine `id` from GET /patient-medicines/patient/{patientId} (not tradeNameId).';
 
 export const getSideEffectsByMedication = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -138,7 +176,6 @@ export const getSideEffectsByMedication = async (req: Request, res: Response, ne
         });
 
         const catalogRows = records.map((r) => ({
-            id: r.sideEffect.id as number,
             name: r.sideEffect.name,
             nameAr: r.sideEffect.nameAr,
             frequency: r.frequency,
@@ -147,7 +184,6 @@ export const getSideEffectsByMedication = async (req: Request, res: Response, ne
 
         const seenNames = new Set(catalogRows.map((s) => s.name.trim().toLowerCase()));
         const merged: Array<{
-            id: number | null;
             name: string;
             nameAr: string | null;
             frequency: string | null;
@@ -161,7 +197,6 @@ export const getSideEffectsByMedication = async (req: Request, res: Response, ne
                 if (seenNames.has(key)) continue;
                 seenNames.add(key);
                 merged.push({
-                    id: null,
                     name: row.name,
                     nameAr: null,
                     frequency: row.frequency,
@@ -247,15 +282,17 @@ export const addSideEffect = async (req: Request, res: Response, next: NextFunct
             return;
         }
 
-        const patientMedicine = await prisma.patientMedicine.findFirst({
-            where: { id: medicationId, patientId: patient.id },
-            include: { tradeName: { include: { company: true } } },
-        });
-
-        if (!patientMedicine) {
+        const resolved = await resolvePatientMedicineForSideEffectReporting(patient.id, medicationId);
+        if (!resolved.ok) {
+            if (resolved.reason === 'ambiguous') {
+                res.status(400).json({ error: 'AMBIGUOUS_MEDICATION_ID', message: ambiguousMedicationIdMessage });
+                return;
+            }
             res.status(404).json({ error: 'Medication not found or does not belong to you' });
             return;
         }
+        const patientMedicine = resolved.patientMedicine;
+        const patientMedicineId = patientMedicine.id;
 
         if (patientMedicine.tradeName && !patientMedicine.tradeName.company) {
             const redirect = await getPatientSideEffectsFallbackRedirectUrl();
@@ -268,39 +305,8 @@ export const addSideEffect = async (req: Request, res: Response, next: NextFunct
             return;
         }
 
-        const activeSubstanceId =
-            patientMedicine.activeSubstanceId ?? patientMedicine.tradeName?.activeSubstanceId;
-
         const trimmedName = name.trim();
-        let sideEffect = await prisma.sideEffect.findUnique({ where: { name: trimmedName } });
-
-        if (!sideEffect) {
-            sideEffect = await prisma.sideEffect.create({
-                data: {
-                    name: trimmedName,
-                    createdBy: SideEffectCreatedBy.Patient,
-                    status: SideEffectStatus.Pending,
-                    createdByUserId: req.user!.userId,
-                },
-            });
-        }
-
-        if (activeSubstanceId) {
-            await prisma.medicationSideEffect.upsert({
-                where: {
-                    activeSubstanceId_sideEffectId: {
-                        activeSubstanceId,
-                        sideEffectId: sideEffect.id,
-                    },
-                },
-                create: {
-                    activeSubstanceId,
-                    sideEffectId: sideEffect.id,
-                    frequency: 'Unknown',
-                },
-                update: {},
-            });
-        }
+        const reportKey = trimmedName.toLowerCase();
 
         const createSeverity = sevIn === undefined ? null : sevIn;
         const createNotes = notesIn === undefined ? null : notesIn;
@@ -317,16 +323,17 @@ export const addSideEffect = async (req: Request, res: Response, next: NextFunct
 
         const patientSideEffect = await prisma.patientSideEffect.upsert({
             where: {
-                patientId_patientMedicineId_sideEffectId: {
+                patientId_patientMedicineId_reportKey: {
                     patientId: patient.id,
-                    patientMedicineId: medicationId,
-                    sideEffectId: sideEffect.id,
+                    patientMedicineId: patientMedicineId,
+                    reportKey,
                 },
             },
             create: {
                 patientId: patient.id,
-                patientMedicineId: medicationId,
-                sideEffectId: sideEffect.id,
+                patientMedicineId: patientMedicineId,
+                reportedName: trimmedName,
+                reportKey,
                 severity: createSeverity,
                 notes: createNotes,
                 reportedAt: new Date(),
@@ -335,10 +342,10 @@ export const addSideEffect = async (req: Request, res: Response, next: NextFunct
         });
 
         res.status(201).json({
-            message: 'Side effect created and linked to medication. Pending admin approval to appear in the app.',
-            sideEffect,
+            message: 'Side effect reported for this medication.',
             patientSideEffect: {
                 id: patientSideEffect.id,
+                name: patientSideEffect.reportedName,
                 severity: patientSideEffect.severity,
                 notes: patientSideEffect.notes,
                 reportedAt: patientSideEffect.reportedAt,
@@ -349,55 +356,12 @@ export const addSideEffect = async (req: Request, res: Response, next: NextFunct
     }
 };
 
-type NormalizedReportItem = {
-    sideEffectId: number;
+type ParsedReportNameItem = {
+    reportedName: string;
+    reportKey: string;
     severity: PatientSideEffectSeverity | null;
     notes: string | null;
 };
-
-type ParsedReportInputItem =
-    | { kind: 'id'; sideEffectId: number; severity: PatientSideEffectSeverity | null; notes: string | null }
-    | { kind: 'name'; name: string; severity: PatientSideEffectSeverity | null; notes: string | null };
-
-/** Find or create catalog row by name and link to active substance (same idea as POST /side-effects/add). */
-async function resolveSideEffectIdFromReportName(
-    name: string,
-    activeSubstanceId: number | null,
-    userId: number
-): Promise<number> {
-    const trimmedName = name.trim();
-    let sideEffect = await prisma.sideEffect.findUnique({ where: { name: trimmedName } });
-
-    if (!sideEffect) {
-        sideEffect = await prisma.sideEffect.create({
-            data: {
-                name: trimmedName,
-                createdBy: SideEffectCreatedBy.Patient,
-                status: SideEffectStatus.Pending,
-                createdByUserId: userId,
-            },
-        });
-    }
-
-    if (activeSubstanceId) {
-        await prisma.medicationSideEffect.upsert({
-            where: {
-                activeSubstanceId_sideEffectId: {
-                    activeSubstanceId,
-                    sideEffectId: sideEffect.id,
-                },
-            },
-            create: {
-                activeSubstanceId,
-                sideEffectId: sideEffect.id,
-                frequency: 'Unknown',
-            },
-            update: {},
-        });
-    }
-
-    return sideEffect.id;
-}
 
 function parseSeverityAndNotes(o: Record<string, unknown>):
     | { severity: PatientSideEffectSeverity | null; notes: string | null }
@@ -429,55 +393,46 @@ function parseSeverityAndNotes(o: Record<string, unknown>):
     return { severity, notes };
 }
 
-/**
- * Each item: either { sideEffectId } (approved catalog id) or { name } (e.g. from GET /medicines/:id/side-effects
- * extracted strings — no id). Exactly one of sideEffectId or name per object.
- */
-function parseReportSideEffectInput(raw: unknown[]): ParsedReportInputItem[] | { error: string; message: string } {
-    const items: ParsedReportInputItem[] = [];
-    const seenIds = new Set<number>();
-    const seenNames = new Set<string>();
+/** Each item: { name, severity?, notes? } only (no sideEffectId). */
+function parseReportSideEffectInput(raw: unknown[]): ParsedReportNameItem[] | { error: string; message: string } {
+    const items: ParsedReportNameItem[] = [];
+    const seenKeys = new Set<string>();
 
     for (const el of raw) {
         if (el === null || typeof el !== 'object' || Array.isArray(el)) {
             return {
                 error: 'INVALID_SIDE_EFFECT_FORMAT',
                 message:
-                    'Each item must be an object: { sideEffectId, severity?, notes? } for catalog entries, or { name, severity?, notes? } when there is no id (e.g. extracted from medicine data)',
+                    'Each item must be an object: { name, severity?, notes? } (e.g. names from GET /side-effects/by-medication or GET /medicines/:tradeNameId/side-effects)',
             };
         }
 
         const o = el as Record<string, unknown>;
+        if (o.sideEffectId !== undefined && o.sideEffectId !== null) {
+            return {
+                error: 'INVALID_SIDE_EFFECT_FORMAT',
+                message: 'sideEffectId is not supported; use { name, severity?, notes? } only',
+            };
+        }
+
         const sn = parseSeverityAndNotes(o);
         if ('error' in sn) {
             return sn;
         }
         const { severity, notes } = sn;
 
-        const hasId =
-            typeof o.sideEffectId === 'number' && Number.isInteger(o.sideEffectId) && (o.sideEffectId as number) >= 1;
         const nameRaw = typeof o.name === 'string' ? o.name.trim() : '';
-        const hasName = nameRaw.length > 0;
-
-        if (hasId === hasName) {
+        if (!nameRaw) {
             return {
                 error: 'INVALID_SIDE_EFFECT_FORMAT',
-                message:
-                    'Each item must include exactly one of: sideEffectId (positive integer) or name (non-empty string)',
+                message: 'Each item must include name (non-empty string)',
             };
         }
 
-        if (hasId) {
-            const sideEffectId = o.sideEffectId as number;
-            if (seenIds.has(sideEffectId)) continue;
-            seenIds.add(sideEffectId);
-            items.push({ kind: 'id', sideEffectId, severity, notes });
-        } else {
-            const key = nameRaw.toLowerCase();
-            if (seenNames.has(key)) continue;
-            seenNames.add(key);
-            items.push({ kind: 'name', name: nameRaw, severity, notes });
-        }
+        const reportKey = nameRaw.toLowerCase();
+        if (seenKeys.has(reportKey)) continue;
+        seenKeys.add(reportKey);
+        items.push({ reportedName: nameRaw, reportKey, severity, notes });
     }
 
     if (items.length === 0) {
@@ -487,11 +442,10 @@ function parseReportSideEffectInput(raw: unknown[]): ParsedReportInputItem[] | {
     return items;
 }
 
-/** POST /my-side-effects — report approved side effects for a medicine (optional severity & notes per item). */
+/** POST /my-side-effects — report side effects by name (optional severity & notes per item). */
 export const reportSideEffects = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { medicationId, sideEffects } = req.body;
-        const userId = req.user!.userId;
 
         if (!medicationId || typeof medicationId !== 'number') {
             res.status(400).json({
@@ -505,8 +459,7 @@ export const reportSideEffects = async (req: Request, res: Response, next: NextF
             res.status(400).json({
                 success: false,
                 error: 'INVALID_SIDE_EFFECTS',
-                message:
-                    'sideEffects must be a non-empty array of { sideEffectId, severity?, notes? } and/or { name, severity?, notes? }',
+                message: 'sideEffects must be a non-empty array of { name, severity?, notes? }',
             });
             return;
         }
@@ -517,7 +470,7 @@ export const reportSideEffects = async (req: Request, res: Response, next: NextF
             return;
         }
 
-        const patient = await prisma.patient.findUnique({ where: { userId } });
+        const patient = await prisma.patient.findUnique({ where: { userId: req.user!.userId } });
         if (!patient) {
             res.status(404).json({
                 success: false,
@@ -527,11 +480,16 @@ export const reportSideEffects = async (req: Request, res: Response, next: NextF
             return;
         }
 
-        const patientMedicine = await prisma.patientMedicine.findFirst({
-            where: { id: medicationId, patientId: patient.id },
-            include: { tradeName: { include: { company: true } } },
-        });
-        if (!patientMedicine) {
+        const resolved = await resolvePatientMedicineForSideEffectReporting(patient.id, medicationId);
+        if (!resolved.ok) {
+            if (resolved.reason === 'ambiguous') {
+                res.status(400).json({
+                    success: false,
+                    error: 'AMBIGUOUS_MEDICATION_ID',
+                    message: ambiguousMedicationIdMessage,
+                });
+                return;
+            }
             res.status(403).json({
                 success: false,
                 error: 'MEDICINE_NOT_IN_PROFILE',
@@ -539,6 +497,8 @@ export const reportSideEffects = async (req: Request, res: Response, next: NextF
             });
             return;
         }
+        const patientMedicine = resolved.patientMedicine;
+        const patientMedicineId = patientMedicine.id;
 
         if (patientMedicine.tradeName && !patientMedicine.tradeName.company) {
             const redirect = await getPatientSideEffectsFallbackRedirectUrl();
@@ -552,97 +512,40 @@ export const reportSideEffects = async (req: Request, res: Response, next: NextF
             return;
         }
 
-        const activeSubstanceId =
-            patientMedicine.activeSubstanceId ?? patientMedicine.tradeName?.activeSubstanceId ?? null;
-
-        type Row = NormalizedReportItem & { mustBeApproved: boolean };
-        const resolvedRows: Row[] = [];
-        for (const item of parsedInput) {
-            if (item.kind === 'id') {
-                resolvedRows.push({
-                    sideEffectId: item.sideEffectId,
-                    severity: item.severity,
-                    notes: item.notes,
-                    mustBeApproved: true,
-                });
-            } else {
-                const sideEffectId = await resolveSideEffectIdFromReportName(
-                    item.name,
-                    activeSubstanceId,
-                    userId
-                );
-                resolvedRows.push({
-                    sideEffectId,
-                    severity: item.severity,
-                    notes: item.notes,
-                    mustBeApproved: false,
-                });
-            }
-        }
-
-        const deduped = new Map<number, Row>();
-        for (const row of resolvedRows) {
-            if (!deduped.has(row.sideEffectId)) {
-                deduped.set(row.sideEffectId, row);
-            }
-        }
-        const finalRows = [...deduped.values()];
-
-        const explicitIds = finalRows.filter((r) => r.mustBeApproved).map((r) => r.sideEffectId);
-        if (explicitIds.length > 0) {
-            const existingSideEffects = await prisma.sideEffect.findMany({
-                where: { id: { in: explicitIds }, status: SideEffectStatus.Approved },
-            });
-            if (existingSideEffects.length !== explicitIds.length) {
-                const found = new Set(existingSideEffects.map((s) => s.id));
-                const missing = explicitIds.filter((id: number) => !found.has(id));
-                res.status(400).json({
-                    success: false,
-                    error: 'SIDE_EFFECTS_NOT_FOUND',
-                    message: 'Some side effect IDs do not exist or are not approved yet',
-                    missing,
-                });
-                return;
-            }
-        }
-
-        const sideEffectIds = finalRows.map((i) => i.sideEffectId);
+        const reportKeys = parsedInput.map((i) => i.reportKey);
         const existingSubmissions = await prisma.patientSideEffect.findMany({
             where: {
                 patientId: patient.id,
-                patientMedicineId: medicationId,
-                sideEffectId: { in: sideEffectIds },
+                patientMedicineId: patientMedicineId,
+                reportKey: { in: reportKeys },
             },
         });
 
         if (existingSubmissions.length > 0) {
-            const duplicateIds = existingSubmissions.map((s) => s.sideEffectId);
+            const duplicates = existingSubmissions.map((s) => s.reportKey);
             res.status(409).json({
                 success: false,
                 error: 'DUPLICATE_SUBMISSION',
-                message: `${duplicateIds.length} of these side effects were already reported`,
-                duplicates: duplicateIds,
+                message: `${duplicates.length} of these side effects were already reported`,
+                duplicates,
             });
             return;
         }
 
-        const normalized: NormalizedReportItem[] = finalRows.map(
-            ({ sideEffectId, severity, notes }) => ({ sideEffectId, severity, notes })
-        );
-        const byId = new Map(normalized.map((i) => [i.sideEffectId, i]));
+        const byKey = new Map(parsedInput.map((i) => [i.reportKey, i]));
         const results = await Promise.all(
-            sideEffectIds.map((sideEffectId: number) => {
-                const item = byId.get(sideEffectId)!;
+            reportKeys.map((reportKey) => {
+                const item = byKey.get(reportKey)!;
                 return prisma.patientSideEffect.create({
                     data: {
                         patientId: patient.id,
-                        patientMedicineId: medicationId,
-                        sideEffectId,
+                        patientMedicineId: patientMedicineId,
+                        reportedName: item.reportedName,
+                        reportKey: item.reportKey,
                         severity: item.severity,
                         notes: item.notes,
                         reportedAt: new Date(),
                     },
-                    include: { sideEffect: true },
                 });
             })
         );
@@ -654,7 +557,7 @@ export const reportSideEffects = async (req: Request, res: Response, next: NextF
             reportedCount: results.length,
             sideEffects: results.map((r) => ({
                 id: r.id,
-                name: r.sideEffect.name,
+                name: r.reportedName,
                 severity: r.severity,
                 notes: r.notes,
             })),
@@ -677,7 +580,6 @@ export const getMySideEffects = async (req: Request, res: Response, next: NextFu
         const records = await prisma.patientSideEffect.findMany({
             where: { patientId: patient.id },
             include: {
-                sideEffect: true,
                 patientMedicine: {
                     select: { id: true, medicineName: true, tradeNameId: true },
                 },
@@ -688,7 +590,7 @@ export const getMySideEffects = async (req: Request, res: Response, next: NextFu
         res.json({
             sideEffects: records.map((r) => ({
                 id: r.id,
-                sideEffect: { id: r.sideEffect.id, name: r.sideEffect.name, nameAr: r.sideEffect.nameAr },
+                name: r.reportedName,
                 medication: r.patientMedicine,
                 severity: r.severity,
                 notes: r.notes,
@@ -715,16 +617,25 @@ export const getMySideEffectsByMedication = async (req: Request, res: Response, 
             return;
         }
 
+        const resolved = await resolvePatientMedicineForSideEffectReporting(patient.id, medicationId);
+        if (!resolved.ok) {
+            if (resolved.reason === 'ambiguous') {
+                res.status(400).json({ error: 'AMBIGUOUS_MEDICATION_ID', message: ambiguousMedicationIdMessage });
+                return;
+            }
+            res.status(404).json({ error: 'Medication not found or does not belong to you' });
+            return;
+        }
+
         const records = await prisma.patientSideEffect.findMany({
-            where: { patientId: patient.id, patientMedicineId: medicationId },
-            include: { sideEffect: true },
+            where: { patientId: patient.id, patientMedicineId: resolved.patientMedicine.id },
             orderBy: { reportedAt: 'desc' },
         });
 
         res.json({
             sideEffects: records.map((r) => ({
                 id: r.id,
-                sideEffect: { id: r.sideEffect.id, name: r.sideEffect.name, nameAr: r.sideEffect.nameAr },
+                name: r.reportedName,
                 severity: r.severity,
                 notes: r.notes,
                 reportedAt: r.reportedAt,

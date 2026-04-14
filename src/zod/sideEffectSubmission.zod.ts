@@ -13,25 +13,12 @@ const optionalNotes = z
   .optional()
   .nullable();
 
-/**
- * POST /my-side-effects item: exactly one of sideEffectId (approved catalog) or name
- * (e.g. from extracted medicine side effects with no id).
- */
-export const submitSideEffectItemSchema = z
-  .object({
-    sideEffectId: z.number().int().positive().optional(),
-    name: z.string().min(1).max(200).optional(),
-    severity: optionalSeverity,
-    notes: optionalNotes,
-  })
-  .refine(
-    (d) => {
-      const hasId = d.sideEffectId !== undefined && d.sideEffectId !== null;
-      const hasName = d.name !== undefined && String(d.name).trim().length > 0;
-      return hasId !== hasName;
-    },
-    { message: 'Provide exactly one of sideEffectId or name' }
-  );
+/** POST /my-side-effects item: name only (e.g. from GET by-medication or medicine extract). */
+export const submitSideEffectItemSchema = z.object({
+  name: z.string().min(1).max(200),
+  severity: optionalSeverity,
+  notes: optionalNotes,
+});
 
 // Batch submission (patient selects multiple side effects at once)
 export const submitBatchSideEffectsSchema = z.object({
