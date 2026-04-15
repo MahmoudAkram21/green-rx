@@ -56,8 +56,11 @@ export const redeemShareToken = async (req: Request, res: Response, next: NextFu
         const userId = req.user!.userId;
 
         const doctor = await prisma.doctor.findUnique({ where: { userId } });
-        if (!doctor) {
-            res.status(404).json({ error: 'Doctor profile not found' });
+
+        const pharmacist = await prisma.pharmacist.findUnique({ where: { userId } });
+
+        if (!doctor && !pharmacist) {
+            res.status(404).json({ error: 'Doctor or pharmacist profile not found' });
             return;
         }
 
@@ -77,6 +80,9 @@ export const redeemShareToken = async (req: Request, res: Response, next: NextFu
             res.status(410).json({ error: 'Token has expired' });
             return;
         }
+
+
+        if(doctor){
 
         const existingRelation = await prisma.patientDoctor.findUnique({
             where: {
@@ -141,23 +147,51 @@ export const redeemShareToken = async (req: Request, res: Response, next: NextFu
                 },
             });
         }
+        
+                res.status(201).json({
+                    message: 'Patient linked to doctor successfully',
+                    relationship: patientDoctor,
+                    patient: patient
+                        ? {
+                              id: patient.id,
+                              name: patient.user.name,
+                              email: patient.user.email,
+                              age: patient.age,
+                              gender: patient.gender,
+                              bloodType: patient.bloodType,
+                              diseases: patient.patientDiseases,
+                              allergies: patient.allergyReports,
+                          }
+                        : null,
+                });
+        }
 
-        res.status(201).json({
-            message: 'Patient linked to doctor successfully',
-            relationship: patientDoctor,
-            patient: patient
-                ? {
-                      id: patient.id,
-                      name: patient.user.name,
-                      email: patient.user.email,
-                      age: patient.age,
-                      gender: patient.gender,
-                      bloodType: patient.bloodType,
-                      diseases: patient.patientDiseases,
-                      allergies: patient.allergyReports,
-                  }
-                : null,
-        });
+
+
+        if(pharmacist){
+
+
+
+            const [patientResult , ] = await prisma.$transaction([
+prisma.patient.findUnique({
+                where: { id: shareToken.patientId },
+                include: {
+                    user: { select: { id: true, name: true, email: true } },
+                    patientDiseases: { include: { disease: true } },
+                    allergyReports: true,
+                },
+            }),
+             prisma.patientShareToken.update({
+                where: { id: shareToken.id },
+                data: { used: true, usedAt: new Date(), usedByPharmacistId: pharmacist.id },
+            }),
+            ])
+
+
+            res.status(200).json({
+                message: 'Token redeemed successfully', patientResult
+        })
+    }
     } catch (error) {
         next(error);
     }
