@@ -16,7 +16,7 @@ router.use(authenticate);
 
 // Pharmacist Profile
 router.post('/', authorize([UserRole.Pharmacist, UserRole.Admin]), createOrUpdatePharmacist);
-router.post("/patients/:patientId", getMyFullDetailsForPharmacist)
+router.post("/patients/:patientId" , authorize([UserRole.Pharmacist]), getMyFullDetailsForPharmacist)
 router.get('/search', getAllPharmacists);
 router.get('/:id', getPharmacistById);
 router.get('/user/:userId', getPharmacistByUserId);
