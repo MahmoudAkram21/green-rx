@@ -1,7 +1,7 @@
 import nodemailer from "nodemailer";
 import mailRepository from "../repositories/mail.repository";
 import { prisma } from "../lib/prisma";
-import crypto from "crypto";
+// import crypto from "crypto";
 
 let transporter: nodemailer.Transporter | null = null;
 
