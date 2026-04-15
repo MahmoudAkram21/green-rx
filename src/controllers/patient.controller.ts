@@ -930,6 +930,37 @@ export const getMyFullDetails = async (
     }
 };
 
+
+export const getMyFullDetailsForPharmacist = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+) => {
+    try {
+        const userId = req.user?.userId;
+
+        const patientId = req.params?.patientId;
+        if (!userId) {
+            res.status(401).json({ error: "Unauthorized" });
+            return;
+        }
+
+        const patient = await prisma.patient.findUnique({
+            where: {  id: Number(patientId) },
+            include: patientFullDetailsInclude,
+        });
+
+        if (!patient) {
+            res.status(404).json({ error: "Patient not found" });
+            return;
+        }
+
+        const payload = mapPatientToFullDetailsPayload(patient);
+        res.json(payload);
+    } catch (error) {
+        next(error);
+    }
+};
 /** Shared result type for aggregated patient warnings (used by GET /patients/:patientId/warnings and GET /doctors/:doctorId/patients/warnings). */
 export type PatientWarningsPayload = {
     warnings: Array<{

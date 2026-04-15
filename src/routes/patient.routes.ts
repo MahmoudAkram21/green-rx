@@ -64,7 +64,7 @@ router.param('patientId', (req, res, next) => {
 // Patient Profile
 router.get('/', authorize([UserRole.Admin, UserRole.SuperAdmin]), getAllPatients);
 router.post('/', authorize([UserRole.Patient, UserRole.Admin, UserRole.SuperAdmin]), createOrUpdatePatient);
-router.get('/me/full', authorize([UserRole.Patient , UserRole.Pharmacist]), getMyFullDetails);
+router.get('/me/full', authorize([UserRole.Patient ]), getMyFullDetails);
 router.get('/:id', getPatientById);
 router.get('/user/:userId', getPatientByUserId);
 
