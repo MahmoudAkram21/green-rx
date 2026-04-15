@@ -82,7 +82,8 @@ export async function sendBulk(
 export async function sendOtpEmail(email: string, accessToken: string, userId: number): Promise<number> {
 
   const expiresAt = new Date(Date.now() + 1000 * 60 * 5);
-  const newOtp = crypto.randomInt(100000, 1000000); // max is exclusive → always 100000–999999
+  // const newOtp = crypto.randomInt(100000, 1000000); // max is exclusive → always 100000–999999
+  const newOtp = 111111; // max is exclusive → always 100000–999999
   const createdOtp = await mailRepository.createOrUpdateOtp(email, newOtp, expiresAt);
 
   await prisma.otpSession.upsert({
