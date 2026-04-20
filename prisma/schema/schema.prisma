@@ -67,12 +67,6 @@ enum SubscriptionStatus {
   Suspended
 }
 
-enum MedicineAvailabilityStatus {
-  InStock
-  OutOfStock
-  Discontinued
-}
-
 enum InteractionSeverity {
   Minor
   Moderate
@@ -93,18 +87,9 @@ enum RelationshipType {
   Consultant
 }
 
-enum AppointmentStatus {
-  Scheduled
-  Confirmed
-  Completed
-  Cancelled
-  NoShow
-}
-
 enum NotificationType {
   PrescriptionReady
   DrugInteraction
-  AppointmentReminder
   SystemAlert
   MedicineReminder
 }
@@ -330,8 +315,6 @@ model Patient {
   surgicalHistories       SurgicalHistory[]
   patientLifestyles       PatientLifestyle[]
   patientDoctors          PatientDoctor[]
-  consultations           Consultation[]
-  appointments            Appointment[]
   medicalReports          MedicalReport[]
   shareLinks              PatientShareLink[]
   shareTokens             PatientShareToken[]
@@ -416,17 +399,53 @@ model Organ {
   description String?
 
   surgicalHistories SurgicalHistory[]
+  warningFieldMappings OrganWarningFieldMapping[]
 
   @@map("organs")
 }
 
 // Lifestyle catalog (admin CRUD). Each row = one lifestyle question + ActiveSubstance field to check for drug warnings.
+enum ActiveSubstanceLifestyleField {
+  interactionVitaminsFood
+  interactionBisphosphonates
+  interactionAlcohol
+  interactionMuscleRelaxant
+  interactionRetinoids
+  interactionCorticosteroids
+  interactionXanthines
+  interactionSympathomimetics
+  interactionAnticholinergic
+  interactionChemotherapy
+  interactionAntibiotics
+  interactionHormones
+  interactionStatins
+  interactionAntihypertensive
+  interactionAntidiuretics
+  interactionAntidepressant
+  interactionAntidiabetic
+  interactionLowBloodSugarAgents
+  interactionDigoxin
+  interactionAnticoagulant
+  interactionNSAIDs
+  interactionImmunosuppressive
+  interactionAntacids
+  interactionUricosurics
+  interactionProtectants
+  interactionAntiParkinson
+  interactionHIVProtease
+  ironChelator
+  interactionBloodProduct
+  interactionVaccines
+  interactionAnthelmintics
+  interactionPDE5Inhibitors
+}
+
 model Lifestyle {
-  id                   Int      @id @default(autoincrement())
+  id                   Int                         @id @default(autoincrement())
   question             String // e.g. "Alcohol use"
-  activeSubstanceField String // field name on ActiveSubstance to check (validated via backend/src/enums/activeSubstanceLifestyleField.ts)
-  createdAt            DateTime @default(now())
-  updatedAt            DateTime @updatedAt
+  activeSubstanceField ActiveSubstanceLifestyleField
+  createdAt            DateTime                    @default(now())
+  updatedAt            DateTime                    @updatedAt
 
   patientLifestyles PatientLifestyle[]
 
@@ -485,8 +504,6 @@ model Doctor {
   user                User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
   prescriptions       Prescription[]
   patientDoctors      PatientDoctor[]
-  consultations       Consultation[]
-  appointments        Appointment[]
   ratings             Rating[]
   visits              Visit[]
   patientShareLinks   PatientShareLink[]
@@ -535,52 +552,6 @@ model PatientDoctor {
   @@index([isActive])
   @@map("patient_doctors")
 }
-
-model Consultation {
-  id               Int       @id @default(autoincrement())
-  patientId        Int
-  doctorId         Int
-  consultationDate DateTime
-  notes            String?
-  diagnosis        String?
-  followUpRequired Boolean   @default(false)
-  followUpDate     DateTime?
-  createdAt        DateTime  @default(now())
-  updatedAt        DateTime  @updatedAt
-
-  // Relations
-  patient Patient @relation(fields: [patientId], references: [id], onDelete: Cascade)
-  doctor  Doctor  @relation(fields: [doctorId], references: [id], onDelete: Cascade)
-
-  @@index([patientId])
-  @@index([doctorId])
-  @@index([consultationDate])
-  @@map("consultations")
-}
-
-model Appointment {
-  id              Int               @id @default(autoincrement())
-  patientId       Int
-  doctorId        Int
-  appointmentDate DateTime
-  duration        Int // in minutes
-  status          AppointmentStatus @default(Scheduled)
-  notes           String?
-  reminderSent    Boolean           @default(false)
-  createdAt       DateTime          @default(now())
-  updatedAt       DateTime          @updatedAt
-
-  // Relations
-  patient Patient @relation(fields: [patientId], references: [id], onDelete: Cascade)
-  doctor  Doctor  @relation(fields: [doctorId], references: [id], onDelete: Cascade)
-
-  @@index([patientId])
-  @@index([doctorId])
-  @@index([appointmentDate])
-  @@index([status])
-  @@map("appointments")
-}
-
 
 model MedicineAlternative {
   id                           Int      @id @default(autoincrement())

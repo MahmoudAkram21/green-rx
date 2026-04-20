@@ -5,7 +5,6 @@ export const notificationSchema = z.object({
   type: z.enum([
     "PrescriptionReady",
     "DrugInteraction",
-    "AppointmentReminder",
     "SystemAlert",
     "MedicineReminder",
   ]),

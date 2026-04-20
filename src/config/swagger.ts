@@ -1,4 +1,5 @@
 import path from 'path';
+import { ActiveSubstanceLifestyleField } from '../../generated/client/client';
 
 type SwaggerJSDoc = (options: unknown) => unknown;
 const swaggerJSDoc = require('swagger-jsdoc') as SwaggerJSDoc;
@@ -10,6 +11,8 @@ type Method = 'get' | 'post' | 'put' | 'patch' | 'delete';
 
 const bearerSecurity = [{ bearerAuth: [] }];
 const paths: Record<string, any> = {};
+
+const ACTIVE_SUBSTANCE_LIFESTYLE_FIELD_OPENAPI_ENUM = Object.values(ActiveSubstanceLifestyleField) as string[];
 
 /** Integer path param */
 const p = (name: string, type: 'integer' | 'string' = 'integer') =>
@@ -35,7 +38,7 @@ const PATIENT_TAGS = {
   MEDICATIONS: 'Patient - 8. My medications',
   SHARE_WITH_DOCTOR: 'Patient - 9. Share profile with doctor',
   PRESCRIPTIONS: 'Patient - 10. Prescriptions',
-  CONSULTATIONS_VISITS: 'Patient - 11. Consultations & visits',
+  CONSULTATIONS_VISITS: 'Patient - 11. Visits & medical reports',
   SHARE_LINKS: 'Patient - 12. Share links',
   DRUG_SAFETY: 'Patient - 13. Drug interactions & ADR',
   RATINGS: 'Patient - 14. Ratings',
@@ -48,7 +51,7 @@ const DOCTOR_TAGS = {
   AUTH: 'Doctor - 1. Auth',
   MY_PATIENTS: 'Doctor - 2. My patients',
   PRESCRIPTIONS: 'Doctor - 3. Prescriptions',
-  CONSULTATIONS_VISITS: 'Doctor - 4. Consultations & visits',
+  CONSULTATIONS_VISITS: 'Doctor - 4. Visits & medical reports',
   MEDICAL_REPORTS: 'Doctor - 5. Medical reports',
   DRUG_SAFETY: 'Doctor - 6. Drug interactions & medicine suggestions',
   RATINGS: 'Doctor - 7. Ratings',
@@ -181,6 +184,13 @@ s('/patients/lifestyle/{patientLifestyleId}', 'delete', PATIENT_TAGS.LIFESTYLE, 
 
 // LIFESTYLES (catalog — Admin CRUD; patients use GET for lifestyle questions and POST .../lifestyle to submit answers)
 s('/lifestyles', 'get', [PATIENT_TAGS.LIFESTYLE, ADMIN_TAG], 'List all lifestyle questions (for patient form and admin)', true);
+s(
+  '/lifestyles/active-substance-field-options',
+  'get',
+  [PATIENT_TAGS.LIFESTYLE, ADMIN_TAG],
+  'List allowed `activeSubstanceField` enum values (ActiveSubstance columns) for lifestyle catalog admin UI',
+  true,
+);
 s('/lifestyles/{id}', 'get', [PATIENT_TAGS.LIFESTYLE, ADMIN_TAG], 'Get lifestyle by ID', true, [p('id')]);
 s('/lifestyles', 'post', ADMIN_TAG, 'Create a lifestyle question (Admin)', true, [], { schemaRef: 'CreateLifestyleRequest' }, { '200': 'Success', '201': 'Created' });
 s('/lifestyles/{id}', 'put', ADMIN_TAG, 'Update a lifestyle question (Admin)', true, [p('id')], { schemaRef: 'UpdateLifestyleRequest' });
@@ -204,7 +214,7 @@ s('/patients/{patientId}/warnings', 'get', [WARNING_SYSTEM_SECTION, PATIENT_TAGS
 // DOCTORS
 s('/doctors', 'post', [DOCTOR_TAGS.MY_PATIENTS, DOCTOR_PATIENTS_SECTION], 'Create or update doctor profile', true, [], { schemaRef: 'CreateDoctorRequest' });
 s('/doctors/search', 'get', [PATIENT_TAGS.SHARE_WITH_DOCTOR, DOCTOR_TAGS.MY_PATIENTS], 'Search / list all doctors', true, [q('q', 'Search query')]);
-s('/doctors/me/stats', 'get', [DOCTOR_TAGS.MY_PATIENTS, DOCTOR_PATIENTS_SECTION], 'Get statistics for the current doctor (total patients, prescriptions, consultations, appointments, visits, ratings, clinics; averageRating). Requires Bearer token (Doctor).', true);
+s('/doctors/me/stats', 'get', [DOCTOR_TAGS.MY_PATIENTS, DOCTOR_PATIENTS_SECTION], 'Get statistics for the current doctor (total patients, prescriptions, visits, ratings, clinics; averageRating). Requires Bearer token (Doctor).', true);
 s('/doctors/me', 'get', [DOCTOR_TAGS.MY_PATIENTS, DOCTOR_PATIENTS_SECTION], 'Get current doctor profile (mobile: use Bearer token; no path params)', true);
 s('/doctors/me', 'patch', [DOCTOR_TAGS.MY_PATIENTS, DOCTOR_PATIENTS_SECTION], 'Update current doctor profile (mobile: use Bearer token). Body: optional name, specialization, licenseNumber, clinicAddress, phoneNumber, yearsOfExperience, qualifications, consultationFee; optional clinics array to replace all doctor clinics (each item: name?, address?, city?, latitude?, longitude?, workingHours?).', true, [], { schemaRef: 'UpdateDoctorMeRequest' });
 s('/doctors/nearby', 'get', [PATIENT_TAGS.SHARE_WITH_DOCTOR, DOCTOR_TAGS.MY_PATIENTS], 'Get doctors within admin-configured radius (km) of patient location. Uses Doctor-level lat/lng and DoctorClinic locations (nearest clinic used). Query: lat, lng. Returns verified doctors sorted by distance with distanceKm.', true, [
@@ -318,26 +328,6 @@ s('/prescription-versions/prescription/{prescriptionId}', 'post', [DOCTOR_TAGS.P
 s('/prescription-versions/prescription/{prescriptionId}/compare', 'get', [PATIENT_TAGS.PRESCRIPTIONS, DOCTOR_TAGS.PRESCRIPTIONS, DOCTOR_PATIENTS_SECTION], 'Compare two prescription versions', true, [p('prescriptionId'), q('version1'), q('version2')]);
 s('/prescription-versions/{id}', 'get', [PATIENT_TAGS.PRESCRIPTIONS, DOCTOR_TAGS.PRESCRIPTIONS, DOCTOR_PATIENTS_SECTION], 'Get a specific prescription version', true, [p('id')]);
 
-// APPOINTMENTS
-s('/appointments', 'post', [PATIENT_TAGS.CONSULTATIONS_VISITS, DOCTOR_TAGS.CONSULTATIONS_VISITS, DOCTOR_PATIENTS_SECTION], 'Create an appointment. Requires Doctor or Patient role.', true, [], { schemaRef: 'CreateAppointmentRequest' });
-s('/appointments/patient/{patientId}', 'get', [PATIENT_TAGS.CONSULTATIONS_VISITS, DOCTOR_PATIENTS_SECTION], 'Get all appointments for a patient. Requires Doctor, Patient, or Admin role.', true, [p('patientId')]);
-s('/appointments/doctor/{doctorId}/today', 'get', [DOCTOR_TAGS.CONSULTATIONS_VISITS, DOCTOR_PATIENTS_SECTION], "Get today's appointments for a doctor. Requires Doctor or Admin role.", true, [p('doctorId')]);
-s('/appointments/doctor/{doctorId}', 'get', [DOCTOR_TAGS.CONSULTATIONS_VISITS, DOCTOR_PATIENTS_SECTION], 'Get all appointments for a doctor. Requires Doctor or Admin role.', true, [p('doctorId')]);
-s('/appointments/{id}', 'get', [PATIENT_TAGS.CONSULTATIONS_VISITS, DOCTOR_TAGS.CONSULTATIONS_VISITS, DOCTOR_PATIENTS_SECTION], 'Get appointment by ID. Requires Doctor, Patient, or Admin role.', true, [p('id')]);
-s('/appointments/{id}', 'put', [PATIENT_TAGS.CONSULTATIONS_VISITS, DOCTOR_TAGS.CONSULTATIONS_VISITS, DOCTOR_PATIENTS_SECTION], 'Update an appointment. Requires Doctor, Patient, or Admin role.', true, [p('id')], { schemaRef: 'UpdateAppointmentRequest' });
-s('/appointments/{id}/cancel', 'post', [PATIENT_TAGS.CONSULTATIONS_VISITS, DOCTOR_TAGS.CONSULTATIONS_VISITS, DOCTOR_PATIENTS_SECTION], 'Cancel an appointment. Requires Doctor, Patient, or Admin role.', true, [p('id')]);
-s('/appointments/{id}/confirm', 'post', [DOCTOR_TAGS.CONSULTATIONS_VISITS, DOCTOR_PATIENTS_SECTION], 'Confirm an appointment. Doctor only.', true, [p('id')]);
-s('/appointments/{id}/complete', 'post', [DOCTOR_TAGS.CONSULTATIONS_VISITS, DOCTOR_PATIENTS_SECTION], 'Mark appointment as completed. Doctor only.', true, [p('id')]);
-
-// CONSULTATIONS
-s('/consultations', 'post', [PATIENT_TAGS.CONSULTATIONS_VISITS, DOCTOR_TAGS.CONSULTATIONS_VISITS, DOCTOR_PATIENTS_SECTION], 'Create a consultation', true, [], { schemaRef: 'CreateConsultationRequest' });
-s('/consultations/{id}', 'get', [PATIENT_TAGS.CONSULTATIONS_VISITS, DOCTOR_TAGS.CONSULTATIONS_VISITS, DOCTOR_PATIENTS_SECTION], 'Get consultation by ID', true, [p('id')]);
-s('/consultations/{id}', 'put', [PATIENT_TAGS.CONSULTATIONS_VISITS, DOCTOR_TAGS.CONSULTATIONS_VISITS, DOCTOR_PATIENTS_SECTION], 'Update a consultation', true, [p('id')], { schemaRef: 'UpdateConsultationRequest' });
-s('/consultations/{id}', 'delete', [PATIENT_TAGS.CONSULTATIONS_VISITS, DOCTOR_TAGS.CONSULTATIONS_VISITS, DOCTOR_PATIENTS_SECTION], 'Delete a consultation', true, [p('id')]);
-s('/consultations/patient/{patientId}', 'get', PATIENT_TAGS.CONSULTATIONS_VISITS, 'Get consultations for a patient', true, [p('patientId')]);
-s('/consultations/doctor/{doctorId}', 'get', [DOCTOR_TAGS.CONSULTATIONS_VISITS, DOCTOR_PATIENTS_SECTION], 'Get consultations for a doctor', true, [p('doctorId')]);
-s('/consultations/doctor/{doctorId}/followups', 'get', [DOCTOR_TAGS.CONSULTATIONS_VISITS, DOCTOR_PATIENTS_SECTION], 'Get upcoming follow-ups for a doctor', true, [p('doctorId')]);
-
 // VISITS
 s('/visits', 'post', [PATIENT_TAGS.CONSULTATIONS_VISITS, DOCTOR_TAGS.CONSULTATIONS_VISITS, DOCTOR_PATIENTS_SECTION], 'Create a visit record', true, [], { schemaRef: 'CreateVisitRequest' });
 s('/visits/{id}', 'get', [PATIENT_TAGS.CONSULTATIONS_VISITS, DOCTOR_TAGS.CONSULTATIONS_VISITS, DOCTOR_PATIENTS_SECTION], 'Get visit by ID', true, [p('id')]);
@@ -375,7 +365,6 @@ s('/notifications/user/{userId}', 'get', [PATIENT_TAGS.NOTIFICATIONS, DOCTOR_TAG
 s('/notifications/user/{userId}/read-all', 'patch', [PATIENT_TAGS.NOTIFICATIONS, DOCTOR_TAGS.NOTIFICATIONS, PHARMACIST_TAGS.NOTIFICATIONS], 'Mark all notifications as read', true, [p('userId')]);
 s('/notifications/{id}/read', 'patch', [PATIENT_TAGS.NOTIFICATIONS, DOCTOR_TAGS.NOTIFICATIONS, PHARMACIST_TAGS.NOTIFICATIONS], 'Mark a single notification as read', true, [p('id')]);
 s('/notifications/{id}', 'delete', [PATIENT_TAGS.NOTIFICATIONS, DOCTOR_TAGS.NOTIFICATIONS, PHARMACIST_TAGS.NOTIFICATIONS], 'Delete a notification', true, [p('id')]);
-s('/notifications/appointment-reminders', 'post', ADMIN_TAG, 'Trigger appointment reminder notifications');
 
 // BATCH NUMBER CHECK (trade name can have many batch numbers in BatchHistory)
 s('/batch-check/trade-name/{tradeNameId}', 'get', [WARNING_SYSTEM_SECTION, PATIENT_TAGS.MEDICATIONS, PATIENT_TAGS.DRUG_SAFETY, ADMIN_TAG], 'List all batch numbers for a trade name. A trade name can have many batches (e.g. last 3 months from contracted companies). Returns tradeNameId, count, and batches array. Requires authentication.', true, [p('tradeNameId')]);
@@ -419,7 +408,7 @@ s('/active-substances/{id}/interactions', 'get', [WARNING_SYSTEM_SECTION, PATIEN
 // TRADE NAMES
 s('/trade-names', 'get', [PATIENT_TAGS.MEDICATIONS, PHARMACIST_TAGS.MEDICATIONS_SEARCH], 'List all trade names');
 s('/trade-names', 'post', ADMIN_TAG, 'Create a trade name (Admin/Company)', true, [], { schemaRef: 'CreateTradeNameRequest' });
-s('/trade-names/search', 'get', [WARNING_SYSTEM_SECTION, DOCTOR_ADD_DRUG_SECTION, DOCTOR_TAGS.PRESCRIPTIONS, PATIENT_TAGS.DRUG_SAFETY], 'Search trade names. Pass optional **patientId** to receive a `safetyStatus` on every result (statusColor RED/ORANGE/GREEN, blocked flag, warnings array, filteredData). When patientId is provided, excipients are also fetched for allergy checks and patient context is pre-loaded once. Without patientId, safetyStatus is null.', true, [q('q', 'Search text (title or active substance name)'), q('search', 'Alias for q'), q('activeSubstanceId'), q('classification'), q('dosageForm'), q('concentration', 'Filter by active substance concentration e.g. 5 mg'), q('companyId'), q('isActive'), q('availabilityStatus', 'InStock | OutOfStock | Discontinued | Pending'), q('patientId', 'Optional. Patient ID — enables real-time Pharma Safety Engine evaluation for each result.'), q('page'), q('limit')]);
+s('/trade-names/search', 'get', [WARNING_SYSTEM_SECTION, DOCTOR_ADD_DRUG_SECTION, DOCTOR_TAGS.PRESCRIPTIONS, PATIENT_TAGS.DRUG_SAFETY], 'Search trade names. Pass optional **patientId** to receive a `safetyStatus` on every result (statusColor RED/ORANGE/GREEN, blocked flag, warnings array, filteredData). When patientId is provided, excipients are also fetched for allergy checks and patient context is pre-loaded once. Without patientId, safetyStatus is null.', true, [q('q', 'Search text (title or active substance name)'), q('search', 'Alias for q'), q('activeSubstanceId'), q('classification'), q('dosageForm'), q('concentration', 'Filter by active substance concentration e.g. 5 mg'), q('companyId'), q('isActive'), q('patientId', 'Optional. Patient ID — enables real-time Pharma Safety Engine evaluation for each result.'), q('page'), q('limit')]);
   s('/trade-names/search-by-image', 'post', [PATIENT_TAGS.MEDICATIONS, PHARMACIST_TAGS.MEDICATIONS_SEARCH, DOCTOR_TAGS.PRESCRIPTIONS], 'Search for trade names by image. Upload a medicine package image; AI extracts trade name and active substance, then returns matching trade names from the database.', true);
   s('/trade-names/{id}', 'get', [PATIENT_TAGS.MEDICATIONS, PHARMACIST_TAGS.MEDICATIONS_SEARCH], 'Get trade name by ID', true, [p('id')]);
 s('/trade-names/{id}', 'put', ADMIN_TAG, 'Update trade name (Admin/Company)', true, [p('id')], { schemaRef: 'UpdateTradeNameRequest' });
@@ -502,6 +491,8 @@ s('/admin/side-effects', 'post', ADMIN_TAG, 'Create a new side effect and option
   s('/admin/side-effects/{id}/trade-names/{tradeNameId}', 'delete', ADMIN_TAG, 'Remove a trade name from a side effect', true, [p('id'), p('tradeNameId')]);
 s('/admin/side-effects/{id}/approve', 'patch', ADMIN_TAG, 'Approve a patient-submitted side effect (makes it visible in mobile app)', true, [p('id')]);
 
+s('/admin/ratings', 'get', ADMIN_TAG, 'List all ratings (paginated) for admin dashboard', true, [], undefined, { '200': 'Ratings list with averageRating, totalRatings' });
+s('/admin/ratings/{id}', 'delete', ADMIN_TAG, 'Delete any rating (admin)', true, [p('id')]);
 s('/admin/statistics', 'get', ADMIN_TAG, 'Get platform statistics');
 s('/admin/audit-logs', 'get', ADMIN_TAG, 'Get audit logs');
 
@@ -998,7 +989,7 @@ if (paths['/patients/{patientId}/warnings']?.get) {
 // GET /doctors/me/stats: document 200 response
 if (paths['/doctors/me/stats']?.get) {
   paths['/doctors/me/stats'].get.responses['200'] = {
-    description: 'Doctor statistics (patients, prescriptions, consultations, appointments, visits, ratings, clinics, averageRating).',
+    description: 'Doctor statistics (patients, prescriptions, visits, ratings, clinics, averageRating).',
     content: { 'application/json': { schema: { $ref: '#/components/schemas/DoctorMeStatsResponse' } } }
   };
 }
@@ -1163,7 +1154,6 @@ if (paths['/trade-names/search']?.get) {
               companyId: 2,
               warningNotification: null,
               barCode: '6224000123456',
-              availabilityStatus: 'InStock',
               isActive: true,
               createdAt: '2026-01-15T08:00:00.000Z',
               updatedAt: '2026-03-01T12:00:00.000Z',
@@ -1291,7 +1281,7 @@ const options: Record<string, unknown> = {
       { name: PATIENT_TAGS.MEDICATIONS, description: 'My medications' },
       { name: PATIENT_TAGS.SHARE_WITH_DOCTOR, description: 'Share profile with doctor' },
       { name: PATIENT_TAGS.PRESCRIPTIONS, description: 'Prescriptions' },
-      { name: PATIENT_TAGS.CONSULTATIONS_VISITS, description: 'Consultations and visits' },
+      { name: PATIENT_TAGS.CONSULTATIONS_VISITS, description: 'Visits and medical reports' },
       { name: PATIENT_TAGS.SHARE_LINKS, description: 'Share links' },
       { name: PATIENT_TAGS.DRUG_SAFETY, description: 'Drug interactions and ADR' },
       { name: PATIENT_TAGS.RATINGS, description: 'Ratings' },
@@ -1299,11 +1289,11 @@ const options: Record<string, unknown> = {
       { name: PATIENT_TAGS.SUBSCRIPTION_PAYMENTS, description: 'Subscription and payments' },
       { name: PATIENT_TAGS.SIDE_EFFECTS, description: 'Medication side effects: GET by-medication (merged catalog + extract **names**), GET extract (names only), POST add (single **name** on profile), POST my-side-effects (batch **`{ name }`** only), GET reported lists.' },
       { name: DOCTOR_TAGS.AUTH, description: 'Authentication (Doctor)' },
-      { name: DOCTOR_PATIENTS_SECTION, description: 'All doctor capabilities with patients: list/search/get details, assign/remove, prescriptions, visits, consultations, medical reports, drug safety, view patient allergies/diseases/medicines.' },
+      { name: DOCTOR_PATIENTS_SECTION, description: 'All doctor capabilities with patients: list/search/get details, assign/remove, prescriptions, visits, medical reports, drug safety, view patient allergies/diseases/medicines.' },
       { name: DOCTOR_ADD_DRUG_SECTION, description: 'Add A New Drug screen: Step 1 — GET /active-substances/classifications. Step 2 — GET /active-substances/search (API, filter by classification). Step 3 — GET /active-substances/concentrations (Conc for this API). Step 4 — GET /active-substances/dosage-forms. Step 5 — GET /trade-names/search (classification, API, concentration, dosage form). Step 6 — POST /prescriptions with medicationPlan (each item: medicineName required, tradeNameId? or manual; creates Prescription + PatientMedicine + PrescriptionMedicine). Optional: POST /prescriptions/:prescriptionId/medicines to add one drug to a draft prescription.' },
       { name: DOCTOR_TAGS.MY_PATIENTS, description: 'My patients' },
       { name: DOCTOR_TAGS.PRESCRIPTIONS, description: 'Prescriptions' },
-      { name: DOCTOR_TAGS.CONSULTATIONS_VISITS, description: 'Consultations and visits' },
+      { name: DOCTOR_TAGS.CONSULTATIONS_VISITS, description: 'Visits and medical reports' },
       { name: DOCTOR_TAGS.MEDICAL_REPORTS, description: 'Medical reports' },
       { name: DOCTOR_TAGS.DRUG_SAFETY, description: 'Drug interactions and medicine suggestions' },
       { name: DOCTOR_TAGS.RATINGS, description: 'Ratings' },
@@ -1525,8 +1515,37 @@ const options: Record<string, unknown> = {
           example: { userId: 12, gender: 'Male', dateOfBirth: '1980-06-15T00:00:00.000Z', height: 175, weight: 80, bloodType: 'A+' }
         },
         // ── User
-        CreateUserRequest: { type: 'object', required: ['email', 'role'], properties: { email: { type: 'string', format: 'email', example: 'admin@greenrx.com' }, passwordHash: { type: 'string', example: '$2b$10$...' }, role: { type: 'string', enum: ['Patient', 'Doctor', 'Pharmacist', 'Admin', 'SuperAdmin'], example: 'Admin' } }, example: { email: 'admin@greenrx.com', role: 'Admin' } },
-        UpdateUserRequest: { description: 'All fields optional. Send only fields to update.', type: 'object', properties: { email: { type: 'string', format: 'email', example: 'newemail@greenrx.com' }, isActive: { type: 'boolean', example: true } }, example: { isActive: true } },
+        CreateUserRequest: {
+          type: 'object',
+          required: ['email', 'role'],
+          properties: {
+            email: { type: 'string', format: 'email', example: 'admin@greenrx.com' },
+            password: { type: 'string', minLength: 8, description: 'Plain password (preferred); hashed server-side' },
+            passwordHash: { type: 'string', example: '$2b$10$...', description: 'Alternative to password for integrations' },
+            name: { type: 'string', nullable: true },
+            phone: { type: 'string', nullable: true },
+            isActive: { type: 'boolean' },
+            role: { type: 'string', enum: ['Patient', 'Doctor', 'Pharmacist', 'Admin', 'SuperAdmin'], example: 'Admin' },
+          },
+          description: 'Provide either `password` or `passwordHash` plus email and role.',
+        },
+        UpdateUserRequest: {
+          description:
+            'Admin update: account fields plus optional nested `patientProfile`, `doctorProfile`, `pharmacistProfile` (only for users who already have that record). Password is plain text and is hashed server-side. Role cannot be changed in a way that conflicts with an existing profile (e.g. Patient user with a patient row cannot become Doctor).',
+          type: 'object',
+          properties: {
+            email: { type: 'string', format: 'email' },
+            name: { type: 'string', nullable: true },
+            phone: { type: 'string', nullable: true },
+            isActive: { type: 'boolean' },
+            isEmailVerified: { type: 'boolean' },
+            role: { type: 'string', enum: ['Patient', 'Doctor', 'Pharmacist', 'Admin', 'Company', 'SuperAdmin'] },
+            password: { type: 'string', minLength: 8, description: 'Optional; new password (plain)' },
+            patientProfile: { type: 'object', description: 'Scalars on Patient model' },
+            doctorProfile: { type: 'object', description: 'Scalars on Doctor model; workingHours JSON' },
+            pharmacistProfile: { type: 'object', description: 'Scalars on Pharmacist model' },
+          },
+        },
         // ── Patient profile & history
         DiseaseSeverity: {
           type: 'string',
@@ -1606,17 +1625,32 @@ const options: Record<string, unknown> = {
           ],
         },
         CreateLifestyleRequest: {
-          description: 'Create lifestyle question (catalog). activeSubstanceField must be one of the ActiveSubstance field names used for warnings (e.g. interactionAlcohol, interactionXanthines). See backend enum ACTIVE_SUBSTANCE_LIFESTYLE_FIELDS.',
+          description: 'Create lifestyle question (catalog). activeSubstanceField is the ActiveSubstance column checked when the patient answers true.',
           type: 'object',
           required: ['question', 'activeSubstanceField'],
-          properties: { question: { type: 'string', example: 'Do you drink alcohol regularly?' }, activeSubstanceField: { type: 'string', example: 'interactionAlcohol', description: 'Field on ActiveSubstance to check when adding a medicine (enum)' } },
-          example: { question: 'Do you drink alcohol regularly?', activeSubstanceField: 'interactionAlcohol' }
+          properties: {
+            question: { type: 'string', example: 'Do you drink alcohol regularly?' },
+            activeSubstanceField: {
+              type: 'string',
+              enum: ACTIVE_SUBSTANCE_LIFESTYLE_FIELD_OPENAPI_ENUM,
+              example: 'interactionAlcohol',
+              description: 'Prisma enum ActiveSubstanceLifestyleField',
+            },
+          },
+          example: { question: 'Do you drink alcohol regularly?', activeSubstanceField: 'interactionAlcohol' },
         },
         UpdateLifestyleRequest: {
           description: 'Update lifestyle question. All fields optional.',
           type: 'object',
-          properties: { question: { type: 'string', example: 'Do you smoke?' }, activeSubstanceField: { type: 'string', example: 'interactionXanthines' } },
-          example: { question: 'Do you smoke?' }
+          properties: {
+            question: { type: 'string', example: 'Do you smoke?' },
+            activeSubstanceField: {
+              type: 'string',
+              enum: ACTIVE_SUBSTANCE_LIFESTYLE_FIELD_OPENAPI_ENUM,
+              example: 'interactionXanthines',
+            },
+          },
+          example: { question: 'Do you smoke?' },
         },
         PatientLifestyleItemRequest: {
           description: 'One lifestyle answer. lifestyleId from GET /lifestyles, value = boolean.',
@@ -1672,14 +1706,12 @@ const options: Record<string, unknown> = {
           properties: {
             totalPatients:     { type: 'integer', example: 42, description: 'Number of patients linked to this doctor' },
             totalPrescriptions:{ type: 'integer', example: 128, description: 'Number of prescriptions written' },
-            totalConsultations:{ type: 'integer', example: 95, description: 'Number of consultations' },
-            totalAppointments: { type: 'integer', example: 110, description: 'Number of appointments' },
             totalVisits:       { type: 'integer', example: 87, description: 'Number of visit records' },
             totalRatings:      { type: 'integer', example: 20, description: 'Number of ratings received' },
             totalClinics:      { type: 'integer', example: 2, description: 'Number of clinics (locations)' },
             averageRating:     { type: 'number', example: 4.7, nullable: true, description: 'Average rating (1–5) or null if none' }
           },
-          example: { totalPatients: 42, totalPrescriptions: 128, totalConsultations: 95, totalAppointments: 110, totalVisits: 87, totalRatings: 20, totalClinics: 2, averageRating: 4.7 }
+          example: { totalPatients: 42, totalPrescriptions: 128, totalVisits: 87, totalRatings: 20, totalClinics: 2, averageRating: 4.7 }
         },
         PutNearbyDoctorsRadiusRequest: {
           description: 'PUT /settings/nearby-doctors-radius. Admin sets the radius in km used by GET /doctors/nearby.',
@@ -2016,7 +2048,6 @@ const options: Record<string, unknown> = {
                 title: { type: 'string' },
                 barCode: { type: 'string', nullable: true },
                 warningNotification: { type: 'string', nullable: true },
-                availabilityStatus: { type: 'string' },
                 activeSubstance: {
                   type: 'object',
                   nullable: true,
@@ -2361,12 +2392,6 @@ const options: Record<string, unknown> = {
         },
         UpdatePrescriptionRequest: { description: 'All fields optional. Send only fields to update.', type: 'object', properties: { status: { type: 'string', example: 'Active' }, dosage: { type: 'string', example: '500mg' }, frequency: { type: 'string', example: 'Twice daily' }, duration: { type: 'string', example: '30 days' }, instructions: { type: 'string', example: 'Take with food' }, notes: { type: 'string', example: 'Monitor kidney function' }, changedBy: { type: 'string', example: 'Dr. Ahmed' }, conditionDiagnosis: { type: 'string', example: 'Type 2 Diabetes' }, initialCheckUp: { type: 'object' }, testResultsOrScans: { type: 'array', items: { type: 'string' } }, followUpAppointmentDate: { type: 'string', format: 'date-time', example: '2025-04-15T09:00:00.000Z' } }, example: { status: 'Active', notes: 'Monitor kidney function', followUpAppointmentDate: '2025-04-15T09:00:00.000Z' } },
         CreatePrescriptionVersionRequest: { type: 'object', properties: { changes: { type: 'string', example: 'Changed dosage from 250mg to 500mg' } }, example: { changes: 'Changed dosage from 250mg to 500mg' } },
-        // ── Appointments
-        CreateAppointmentRequest: { description: 'Required: patientId, doctorId, appointmentDate. Optional: duration, notes. Get doctorId from GET /doctors/search.', type: 'object', required: ['patientId', 'doctorId', 'appointmentDate'], properties: { patientId: { type: 'integer', example: 5, description: 'Required.' }, doctorId: { type: 'integer', example: 2, description: 'Required. Get from GET /doctors/search.' }, appointmentDate: { type: 'string', format: 'date-time', example: '2025-04-20T10:00:00.000Z', description: 'Required. ISO 8601.' }, duration: { type: 'integer', example: 30, description: 'Optional. Minutes.' }, notes: { type: 'string', example: 'Annual check-up', description: 'Optional.' } }, example: { patientId: 5, doctorId: 2, appointmentDate: '2025-04-20T10:00:00.000Z', duration: 30, notes: 'Annual check-up' } },
-        UpdateAppointmentRequest: { description: 'All fields optional. Send only fields to update.', type: 'object', properties: { appointmentDate: { type: 'string', format: 'date-time', example: '2025-04-21T11:00:00.000Z' }, duration: { type: 'integer', example: 45 }, status: { type: 'string', example: 'Confirmed' }, notes: { type: 'string', example: 'Rescheduled' } }, example: { appointmentDate: '2025-04-21T11:00:00.000Z', status: 'Confirmed' } },
-        // ── Consultations
-        CreateConsultationRequest: { description: 'Required: patientId, doctorId. Optional: consultationDate, notes, diagnosis, followUpRequired, followUpDate. Get doctorId from GET /doctors/search.', type: 'object', required: ['patientId', 'doctorId'], properties: { patientId: { type: 'integer', example: 5, description: 'Required.' }, doctorId: { type: 'integer', example: 2, description: 'Required. Get from GET /doctors/search.' }, consultationDate: { type: 'string', format: 'date-time', example: '2025-04-10T09:00:00.000Z', description: 'Optional.' }, notes: { type: 'string', example: 'Patient reports dizziness', description: 'Optional.' }, diagnosis: { type: 'string', example: 'Hypertension', description: 'Optional.' }, followUpRequired: { type: 'boolean', example: true, description: 'Optional.' }, followUpDate: { type: 'string', format: 'date-time', example: '2025-05-10T09:00:00.000Z', description: 'Optional.' } }, example: { patientId: 5, doctorId: 2, diagnosis: 'Hypertension', followUpRequired: true, followUpDate: '2025-05-10T09:00:00.000Z' } },
-        UpdateConsultationRequest: { description: 'All fields optional. Send only fields to update.', type: 'object', properties: { notes: { type: 'string', example: 'BP improved after medication' }, diagnosis: { type: 'string', example: 'Controlled Hypertension' }, followUpRequired: { type: 'boolean', example: false }, followUpDate: { type: 'string', format: 'date-time' } }, example: { notes: 'BP improved after medication', followUpRequired: false } },
         // ── Visits
         CreateVisitRequest: { description: 'Required: patientId, doctorId, visitDate. Optional: visitType, diagnosis, treatmentPlan, notes. Get doctorId from GET /doctors/search.', type: 'object', required: ['patientId', 'doctorId', 'visitDate'], properties: { patientId: { type: 'integer', example: 5, description: 'Required.' }, doctorId: { type: 'integer', example: 2, description: 'Required. Get from GET /doctors/search.' }, visitDate: { type: 'string', format: 'date-time', example: '2025-04-10T10:00:00.000Z', description: 'Required. ISO 8601.' }, visitType: { type: 'string', enum: ['FirstVisit', 'FollowUp', 'Emergency', 'Consultation'], example: 'FollowUp', description: 'Optional.' }, diagnosis: { type: 'string', example: 'Type 2 Diabetes — follow-up', description: 'Optional.' }, treatmentPlan: { type: 'string', example: 'Continue Metformin; add dietary guidance', description: 'Optional.' }, notes: { type: 'string', example: 'Patient tolerating medication well', description: 'Optional.' } }, example: { patientId: 5, doctorId: 2, visitDate: '2025-04-10T10:00:00.000Z', visitType: 'FollowUp', diagnosis: 'Type 2 Diabetes — follow-up' } },
         UpdateVisitRequest: { description: 'All fields optional. Send only fields to update.', type: 'object', properties: { visitDate: { type: 'string', format: 'date-time' }, visitType: { type: 'string', example: 'Emergency' }, diagnosis: { type: 'string', example: 'Acute hyperglycaemia' }, treatmentPlan: { type: 'string' }, notes: { type: 'string' } }, example: { visitType: 'Emergency', diagnosis: 'Acute hyperglycaemia' } },
@@ -2379,7 +2404,7 @@ const options: Record<string, unknown> = {
         // ── Ratings
         CreateRatingRequest: { description: 'Required: patientId, ratedType, rating (1–5). For Doctor: include doctorId; for Pharmacist: include pharmacistId. Optional: review.', type: 'object', required: ['patientId', 'ratedType', 'rating'], properties: { patientId: { type: 'integer', example: 5, description: 'Required.' }, ratedType: { type: 'string', enum: ['Doctor', 'Pharmacist'], example: 'Doctor', description: 'Required.' }, doctorId: { type: 'integer', example: 2, description: 'Required when ratedType=Doctor.' }, pharmacistId: { type: 'integer', description: 'Required when ratedType=Pharmacist.' }, rating: { type: 'integer', minimum: 1, maximum: 5, example: 5, description: 'Required. 1–5.' }, review: { type: 'string', example: 'Very attentive and professional', description: 'Optional.' } }, example: { patientId: 5, ratedType: 'Doctor', doctorId: 2, rating: 5, review: 'Very attentive and professional' } },
         // ── Notifications
-        CreateNotificationRequest: { type: 'object', required: ['userId', 'type', 'title', 'message'], properties: { userId: { type: 'integer', example: 12 }, type: { type: 'string', enum: ['PrescriptionReady', 'DrugInteraction', 'AppointmentReminder', 'SystemAlert'], example: 'AppointmentReminder' }, title: { type: 'string', example: 'Appointment Reminder' }, message: { type: 'string', example: 'Your appointment with Dr. Ahmed is tomorrow at 10:00 AM.' } }, example: { userId: 12, type: 'AppointmentReminder', title: 'Appointment Reminder', message: 'Your appointment with Dr. Ahmed is tomorrow at 10:00 AM.' } },
+        CreateNotificationRequest: { type: 'object', required: ['userId', 'type', 'title', 'message'], properties: { userId: { type: 'integer', example: 12 }, type: { type: 'string', enum: ['PrescriptionReady', 'DrugInteraction', 'SystemAlert', 'MedicineReminder'], example: 'SystemAlert' }, title: { type: 'string', example: 'System alert' }, message: { type: 'string', example: 'Your visit record was updated.' } }, example: { userId: 12, type: 'SystemAlert', title: 'System alert', message: 'Your visit record was updated.' } },
         // ── Drug safety
         CheckByTradeNameRequest: { description: 'POST /drug-interactions/check-by-trade-name. Run full 8-check warning logic for this patient and drug.', type: 'object', required: ['patientId', 'tradeNameId'], properties: { patientId: { type: 'integer', example: 5, description: 'Patient to check against (Doctor: any; Patient: must be own id)' }, tradeNameId: { type: 'integer', example: 23, description: 'Drug trade name ID (from GET /trade-names or search)' } }, example: { patientId: 5, tradeNameId: 23 } },
         CheckByTradeNameResponse: {
@@ -2454,8 +2479,8 @@ const options: Record<string, unknown> = {
         CreateActiveSubstanceRequest: { type: 'object', required: ['activeSubstance'], properties: { activeSubstance: { type: 'string', example: 'Atorvastatin' }, concentration: { type: 'string', example: '20 mg' }, classification: { type: 'string', example: 'Statins' }, dosageForm: { type: 'string', example: 'Tablet' }, indication: { type: 'string', example: 'Hypercholesterolaemia' }, pregnancyWarning: { type: 'string' }, lactationWarning: { type: 'string' }, contraindications: {}, isActive: { type: 'boolean', example: true } }, example: { activeSubstance: 'Atorvastatin', concentration: '20 mg', classification: 'Statins', dosageForm: 'Tablet' } },
         UpdateActiveSubstanceRequest: { type: 'object', properties: { activeSubstance: { type: 'string', example: 'Atorvastatin' }, concentration: { type: 'string', example: '40 mg' }, classification: { type: 'string', example: 'Statins' }, isActive: { type: 'boolean', example: true } }, example: { concentration: '40 mg' } },
         // ── Trade names
-        CreateTradeNameRequest: { type: 'object', required: ['title', 'activeSubstanceId', 'companyId'], properties: { title: { type: 'string', example: 'Lipitor 20mg' }, activeSubstanceId: { type: 'integer', example: 15 }, companyId: { type: 'integer', example: 1 }, barCode: { type: 'string', example: '6224000123456' }, warningNotification: { type: 'string' }, availabilityStatus: { type: 'string', enum: ['InStock', 'OutOfStock', 'Discontinued', 'Pending'], example: 'InStock' } }, example: { title: 'Lipitor 20mg', activeSubstanceId: 15, companyId: 1, availabilityStatus: 'InStock' } },
-        UpdateTradeNameRequest: { type: 'object', properties: { title: { type: 'string', example: 'Lipitor 40mg' }, activeSubstanceId: { type: 'integer', example: 15 }, companyId: { type: 'integer', example: 1 }, availabilityStatus: { type: 'string', example: 'InStock' } }, example: { availabilityStatus: 'OutOfStock' } },
+        CreateTradeNameRequest: { type: 'object', required: ['title', 'activeSubstanceId', 'companyId'], properties: { title: { type: 'string', example: 'Lipitor 20mg' }, activeSubstanceId: { type: 'integer', example: 15 }, companyId: { type: 'integer', example: 1 }, barCode: { type: 'string', example: '6224000123456' }, warningNotification: { type: 'string' } }, example: { title: 'Lipitor 20mg', activeSubstanceId: 15, companyId: 1 } },
+        UpdateTradeNameRequest: { type: 'object', properties: { title: { type: 'string', example: 'Lipitor 40mg' }, activeSubstanceId: { type: 'integer', example: 15 }, companyId: { type: 'integer', example: 1 } }, example: { title: 'Lipitor 40mg' } },
         Pagination: {
           description: 'Pagination metadata for search/list endpoints (GET /trade-names/search, GET /active-substances/search, GET /trade-names, etc.).',
           type: 'object',
@@ -2529,7 +2554,6 @@ const options: Record<string, unknown> = {
             companyId:           { type: 'integer', nullable: true, example: 2 },
             warningNotification: { type: 'string', nullable: true, description: 'Optional notice shown to doctors.' },
             barCode:             { type: 'string', nullable: true, example: '6224000123456' },
-            availabilityStatus:  { type: 'string', enum: ['InStock', 'OutOfStock', 'Discontinued', 'Pending'], example: 'InStock' },
             isActive:            { type: 'boolean', example: true },
             createdAt:           { type: 'string', format: 'date-time', example: '2026-01-15T08:00:00.000Z' },
             updatedAt:           { type: 'string', format: 'date-time', example: '2026-03-01T12:00:00.000Z' },

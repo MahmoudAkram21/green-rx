@@ -8,9 +8,9 @@ const router = express.Router();
 router.use(authenticate);
 
 router.post('/',                        authorize([UserRole.Patient]),                                            ratingController.createRating);
-router.get('/doctor/:doctorId',         authorize([UserRole.Doctor, UserRole.Patient, UserRole.Admin]),           ratingController.getDoctorRatings);
-router.get('/pharmacist/:pharmacistId', authorize([UserRole.Patient, UserRole.Admin, UserRole.Pharmacist]),       ratingController.getPharmacistRatings);
-router.get('/patient/:patientId',       authorize([UserRole.Patient, UserRole.Doctor, UserRole.Admin]),           ratingController.getPatientRatings);
-router.delete('/:id',                   authorize([UserRole.Patient, UserRole.Admin]),                            ratingController.deleteRating);
+router.get('/doctor/:doctorId',         authorize([UserRole.Doctor, UserRole.Patient, UserRole.Admin, UserRole.SuperAdmin]), ratingController.getDoctorRatings);
+router.get('/pharmacist/:pharmacistId', authorize([UserRole.Patient, UserRole.Admin, UserRole.SuperAdmin, UserRole.Pharmacist]), ratingController.getPharmacistRatings);
+router.get('/patient/:patientId',       authorize([UserRole.Patient, UserRole.Doctor, UserRole.Admin, UserRole.SuperAdmin]), ratingController.getPatientRatings);
+router.delete('/:id',                   authorize([UserRole.Patient, UserRole.Admin, UserRole.SuperAdmin]),                            ratingController.deleteRating);
 
 export default router;

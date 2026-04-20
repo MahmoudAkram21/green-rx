@@ -11,6 +11,7 @@ import {
     addBodySystemMapping,
     setBodySystemMappings,
     removeBodySystemMapping,
+    getBodySystemFieldOptions,
 } from '../controllers/disease.controller';
 import { authenticate, authorize } from '../middleware/auth.middleware';
 import { UserRole } from '../../generated/client/client';
@@ -22,6 +23,7 @@ router.use(authenticate);
 // Disease CRUD
 router.post('/', authorize([UserRole.Admin, UserRole.SuperAdmin]), createDisease);
 router.get('/', getAllDiseases);
+router.get('/body-system-field-options', authorize([UserRole.Admin, UserRole.SuperAdmin]), getBodySystemFieldOptions);
 router.get('/:id', getDiseaseById);
 router.put('/:id', authorize([UserRole.Admin, UserRole.SuperAdmin]), updateDisease);
 router.delete('/:id', authorize([UserRole.Admin, UserRole.SuperAdmin]), deleteDisease);

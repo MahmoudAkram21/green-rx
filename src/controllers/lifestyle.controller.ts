@@ -1,7 +1,21 @@
 import { Request, Response, NextFunction } from 'express';
 import { z } from 'zod';
+import { ActiveSubstanceLifestyleField } from '../../generated/client/client';
 import { prisma } from '../lib/prisma';
 import { createLifestyleSchema, updateLifestyleSchema } from '../zod/lifestyle.zod';
+
+/** GET /lifestyles/active-substance-field-options — enum values for admin UI */
+export const getLifestyleActiveSubstanceFieldOptions = async (
+  _req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    res.json(Object.values(ActiveSubstanceLifestyleField));
+  } catch (error) {
+    next(error);
+  }
+};
 
 /** GET /lifestyles — list all (for patient dropdown and admin) */
 export const getAllLifestyles = async (_req: Request, res: Response, next: NextFunction) => {

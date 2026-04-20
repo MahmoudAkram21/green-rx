@@ -98,3 +98,15 @@ model DiseaseBodySystemMapping {
   @@index([diseaseId])
   @@map("disease_body_system_mappings")
 }
+
+model OrganWarningFieldMapping {
+  id        Int                        @id @default(autoincrement())
+  organId   Int
+  fieldName ActiveSubstanceWarningField
+
+  organ Organ @relation(fields: [organId], references: [id], onDelete: Cascade)
+
+  @@unique([organId, fieldName])
+  @@index([organId])
+  @@map("organ_warning_field_mappings")
+}

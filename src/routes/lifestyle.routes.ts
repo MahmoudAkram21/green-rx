@@ -1,6 +1,7 @@
 import express from 'express';
 import {
   getAllLifestyles,
+  getLifestyleActiveSubstanceFieldOptions,
   getLifestyleById,
   createLifestyle,
   updateLifestyle,
@@ -14,6 +15,7 @@ const router = express.Router();
 router.use(authenticate);
 
 router.get('/', getAllLifestyles);
+router.get('/active-substance-field-options', getLifestyleActiveSubstanceFieldOptions);
 router.get('/:id', getLifestyleById);
 router.post('/', authorize([UserRole.Admin, UserRole.SuperAdmin]), createLifestyle);
 router.put('/:id', authorize([UserRole.Admin, UserRole.SuperAdmin]), updateLifestyle);

@@ -117,60 +117,6 @@ class NotificationController {
             next(error);
         }
     }
-
-    // Create appointment reminder notifications
-    async sendAppointmentReminders(_req: Request, res: Response, next: NextFunction) {
-        try {
-            // Find appointments in the next 24 hours that haven't been reminded
-            const tomorrow = new Date();
-            tomorrow.setHours(tomorrow.getHours() + 24);
-
-            const appointments = await prisma.appointment.findMany({
-                where: {
-                    appointmentDate: {
-                        gte: new Date(),
-                        lte: tomorrow
-                    },
-                    status: 'Scheduled',
-                    reminderSent: false
-                },
-                include: {
-                    patient: { include: { user: true } },
-                    doctor: { include: { user: true } }
-                }
-            });
-
-            const notificationsCreated = [];
-
-            for (const appointment of appointments) {
-                // Notify patient
-                const patientNotification = await prisma.notification.create({
-                    data: {
-                        userId: appointment.patient.userId,
-                        type: 'AppointmentReminder',
-                        title: 'Upcoming Appointment Reminder',
-                        message: `You have an appointment with ${appointment.doctor.name} on ${appointment.appointmentDate.toLocaleString()}`,
-                        deliveryStatus: 'Pending'
-                    }
-                });
-
-                // Mark appointment as reminded
-                await prisma.appointment.update({
-                    where: { id: appointment.id },
-                    data: { reminderSent: true }
-                });
-
-                notificationsCreated.push(patientNotification);
-            }
-
-            res.json({
-                message: `Sent ${notificationsCreated.length} appointment reminders`,
-                notifications: notificationsCreated
-            });
-        } catch (error) {
-            next(error);
-        }
-    }
 }
 
 export default new NotificationController();

@@ -6,9 +6,6 @@ export const createTradeNameSchema = z.object({
   companyId: z.number().int().positive(),
   barCode: z.string().optional(),
   warningNotification: z.string().optional(),
-  availabilityStatus: z
-    .enum(["InStock", "OutOfStock", "Discontinued", "Pending"])
-    .optional(),
 });
 
 export const updateTradeNameSchema = createTradeNameSchema.partial();

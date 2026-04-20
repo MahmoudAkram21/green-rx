@@ -200,7 +200,7 @@ export const searchTradeNamesByImage = async (req: Request, res: Response, next:
     }
 };
 
-// Search Trade Names — GET /trade-names/search?q=... Optional: activeSubstanceId, classification, dosageForm, companyId, isActive, availabilityStatus, patientId, page, limit.
+// Search Trade Names — GET /trade-names/search?q=... Optional: activeSubstanceId, classification, dosageForm, companyId, isActive, patientId, page, limit.
 export const searchTradeNames = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const {
@@ -212,7 +212,6 @@ export const searchTradeNames = async (req: Request, res: Response, next: NextFu
             concentration,
             companyId,
             isActive,
-            availabilityStatus,
             patientId,
             page = '1',
             limit = '20'
@@ -261,13 +260,6 @@ export const searchTradeNames = async (req: Request, res: Response, next: NextFu
 
         if (isActive !== undefined && isActive !== '') {
             whereClause.isActive = isActive === 'true' || isActive === '1';
-        }
-
-        if (availabilityStatus !== undefined && availabilityStatus !== '') {
-            const status = String(availabilityStatus);
-            if (['InStock', 'OutOfStock', 'Discontinued', 'Pending'].includes(status)) {
-                whereClause.availabilityStatus = status;
-            }
         }
 
         const skip = (pageNum - 1) * limitNum;

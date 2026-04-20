@@ -9,6 +9,27 @@ import { evaluateDrugSafety, loadPatientContext } from "../services/pharmaSafety
 import { extractLang, serializeActiveSubstance } from "../utils/translateJson.util";
 import { extractSideEffects } from "../services/sideEffectExtract.service";
 
+/**
+ * Admin UI and legacy clients expect `activeSubstance` (string) and a string `classification`.
+ * Prisma stores the ingredient name in `name` and links classification via `classification.name`.
+ */
+function shapeActiveSubstanceForApi(sub: Record<string, unknown>): Record<string, unknown> {
+  const name = typeof sub.name === "string" ? sub.name : "";
+  const legacy = typeof sub.activeSubstance === "string" ? sub.activeSubstance : "";
+  const cls = sub.classification;
+  let classificationFlat: string | null = null;
+  if (cls != null && typeof cls === "object" && !Array.isArray(cls) && "name" in cls) {
+    classificationFlat = String((cls as { name: string }).name);
+  } else if (typeof cls === "string") {
+    classificationFlat = cls;
+  }
+  return {
+    ...sub,
+    activeSubstance: legacy || name,
+    classification: classificationFlat,
+  };
+}
+
 // Create Active Substance
 export const createActiveSubstance = async (
   req: Request,
@@ -54,6 +75,7 @@ export const getActiveSubstanceById = async (
       where: { id: parseInt(id) },
       include: {
         tradeNames: true,
+        classification: { select: { id: true, name: true } },
         adverseReactions: {
           take: 10,
           orderBy: { createdAt: "desc" },
@@ -67,7 +89,8 @@ export const getActiveSubstanceById = async (
     }
 
     const lang = extractLang(req);
-    res.json(serializeActiveSubstance(activeSubstance, lang));
+    const payload = serializeActiveSubstance(activeSubstance, lang) as Record<string, unknown>;
+    res.json(shapeActiveSubstanceForApi(payload));
   } catch (error) {
     next(error);
   }
@@ -238,6 +261,7 @@ export const searchActiveSubstances = async (
         orderBy: { name: "asc" },
         include: {
           _count: { select: { tradeNames: true } },
+          classification: { select: { id: true, name: true } },
         },
       }),
       prisma.activeSubstance.count({ where: whereClause }),
@@ -265,14 +289,25 @@ export const searchActiveSubstances = async (
 
     const lang = extractLang(req);
     const serialized = substancesWithSafety.map((sub) => {
-      const base = serializeActiveSubstance(sub, lang);
-      if (base.safetyStatus?.filteredData) {
-        base.safetyStatus = {
-          ...base.safetyStatus,
-          filteredData: serializeActiveSubstance(base.safetyStatus.filteredData, lang),
-        };
+      const base = serializeActiveSubstance(sub, lang) as Record<string, unknown>;
+      if (
+        base.safetyStatus &&
+        typeof base.safetyStatus === "object" &&
+        base.safetyStatus !== null
+      ) {
+        const ss = base.safetyStatus as Record<string, unknown>;
+        if (ss.filteredData) {
+          const fd = serializeActiveSubstance(ss.filteredData as object, lang) as Record<
+            string,
+            unknown
+          >;
+          base.safetyStatus = {
+            ...ss,
+            filteredData: shapeActiveSubstanceForApi(fd),
+          };
+        }
       }
-      return base;
+      return shapeActiveSubstanceForApi(base);
     });
 
     res.json({

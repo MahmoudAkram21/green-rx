@@ -322,7 +322,6 @@ export const addPatientMedicineByImage = async (req: Request, res: Response, nex
                       title: medicine.tradeName.title,
                       barCode: medicine.tradeName.barCode,
                       warningNotification: medicine.tradeName.warningNotification,
-                      availabilityStatus: medicine.tradeName.availabilityStatus,
                       activeSubstance: medicine.tradeName.activeSubstance
                           ? {
                                 id: medicine.tradeName.activeSubstance.id,

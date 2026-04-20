@@ -238,7 +238,6 @@ model TradeName {
   companyId           Int?
   warningNotification String? // for doctors only
   barCode             String?
-  availabilityStatus  MedicineAvailabilityStatus @default(InStock)
   isActive            Boolean                    @default(true)
   createdAt           DateTime                   @default(now())
   updatedAt           DateTime                   @updatedAt
@@ -261,7 +260,6 @@ model TradeName {
   @@index([title])
   @@index([activeSubstanceId])
   @@index([companyId])
-  @@index([availabilityStatus])
   @@map("trade_names")
 }
 

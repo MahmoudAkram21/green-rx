@@ -152,8 +152,6 @@ export const getDoctorMeStats = async (req: Request, res: Response, next: NextFu
                     select: {
                         patientDoctors: true,
                         prescriptions: true,
-                        consultations: true,
-                        appointments: true,
                         visits: true,
                         ratings: true,
                         doctorClinics: true,
@@ -170,8 +168,6 @@ export const getDoctorMeStats = async (req: Request, res: Response, next: NextFu
         const stats = {
             totalPatients: doctor._count.patientDoctors,
             totalPrescriptions: doctor._count.prescriptions,
-            totalConsultations: doctor._count.consultations,
-            totalAppointments: doctor._count.appointments,
             totalVisits: doctor._count.visits,
             totalRatings: doctor._count.ratings,
             totalClinics: doctor._count.doctorClinics,

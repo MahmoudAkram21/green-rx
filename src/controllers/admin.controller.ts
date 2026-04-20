@@ -124,8 +124,8 @@ userId: (req as any).user?.userId,
                 totalPatients,
                 totalPrescriptions,
                 activePrescriptions,
-                totalAppointments,
-                todayAppointments,
+                totalVisits,
+                todayVisits,
                 totalCompanies,
                 totalActiveSubstances,
                 totalTradeNames,
@@ -134,7 +134,6 @@ userId: (req as any).user?.userId,
                 activeSubscriptions,
                 totalAdverseDrugReactions,
                 adrPendingReview,
-                totalConsultations,
                 medicineSuggestionsPending
             ] = await Promise.all([
                 prisma.user.count(),
@@ -145,10 +144,10 @@ userId: (req as any).user?.userId,
                 prisma.patient.count(),
                 prisma.prescription.count(),
                 prisma.prescription.count({ where: { status: { in: ['Approved', 'Filled'] } } }),
-                prisma.appointment.count(),
-                prisma.appointment.count({
+                prisma.visit.count(),
+                prisma.visit.count({
                     where: {
-                        appointmentDate: { gte: todayStart, lte: todayEnd }
+                        visitDate: { gte: todayStart, lte: todayEnd }
                     }
                 }),
                 prisma.company.count(),
@@ -159,7 +158,6 @@ userId: (req as any).user?.userId,
                 prisma.subscription.count({ where: { status: 'Active' } }),
                 prisma.adverseDrugReaction.count(),
                 prisma.adverseDrugReaction.count({ where: { status: 'Submitted' } }),
-                prisma.consultation.count(),
                 prisma.medicineSuggestion.count({ where: { status: 'Pending' } })
             ]);
 
@@ -180,9 +178,9 @@ userId: (req as any).user?.userId,
                     total: totalPrescriptions,
                     active: activePrescriptions
                 },
-                appointments: {
-                    total: totalAppointments,
-                    today: todayAppointments
+                visits: {
+                    total: totalVisits,
+                    today: todayVisits
                 },
                 companies: { total: totalCompanies },
                 activeSubstances: { total: totalActiveSubstances },
@@ -196,7 +194,6 @@ userId: (req as any).user?.userId,
                     total: totalAdverseDrugReactions,
                     pendingReview: adrPendingReview
                 },
-                consultations: { total: totalConsultations },
                 medicineSuggestions: { pending: medicineSuggestionsPending }
             });
         } catch (error) {
@@ -297,6 +294,85 @@ userId: (req as any).user?.userId,
     }
 
     // Get recent audit logs
+    /** All ratings for admin dashboard (doctors + pharmacists), with display names */
+    async getRatings(req: Request, res: Response, next: NextFunction) {
+        try {
+            const page = Math.max(1, Number(req.query.page) || 1);
+            const limit = Math.min(500, Math.max(1, Number(req.query.limit) || 200));
+
+            const [items, total, agg] = await Promise.all([
+                prisma.rating.findMany({
+                    skip: (page - 1) * limit,
+                    take: limit,
+                    orderBy: { createdAt: 'desc' },
+                    include: {
+                        patient: {
+                            select: {
+                                id: true,
+                                user: { select: { name: true, email: true } },
+                            },
+                        },
+                        doctor: { select: { id: true, name: true } },
+                        pharmacist: { select: { id: true, name: true } },
+                    },
+                }),
+                prisma.rating.count(),
+                prisma.rating.aggregate({
+                    _avg: { rating: true },
+                }),
+            ]);
+
+            const ratings = items.map((r) => ({
+                id: r.id,
+                patientId: r.patientId,
+                doctorId: r.doctorId ?? undefined,
+                pharmacistId: r.pharmacistId ?? undefined,
+                ratedType: r.ratedType,
+                rating: r.rating,
+                review: r.review ?? undefined,
+                createdAt: r.createdAt.toISOString(),
+                patientName:
+                    r.patient.user?.name?.trim() ||
+                    r.patient.user?.email ||
+                    `Patient #${r.patientId}`,
+                doctorName: r.doctor?.name ?? r.pharmacist?.name ?? '—',
+            }));
+
+            res.json({
+                ratings,
+                averageRating: agg._avg.rating ?? 0,
+                totalRatings: total,
+                pagination: {
+                    total,
+                    page,
+                    limit,
+                    totalPages: Math.ceil(total / limit) || 1,
+                },
+            });
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async deleteRating(req: Request, res: Response, next: NextFunction) {
+        try {
+            const id = Number(req.params.id);
+            if (Number.isNaN(id)) {
+                res.status(400).json({ error: 'Invalid rating id' });
+                return;
+            }
+            const existing = await prisma.rating.findUnique({ where: { id } });
+            if (!existing) {
+                res.status(404).json({ error: 'Rating not found' });
+                return;
+            }
+            await prisma.rating.delete({ where: { id } });
+            res.json({ message: 'Rating deleted successfully' });
+        } catch (error) {
+            next(error);
+        }
+    }
+
     async getAuditLogs(req: Request, res: Response, next: NextFunction) {
         try {
             const { page = '1', limit = '50', action, entityType, userId } = req.query;

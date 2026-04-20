@@ -1,16 +1,14 @@
 import { z } from 'zod';
-import { ACTIVE_SUBSTANCE_LIFESTYLE_FIELDS } from '../enums/activeSubstanceLifestyleField';
-
-const activeSubstanceFieldEnum = z.enum(ACTIVE_SUBSTANCE_LIFESTYLE_FIELDS);
+import { ActiveSubstanceLifestyleField } from '../../generated/client/client';
 
 export const createLifestyleSchema = z.object({
   question: z.string().min(1, 'Question is required'),
-  activeSubstanceField: activeSubstanceFieldEnum,
+  activeSubstanceField: z.nativeEnum(ActiveSubstanceLifestyleField),
 });
 
 export const updateLifestyleSchema = z.object({
   question: z.string().min(1).optional(),
-  activeSubstanceField: activeSubstanceFieldEnum.optional(),
+  activeSubstanceField: z.nativeEnum(ActiveSubstanceLifestyleField).optional(),
 });
 
 export type CreateLifestyleInput = z.infer<typeof createLifestyleSchema>;

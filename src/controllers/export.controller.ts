@@ -482,7 +482,6 @@ class ExportController {
                 { header: 'Trade Name', key: 'title', width: 30 },
                 { header: 'Active Substance', key: 'activeSubstance', width: 30 },
                 { header: 'Company', key: 'company', width: 25 },
-                { header: 'Availability Status', key: 'availabilityStatus', width: 20 },
                 { header: 'Created At', key: 'createdAt', width: 20 },
             ];
 
@@ -492,7 +491,6 @@ class ExportController {
                     title: tn.title,
                     activeSubstance: tn.activeSubstance.name,
                     company: tn.company?.name ?? '',
-                    availabilityStatus: tn.availabilityStatus,
                     createdAt: tn.createdAt
                 });
             });

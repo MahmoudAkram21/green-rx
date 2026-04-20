@@ -37,6 +37,10 @@ router.get('/pharmacists/pending', adminController.getPendingPharmacists);
 router.patch('/pharmacists/:id/verify', adminController.verifyPharmacist);
 router.patch('/pharmacists/:id/reject', adminController.rejectPharmacist);
 
+// Ratings (admin dashboard)
+router.get('/ratings', adminController.getRatings);
+router.delete('/ratings/:id', adminController.deleteRating);
+
 // Statistics
 router.get('/statistics', adminController.getStatistics);
 

@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { z } from 'zod';
 import { prisma } from '../lib/prisma';
-import { DiseaseSeverity } from '../../generated/client/client';
+import { ActiveSubstanceWarningField, DiseaseSeverity } from '../../generated/client/client';
 import {
     createDiseaseSchema,
     updateDiseaseSchema,
@@ -103,7 +103,13 @@ export const getAllDiseases = async (req: Request, res: Response, next: NextFunc
                 where: whereClause,
                 skip,
                 take,
-                orderBy: { name: 'asc' }
+                orderBy: { name: 'asc' },
+                include: {
+                    bodySystemMappings: {
+                        orderBy: { fieldName: 'asc' },
+                        select: { id: true, fieldName: true },
+                    },
+                },
             }),
             prisma.disease.count({ where: whereClause })
         ]);
@@ -315,4 +321,11 @@ export const removeBodySystemMapping = async (req: Request, res: Response, next:
         }
         next(error);
     }
+};
+
+// Get allowed body-system field options
+export const getBodySystemFieldOptions = async (_req: Request, res: Response) => {
+    res.json({
+        fieldOptions: Object.values(ActiveSubstanceWarningField),
+    });
 };

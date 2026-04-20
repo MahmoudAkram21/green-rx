@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
+import { UserRole } from '../../generated/client/client';
 import { prisma } from '../lib/prisma';
 import { ratingSchema } from '../zod/rating.zod';
 
@@ -184,30 +185,38 @@ class RatingController {
         }
     }
 
-    // Delete a rating
+    // Delete a rating (patient: own only; Admin/SuperAdmin: any)
     async deleteRating(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const { id } = req.params;
-            const patientId = (req as any).user?.patientId; // From auth middleware
+            const role = req.user?.role;
+            const userId = req.user?.userId;
 
-            // Verify ownership
             const rating = await prisma.rating.findUnique({
-                where: { id: Number(id) }
+                where: { id: Number(id) },
             });
 
             if (!rating) {
                 return res.status(404).json({ error: 'Rating not found' }) as any;
             }
 
-            if (rating.patientId !== patientId) {
-                return res.status(403).json({ error: 'Not authorized to delete this rating' }) as any;
+            if (role === UserRole.Admin || role === UserRole.SuperAdmin) {
+                await prisma.rating.delete({ where: { id: Number(id) } });
+                res.json({ message: 'Rating deleted successfully' });
+                return;
             }
 
-            await prisma.rating.delete({
-                where: { id: Number(id) }
-            });
+            if (role === UserRole.Patient && userId != null) {
+                const patient = await prisma.patient.findUnique({ where: { userId } });
+                if (!patient || rating.patientId !== patient.id) {
+                    return res.status(403).json({ error: 'Not authorized to delete this rating' }) as any;
+                }
+                await prisma.rating.delete({ where: { id: Number(id) } });
+                res.json({ message: 'Rating deleted successfully' });
+                return;
+            }
 
-            res.json({ message: 'Rating deleted successfully' });
+            res.status(403).json({ error: 'Not authorized to delete this rating' });
         } catch (error) {
             next(error);
         }

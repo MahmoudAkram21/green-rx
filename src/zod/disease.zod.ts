@@ -3,7 +3,7 @@ import { WarningSeverity, DiseaseSeverity, ActiveSubstanceWarningField } from ".
 
 export const createDiseaseSchema = z.object({
   name: z.string().min(1),
-  severity: z.nativeEnum(DiseaseSeverity),
+  severity: z.nativeEnum(DiseaseSeverity).optional().default(DiseaseSeverity.None),
   description: z.string().optional(),
   triggersCancerCheck: z.boolean().optional().default(false),
   contraindicationKeywords: z.array(z.string().min(1)).optional().default([]),

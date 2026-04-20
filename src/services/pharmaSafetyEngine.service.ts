@@ -97,40 +97,6 @@ function extractText(value: unknown): string {
 // ─── Static Maps ──────────────────────────────────────────────────────────────
 
 /**
- * Maps organ names (stored in Organ.name) to the corresponding
- * ActiveSubstance warning field. Only organs present in this map
- * are checked; unmapped organs are silently skipped.
- */
-const ORGAN_TO_WARNING_FIELD: Record<string, string> = {
-  liver:       'hepaticWarning',
-  kidney:      'renalWarning',
-  heart:       'cardiacWarning',
-  lung:        'pulmonaryWarning',
-  respiratory: 'pulmonaryWarning',
-  eye:         'eyeDisordersWarning',
-  ear:         'earDisordersWarning',
-  stomach:     'gitWarning',
-  intestine:   'gitWarning',
-  git:         'gitWarning',
-  colon:       'gitWarning',
-  vessel:      'vascularWarning',
-  artery:      'vascularWarning',
-  vein:        'vascularWarning',
-  brain:       'nervousSystemWarning',
-  nervous:     'nervousSystemWarning',
-  bone:        'musculoSkeletalWarning',
-  joint:       'musculoSkeletalWarning',
-  muscle:      'musculoSkeletalWarning',
-  skin:        'skinConnectiveTissueWarning',
-  blood:       'bloodWarning',
-  lymph:       'bloodWarning',
-  spleen:      'immuneSystemWarning',
-  immune:      'immuneSystemWarning',
-  thyroid:     'metabolismWarning',
-  pancreas:    'metabolismWarning',
-};
-
-/**
  * Maps each ActiveSubstanceWarningField to its ADR column names
  * (veryCommon, common) for dynamic filteredData building and ADR color checks.
  */
@@ -240,7 +206,14 @@ export async function loadPatientContext(patientId: number) {
       surgicalHistories: {
         where: { surgeryTimeframe: { in: [SurgeryTimeframe.THREE_MONTHS, SurgeryTimeframe.SIX_MONTHS] } },
         include: {
-          organ: true,
+          organ: {
+            include: {
+              warningFieldMappings: {
+                select: { fieldName: true },
+                orderBy: { fieldName: 'asc' },
+              },
+            },
+          },
         },
       },
       prescriptions: {
@@ -537,21 +510,34 @@ function checkSurgeries(
   const warnings: SafetyWarning[] = [];
 
   for (const sh of patient.surgicalHistories) {
-    const organName = sh.organ?.name?.toLowerCase() ?? '';
-    const fieldName = ORGAN_TO_WARNING_FIELD[organName];
-    if (!fieldName) continue;
+    const organName = sh.organ?.name ?? 'Unknown organ';
+    const mappedFields = (sh.organ?.warningFieldMappings ?? []).map((m: any) => m.fieldName as string);
 
-    const fieldValue = drug[fieldName];
-    if (!hasContent(fieldValue)) continue;
+    if (mappedFields.length === 0) {
+      warnings.push(
+        warn(
+          'surgery',
+          'ORANGE',
+          `[Surgical History] ${organName} has no admin warning-field mapping configured. Map this organ in Admin > Operations to complete warning checks.`,
+          WarningSeverity.Low,
+        ),
+      );
+      continue;
+    }
 
-    warnings.push(
-      warn(
-        'surgery',
-        'ORANGE',
-        `[Surgical History] Recent ${sh.organ.name} surgery (${sh.surgeryTimeframe}). Drug has ${fieldName.replace('Warning', '')} warning: ${extractText(fieldValue)}`,
-        WarningSeverity.Medium,
-      ),
-    );
+    for (const fieldName of mappedFields) {
+      const fieldValue = drug[fieldName];
+      if (!hasContent(fieldValue)) continue;
+
+      warnings.push(
+        warn(
+          'surgery',
+          'ORANGE',
+          `[Surgical History] Recent ${organName} surgery (${sh.surgeryTimeframe}). Drug has ${fieldName.replace('Warning', '')} warning: ${extractText(fieldValue)}`,
+          WarningSeverity.Medium,
+        ),
+      );
+    }
   }
 
   return warnings;

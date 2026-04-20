@@ -2,7 +2,7 @@
 
 import "dotenv/config";
 import { PrismaPg } from "@prisma/adapter-pg";
-import { PrismaClient, Prisma } from "../generated/client/client";
+import { PrismaClient, Prisma, ActiveSubstanceLifestyleField } from "../generated/client/client";
 import * as bcrypt from "bcryptjs";
 
 const connectionString = `${process.env.DATABASE_URL}`;
@@ -25,8 +25,6 @@ async function main() {
   await prisma.prescriptionVersion.deleteMany();
   await prisma.prescription.deleteMany();
   await prisma.notification.deleteMany();
-  await prisma.appointment.deleteMany();
-  await prisma.consultation.deleteMany();
   await prisma.patientDoctor.deleteMany();
   await prisma.rating.deleteMany();
   await prisma.visit.deleteMany();
@@ -321,7 +319,6 @@ async function main() {
         title: "Panadol",
         activeSubstanceId: activeSubstances[0].id,
         companyId: companies[2].id, // GSK
-        availabilityStatus: "InStock",
       },
     }),
     prisma.tradeName.create({
@@ -329,7 +326,6 @@ async function main() {
         title: "Brufen",
         activeSubstanceId: activeSubstances[1].id,
         companyId: companies[0].id, // Pfizer
-        availabilityStatus: "InStock",
       },
     }),
     prisma.tradeName.create({
@@ -337,7 +333,6 @@ async function main() {
         title: "Amoxil",
         activeSubstanceId: activeSubstances[2].id,
         companyId: companies[2].id, // GSK
-        availabilityStatus: "InStock",
       },
     }),
     prisma.tradeName.create({
@@ -345,7 +340,6 @@ async function main() {
         title: "Glucophage",
         activeSubstanceId: activeSubstances[3].id,
         companyId: companies[3].id, // Sanofi
-        availabilityStatus: "InStock",
       },
     }),
     prisma.tradeName.create({
@@ -353,7 +347,6 @@ async function main() {
         title: "Norvasc",
         activeSubstanceId: activeSubstances[4].id,
         companyId: companies[0].id, // Pfizer
-        availabilityStatus: "InStock",
       },
     }),
     prisma.tradeName.create({
@@ -361,7 +354,6 @@ async function main() {
         title: "Losec",
         activeSubstanceId: activeSubstances[5].id,
         companyId: companies[1].id, // Novartis
-        availabilityStatus: "InStock",
       },
     }),
     prisma.tradeName.create({
@@ -369,7 +361,6 @@ async function main() {
         title: "Lipitor",
         activeSubstanceId: activeSubstances[6].id,
         companyId: companies[0].id, // Pfizer
-        availabilityStatus: "InStock",
       },
     }),
     prisma.tradeName.create({
@@ -377,7 +368,6 @@ async function main() {
         title: "Ventolin",
         activeSubstanceId: activeSubstances[7].id,
         companyId: companies[2].id, // GSK
-        availabilityStatus: "InStock",
       },
     }),
     prisma.tradeName.create({
@@ -385,7 +375,6 @@ async function main() {
         title: "Zyrtec",
         activeSubstanceId: activeSubstances[8].id,
         companyId: companies[1].id, // Novartis
-        availabilityStatus: "InStock",
       },
     }),
     prisma.tradeName.create({
@@ -393,7 +382,6 @@ async function main() {
         title: "Cozaar",
         activeSubstanceId: activeSubstances[9].id,
         companyId: companies[0].id, // Pfizer
-        availabilityStatus: "InStock",
       },
     }),
   ]);
@@ -1779,37 +1767,37 @@ async function main() {
   const lifestyleAlcohol = await prisma.lifestyle.create({
     data: {
       question: "Alcohol use",
-      activeSubstanceField: "interactionAlcohol",
+      activeSubstanceField: ActiveSubstanceLifestyleField.interactionAlcohol,
     },
   });
   const lifestyleCaffeine = await prisma.lifestyle.create({
     data: {
       question: "Excess caffeine / xanthines",
-      activeSubstanceField: "interactionXanthines",
+      activeSubstanceField: ActiveSubstanceLifestyleField.interactionXanthines,
     },
   });
   const lifestyleVitaminsFood = await prisma.lifestyle.create({
     data: {
       question: "Vitamins / food interactions",
-      activeSubstanceField: "interactionVitaminsFood",
+      activeSubstanceField: ActiveSubstanceLifestyleField.interactionVitaminsFood,
     },
   });
   const lifestyleMuscleRelaxant = await prisma.lifestyle.create({
     data: {
       question: "Muscle relaxant use",
-      activeSubstanceField: "interactionMuscleRelaxant",
+      activeSubstanceField: ActiveSubstanceLifestyleField.interactionMuscleRelaxant,
     },
   });
   const lifestyleAnticoagulant = await prisma.lifestyle.create({
     data: {
       question: "Anticoagulant use",
-      activeSubstanceField: "interactionAnticoagulant",
+      activeSubstanceField: ActiveSubstanceLifestyleField.interactionAnticoagulant,
     },
   });
   const lifestyleCorticosteroids = await prisma.lifestyle.create({
     data: {
       question: "Corticosteroid use",
-      activeSubstanceField: "interactionCorticosteroids",
+      activeSubstanceField: ActiveSubstanceLifestyleField.interactionCorticosteroids,
     },
   });
 
@@ -2237,110 +2225,7 @@ async function main() {
   console.log(`✅ Created ${prescriptions.length} prescriptions`);
 
   // ============================================
-  // SECTION 11: APPOINTMENTS
-  // ============================================
-  console.log("\n📅 Creating appointments...");
-  await prisma.appointment.createMany({
-    data: [
-      {
-        patientId: patients[0].id,
-        doctorId: doctors[0].id,
-        appointmentDate: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000), // 2 days from now
-        duration: 30,
-        status: "Scheduled",
-        notes: "Regular diabetes checkup - review HbA1c results",
-        reminderSent: false,
-      },
-      {
-        patientId: patients[1].id,
-        doctorId: doctors[0].id,
-        appointmentDate: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000), // 5 days from now
-        duration: 45,
-        status: "Confirmed",
-        notes:
-          "Follow-up on hypertension and hyperlipidemia - review lab results",
-        reminderSent: true,
-      },
-      {
-        patientId: patients[2].id,
-        doctorId: doctors[2].id,
-        appointmentDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days from now
-        duration: 20,
-        status: "Scheduled",
-        notes: "Allergy consultation - seasonal symptoms",
-        reminderSent: false,
-      },
-      {
-        patientId: patients[3].id,
-        doctorId: doctors[2].id,
-        appointmentDate: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000), // 10 days from now
-        duration: 30,
-        status: "Scheduled",
-        notes: "GERD follow-up",
-        reminderSent: false,
-      },
-      {
-        patientId: patients[4].id,
-        doctorId: doctors[1].id, // Pediatrician
-        appointmentDate: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000), // 14 days from now
-        duration: 30,
-        status: "Scheduled",
-        notes: "Asthma management review",
-        reminderSent: false,
-      },
-    ],
-  });
-  console.log("✅ Created appointments");
-
-  // ============================================
-  // SECTION 11B: CONSULTATIONS
-  // ============================================
-  console.log("\n💬 Creating consultations...");
-  await prisma.consultation.createMany({
-    data: [
-      {
-        patientId: patients[0].id,
-        doctorId: doctors[0].id,
-        consultationDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000), // 30 days ago
-        notes:
-          "Patient reports good glucose control. No hypoglycemic episodes.",
-        diagnosis: "Type 2 Diabetes Mellitus - Well controlled",
-        followUpRequired: true,
-        followUpDate: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000),
-      },
-      {
-        patientId: patients[1].id,
-        doctorId: doctors[0].id,
-        consultationDate: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000), // 15 days ago
-        notes: "BP stable on current medication. Lipid panel ordered.",
-        diagnosis:
-          "Hypertension - Controlled, Hyperlipidemia - Under treatment",
-        followUpRequired: true,
-        followUpDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
-      },
-      {
-        patientId: patients[2].id,
-        doctorId: doctors[2].id,
-        consultationDate: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000), // 10 days ago
-        notes: "Allergic rhinitis symptoms improved with medication.",
-        diagnosis: "Allergic Rhinitis - Responding to treatment",
-        followUpRequired: false,
-      },
-      {
-        patientId: patients[4].id,
-        doctorId: doctors[1].id,
-        consultationDate: new Date(Date.now() - 20 * 24 * 60 * 60 * 1000), // 20 days ago
-        notes: "Asthma well controlled. No recent exacerbations.",
-        diagnosis: "Mild persistent asthma - Well controlled",
-        followUpRequired: true,
-        followUpDate: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
-      },
-    ],
-  });
-  console.log("✅ Created consultations");
-
-  // ============================================
-  // SECTION 11C: VISITS
+  // SECTION 11: VISITS
   // ============================================
   console.log("\n🏥 Creating visit records...");
   await prisma.visit.createMany({
@@ -2588,9 +2473,9 @@ async function main() {
       },
       {
         userId: patientUser2.id,
-        type: "AppointmentReminder",
-        title: "Appointment Reminder",
-        message: "You have an appointment with Dr. Smith in 2 days",
+        type: "SystemAlert",
+        title: "Follow-up reminder",
+        message: "Follow-up visit with Dr. Smith is coming up in 2 days",
         isRead: false,
         deliveryStatus: "Delivered",
       },
@@ -2605,18 +2490,18 @@ async function main() {
       },
       {
         userId: patientUser1.id,
-        type: "AppointmentReminder",
-        title: "Upcoming Appointment",
+        type: "SystemAlert",
+        title: "Follow-up reminder",
         message:
-          "Reminder: You have a diabetes checkup with Dr. Smith in 2 days",
+          "Reminder: Diabetes follow-up with Dr. Smith is in 2 days",
         isRead: true,
         readAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
         deliveryStatus: "Delivered",
       },
       {
         userId: patientUser5.id,
-        type: "AppointmentReminder",
-        title: "Pediatric Checkup Reminder",
+        type: "SystemAlert",
+        title: "Pediatric follow-up",
         message:
           "Emma's asthma management review with Dr. Johnson is in 14 days",
         isRead: false,
@@ -4205,7 +4090,7 @@ async function main() {
   console.log(`   - Comprehensive patient data including:`);
   console.log(`     • Medical histories, family histories, allergies`);
   console.log(`     • Lifestyle data, child profiles`);
-  console.log(`     • Consultations, visits, medical reports`);
+  console.log(`     • Visits, medical reports`);
   console.log(`   - Adverse drug reactions, share links, ratings`);
 
   // ============================================
@@ -4516,7 +4401,6 @@ async function main() {
       title: "Coumadin",
       activeSubstanceId: warfarinSubstance.id,
       companyId: companies[0].id, // Pfizer
-      availabilityStatus: "InStock",
     },
   });
 
@@ -4863,7 +4747,7 @@ async function main() {
   console.log(`   - Comprehensive patient data:`);
   console.log(`     • Medical histories, family histories, allergies`);
   console.log(`     • Lifestyle data, child profiles, patient diseases`);
-  console.log(`     • Consultations, visits, appointments`);
+  console.log(`     • Visits, medical reports`);
   console.log(`     • Medical reports, adverse drug reactions`);
   console.log(`     • Share links, ratings, notifications`);
   console.log(`   - Supporting data:`);
