@@ -261,7 +261,6 @@ export const searchActiveSubstances = async (
         orderBy: { name: "asc" },
         include: {
           _count: { select: { tradeNames: true } },
-          classification: { select: { id: true, name: true } },
         },
       }),
       prisma.activeSubstance.count({ where: whereClause }),
@@ -303,11 +302,11 @@ export const searchActiveSubstances = async (
           >;
           base.safetyStatus = {
             ...ss,
-            filteredData: shapeActiveSubstanceForApi(fd),
+            filteredData: fd,
           };
         }
       }
-      return shapeActiveSubstanceForApi(base);
+      return base;
     });
 
     res.json({
