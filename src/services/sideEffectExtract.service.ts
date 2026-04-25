@@ -8,7 +8,9 @@ import { prisma } from '../lib/prisma';
  * All values stored in these fields are string[] (as written by the import
  * controller's parseArrayField helper).
  */
-const SIDE_EFFECT_FIELDS: Record<string, { frequency: string; bodySystem: string }> = {
+type SideEffectFieldMeta = { frequency: string; bodySystem: string };
+
+const SIDE_EFFECT_FIELDS: Record<string, SideEffectFieldMeta> = {
   // ── VeryCommon (16 fields) ───────────────────────────────────────
   veryCommonGIT:             { frequency: 'VeryCommon', bodySystem: 'GIT' },
   veryCommonBlood:           { frequency: 'VeryCommon', bodySystem: 'Blood' },
@@ -125,31 +127,30 @@ const SIDE_EFFECT_FIELDS: Record<string, { frequency: string; bodySystem: string
   unknownInfections:     { frequency: 'Unknown', bodySystem: 'Infections' },
 };
 
+const BODY_SYSTEM_ALIASES: Record<string, string> = {
+  Nervous: 'NervousSystem',
+  NervousSystem: 'NervousSystem',
+  Infection: 'Infections',
+  Infections: 'Infections',
+  Immunity: 'Immune',
+  Immune: 'Immune',
+};
+
+export function normalizeBodySystem(rawBodySystem: string): string {
+  const trimmed = rawBodySystem.trim();
+  if (!trimmed) return 'Other';
+  return BODY_SYSTEM_ALIASES[trimmed] ?? trimmed;
+}
+
 export interface SideEffectEntry {
   name: string;
-  bodySystem: string;
+  frequency: string;
 }
 
 export interface ExtractedSideEffects {
   activeSubstanceId: number;
-  sideEffects: {
-    veryCommon: SideEffectEntry[];
-    common: SideEffectEntry[];
-    uncommon: SideEffectEntry[];
-    rare: SideEffectEntry[];
-    veryRare: SideEffectEntry[];
-    unknown: SideEffectEntry[];
-  };
+  sideEffects: Record<string, SideEffectEntry[]>;
 }
-
-const FREQUENCY_KEY_MAP: Record<string, keyof ExtractedSideEffects['sideEffects']> = {
-  VeryCommon: 'veryCommon',
-  Common:     'common',
-  Uncommon:   'uncommon',
-  Rare:       'rare',
-  VeryRare:   'veryRare',
-  Unknown:    'unknown',
-};
 
 /** Build a Prisma select object that includes only the side-effect fields + id + name. */
 const SIDE_EFFECT_SELECT = {
@@ -160,7 +161,7 @@ const SIDE_EFFECT_SELECT = {
 
 /**
  * Reads the side-effect JSON array fields directly from the ActiveSubstance
- * record and returns them grouped by frequency tier.
+ * record and returns them grouped by normalized organ/body system.
  *
  * No data is written to the database — this is a pure read and transform.
  * Returns null when the active substance does not exist.
@@ -175,26 +176,21 @@ export async function extractSideEffects(
 
   if (!substance) return null;
 
-  const grouped: ExtractedSideEffects['sideEffects'] = {
-    veryCommon: [],
-    common:     [],
-    uncommon:   [],
-    rare:       [],
-    veryRare:   [],
-    unknown:    [],
-  };
+  const grouped: ExtractedSideEffects['sideEffects'] = {};
 
   for (const [fieldName, { frequency, bodySystem }] of Object.entries(SIDE_EFFECT_FIELDS)) {
     const raw = (substance as Record<string, unknown>)[fieldName];
     if (!raw || !Array.isArray(raw) || raw.length === 0) continue;
 
-    const key = FREQUENCY_KEY_MAP[frequency];
-    if (!key) continue;
+    const normalizedBodySystem = normalizeBodySystem(bodySystem);
+    if (!grouped[normalizedBodySystem]) {
+      grouped[normalizedBodySystem] = [];
+    }
 
     for (const item of raw) {
       const name = String(item).trim();
       if (name) {
-        grouped[key].push({ name, bodySystem });
+        grouped[normalizedBodySystem].push({ name, frequency });
       }
     }
   }

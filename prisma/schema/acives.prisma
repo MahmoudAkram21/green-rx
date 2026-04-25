@@ -208,6 +208,7 @@ model ActiveSubstance {
   patientMedicines                PatientMedicine[]
   addMedicineRequests             AddMedicineRequest[]
   medicationSideEffects           MedicationSideEffect[]
+  adrReports                      AdrReport[]
   activeSubstancePatientAllergies ActiveSubstancePatientAllergy[]
   allergenActiveSubstances        AllergenActiveSubstance[]
 
@@ -256,6 +257,7 @@ model TradeName {
   excipientTradeName           ExcipientTradeName[]
   tradnamePatientAllergies     TradenamePatientAllergy[]
   companyInstructionsPdf       InstructionPdf?
+  adrReports                   AdrReport[]
 
   @@index([title])
   @@index([activeSubstanceId])

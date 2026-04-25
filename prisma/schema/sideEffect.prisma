@@ -78,3 +78,103 @@ model PatientSideEffect {
   @@index([patientMedicineId])
   @@map("patient_side_effects")
 }
+
+enum AdrReportRoutingStatus {
+  STORED_ONLY
+  STORED_AND_EMAILED
+  EMAIL_FAILED
+}
+
+enum AdrSideEffectSourceType {
+  CATALOG
+  EXTRACTED
+}
+
+/** Input kind for mobile clients rendering the ADR questionnaire (labels still come from labelEn/labelAr). */
+enum AdrQuestionFieldType {
+  TEXT
+  TEXTAREA
+  DATE
+  BOOLEAN
+  NUMBER
+  SINGLE_CHOICE
+}
+
+/** Admin-managed ADR questionnaire fields; `key` is immutable after create (API contract). */
+model AdrQuestion {
+  id         Int                  @id @default(autoincrement())
+  key        String               @unique
+  labelEn    String
+  labelAr    String
+  required   Boolean              @default(false)
+  fieldType  AdrQuestionFieldType @default(TEXT)
+  isActive   Boolean              @default(true)
+  sortOrder  Int                  @default(0)
+  createdAt  DateTime             @default(now())
+  updatedAt  DateTime             @updatedAt
+
+  @@index([isActive, sortOrder])
+  @@map("adr_questions")
+}
+
+model AdrReport {
+  id                Int                    @id @default(autoincrement())
+  referenceCode     String                 @unique
+  patientId         Int
+  tradeNameId       Int
+  activeSubstanceId Int?
+  companyId         Int?
+  locale            String                 @default("en")
+  routingStatus     AdrReportRoutingStatus
+  emailStatus       String?
+  emailError        String?
+  submittedAt       DateTime               @default(now())
+  createdAt         DateTime               @default(now())
+  updatedAt         DateTime               @updatedAt
+
+  patient         Patient         @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  tradeName       TradeName       @relation(fields: [tradeNameId], references: [id], onDelete: Cascade)
+  activeSubstance ActiveSubstance? @relation(fields: [activeSubstanceId], references: [id], onDelete: SetNull)
+  company         Company?        @relation(fields: [companyId], references: [id], onDelete: SetNull)
+  items           AdrReportItem[]
+
+  @@index([tradeNameId])
+  @@index([companyId])
+  @@index([submittedAt])
+  @@index([patientId])
+  @@map("adr_reports")
+}
+
+model AdrReportItem {
+  id           Int                     @id @default(autoincrement())
+  adrReportId  Int
+  sideEffectName String
+  reportKey    String
+  sourceType   AdrSideEffectSourceType
+  organ        String?
+  frequency    String?
+  createdAt    DateTime                @default(now())
+
+  adrReport AdrReport          @relation(fields: [adrReportId], references: [id], onDelete: Cascade)
+  answers   AdrReportAnswer[]
+
+  @@index([adrReportId])
+  @@index([reportKey])
+  @@map("adr_report_items")
+}
+
+model AdrReportAnswer {
+  id              Int      @id @default(autoincrement())
+  adrReportItemId Int
+  questionKey     String
+  questionLabelEn String
+  questionLabelAr String
+  answerValue     String
+  createdAt       DateTime @default(now())
+
+  adrReportItem AdrReportItem @relation(fields: [adrReportItemId], references: [id], onDelete: Cascade)
+
+  @@index([adrReportItemId])
+  @@index([questionKey])
+  @@map("adr_report_answers")
+}

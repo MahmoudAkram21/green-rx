@@ -325,6 +325,7 @@ model Patient {
   medicines               PatientMedicine[]
   addMedicineRequests     AddMedicineRequest[]
   patientSideEffects      PatientSideEffect[]
+  adrReports              AdrReport[]
 
   @@index([age])
   @@index([ageClassification])
@@ -589,6 +590,7 @@ model Company {
   tradeNames           TradeName[]
   contractingCompanies ContractingCompany[]
   adverseReactions     AdverseDrugReaction[]
+  adrReports           AdrReport[]
 
   @@map("companies")
 }

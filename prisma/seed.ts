@@ -4,6 +4,7 @@ import "dotenv/config";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient, Prisma, ActiveSubstanceLifestyleField } from "../generated/client/client";
 import * as bcrypt from "bcryptjs";
+import { DEFAULT_ADR_QUESTION_TEMPLATE } from "../src/constants/adrQuestionDefaults";
 
 const connectionString = `${process.env.DATABASE_URL}`;
 const adapter = new PrismaPg({ connectionString });
@@ -82,8 +83,28 @@ async function main() {
   await prisma.activeSubstance.deleteMany();
   await prisma.company.deleteMany();
   await prisma.contraindicationTermMapping.deleteMany();
+  await prisma.adrQuestion.deleteMany();
 
   console.log("✅ Cleanup completed");
+
+  // ============================================
+  // ADR questionnaire (admin-editable via dashboard)
+  // ============================================
+  console.log("\n📋 Seeding ADR questions...");
+  for (let i = 0; i < DEFAULT_ADR_QUESTION_TEMPLATE.length; i++) {
+    const q = DEFAULT_ADR_QUESTION_TEMPLATE[i];
+    await prisma.adrQuestion.create({
+      data: {
+        key: q.key,
+        labelEn: q.labelEn,
+        labelAr: q.labelAr,
+        required: q.required,
+        fieldType: q.fieldType,
+        isActive: true,
+        sortOrder: i,
+      },
+    });
+  }
 
   // ============================================
   // SECTION 1: COMPANIES

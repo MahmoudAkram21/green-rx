@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { prisma } from '../lib/prisma';
 import { PatientSideEffectSeverity, Prisma, SideEffectStatus } from '../../generated/client/client';
 import { extractSideEffects, type ExtractedSideEffects } from '../services/sideEffectExtract.service';
-import { getPatientSideEffectsFallbackRedirectUrl } from './settings.controller';
+import { getAdrQuestionTemplate, submitAdrReport } from '../services/adrReport.service';
 
 /** Prisma filter: active contracting row, not past expiry (null expiry = open-ended). */
 const activeContractingCompanyFilter: Prisma.ContractingCompanyWhereInput = {
@@ -20,18 +20,10 @@ function flattenExtractedForMerge(extracted: ExtractedSideEffects): Array<{
     bodySystem: string;
     frequency: string;
 }> {
-    const tiers: Array<{ tier: keyof ExtractedSideEffects['sideEffects']; frequency: string }> = [
-        { tier: 'veryCommon', frequency: 'VeryCommon' },
-        { tier: 'common', frequency: 'Common' },
-        { tier: 'uncommon', frequency: 'Uncommon' },
-        { tier: 'rare', frequency: 'Rare' },
-        { tier: 'veryRare', frequency: 'VeryRare' },
-        { tier: 'unknown', frequency: 'Unknown' },
-    ];
     const out: Array<{ name: string; bodySystem: string; frequency: string }> = [];
-    for (const { tier, frequency } of tiers) {
-        for (const e of extracted.sideEffects[tier]) {
-            out.push({ name: e.name, bodySystem: e.bodySystem, frequency });
+    for (const [bodySystem, rows] of Object.entries(extracted.sideEffects)) {
+        for (const e of rows) {
+            out.push({ name: e.name, bodySystem, frequency: e.frequency });
         }
     }
     return out;
@@ -135,31 +127,11 @@ export const getSideEffectsByMedication = async (req: Request, res: Response, ne
             return;
         }
 
-        if (!patientMedicine.tradeName || !patientMedicine.tradeName.company) {
-            const redirect = await getPatientSideEffectsFallbackRedirectUrl();
-            res.json({
-                supported: false,
-                redirect,
-                reason: 'NO_COMPANY',
-                message: 'This medicine is not linked to a manufacturer. Open the link for more information.',
-            });
-            return;
-        }
-
-        const hasContract = tradeNameAllowsSideEffectsDisclosure(patientMedicine.tradeName);
-        if (!hasContract) {
-            const redirect = await getPatientSideEffectsFallbackRedirectUrl();
-            res.json({
-                supported: false,
-                redirect,
-                reason: 'NO_ACTIVE_CONTRACT',
-                message: 'Side effects are not available in the app for this medicine. Open the link for more information.',
-            });
-            return;
-        }
+        // Side effects are available even when no company/contract exists.
+        // Reporting for no-company medicines is stored internally (no company email route).
 
         const activeSubstanceId =
-            patientMedicine.activeSubstanceId ?? patientMedicine.tradeName.activeSubstanceId;
+            patientMedicine.activeSubstanceId ?? patientMedicine.tradeName?.activeSubstanceId;
 
         if (!activeSubstanceId) {
             res.json({ supported: true, sideEffects: [] });
@@ -216,139 +188,46 @@ export const getSideEffectsByMedication = async (req: Request, res: Response, ne
     }
 };
 
-function parseAddSideEffectSeverityNotes(body: Record<string, unknown>):
-    | {
-          ok: true;
-          severity: PatientSideEffectSeverity | null | undefined;
-          notes: string | null | undefined;
-      }
-    | { ok: false; error: string } {
-    let severity: PatientSideEffectSeverity | null | undefined = undefined;
-    if (Object.prototype.hasOwnProperty.call(body, 'severity')) {
-        if (body.severity === null) {
-            severity = null;
-        } else if (typeof body.severity === 'string') {
-            if (
-                body.severity !== PatientSideEffectSeverity.Mild &&
-                body.severity !== PatientSideEffectSeverity.Moderate &&
-                body.severity !== PatientSideEffectSeverity.Severe
-            ) {
-                return { ok: false, error: 'severity must be Mild, Moderate, or Severe' };
-            }
-            severity = body.severity as PatientSideEffectSeverity;
-        } else {
-            return { ok: false, error: 'severity must be Mild, Moderate, Severe, or null' };
-        }
-    }
-
-    let notes: string | null | undefined = undefined;
-    if (Object.prototype.hasOwnProperty.call(body, 'notes')) {
-        if (body.notes === null) {
-            notes = null;
-        } else if (typeof body.notes === 'string') {
-            const t = body.notes.trim();
-            notes = t.length > 0 ? t : null;
-        } else {
-            return { ok: false, error: 'notes must be a string or null when provided' };
-        }
-    }
-
-    return { ok: true, severity, notes };
-}
-
+/** POST /side-effects/add — ADR questionnaire (multiple side effects, each with answers). */
 export const addSideEffect = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { medicationId, name } = req.body;
-
-        if (!name || typeof name !== 'string' || !name.trim()) {
-            res.status(400).json({ error: 'name is required' });
+        const { tradeNameId, sideEffects, locale } = req.body ?? {};
+        if (!tradeNameId || typeof tradeNameId !== 'number') {
+            res.status(400).json({ error: 'INVALID_TRADE_NAME_ID', message: 'tradeNameId (number) is required' });
             return;
         }
-        if (!medicationId || typeof medicationId !== 'number') {
-            res.status(400).json({ error: 'medicationId (number) is required' });
-            return;
-        }
-
-        const parsedSn = parseAddSideEffectSeverityNotes(req.body as Record<string, unknown>);
-        if (!parsedSn.ok) {
-            res.status(400).json({ error: parsedSn.error });
-            return;
-        }
-        const { severity: sevIn, notes: notesIn } = parsedSn;
-
-        const patient = await prisma.patient.findUnique({ where: { userId: req.user!.userId } });
-        if (!patient) {
-            res.status(404).json({ error: 'Patient profile not found' });
+        if (!Array.isArray(sideEffects) || sideEffects.length === 0) {
+            res.status(400).json({ error: 'INVALID_SIDE_EFFECTS', message: 'sideEffects must be a non-empty array' });
             return;
         }
 
-        const resolved = await resolvePatientMedicineForSideEffectReporting(patient.id, medicationId);
-        if (!resolved.ok) {
-            if (resolved.reason === 'ambiguous') {
-                res.status(400).json({ error: 'AMBIGUOUS_MEDICATION_ID', message: ambiguousMedicationIdMessage });
-                return;
-            }
-            res.status(404).json({ error: 'Medication not found or does not belong to you' });
-            return;
-        }
-        const patientMedicine = resolved.patientMedicine;
-        const patientMedicineId = patientMedicine.id;
+        const result = await submitAdrReport({
+            userId: req.user!.userId,
+            tradeNameId,
+            locale,
+            sideEffects,
+        });
 
-        if (patientMedicine.tradeName && !patientMedicine.tradeName.company) {
-            const redirect = await getPatientSideEffectsFallbackRedirectUrl();
-            res.status(403).json({
-                error: 'SIDE_EFFECTS_TRADE_NAME_NO_COMPANY',
-                message:
-                    'This medicine is not linked to a manufacturer. You cannot add side effects here; open the link for more information.',
-                redirect,
+        if (!result.ok) {
+            res.status(result.status).json({
+                error: result.error,
+                message: result.message,
+                ...(result as Record<string, unknown>),
             });
             return;
         }
 
-        const trimmedName = name.trim();
-        const reportKey = trimmedName.toLowerCase();
-
-        const createSeverity = sevIn === undefined ? null : sevIn;
-        const createNotes = notesIn === undefined ? null : notesIn;
-        const updateData: {
-            severity?: PatientSideEffectSeverity | null;
-            notes?: string | null;
-            reportedAt?: Date;
-        } = {};
-        if (sevIn !== undefined) updateData.severity = sevIn;
-        if (notesIn !== undefined) updateData.notes = notesIn;
-        if (sevIn !== undefined || notesIn !== undefined) {
-            updateData.reportedAt = new Date();
-        }
-
-        const patientSideEffect = await prisma.patientSideEffect.upsert({
-            where: {
-                patientId_patientMedicineId_reportKey: {
-                    patientId: patient.id,
-                    patientMedicineId: patientMedicineId,
-                    reportKey,
-                },
-            },
-            create: {
-                patientId: patient.id,
-                patientMedicineId: patientMedicineId,
-                reportedName: trimmedName,
-                reportKey,
-                severity: createSeverity,
-                notes: createNotes,
-                reportedAt: new Date(),
-            },
-            update: Object.keys(updateData).length > 0 ? updateData : {},
-        });
-
         res.status(201).json({
-            message: 'Side effect reported for this medication.',
-            patientSideEffect: {
-                id: patientSideEffect.id,
-                name: patientSideEffect.reportedName,
-                severity: patientSideEffect.severity,
-                notes: patientSideEffect.notes,
-                reportedAt: patientSideEffect.reportedAt,
+            message: 'ADR report submitted successfully',
+            result: result.result,
+            report: {
+                id: result.report.id,
+                referenceCode: result.report.referenceCode,
+                tradeNameId: result.report.tradeNameId,
+                companyId: result.report.companyId,
+                routingStatus: result.report.routingStatus,
+                emailStatus: result.report.emailStatus,
+                submittedAt: result.report.submittedAt,
             },
         });
     } catch (error) {
@@ -500,18 +379,6 @@ export const reportSideEffects = async (req: Request, res: Response, next: NextF
         const patientMedicine = resolved.patientMedicine;
         const patientMedicineId = patientMedicine.id;
 
-        if (patientMedicine.tradeName && !patientMedicine.tradeName.company) {
-            const redirect = await getPatientSideEffectsFallbackRedirectUrl();
-            res.status(403).json({
-                success: false,
-                error: 'SIDE_EFFECTS_TRADE_NAME_NO_COMPANY',
-                message:
-                    'This medicine is not linked to a manufacturer. Reporting side effects here is not available; open the link for more information.',
-                redirect,
-            });
-            return;
-        }
-
         const reportKeys = parsedInput.map((i) => i.reportKey);
         const existingSubmissions = await prisma.patientSideEffect.findMany({
             where: {
@@ -650,8 +517,7 @@ export const getMySideEffectsByMedication = async (req: Request, res: Response, 
  * NEW ENDPOINT: Extract side effects for a trade name from database
  * GET /medicines/:tradeNameId/side-effects
  * - Filters by TradeNameSideEffect table
- * - Validates active contract with company
- * - Groups by frequency
+ * - Groups by organ/body system
  */
 export const getSideEffectsByTradeName = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -697,29 +563,7 @@ export const getSideEffectsByTradeName = async (req: Request, res: Response, nex
             return;
         }
 
-        const redirect = await getPatientSideEffectsFallbackRedirectUrl();
-
-        if (!tradeName.company) {
-            res.status(403).json({
-                success: false,
-                error: 'NO_COMPANY',
-                message: 'This medicine is not linked to a manufacturer. Open the link for more information.',
-                redirect,
-            });
-            return;
-        }
-
         const hasActiveContract = tradeNameAllowsSideEffectsDisclosure(tradeName);
-
-        if (!hasActiveContract) {
-            res.status(403).json({
-                success: false,
-                error: 'NO_ACTIVE_CONTRACT',
-                message: 'No active contract for this medication. Open the link for more information.',
-                redirect,
-            });
-            return;
-        }
 
         // 3. Extract side effects on-the-fly from ActiveSubstance JSON fields
         const extracted = await extractSideEffects(tradeName.activeSubstanceId);
@@ -728,7 +572,7 @@ export const getSideEffectsByTradeName = async (req: Request, res: Response, nex
             success: true,
             medicineId: tradeName.id,
             tradeName: tradeName.title,
-            hasContract: true,
+            hasContract: hasActiveContract,
             instructionPdf: tradeName.companyInstructionsPdf ? {
                 id: tradeName.companyInstructionsPdf.id,
                 url: tradeName.companyInstructionsPdf.url,
@@ -736,14 +580,19 @@ export const getSideEffectsByTradeName = async (req: Request, res: Response, nex
                 createdAt: tradeName.companyInstructionsPdf.createdAt,
                 updatedAt: tradeName.companyInstructionsPdf.updatedAt,
             } : null,
-            sideEffects: extracted?.sideEffects ?? {
-                veryCommon: [],
-                common:     [],
-                uncommon:   [],
-                rare:       [],
-                veryRare:   [],
-                unknown:    [],
-            },
+            sideEffects: extracted?.sideEffects ?? {},
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+/** GET /adr/questions-template?lang=en|ar */
+export const getAdrQuestionsTemplate = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const lang = typeof req.query.lang === 'string' ? req.query.lang : 'en';
+        res.json({
+            template: await getAdrQuestionTemplate(lang),
         });
     } catch (error) {
         next(error);

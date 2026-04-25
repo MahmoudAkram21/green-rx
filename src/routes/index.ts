@@ -50,6 +50,7 @@ import medicinesRoutes from './medicines.routes';
 import batchCheckRoutes from './batchCheck.routes';
 import excipientRoutes from './excipient.rout';
 import otpRoutes from './otp.routes';
+import adrRoutes from './adr.routes';
 // Mount routes (admin first - has nested paths like /admin/side-effects/:id/trade-names)
 // Explicit route for trade-names (avoids nested router matching issues)
 router.post('/admin/side-effects/:id/trade-names', authenticate, authorize([UserRole.Admin, UserRole.SuperAdmin]), adminSideEffectController.attachTradeNames);
@@ -99,6 +100,7 @@ router.use('/medicines', medicinesRoutes);
 router.use('/batch-check', batchCheckRoutes);
 router.use('/excipients', excipientRoutes);
 router.use('/otp', otpRoutes);
+router.use('/adr', adrRoutes);
 // Example route
 router.get('/', (_req: Request, res: Response) => {
   res.json({ message: 'API is working' });

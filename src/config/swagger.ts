@@ -491,6 +491,12 @@ s('/admin/side-effects', 'post', ADMIN_TAG, 'Create a new side effect and option
   s('/admin/side-effects/{id}/trade-names/{tradeNameId}', 'delete', ADMIN_TAG, 'Remove a trade name from a side effect', true, [p('id'), p('tradeNameId')]);
 s('/admin/side-effects/{id}/approve', 'patch', ADMIN_TAG, 'Approve a patient-submitted side effect (makes it visible in mobile app)', true, [p('id')]);
 
+// Admin — ADR questionnaire (DB-backed; keys immutable after create)
+s('/admin/adr-questions', 'get', ADMIN_TAG, 'List all ADR questionnaire rows (active and inactive), ordered by sortOrder.');
+s('/admin/adr-questions', 'post', ADMIN_TAG, 'Create an ADR question. Body: key (camelCase, immutable after create), labelEn, labelAr, optional required, sortOrder, isActive.', true, [], { schemaRef: 'CreateAdrQuestionRequest' }, { '201': 'Created', '400': 'Validation', '409': 'Duplicate key' });
+s('/admin/adr-questions/reorder', 'put', ADMIN_TAG, 'Set display order. Body: orderedIds — every question id exactly once.', true, [], { schemaRef: 'ReorderAdrQuestionsRequest' }, { '200': 'Full list after reorder' });
+s('/admin/adr-questions/{id}', 'put', ADMIN_TAG, 'Update labels and flags only; **key** must not appear in body.', true, [p('id')], { schemaRef: 'UpdateAdrQuestionRequest' }, { '400': 'Invalid body or key in payload', '404': 'Not found' });
+
 s('/admin/ratings', 'get', ADMIN_TAG, 'List all ratings (paginated) for admin dashboard', true, [], undefined, { '200': 'Ratings list with averageRating, totalRatings' });
 s('/admin/ratings/{id}', 'delete', ADMIN_TAG, 'Delete any rating (admin)', true, [p('id')]);
 s('/admin/statistics', 'get', ADMIN_TAG, 'Get platform statistics');
@@ -502,16 +508,16 @@ s('/settings/logo', 'post', ADMIN_TAG, 'Upload / update application logo (Admin)
 s('/settings/nearby-doctors-radius', 'get', ADMIN_TAG, 'Get nearby doctors search radius in km (Admin). Used by GET /doctors/nearby.', true);
 s('/settings/nearby-doctors-radius', 'put', ADMIN_TAG, 'Set nearby doctors search radius in km (Admin). Body: { radiusKm: number } (1–500).', true, [], { schemaRef: 'PutNearbyDoctorsRadiusRequest' });
 s('/settings/patient-side-effects-fallback-redirect', 'get', ADMIN_TAG, 'Get the **effective** patient fallback URL (`AppSetting.key` = `patientSideEffectsFallbackRedirectUrl`). If unset or invalid, the server uses `https://edaegypt.gov.eg`. **Auth:** Admin or SuperAdmin.', true);
-s('/settings/patient-side-effects-fallback-redirect', 'put', [ADMIN_TAG, SUPERADMIN_SETTINGS_WRITE_TAG], 'Set patient fallback URL (`patientSideEffectsFallbackRedirectUrl`) — **http** or **https** only. **Auth: SuperAdmin only** (Admin receives 403). Patients get this `redirect` when GET /side-effects/by-medication returns `supported: false`, GET /medicines/:id/side-effects returns 403, or POST `/side-effects/add` / POST `/my-side-effects` refuse a trade name without a company.', true, [], { schemaRef: 'PutPatientSideEffectsFallbackRedirectRequest' });
+s('/settings/patient-side-effects-fallback-redirect', 'put', [ADMIN_TAG, SUPERADMIN_SETTINGS_WRITE_TAG], 'Set patient fallback URL (`patientSideEffectsFallbackRedirectUrl`) — **http** or **https** only. **Auth: SuperAdmin only** (Admin receives 403). Legacy: patients may receive this `redirect` when older clients hit unsupported flows; ADR submission is **POST /side-effects/add** (stored with or without company email).', true, [], { schemaRef: 'PutPatientSideEffectsFallbackRedirectRequest' });
 
 // PATIENT SHARE TOKEN (QR Code sharing)
 s('/patient-share-token/generate', 'post', [PATIENT_TAGS.SHARE_WITH_DOCTOR, DOCTOR_TAGS.MY_PATIENTS, DOCTOR_PATIENTS_SECTION], 'Generate a secure QR code token for sharing profile with a doctor (Patient only). Returns token + QR code base64 data URL. Token expires in 10 minutes.', true, [], undefined, { '201': 'Token generated successfully (token, expiresAt, qrCode base64)' });
 s('/patient-share-token/redeem', 'post', [PATIENT_TAGS.SHARE_WITH_DOCTOR, DOCTOR_TAGS.MY_PATIENTS, DOCTOR_PATIENTS_SECTION], 'Redeem a patient share QR token (Doctor only). Validates token, creates patient-doctor relationship, sends notifications, returns patient details.', true, [], { schemaRef: 'RedeemShareTokenRequest' }, { '201': 'Patient linked successfully', '404': 'Invalid token or profile not found', '409': 'Patient already linked to this doctor', '410': 'Token expired or already used' });
 
 // SIDE EFFECTS (My Side Effects)
-s('/side-effects/by-medication/{medicationId}', 'get', [PATIENT_TAGS.SIDE_EFFECTS, DOCTOR_PATIENTS_SECTION], 'Get side effects for a medicine: merges **approved** catalog labels with active-substance **extract** strings (same shape — **name** only for reporting). **`medicationId` may be:** (1) **`PatientMedicine.id`** from GET `/patient-medicines/patient/{patientId}`, or (2) **`TradeName.id`** from GET `/trade-names/search`. Same contract/company rules apply. If **supported: false**, returns **redirect**, **reason**, **message**. **404** if id matches neither table. **Reporting:** POST `/my-side-effects` or `/side-effects/add` with **`medicationId` = `PatientMedicine.id` or unambiguous `TradeName.id`** and **`{ name, severity?, notes? }`** (copy **name** from this list).', true, [p('medicationId')], undefined, { '400': 'Invalid medicationId', '404': 'No PatientMedicine or TradeName for this id' }, 'SideEffectsByMedicationResponse');
-s('/side-effects/add', 'post', PATIENT_TAGS.SIDE_EFFECTS, 'Report one side effect **name** for a medication (Patient). Stored on **`PatientSideEffect`** only (no catalog row). **`medicationId`:** `PatientMedicine.id` **or** `TradeName.id` if only one profile row uses that trade name (otherwise **400** `AMBIGUOUS_MEDICATION_ID`). Optional **severity** and **notes**. Upserts on same patient + medicine + normalized name. **400** validation / ambiguous trade; **403** trade name without company (+ **redirect**); **404** no patient profile or medication not yours.', true, [], { schemaRef: 'AddSideEffectRequest' }, { '201': 'Created — see AddSideEffectResponse', '400': 'Missing name or medicationId, ambiguous medicationId, or invalid severity/notes', '403': 'Trade name has no company', '404': 'Patient or medication' });
-s('/medicines/{tradeNameId}/side-effects', 'get', [PATIENT_TAGS.SIDE_EFFECTS, DOCTOR_PATIENTS_SECTION], '**Extract** side-effect **names** from the trade name’s **active substance** structured fields (computed on read — **no** `sideEffectId` on each string). Response groups strings by frequency tier (`veryCommon`, `common`, …). Allowed when the trade name has an **active manufacturer** or qualifying **contracting-company** link. **403** NO_COMPANY / NO_ACTIVE_CONTRACT (+ **redirect**). To **report** these to your profile, POST `/my-side-effects` with **`{ name, severity?, notes? }`** (same spelling as returned). Includes **instructionPdf** when present.', true, [p('tradeNameId')], undefined, { '403': 'No company or inactive manufacturer — see error body + redirect', '404': 'Trade name not found' }, 'ExtractSideEffectsResponse');
+s('/side-effects/by-medication/{medicationId}', 'get', [PATIENT_TAGS.SIDE_EFFECTS, DOCTOR_PATIENTS_SECTION], 'Get side effects for a medicine: merges **approved** catalog labels with active-substance **extract** strings (same shape — **name** only for reporting). **`medicationId` may be:** (1) **`PatientMedicine.id`** from GET `/patient-medicines/patient/{patientId}`, or (2) **`TradeName.id`** from GET `/trade-names/search`. **404** if id matches no `PatientMedicine`. **ADR reporting:** POST **`/side-effects/add`** with **`tradeNameId`**, **`sideEffects[]`** (each with **`name`** + **`answers[]`** from GET **`/adr/questions-template`**). Bulk simple reports: POST **`/my-side-effects`** with **`medicationId`** + **`{ name, severity?, notes? }`**.', true, [p('medicationId')], undefined, { '400': 'Invalid medicationId', '404': 'No PatientMedicine or TradeName for this id' }, 'SideEffectsByMedicationResponse');
+s('/side-effects/add', 'post', PATIENT_TAGS.SIDE_EFFECTS, 'Submit **ADR questionnaire** for one trade name: **`tradeNameId`**, **`sideEffects`** (non-empty array; each item **`name`** + **`answers`** with `questionKey` / `answerValue` from GET **`/adr/questions-template`**). Report is always stored; if manufacturer email exists, anonymized email is attempted. **400** validation; **404** patient profile or trade name not found.', true, [], { schemaRef: 'CreateAdrReportRequest' }, { '201': 'ADR report created — see CreateAdrReportResponse', '400': 'Invalid body, missing answers, or invalid side effect names', '404': 'Patient or trade name' });
+s('/medicines/{tradeNameId}/side-effects', 'get', [PATIENT_TAGS.SIDE_EFFECTS, DOCTOR_PATIENTS_SECTION], '**Extract** side-effect **names** from the trade name’s **active substance** structured fields (computed on read — **no** `sideEffectId` on each string). Response groups by normalized organ key and each item includes `frequency`. To **report** these to your profile, POST `/my-side-effects` with **`{ name, severity?, notes? }`** (same spelling as returned). Includes **instructionPdf** when present.', true, [p('tradeNameId')], undefined, { '404': 'Trade name not found' }, 'ExtractSideEffectsResponse');
 
 // INSTRUCTION PDF (Medicine instructions)
 s('/trade-names/{tradeNameId}/instruction-pdf/view', 'post', [DOCTOR_TAGS.DRUG_SAFETY, DOCTOR_PATIENTS_SECTION], 'View instruction PDF for a medicine and increment the view counter. Doctor or Admin: call this when opening the PDF so views are tracked. Returns PDF metadata including url (not file bytes).', true, [p('tradeNameId')], undefined, { '404': 'Instruction PDF not found for this medicine' }, 'ViewInstructionPdfResponse');
@@ -519,6 +525,7 @@ s('/trade-names/{tradeNameId}/instruction-pdf/stats', 'get', [DOCTOR_TAGS.DRUG_S
 s('/my-side-effects', 'post', PATIENT_TAGS.SIDE_EFFECTS, 'Report side effects for a medication (Patient). Body: **`medicationId`** — **`PatientMedicine.id`** **or** **`TradeName.id`** when a single profile medicine matches — and **`sideEffects`** array of **`{ name, severity?, notes? }`**. Stored on **`PatientSideEffect`** only. **`sideEffectId` is not accepted.** **400** ambiguous `medicationId`; **403** not in profile or no company (**redirect**); **409** duplicate report.', true, [], { schemaRef: 'ReportSideEffectsRequest' }, { '201': 'Created — see ReportSideEffectsResponse', '400': 'Invalid body, ambiguous medicationId, or severity/notes', '403': 'Not in profile or trade name without company', '404': 'Patient profile not found', '409': 'Duplicate submission' });
 s('/my-side-effects', 'get', [PATIENT_TAGS.SIDE_EFFECTS, DOCTOR_PATIENTS_SECTION], 'Get all side effects reported by the patient');
 s('/my-side-effects/by-medication/{medicationId}', 'get', [PATIENT_TAGS.SIDE_EFFECTS, DOCTOR_PATIENTS_SECTION], 'Get side effects reported for one medicine. **`medicationId`:** **`PatientMedicine.id`** or **`TradeName.id`** if only one profile row matches (**400** if ambiguous).', true, [p('medicationId')]);
+s('/adr/questions-template', 'get', [PATIENT_TAGS.SIDE_EFFECTS, DOCTOR_PATIENTS_SECTION], 'Get ADR questionnaire template in EN/AR (served from **database** for active rows; falls back to server defaults if none seeded). Each item includes **`fieldType`** (`TEXT`, `TEXTAREA`, `DATE`, `BOOLEAN`, `NUMBER`, `SINGLE_CHOICE`) for mobile UI. Query: `lang=en|ar`.', true, [q('lang', 'Language for primary label. Defaults to en.')], undefined, {}, 'AdrQuestionTemplateResponse');
 
 // IMPORT
 s('/import/active-substances', 'post', ADMIN_TAG, 'Import active substances from Excel/CSV file. Uses fixed column indexes (not header titles). Column 180 (Trade Name) is parsed as comma-separated values and each value is inserted into TradeName linked to the created active substance.');
@@ -561,30 +568,24 @@ if (paths['/my-side-effects']?.post) {
 
 if (paths['/side-effects/add']?.post) {
   paths['/side-effects/add'].post.responses['201'] = {
-    description: 'Side effect name stored on `PatientSideEffect` for this medication (no catalog row created).',
+    description: 'ADR report stored (`AdrReport` + items + answers). `result` is `stored_only` or `stored_and_emailed`.',
     content: {
-      'application/json': { schema: { $ref: '#/components/schemas/AddSideEffectResponse' } }
+      'application/json': { schema: { $ref: '#/components/schemas/CreateAdrReportResponse' } }
     }
   };
   const addErr = {
     type: 'object',
     required: ['error'],
-    properties: { error: { type: 'string', example: 'name is required' } }
+    properties: { error: { type: 'string', example: 'INVALID_TRADE_NAME_ID' }, message: { type: 'string' } }
   };
   paths['/side-effects/add'].post.responses['400'] = {
     description:
-      'Validation — missing **name** or **medicationId**, invalid **severity** / **notes**, or **AMBIGUOUS_MEDICATION_ID** (`TradeName.id` matches several profile medicines — use `PatientMedicine.id`).',
+      'Validation — missing **tradeNameId** / **sideEffects**, invalid answers, **MISSING_REQUIRED_ANSWERS**, **INVALID_SIDE_EFFECT_SELECTION**, or empty **sideEffects**.',
     content: { 'application/json': { schema: addErr } }
   };
   paths['/side-effects/add'].post.responses['404'] = {
-    description: 'Patient profile missing or medicationId not in this patient’s list.',
+    description: 'Patient profile missing (`PATIENT_NOT_FOUND`) or **tradeNameId** not found (`TRADE_NAME_NOT_FOUND`).',
     content: { 'application/json': { schema: addErr } }
-  };
-  paths['/side-effects/add'].post.responses['403'] = {
-    description: 'Trade name is not linked to a manufacturer.',
-    content: {
-      'application/json': { schema: { $ref: '#/components/schemas/SideEffectTradeNameNoCompanyResponse' } }
-    }
   };
 }
 
@@ -2705,38 +2706,6 @@ const options: Record<string, unknown> = {
             duplicates: { type: 'array', items: { type: 'string' }, description: 'Normalized **reportKey** values already reported for this patient + medication (error DUPLICATE_SUBMISSION).' }
           }
         },
-        AddSideEffectRequest: {
-          description: 'Report a side effect **name** for a medication. Required: medicationId, name. Optional: severity, notes (stored on `PatientSideEffect` only). Upsert key: patient + medicine + normalized name. Not allowed when the trade name has no **company** (403 + redirect).',
-          type: 'object',
-          required: ['medicationId', 'name'],
-          properties: {
-            medicationId: { type: 'integer', minimum: 1, example: 8, description: 'Required. **`PatientMedicine.id`** from GET `/patient-medicines/patient/{patientId}`, **or** **`TradeName.id`** when exactly one of your profile medicines uses that trade name.' },
-            name: { type: 'string', example: 'Headache', description: 'Required. Name of the side effect (e.g. "Headache").' },
-            severity: { allOf: [{ $ref: '#/components/schemas/PatientSideEffectSeverity' }], nullable: true, description: 'Optional. Omit for unknown; null clears on update if key present.' },
-            notes: { type: 'string', maxLength: 500, nullable: true, description: 'Optional patient notes.' }
-          },
-          example: { medicationId: 8, name: 'Headache', severity: 'Moderate', notes: 'After evening dose' }
-        },
-        AddSideEffectResponse: {
-          description: '201 response for POST /side-effects/add.',
-          type: 'object',
-          required: ['message', 'patientSideEffect'],
-          properties: {
-            message: { type: 'string', example: 'Side effect reported for this medication.' },
-            patientSideEffect: {
-              type: 'object',
-              required: ['id', 'name', 'reportedAt'],
-              description: 'Patient report row for this medication + reported name.',
-              properties: {
-                id: { type: 'integer', example: 1001 },
-                name: { type: 'string', example: 'Headache', description: '`PatientSideEffect.reportedName`' },
-                severity: { allOf: [{ $ref: '#/components/schemas/PatientSideEffectSeverity' }], nullable: true },
-                notes: { type: 'string', nullable: true },
-                reportedAt: { type: 'string', format: 'date-time' }
-              }
-            }
-          }
-        },
         ReportSideEffectItemRequest: {
           description:
             'One side effect to report: **`name`** (e.g. from GET `/side-effects/by-medication/{id}` or GET `/medicines/{tradeNameId}/side-effects`). Optional **severity** and **notes**. Do not send `sideEffectId`.',
@@ -2843,21 +2812,21 @@ const options: Record<string, unknown> = {
         },
         ExtractedSideEffectEntry: {
           description:
-            'One string read from the active substance’s side-effect field map. **No** `sideEffectId` — use this **name** (and optional severity/notes) in POST `/my-side-effects` as `{ name }`.',
+            'One string read from the active substance side-effect field map and grouped under a normalized organ key. **No** `sideEffectId` — use this **name** in reporting flows.',
           type: 'object',
-          required: ['name', 'bodySystem'],
+          required: ['name', 'frequency'],
           properties: {
             name: { type: 'string', example: 'Headache' },
-            bodySystem: {
+            frequency: {
               type: 'string',
-              example: 'NervousSystem',
-              description: 'Bucket from the extraction map (e.g. GIT, NervousSystem, Cardiac).',
+              example: 'VeryCommon',
+              description: 'Frequency tier copied from source field metadata.',
             },
           },
         },
         ExtractSideEffectsResponse: {
           description:
-            'GET `/medicines/{tradeNameId}/side-effects`. Side-effect strings are **derived on read** from active-substance JSON-style fields (not necessarily rows in `side_effects`). Grouped by frequency tier. Requires active manufacturer / contract (else 403).',
+            'GET `/medicines/{tradeNameId}/side-effects`. Side-effect strings are **derived on read** from active-substance JSON-style fields (not necessarily rows in `side_effects`). Grouped by normalized organ key with frequency.',
           type: 'object',
           properties: {
             success: { type: 'boolean', example: true },
@@ -2878,15 +2847,11 @@ const options: Record<string, unknown> = {
             },
             sideEffects: {
               type: 'object',
-              properties: {
-                veryCommon: { type: 'array', items: { $ref: '#/components/schemas/ExtractedSideEffectEntry' } },
-                common: { type: 'array', items: { $ref: '#/components/schemas/ExtractedSideEffectEntry' } },
-                uncommon: { type: 'array', items: { $ref: '#/components/schemas/ExtractedSideEffectEntry' } },
-                rare: { type: 'array', items: { $ref: '#/components/schemas/ExtractedSideEffectEntry' } },
-                veryRare: { type: 'array', items: { $ref: '#/components/schemas/ExtractedSideEffectEntry' } },
-                unknown: { type: 'array', items: { $ref: '#/components/schemas/ExtractedSideEffectEntry' } },
+              additionalProperties: {
+                type: 'array',
+                items: { $ref: '#/components/schemas/ExtractedSideEffectEntry' }
               },
-              description: 'Buckets of `{ name, bodySystem }` entries. Tier key implies frequency (VeryCommon, Common, …).',
+              description: 'Object map keyed by normalized organ/body system (e.g. `NervousSystem`, `GIT`).',
             }
           },
           example: {
@@ -2902,15 +2867,140 @@ const options: Record<string, unknown> = {
               updatedAt: '2026-04-02T15:45:00.000Z'
             },
             sideEffects: {
-              veryCommon: [
-                { name: 'Headache', bodySystem: 'NervousSystem' },
-                { name: 'Dizziness', bodySystem: 'NervousSystem' }
+              NervousSystem: [
+                { name: 'Headache', frequency: 'VeryCommon' },
+                { name: 'Dizziness', frequency: 'VeryCommon' }
               ],
-              common: [{ name: 'Nausea', bodySystem: 'GIT' }],
-              uncommon: [],
-              rare: [],
-              veryRare: [],
-              unknown: []
+              GIT: [{ name: 'Nausea', frequency: 'Common' }]
+            }
+          }
+        },
+        AdrQuestionTemplateItem: {
+          type: 'object',
+          required: ['key', 'labelEn', 'labelAr', 'required', 'fieldType'],
+          properties: {
+            key: { type: 'string', example: 'adrStartDate' },
+            labelEn: { type: 'string', example: 'Date of ADR started' },
+            labelAr: { type: 'string', example: 'تاريخ بدء الأثار الجانبية للدواء' },
+            label: { type: 'string', example: 'Date of ADR started', description: 'Localized primary label based on lang query.' },
+            required: { type: 'boolean', example: true },
+            fieldType: {
+              type: 'string',
+              enum: ['TEXT', 'TEXTAREA', 'DATE', 'BOOLEAN', 'NUMBER', 'SINGLE_CHOICE'],
+              description:
+                'Mobile UI hint: TEXT (single line), TEXTAREA (long text), DATE (date picker), BOOLEAN (yes/no), NUMBER (numeric), SINGLE_CHOICE (picker / radio). Answers remain strings in POST /side-effects/add.',
+              example: 'DATE',
+            },
+          }
+        },
+        AdrQuestionTemplateResponse: {
+          type: 'object',
+          required: ['template'],
+          properties: {
+            template: { type: 'array', items: { $ref: '#/components/schemas/AdrQuestionTemplateItem' } }
+          }
+        },
+        AdrQuestionAdmin: {
+          type: 'object',
+          required: ['id', 'key', 'labelEn', 'labelAr', 'required', 'fieldType', 'isActive', 'sortOrder', 'createdAt', 'updatedAt'],
+          properties: {
+            id: { type: 'integer' },
+            key: { type: 'string', example: 'adrStartDate' },
+            labelEn: { type: 'string' },
+            labelAr: { type: 'string' },
+            required: { type: 'boolean' },
+            fieldType: {
+              type: 'string',
+              enum: ['TEXT', 'TEXTAREA', 'DATE', 'BOOLEAN', 'NUMBER', 'SINGLE_CHOICE'],
+            },
+            isActive: { type: 'boolean' },
+            sortOrder: { type: 'integer' },
+            createdAt: { type: 'string', format: 'date-time' },
+            updatedAt: { type: 'string', format: 'date-time' }
+          }
+        },
+        CreateAdrQuestionRequest: {
+          type: 'object',
+          required: ['key', 'labelEn', 'labelAr'],
+          properties: {
+            key: { type: 'string', example: 'customField', description: 'Must match /^[a-zA-Z][a-zA-Z0-9]*$/. Immutable after create.' },
+            labelEn: { type: 'string' },
+            labelAr: { type: 'string' },
+            required: { type: 'boolean', default: false },
+            fieldType: {
+              type: 'string',
+              enum: ['TEXT', 'TEXTAREA', 'DATE', 'BOOLEAN', 'NUMBER', 'SINGLE_CHOICE'],
+              default: 'TEXT',
+              description: 'How the mobile app should render this question.',
+            },
+            sortOrder: { type: 'integer', description: 'Optional; defaults to max+1' },
+            isActive: { type: 'boolean', default: true }
+          }
+        },
+        UpdateAdrQuestionRequest: {
+          type: 'object',
+          description: 'Do not send `key`.',
+          properties: {
+            labelEn: { type: 'string' },
+            labelAr: { type: 'string' },
+            required: { type: 'boolean' },
+            isActive: { type: 'boolean' },
+            fieldType: {
+              type: 'string',
+              enum: ['TEXT', 'TEXTAREA', 'DATE', 'BOOLEAN', 'NUMBER', 'SINGLE_CHOICE'],
+            },
+          }
+        },
+        ReorderAdrQuestionsRequest: {
+          type: 'object',
+          required: ['orderedIds'],
+          properties: {
+            orderedIds: { type: 'array', items: { type: 'integer' }, description: 'Permutation of all AdrQuestion ids' }
+          }
+        },
+        CreateAdrReportRequestItemAnswer: {
+          type: 'object',
+          required: ['questionKey', 'answerValue'],
+          properties: {
+            questionKey: { type: 'string', example: 'adrStartDate' },
+            answerValue: { type: 'string', example: '2026-04-20' }
+          }
+        },
+        CreateAdrReportRequestItem: {
+          type: 'object',
+          required: ['name', 'answers'],
+          properties: {
+            name: { type: 'string', example: 'Headache' },
+            answers: { type: 'array', items: { $ref: '#/components/schemas/CreateAdrReportRequestItemAnswer' } }
+          }
+        },
+        CreateAdrReportRequest: {
+          description: 'Body for **POST /side-effects/add** (ADR questionnaire). Use **GET /adr/questions-template** for `questionKey` values.',
+          type: 'object',
+          required: ['tradeNameId', 'sideEffects'],
+          properties: {
+            tradeNameId: { type: 'integer', example: 12 },
+            locale: { type: 'string', example: 'en' },
+            sideEffects: { type: 'array', items: { $ref: '#/components/schemas/CreateAdrReportRequestItem' } }
+          }
+        },
+        CreateAdrReportResponse: {
+          description: '201 response for **POST /side-effects/add**.',
+          type: 'object',
+          properties: {
+            message: { type: 'string', example: 'ADR report submitted successfully' },
+            result: { type: 'string', enum: ['stored_only', 'stored_and_emailed'] },
+            report: {
+              type: 'object',
+              properties: {
+                id: { type: 'integer', example: 101 },
+                referenceCode: { type: 'string', example: 'ADR-20260421-AB12CD34' },
+                tradeNameId: { type: 'integer', example: 12 },
+                companyId: { type: 'integer', nullable: true, example: 2 },
+                routingStatus: { type: 'string', example: 'STORED_AND_EMAILED' },
+                emailStatus: { type: 'string', nullable: true, example: 'SENT' },
+                submittedAt: { type: 'string', format: 'date-time' }
+              }
             }
           }
         },

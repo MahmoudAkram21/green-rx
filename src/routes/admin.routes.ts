@@ -2,6 +2,7 @@ import express from 'express';
 import adminController from '../controllers/admin.controller';
 import * as permissionController from '../controllers/permission.controller';
 import * as adminSideEffectController from '../controllers/adminSideEffect.controller';
+import * as adminAdrQuestionController from '../controllers/adminAdrQuestion.controller';
 import { authenticate, authorize } from '../middleware/auth.middleware';
 import { UserRole } from '../../generated/client/client';
 
@@ -18,6 +19,12 @@ router.post('/side-effects/:id/medications', adminSideEffectController.attachTra
 router.delete('/side-effects/:id/trade-names/:tradeNameId', adminSideEffectController.removeTradeName);
 router.put('/side-effects/:id', adminSideEffectController.updateSideEffect);
 router.patch('/side-effects/:id/approve', adminSideEffectController.approveSideEffect);
+
+// ADR questionnaire (dashboard-managed)
+router.get('/adr-questions', adminAdrQuestionController.listAdrQuestions);
+router.put('/adr-questions/reorder', adminAdrQuestionController.reorderAdrQuestions);
+router.post('/adr-questions', adminAdrQuestionController.createAdrQuestion);
+router.put('/adr-questions/:id', adminAdrQuestionController.updateAdrQuestion);
 
 // Permissions & role-permissions
 router.get('/permissions', permissionController.listPermissions);
