@@ -4,6 +4,8 @@ import {
     Patient,
 } from '../../generated/client/client';
 import { checkAllergyConflicts } from './allergyCheck.service';
+import { hasContent, extractText } from '../utils/activeSubstanceFieldText.util';
+import { shouldApplyPregnancyDrugWarnings } from '../utils/patientPregnancyWarning.util';
 
 interface DrugInteractionCheck {
     hasDrugInteractions: boolean;
@@ -137,7 +139,7 @@ class DrugInteractionService {
         }
 
         // 4. Check pregnancy and lactation warnings
-        if (patient.pregnancyWarning && newDrug.pregnancyWarning) {
+        if (shouldApplyPregnancyDrugWarnings(patient as any) && newDrug.pregnancyWarning) {
             warnings.push({
                 type: 'pregnancy',
                 severity: 'high',
@@ -177,7 +179,7 @@ class DrugInteractionService {
             hasDrugInteractions: interactionCheck.warnings.length > 0 || interactionCheck.alerts.length > 0,
             hasAllergyConflicts: allergyGate.blocked,
             hasDiseaseWarnings: diseaseCheck.length > 0,
-            hasPregnancyWarnings: (patient.pregnancyWarning || patient.lactation) &&
+            hasPregnancyWarnings: (shouldApplyPregnancyDrugWarnings(patient as any) || patient.lactation) &&
                 (!!newDrug.pregnancyWarning || !!newDrug.lactationWarning),
             hasAgeWarnings: ageCheck.length > 0,
             hasLifestyleWarnings: lifestyleCheck.length > 0,
@@ -199,13 +201,8 @@ class DrugInteractionService {
             const fieldName = pl.lifestyle?.activeSubstanceField;
             if (!fieldName) continue;
             const fieldValue = (drug as any)[fieldName];
-            if (fieldValue == null || fieldValue === '') continue;
-            let message = fieldValue;
-            if (typeof fieldValue === 'object' && fieldValue !== null && 'en' in fieldValue) {
-                message = (fieldValue as { en?: string }).en ?? JSON.stringify(fieldValue);
-            } else if (typeof fieldValue !== 'string') {
-                message = String(fieldValue);
-            }
+            if (!hasContent(fieldValue)) continue;
+            const message = extractText(fieldValue);
             warnings.push({
                 type: 'lifestyle',
                 severity: 'medium',

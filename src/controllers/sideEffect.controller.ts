@@ -3,6 +3,7 @@ import { prisma } from '../lib/prisma';
 import { PatientSideEffectSeverity, Prisma, SideEffectStatus } from '../../generated/client/client';
 import { extractSideEffects, type ExtractedSideEffects } from '../services/sideEffectExtract.service';
 import { getAdrQuestionTemplate, submitAdrReport } from '../services/adrReport.service';
+import { getPatientSideEffectsFallbackRedirectUrl } from './settings.controller';
 
 /** Prisma filter: active contracting row, not past expiry (null expiry = open-ended). */
 const activeContractingCompanyFilter: Prisma.ContractingCompanyWhereInput = {
@@ -134,7 +135,12 @@ export const getSideEffectsByMedication = async (req: Request, res: Response, ne
             patientMedicine.activeSubstanceId ?? patientMedicine.tradeName?.activeSubstanceId;
 
         if (!activeSubstanceId) {
-            res.json({ supported: true, sideEffects: [] });
+            const tnEarly = patientMedicine.tradeName;
+            const externalSubmitUrlEarly =
+                tnEarly != null && tnEarly.company == null
+                    ? await getPatientSideEffectsFallbackRedirectUrl()
+                    : null;
+            res.json({ supported: true, sideEffects: [], externalSubmitUrl: externalSubmitUrlEarly });
             return;
         }
 
@@ -179,9 +185,14 @@ export const getSideEffectsByMedication = async (req: Request, res: Response, ne
 
         merged.sort((a, b) => a.name.localeCompare(b.name));
 
+        const tn = patientMedicine.tradeName;
+        const externalSubmitUrl =
+            tn != null && tn.company == null ? await getPatientSideEffectsFallbackRedirectUrl() : null;
+
         res.json({
             supported: true,
             sideEffects: merged,
+            externalSubmitUrl,
         });
     } catch (error) {
         next(error);
@@ -217,9 +228,16 @@ export const addSideEffect = async (req: Request, res: Response, next: NextFunct
             return;
         }
 
+        const externalSubmitUrl = result.externalSubmitUrl ?? null;
+        const message =
+            externalSubmitUrl != null
+                ? 'ADR report submitted successfully. Open externalSubmitUrl in a browser to submit to the national reporting website if you need to file there as well.'
+                : 'ADR report submitted successfully';
+
         res.status(201).json({
-            message: 'ADR report submitted successfully',
+            message,
             result: result.result,
+            externalSubmitUrl,
             report: {
                 id: result.report.id,
                 referenceCode: result.report.referenceCode,
@@ -417,11 +435,18 @@ export const reportSideEffects = async (req: Request, res: Response, next: NextF
             })
         );
 
+        const tnReport = patientMedicine.tradeName;
+        const externalSubmitUrl =
+            tnReport != null && tnReport.company == null
+                ? await getPatientSideEffectsFallbackRedirectUrl()
+                : null;
+
         res.status(201).json({
             success: true,
             message: `${results.length} side effect(s) reported successfully`,
             submitted: results.length,
             reportedCount: results.length,
+            externalSubmitUrl,
             sideEffects: results.map((r) => ({
                 id: r.id,
                 name: r.reportedName,
@@ -568,11 +593,15 @@ export const getSideEffectsByTradeName = async (req: Request, res: Response, nex
         // 3. Extract side effects on-the-fly from ActiveSubstance JSON fields
         const extracted = await extractSideEffects(tradeName.activeSubstanceId);
 
+        const externalSubmitUrl =
+            tradeName.company == null ? await getPatientSideEffectsFallbackRedirectUrl() : null;
+
         res.json({
             success: true,
             medicineId: tradeName.id,
             tradeName: tradeName.title,
             hasContract: hasActiveContract,
+            externalSubmitUrl,
             instructionPdf: tradeName.companyInstructionsPdf ? {
                 id: tradeName.companyInstructionsPdf.id,
                 url: tradeName.companyInstructionsPdf.url,

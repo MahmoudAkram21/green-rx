@@ -1821,6 +1821,30 @@ async function main() {
       activeSubstanceField: ActiveSubstanceLifestyleField.interactionCorticosteroids,
     },
   });
+  const lifestyleGlasses = await prisma.lifestyle.create({
+    data: {
+      question: "Glasses (vision correction)",
+      activeSubstanceField: ActiveSubstanceLifestyleField.eyeDisordersWarning,
+    },
+  });
+  const lifestyleLowSleep = await prisma.lifestyle.create({
+    data: {
+      question: "Low sleeping hours",
+      activeSubstanceField: ActiveSubstanceLifestyleField.nervousSystemWarning,
+    },
+  });
+  const lifestyleSmoking = await prisma.lifestyle.create({
+    data: {
+      question: "Smoking",
+      activeSubstanceField: ActiveSubstanceLifestyleField.pulmonaryWarning,
+    },
+  });
+  const lifestyleLowWater = await prisma.lifestyle.create({
+    data: {
+      question: "Low water intake",
+      activeSubstanceField: ActiveSubstanceLifestyleField.renalWarning,
+    },
+  });
 
   // Patient lifestyle answers (many-to-many: patientId, lifestyleId, value) — all patients have answers for all questions
   await prisma.patientLifestyle.createMany({
@@ -1981,6 +2005,22 @@ async function main() {
         value: false,
       },
     ],
+  });
+
+  const extraLifestyleIds = [
+    lifestyleGlasses.id,
+    lifestyleLowSleep.id,
+    lifestyleSmoking.id,
+    lifestyleLowWater.id,
+  ];
+  await prisma.patientLifestyle.createMany({
+    data: patients.flatMap((p) =>
+      extraLifestyleIds.map((lifestyleId) => ({
+        patientId: p.id,
+        lifestyleId,
+        value: false,
+      })),
+    ),
   });
 
   const lifestyleCatalogCount = await prisma.lifestyle.count();

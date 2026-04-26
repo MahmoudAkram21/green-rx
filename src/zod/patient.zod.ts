@@ -24,9 +24,9 @@ export const createPatientSchema = z.object({
     .number()
     .positive({ message: "Height must be greater than zero" })
     .optional(),
-  pregnancyStatus: z.boolean().optional(),
+  pregnancyStatus: z.boolean().optional(), // Female + true: server enables pregnancy drug warnings even if pregnancyWarning omitted
   trimester: z.number().int().min(1).max(3).optional(),
-  pregnancyWarning: z.boolean().optional(),
+  pregnancyWarning: z.boolean().optional(), // Optional; implied true when female and pregnancyStatus true
   lactation: z.boolean().optional(),
   contracipient: z.boolean().optional(),
   isContracipientHormonal: z.boolean().optional(),

@@ -298,8 +298,8 @@ model Patient {
   pregnancyStatus         Boolean? // true if currently pregnant (female)
   trimester               Int? // 1, 2, or 3 when pregnancyStatus is true
   lactation               Boolean               @default(false)
-  contracipient           Boolean?
-  isContracipientHormonal Boolean? // e.g. "Lactose, Sucrose, Magnesium Stearate"
+  contracipient           Boolean? // patient uses contraception (clinical context; typically collected for female patients)
+  isContracipientHormonal Boolean? // true if the contraceptive method is hormonal (e.g. pill, patch, implant)
   bloodType               String? // e.g. A+, A-, B+, B-, AB+, AB-, O+, O-
   profileCompleteness     Int                   @default(0) // percentage
   createdAt               DateTime              @default(now())
@@ -439,6 +439,36 @@ enum ActiveSubstanceLifestyleField {
   interactionVaccines
   interactionAnthelmintics
   interactionPDE5Inhibitors
+  // Clinical warning / special-population fields (ActiveSubstance column names; CSV "Warning …" block)
+  contraindications
+  pregnancyWarning
+  lactationWarning
+  reproductiveWarningFemale
+  reproductiveWarningMale
+  specialPopulationChildren
+  specialPopulationElderly
+  ethnicAction
+  hepaticWarning
+  renalWarning
+  medicationErrorWarning
+  carcinogenicityMutagenicity
+  gitWarning
+  metabolismWarning
+  pulmonaryWarning
+  immuneSystemWarning
+  infectionWarning
+  bloodWarning
+  vascularWarning
+  electrolyteImbalanceWarning
+  cardiacWarning
+  psychiatricWarning
+  nervousSystemWarning
+  skinConnectiveTissueWarning
+  musculoSkeletalWarning
+  eyeDisordersWarning
+  earDisordersWarning
+  effectOnDriving
+  interferenceLabTests
 }
 
 model Lifestyle {

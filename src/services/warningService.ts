@@ -1,6 +1,8 @@
 import { prisma } from '../lib/prisma';
 import { WarningSeverity, WarningRuleType } from '../../generated/client/client';
 import { checkAllergyConflicts } from './allergyCheck.service';
+import { hasContent, extractText } from '../utils/activeSubstanceFieldText.util';
+import { shouldApplyPregnancyDrugWarnings } from '../utils/patientPregnancyWarning.util';
 
 export interface Warning {
   severity: WarningSeverity;
@@ -149,7 +151,7 @@ export async function generateWarnings(
   // ============================================
   // CHECK 3: PREGNANCY WARNINGS
   // ============================================
-  if (patient.gender === 'Female' && patient.pregnancyWarning) {
+  if (shouldApplyPregnancyDrugWarnings(patient)) {
     const pregnancyWarnings = checkPregnancyWarnings(activeSubstance);
     warnings.push(...pregnancyWarnings);
   }
@@ -209,13 +211,8 @@ function checkLifestyleWarnings(patient: any, activeSubstance: any): Warning[] {
     const fieldName = pl.lifestyle?.activeSubstanceField;
     if (!fieldName) continue;
     const fieldValue = activeSubstance[fieldName];
-    if (fieldValue == null || fieldValue === '') continue;
-    let message = fieldValue;
-    if (typeof fieldValue === 'object' && fieldValue !== null && 'en' in fieldValue) {
-      message = (fieldValue as { en?: string }).en ?? JSON.stringify(fieldValue);
-    } else if (typeof fieldValue !== 'string') {
-      message = String(fieldValue);
-    }
+    if (!hasContent(fieldValue)) continue;
+    const message = extractText(fieldValue);
     warnings.push({
       severity: WarningSeverity.Medium,
       type: 'LifestyleWarning',

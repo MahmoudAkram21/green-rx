@@ -87,6 +87,10 @@ export const createOrUpdatePatient = async (
             age,
             ageClassification,
         };
+        // Female + currently pregnant: always enable pregnancy drug-warning path (mobile may omit pregnancyWarning).
+        if (isFemale && rest.pregnancyStatus === true) {
+            (patientData as { pregnancyWarning?: boolean }).pregnancyWarning = true;
+        }
 
         // Check if patient already exists for this user
         const existingPatient = await prisma.patient.findUnique({

@@ -515,14 +515,14 @@ s('/patient-share-token/generate', 'post', [PATIENT_TAGS.SHARE_WITH_DOCTOR, DOCT
 s('/patient-share-token/redeem', 'post', [PATIENT_TAGS.SHARE_WITH_DOCTOR, DOCTOR_TAGS.MY_PATIENTS, DOCTOR_PATIENTS_SECTION], 'Redeem a patient share QR token (Doctor only). Validates token, creates patient-doctor relationship, sends notifications, returns patient details.', true, [], { schemaRef: 'RedeemShareTokenRequest' }, { '201': 'Patient linked successfully', '404': 'Invalid token or profile not found', '409': 'Patient already linked to this doctor', '410': 'Token expired or already used' });
 
 // SIDE EFFECTS (My Side Effects)
-s('/side-effects/by-medication/{medicationId}', 'get', [PATIENT_TAGS.SIDE_EFFECTS, DOCTOR_PATIENTS_SECTION], 'Get side effects for a medicine: merges **approved** catalog labels with active-substance **extract** strings (same shape — **name** only for reporting). **`medicationId` may be:** (1) **`PatientMedicine.id`** from GET `/patient-medicines/patient/{patientId}`, or (2) **`TradeName.id`** from GET `/trade-names/search`. **404** if id matches no `PatientMedicine`. **ADR reporting:** POST **`/side-effects/add`** with **`tradeNameId`**, **`sideEffects[]`** (each with **`name`** + **`answers[]`** from GET **`/adr/questions-template`**). Bulk simple reports: POST **`/my-side-effects`** with **`medicationId`** + **`{ name, severity?, notes? }`**.', true, [p('medicationId')], undefined, { '400': 'Invalid medicationId', '404': 'No PatientMedicine or TradeName for this id' }, 'SideEffectsByMedicationResponse');
-s('/side-effects/add', 'post', PATIENT_TAGS.SIDE_EFFECTS, 'Submit **ADR questionnaire** for one trade name: **`tradeNameId`**, **`sideEffects`** (non-empty array; each item **`name`** + **`answers`** with `questionKey` / `answerValue` from GET **`/adr/questions-template`**). Report is always stored; if manufacturer email exists, anonymized email is attempted. **400** validation; **404** patient profile or trade name not found.', true, [], { schemaRef: 'CreateAdrReportRequest' }, { '201': 'ADR report created — see CreateAdrReportResponse', '400': 'Invalid body, missing answers, or invalid side effect names', '404': 'Patient or trade name' });
-s('/medicines/{tradeNameId}/side-effects', 'get', [PATIENT_TAGS.SIDE_EFFECTS, DOCTOR_PATIENTS_SECTION], '**Extract** side-effect **names** from the trade name’s **active substance** structured fields (computed on read — **no** `sideEffectId` on each string). Response groups by normalized organ key and each item includes `frequency`. To **report** these to your profile, POST `/my-side-effects` with **`{ name, severity?, notes? }`** (same spelling as returned). Includes **instructionPdf** when present.', true, [p('tradeNameId')], undefined, { '404': 'Trade name not found' }, 'ExtractSideEffectsResponse');
+s('/side-effects/by-medication/{medicationId}', 'get', [PATIENT_TAGS.SIDE_EFFECTS, DOCTOR_PATIENTS_SECTION], 'Get side effects for a medicine: merges **approved** catalog labels with active-substance **extract** strings (same shape — **name** only for reporting). **`medicationId` may be:** (1) **`PatientMedicine.id`** from GET `/patient-medicines/patient/{patientId}`, or (2) **`TradeName.id`** from GET `/trade-names/search`. **404** if id matches no `PatientMedicine`. When the trade name has **no** linked manufacturer (`company` null), **`externalSubmitUrl`** is the SuperAdmin-configured fallback (GET `/settings/patient-side-effects-fallback-redirect`, default `https://edaegypt.gov.eg`) for optional external reporting guidance. **ADR reporting:** POST **`/side-effects/add`** with **`tradeNameId`**, **`sideEffects[]`** (each with **`name`** + **`answers[]`** from GET **`/adr/questions-template`**). Bulk simple reports: POST **`/my-side-effects`** with **`medicationId`** + **`{ name, severity?, notes? }`**.', true, [p('medicationId')], undefined, { '400': 'Invalid medicationId', '404': 'No PatientMedicine or TradeName for this id' }, 'SideEffectsByMedicationResponse');
+s('/side-effects/add', 'post', PATIENT_TAGS.SIDE_EFFECTS, 'Submit **ADR questionnaire** for one trade name: **`tradeNameId`**, **`sideEffects`** (non-empty array; each item **`name`** + **`answers`** with `questionKey` / `answerValue` from GET **`/adr/questions-template`**). Report is always stored; if manufacturer email exists, anonymized email is attempted. When the trade name has **no** manufacturer, **`externalSubmitUrl`** in the 201 body is the same fallback URL as GET by-medication (optional link for patients). **400** validation; **404** patient profile or trade name not found.', true, [], { schemaRef: 'CreateAdrReportRequest' }, { '201': 'ADR report created — see CreateAdrReportResponse', '400': 'Invalid body, missing answers, or invalid side effect names', '404': 'Patient or trade name' });
+s('/medicines/{tradeNameId}/side-effects', 'get', [PATIENT_TAGS.SIDE_EFFECTS, DOCTOR_PATIENTS_SECTION], '**Extract** side-effect **names** from the trade name’s **active substance** structured fields (computed on read — **no** `sideEffectId` on each string). Response groups by normalized organ key and each item includes `frequency`. When the trade name has **no** manufacturer, **`externalSubmitUrl`** is the patient fallback URL (SuperAdmin setting, default EDA). To **report** strings to your profile, POST `/my-side-effects` with **`{ name, severity?, notes? }`** (same spelling as returned). Includes **instructionPdf** when present.', true, [p('tradeNameId')], undefined, { '404': 'Trade name not found' }, 'ExtractSideEffectsResponse');
 
 // INSTRUCTION PDF (Medicine instructions)
 s('/trade-names/{tradeNameId}/instruction-pdf/view', 'post', [DOCTOR_TAGS.DRUG_SAFETY, DOCTOR_PATIENTS_SECTION], 'View instruction PDF for a medicine and increment the view counter. Doctor or Admin: call this when opening the PDF so views are tracked. Returns PDF metadata including url (not file bytes).', true, [p('tradeNameId')], undefined, { '404': 'Instruction PDF not found for this medicine' }, 'ViewInstructionPdfResponse');
 s('/trade-names/{tradeNameId}/instruction-pdf/stats', 'get', [DOCTOR_TAGS.DRUG_SAFETY, DOCTOR_PATIENTS_SECTION, ADMIN_TAG], 'Get view count statistics for an instruction PDF without incrementing the counter. Authorized: Doctor, Admin, or Company (company users see stats for their products).', true, [p('tradeNameId')], undefined, { '404': 'Instruction PDF not found for this medicine' }, 'GetInstructionPdfStatsResponse');
-s('/my-side-effects', 'post', PATIENT_TAGS.SIDE_EFFECTS, 'Report side effects for a medication (Patient). Body: **`medicationId`** — **`PatientMedicine.id`** **or** **`TradeName.id`** when a single profile medicine matches — and **`sideEffects`** array of **`{ name, severity?, notes? }`**. Stored on **`PatientSideEffect`** only. **`sideEffectId` is not accepted.** **400** ambiguous `medicationId`; **403** not in profile or no company (**redirect**); **409** duplicate report.', true, [], { schemaRef: 'ReportSideEffectsRequest' }, { '201': 'Created — see ReportSideEffectsResponse', '400': 'Invalid body, ambiguous medicationId, or severity/notes', '403': 'Not in profile or trade name without company', '404': 'Patient profile not found', '409': 'Duplicate submission' });
+s('/my-side-effects', 'post', PATIENT_TAGS.SIDE_EFFECTS, 'Report side effects for a medication (Patient). Body: **`medicationId`** — **`PatientMedicine.id`** **or** **`TradeName.id`** when a single profile medicine matches — and **`sideEffects`** array of **`{ name, severity?, notes? }`**. Stored on **`PatientSideEffect`** only. **`sideEffectId` is not accepted.** **201** includes **`externalSubmitUrl`** when the trade name has **no** manufacturer (same SuperAdmin fallback as POST **`/side-effects/add`**). **400** ambiguous `medicationId`; **403** medicine not in profile; **409** duplicate report.', true, [], { schemaRef: 'ReportSideEffectsRequest' }, { '201': 'Created — see ReportSideEffectsResponse', '400': 'Invalid body, ambiguous medicationId, or severity/notes', '403': 'Medicine not in profile', '404': 'Patient profile not found', '409': 'Duplicate submission' });
 s('/my-side-effects', 'get', [PATIENT_TAGS.SIDE_EFFECTS, DOCTOR_PATIENTS_SECTION], 'Get all side effects reported by the patient');
 s('/my-side-effects/by-medication/{medicationId}', 'get', [PATIENT_TAGS.SIDE_EFFECTS, DOCTOR_PATIENTS_SECTION], 'Get side effects reported for one medicine. **`medicationId`:** **`PatientMedicine.id`** or **`TradeName.id`** if only one profile row matches (**400** if ambiguous).', true, [p('medicationId')]);
 s('/adr/questions-template', 'get', [PATIENT_TAGS.SIDE_EFFECTS, DOCTOR_PATIENTS_SECTION], 'Get ADR questionnaire template in EN/AR (served from **database** for active rows; falls back to server defaults if none seeded). Each item includes **`fieldType`** (`TEXT`, `TEXTAREA`, `DATE`, `BOOLEAN`, `NUMBER`, `SINGLE_CHOICE`) for mobile UI. Query: `lang=en|ar`.', true, [q('lang', 'Language for primary label. Defaults to en.')], undefined, {}, 'AdrQuestionTemplateResponse');
@@ -543,7 +543,7 @@ s('/export/history', 'get', ADMIN_TAG, 'Get export history');
 if (paths['/my-side-effects']?.post) {
   paths['/my-side-effects'].post.responses['201'] = {
     description:
-      'Created. Each new `PatientSideEffect` row; response lists stored **name** (`reportedName`) and optional **severity** / **notes**.',
+      'Created. Each new `PatientSideEffect` row; response lists stored **name** (`reportedName`) and optional **severity** / **notes**. When the trade name has no manufacturer, **`externalSubmitUrl`** is the national / fallback reporting link for patients.',
     content: { 'application/json': { schema: { $ref: '#/components/schemas/ReportSideEffectsResponse' } } }
   };
   const err = { $ref: '#/components/schemas/ReportMySideEffectsErrorResponse' };
@@ -553,7 +553,7 @@ if (paths['/my-side-effects']?.post) {
     content: { 'application/json': { schema: err } }
   };
   paths['/my-side-effects'].post.responses['403'] = {
-    description: 'Medicine not in profile (MEDICINE_NOT_IN_PROFILE) or trade name has no company (SIDE_EFFECTS_TRADE_NAME_NO_COMPANY); latter includes redirect URL.',
+    description: 'Medicine not in profile (`MEDICINE_NOT_IN_PROFILE`).',
     content: { 'application/json': { schema: err } }
   };
   paths['/my-side-effects'].post.responses['404'] = {
@@ -568,7 +568,8 @@ if (paths['/my-side-effects']?.post) {
 
 if (paths['/side-effects/add']?.post) {
   paths['/side-effects/add'].post.responses['201'] = {
-    description: 'ADR report stored (`AdrReport` + items + answers). `result` is `stored_only` or `stored_and_emailed`.',
+    description:
+      'ADR report stored (`AdrReport` + items + answers). `result` is `stored_only` or `stored_and_emailed`. When the trade name has no manufacturer, `externalSubmitUrl` is the effective patient fallback (same as GET `/settings/patient-side-effects-fallback-redirect`; default https://edaegypt.gov.eg); otherwise `null`.',
     content: {
       'application/json': { schema: { $ref: '#/components/schemas/CreateAdrReportResponse' } }
     }
@@ -1489,12 +1490,13 @@ const options: Record<string, unknown> = {
           },
           example: {
             id: 12, email: 'patient@greenrx.com', name: 'John Doe', role: 'Patient', isActive: true, createdAt: '2025-01-15T10:30:00.000Z',
-            patient: { id: 5, gender: 'Male', age: 45, ageClassification: 'Adults', height: 175, weight: 80, bodyMassIndex: 26.1, patientDiseases: [], medicalHistories: [], familyHistories: [], patientLifestyles: [], allergyReports: [] },
+            patient: { id: 5, gender: 'Female', age: 32, ageClassification: 'Adults', height: 165, weight: 60, bodyMassIndex: 22.0, lactation: false, contracipient: true, isContracipientHormonal: true, patientDiseases: [], medicalHistories: [], familyHistories: [], patientLifestyles: [], allergyReports: [] },
             doctor: null, pharmacist: null
           }
         },
         CreatePatientRequest: {
-          description: 'Step 1 "Enter Your Personal Information". Required: userId, gender. Optional: dateOfBirth (when provided, age and ageClassification are computed by backend), age, ageClassification, height (cm), weight (kg). BMI is computed from height and weight and returned as bodyMassIndex in patient responses when both are set. Patient name comes from User (e.g. set at registration). Smoking is covered by lifestyle questions. Get userId from GET /auth/me or register response.',
+          description:
+            'Step 1 "Enter Your Personal Information" (POST /patients — create or update). Required: userId, gender. Optional: dateOfBirth (when provided, age and ageClassification are computed by backend), age, ageClassification, height (cm), weight (kg), bloodType, pregnancyWarning, pregnancyStatus, trimester, lactation, **contracipient**, **isContracipientHormonal**. BMI is computed from height and weight and returned as bodyMassIndex when both are set. Patient name comes from User. Smoking is covered by lifestyle questions. Get userId from GET /auth/me. **Pregnancy:** for **Female**, if `pregnancyStatus` is **true**, the server sets `pregnancyWarning` to **true** and applies pregnancy drug warnings even if the client omits `pregnancyWarning`. **contraception fields:** the API only stores `contracipient` and `isContracipientHormonal` when `gender` is **Female**; for other genders they are ignored on write.',
           type: 'object',
           required: ['userId', 'gender'],
           properties: {
@@ -1506,14 +1508,47 @@ const options: Record<string, unknown> = {
             height:           { type: 'number', example: 175, description: 'Optional. Height in cm. With weight, used to compute bodyMassIndex in responses.' },
             weight:           { type: 'number', example: 80, description: 'Optional. Weight in kg. With height, used to compute bodyMassIndex in responses.' },
             bloodType:        { type: 'string', example: 'A+', description: 'Optional. e.g. A+, A-, B+, B-, AB+, AB-, O+, O-' },
-            pregnancyWarning: { type: 'boolean', example: false, default: false, description: 'Optional.' },
-            pregnancyStatus:  { type: 'boolean', example: false, description: 'Optional.' },
+            pregnancyWarning: { type: 'boolean', example: false, default: false, description: 'Optional. Extra flag for pregnancy-related drug warnings; not required when pregnancyStatus is true (server derives).' },
+            pregnancyStatus:  { type: 'boolean', example: false, description: 'Optional. Female: true = currently pregnant; when true, pregnancy drug-warning path runs even if pregnancyWarning is omitted.' },
             trimester:        { type: 'integer', minimum: 1, maximum: 3, example: 2, description: 'Optional. 1–3.' },
             lactation:        { type: 'boolean', example: false, default: false, description: 'Optional.' },
-            contracipient:    { type: 'boolean', example: false, description: 'Optional. Female only.' },
-            isContracipientHormonal: { type: 'boolean', example: false, description: 'Optional. Female only.' },
+            contracipient:    { type: 'boolean', example: true, description: 'Optional boolean. Patient uses contraception. Only persisted when gender is Female.' },
+            isContracipientHormonal: { type: 'boolean', example: true, description: 'Optional boolean. Contraceptive method is hormonal (e.g. pill, patch, implant). Only persisted when gender is Female.' },
           },
-          example: { userId: 12, gender: 'Male', dateOfBirth: '1980-06-15T00:00:00.000Z', height: 175, weight: 80, bloodType: 'A+' }
+          example: {
+            userId: 12,
+            gender: 'Female',
+            dateOfBirth: '1995-03-10T00:00:00.000Z',
+            height: 165,
+            weight: 60,
+            bloodType: 'O+',
+            pregnancyStatus: true,
+            trimester: 2,
+            lactation: false,
+            contracipient: true,
+            isContracipientHormonal: true,
+          },
+        },
+        /** PATCH-like scalars for PUT /users/:id when the user has a Patient profile (admin). Booleans may be null to clear. */
+        AdminPatientProfilePatch: {
+          type: 'object',
+          description: 'Nested under `patientProfile` on UpdateUserRequest. All fields optional; send only fields to change.',
+          properties: {
+            age:                 { type: 'integer', minimum: 0, maximum: 150, example: 32 },
+            ageClassification:   { type: 'string', enum: ['Neonates', 'Infants', 'Toddlers', 'Children', 'Adolescents', 'Adults', 'Elderly'], example: 'Adults' },
+            dateOfBirth:         { type: 'string', nullable: true, format: 'date-time', example: '1992-01-20T00:00:00.000Z', description: 'ISO string or null to clear.' },
+            weight:              { type: 'number', nullable: true, example: 58.5, description: 'kg; number, string, or null.' },
+            height:              { type: 'number', nullable: true, example: 162, description: 'cm; number, string, or null.' },
+            gender:              { type: 'string', enum: ['Male', 'Female', 'Other'], example: 'Female' },
+            pregnancyWarning:    { type: 'boolean', example: false },
+            pregnancyStatus:     { type: 'boolean', nullable: true, example: false },
+            trimester:           { type: 'integer', nullable: true, minimum: 1, maximum: 3, example: 2 },
+            lactation:           { type: 'boolean', example: false },
+            contracipient:       { type: 'boolean', nullable: true, example: true, description: 'Uses contraception; null to clear.' },
+            isContracipientHormonal: { type: 'boolean', nullable: true, example: true, description: 'Hormonal contraception; null to clear.' },
+            bloodType:           { type: 'string', nullable: true, example: 'A+' },
+            profileCompleteness: { type: 'integer', minimum: 0, maximum: 100, example: 85 },
+          },
         },
         // ── User
         CreateUserRequest: {
@@ -1542,7 +1577,7 @@ const options: Record<string, unknown> = {
             isEmailVerified: { type: 'boolean' },
             role: { type: 'string', enum: ['Patient', 'Doctor', 'Pharmacist', 'Admin', 'Company', 'SuperAdmin'] },
             password: { type: 'string', minLength: 8, description: 'Optional; new password (plain)' },
-            patientProfile: { type: 'object', description: 'Scalars on Patient model' },
+            patientProfile: { $ref: '#/components/schemas/AdminPatientProfilePatch' },
             doctorProfile: { type: 'object', description: 'Scalars on Doctor model; workingHours JSON' },
             pharmacistProfile: { type: 'object', description: 'Scalars on Pharmacist model' },
           },
@@ -2699,10 +2734,10 @@ const options: Record<string, unknown> = {
             error: {
               type: 'string',
               example: 'DUPLICATE_SUBMISSION',
-              description: 'Machine code e.g. INVALID_MEDICATION_ID, AMBIGUOUS_MEDICATION_ID, INVALID_SIDE_EFFECTS, INVALID_SIDE_EFFECT_FORMAT, INVALID_SEVERITY, INVALID_NOTES, MEDICINE_NOT_IN_PROFILE, SIDE_EFFECTS_TRADE_NAME_NO_COMPANY, PATIENT_NOT_FOUND, DUPLICATE_SUBMISSION.'
+              description: 'Machine code e.g. INVALID_MEDICATION_ID, AMBIGUOUS_MEDICATION_ID, INVALID_SIDE_EFFECTS, INVALID_SIDE_EFFECT_FORMAT, INVALID_SEVERITY, INVALID_NOTES, MEDICINE_NOT_IN_PROFILE, PATIENT_NOT_FOUND, DUPLICATE_SUBMISSION.'
             },
             message: { type: 'string', example: 'This medicine is not in your medication profile' },
-            redirect: { type: 'string', format: 'uri', description: 'Present when error is SIDE_EFFECTS_TRADE_NAME_NO_COMPANY.' },
+            redirect: { type: 'string', format: 'uri', description: 'Reserved; not returned by current error responses. Use **201** `externalSubmitUrl` when the trade name has no manufacturer.' },
             duplicates: { type: 'array', items: { type: 'string' }, description: 'Normalized **reportKey** values already reported for this patient + medication (error DUPLICATE_SUBMISSION).' }
           }
         },
@@ -2744,14 +2779,21 @@ const options: Record<string, unknown> = {
           },
         },
         ReportSideEffectsResponse: {
-          description: '201 response for POST `/my-side-effects` (each item is a stored **name** on `PatientSideEffect`).',
+          description:
+            '201 response for POST `/my-side-effects` (each item is a stored **name** on `PatientSideEffect`). **`externalSubmitUrl`:** when the trade name has no manufacturer, the SuperAdmin patient fallback URL (default https://edaegypt.gov.eg) so the patient can open an external reporting site; otherwise null.',
           type: 'object',
-          required: ['success', 'message', 'submitted', 'sideEffects'],
+          required: ['success', 'message', 'submitted', 'reportedCount', 'externalSubmitUrl', 'sideEffects'],
           properties: {
             success: { type: 'boolean', example: true },
             message: { type: 'string', example: '2 side effect(s) reported successfully' },
             submitted: { type: 'integer', example: 2 },
             reportedCount: { type: 'integer', example: 2, description: 'Same as submitted (backward compatibility).' },
+            externalSubmitUrl: {
+              type: 'string',
+              format: 'uri',
+              nullable: true,
+              description: 'Non-null when the medicine’s trade name has no linked manufacturer.',
+            },
             sideEffects: {
               type: 'array',
               items: {
@@ -2771,6 +2813,7 @@ const options: Record<string, unknown> = {
             message: '2 side effect(s) reported successfully',
             submitted: 2,
             reportedCount: 2,
+            externalSubmitUrl: null,
             sideEffects: [
               { id: 45, name: 'Headache', severity: 'Moderate', notes: 'Evening dose' },
               { id: 46, name: 'Nausea', severity: null, notes: null }
@@ -2779,10 +2822,17 @@ const options: Record<string, unknown> = {
         },
         SideEffectsByMedicationResponse: {
           description:
-            'Response for GET /side-effects/by-medication/:id. If **supported: true**, `sideEffects` merges **approved** catalog labels with **active-substance extract** strings (same fields; catalog wins on duplicate **name**, case-insensitive). Report with POST `/my-side-effects` using **`{ name }`** from this list (no ids). If **supported: false**, use **redirect** (SuperAdmin `patientSideEffectsFallbackRedirectUrl`, default https://edaegypt.gov.eg), **reason**, and **message**.',
+            'Response for GET /side-effects/by-medication/:id. If **supported: true**, `sideEffects` merges **approved** catalog labels with **active-substance extract** strings (same fields; catalog wins on duplicate **name**, case-insensitive). **`externalSubmitUrl`:** when this patient medicine’s trade name has **no** linked manufacturer (`company` null), the resolved SuperAdmin fallback URL (same key as `patientSideEffectsFallbackRedirectUrl`, default https://edaegypt.gov.eg); otherwise **`null`**. Use for optional external reporting. Report with POST `/my-side-effects` using **`{ name }`** from this list (no ids). If **supported: false**, use **redirect** (SuperAdmin `patientSideEffectsFallbackRedirectUrl`, default https://edaegypt.gov.eg), **reason**, and **message**.',
           type: 'object',
           properties: {
             supported: { type: 'boolean', example: true },
+            externalSubmitUrl: {
+              type: 'string',
+              format: 'uri',
+              nullable: true,
+              description:
+                'When the trade name has no manufacturer: same effective URL as GET `/settings/patient-side-effects-fallback-redirect`. `null` when a manufacturer exists.',
+            },
             redirect: { type: 'string', format: 'uri', description: 'When supported=false. Patient should open this URL.' },
             reason: { type: 'string', enum: ['NO_COMPANY', 'NO_ACTIVE_CONTRACT'], description: 'When supported=false.' },
             message: { type: 'string', description: 'Human-readable hint when supported=false.' },
@@ -2803,6 +2853,7 @@ const options: Record<string, unknown> = {
           },
           example: {
             supported: true,
+            externalSubmitUrl: null,
             sideEffects: [
               { name: 'Headache', nameAr: 'صداع', frequency: 'Common', bodySystem: 'Nervous System' },
               { name: 'Somnolence', nameAr: null, frequency: 'Common', bodySystem: 'Nervous System' },
@@ -2826,13 +2877,19 @@ const options: Record<string, unknown> = {
         },
         ExtractSideEffectsResponse: {
           description:
-            'GET `/medicines/{tradeNameId}/side-effects`. Side-effect strings are **derived on read** from active-substance JSON-style fields (not necessarily rows in `side_effects`). Grouped by normalized organ key with frequency.',
+            'GET `/medicines/{tradeNameId}/side-effects`. Side-effect strings are **derived on read** from active-substance JSON-style fields (not necessarily rows in `side_effects`). Grouped by normalized organ key with frequency. **`externalSubmitUrl`:** when the trade name has **no** manufacturer, the patient fallback URL (SuperAdmin `patientSideEffectsFallbackRedirectUrl`, default https://edaegypt.gov.eg); otherwise **null**.',
           type: 'object',
           properties: {
             success: { type: 'boolean', example: true },
             medicineId: { type: 'integer', example: 5 },
             tradeName: { type: 'string', example: 'Crestor 5mg' },
             hasContract: { type: 'boolean', example: true },
+            externalSubmitUrl: {
+              type: 'string',
+              format: 'uri',
+              nullable: true,
+              description: 'Present (non-null) only when `company` is missing for this trade name.',
+            },
             instructionPdf: {
               nullable: true,
               description: 'Company instruction PDF linked to this trade name (Prisma relation companyInstructionsPdf). Null when none is configured.',
@@ -2859,6 +2916,7 @@ const options: Record<string, unknown> = {
             medicineId: 5,
             tradeName: 'Crestor 5mg',
             hasContract: true,
+            externalSubmitUrl: null,
             instructionPdf: {
               id: 1,
               url: 'https://storage.example.com/instructions/crestor.pdf',
@@ -2985,11 +3043,23 @@ const options: Record<string, unknown> = {
           }
         },
         CreateAdrReportResponse: {
-          description: '201 response for **POST /side-effects/add**.',
+          description:
+            '201 response for **POST /side-effects/add**. **`externalSubmitUrl`:** when the trade name has no manufacturer, the same effective fallback as GET `/settings/patient-side-effects-fallback-redirect`; otherwise `null`. **`message`** includes guidance to open that URL when it is non-null.',
           type: 'object',
           properties: {
-            message: { type: 'string', example: 'ADR report submitted successfully' },
+            message: {
+              type: 'string',
+              example: 'ADR report submitted successfully',
+              description:
+                'When `externalSubmitUrl` is set, the server adds a short sentence telling the patient to open that URL for national / external reporting.',
+            },
             result: { type: 'string', enum: ['stored_only', 'stored_and_emailed'] },
+            externalSubmitUrl: {
+              type: 'string',
+              format: 'uri',
+              nullable: true,
+              description: 'Non-null only when the submitted trade name has no linked manufacturer.',
+            },
             report: {
               type: 'object',
               properties: {

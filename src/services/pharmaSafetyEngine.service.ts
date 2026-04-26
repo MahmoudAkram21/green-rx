@@ -18,6 +18,10 @@
 import { prisma } from '../lib/prisma';
 import { WarningSeverity, FamilyRelation, SurgeryTimeframe, PrescriptionStatus } from '../../generated/client/client';
 import { checkAllergyConflicts } from './allergyCheck.service';
+import { hasContent, extractText } from '../utils/activeSubstanceFieldText.util';
+import { shouldApplyPregnancyDrugWarnings } from '../utils/patientPregnancyWarning.util';
+
+export { hasContent, extractText };
 
 // ─── Public Types ─────────────────────────────────────────────────────────────
 
@@ -59,39 +63,6 @@ export interface SafetyEvalResult {
   blocked: boolean;
   warnings: SafetyWarning[];
   filteredData: Record<string, unknown>;
-}
-
-// ─── Shared Utility ───────────────────────────────────────────────────────────
-
-/**
- * Returns true when the value contains real clinical text.
- * Handles plain strings, JSON translation objects { en, ar }, and nulls.
- */
-export function hasContent(value: unknown): boolean {
-  if (value === null || value === undefined) return false;
-  let text: string;
-  if (typeof value === 'object') {
-    text = (value as Record<string, string>).en ?? JSON.stringify(value);
-  } else {
-    text = String(value);
-  }
-  const normalized = text.trim().toUpperCase();
-  return (
-    normalized !== '' &&
-    normalized !== 'NA' &&
-    normalized !== 'N/A' &&
-    normalized !== 'NIL' &&
-    normalized !== 'NONE' &&
-    normalized !== '-'
-  );
-}
-
-function extractText(value: unknown): string {
-  if (!value) return '';
-  if (typeof value === 'object') {
-    return (value as Record<string, string>).en ?? JSON.stringify(value);
-  }
-  return String(value);
 }
 
 // ─── Static Maps ──────────────────────────────────────────────────────────────
@@ -683,8 +654,8 @@ function buildFilteredData(
     result['doseInKg'] = drug['doseInKg'];
   }
 
-  // Pregnancy / lactation contextual fields
-  if (patient.pregnancyStatus || patient.pregnancyWarning) {
+  // Pregnancy / lactation contextual fields (female + pregnant or explicit pregnancyWarning)
+  if (shouldApplyPregnancyDrugWarnings(patient)) {
     result['pregnancyWarning'] = drug['pregnancyWarning'];
     result['pregnancyCategory'] = drug['pregnancyCategory'];
     result['reproductiveWarningFemale'] = drug['reproductiveWarningFemale'];

@@ -1,6 +1,7 @@
 import { randomUUID } from 'crypto';
 import { SideEffectStatus, AdrReportRoutingStatus, AdrSideEffectSourceType } from '../../generated/client/client';
 import { prisma } from '../lib/prisma';
+import { getPatientSideEffectsFallbackRedirectUrl } from '../controllers/settings.controller';
 import { sendMail } from './mail.service';
 import { extractSideEffects } from './sideEffectExtract.service';
 import { DEFAULT_ADR_QUESTION_TEMPLATE } from '../constants/adrQuestionDefaults';
@@ -397,9 +398,12 @@ export async function submitAdrReport(input: SubmitAdrReportInput) {
     },
   });
 
+  const externalSubmitUrl = !tradeName.company ? await getPatientSideEffectsFallbackRedirectUrl() : null;
+
   return {
     ok: true as const,
     report: updated,
     result: routingStatus === AdrReportRoutingStatus.STORED_AND_EMAILED ? 'stored_and_emailed' : 'stored_only',
+    externalSubmitUrl,
   };
 }
