@@ -397,31 +397,9 @@ export const reportSideEffects = async (req: Request, res: Response, next: NextF
         const patientMedicine = resolved.patientMedicine;
         const patientMedicineId = patientMedicine.id;
 
-        const reportKeys = parsedInput.map((i) => i.reportKey);
-        const existingSubmissions = await prisma.patientSideEffect.findMany({
-            where: {
-                patientId: patient.id,
-                patientMedicineId: patientMedicineId,
-                reportKey: { in: reportKeys },
-            },
-        });
-
-        if (existingSubmissions.length > 0) {
-            const duplicates = existingSubmissions.map((s) => s.reportKey);
-            res.status(409).json({
-                success: false,
-                error: 'DUPLICATE_SUBMISSION',
-                message: `${duplicates.length} of these side effects were already reported`,
-                duplicates,
-            });
-            return;
-        }
-
-        const byKey = new Map(parsedInput.map((i) => [i.reportKey, i]));
         const results = await Promise.all(
-            reportKeys.map((reportKey) => {
-                const item = byKey.get(reportKey)!;
-                return prisma.patientSideEffect.create({
+            parsedInput.map((item) =>
+                prisma.patientSideEffect.create({
                     data: {
                         patientId: patient.id,
                         patientMedicineId: patientMedicineId,
@@ -431,8 +409,8 @@ export const reportSideEffects = async (req: Request, res: Response, next: NextF
                         notes: item.notes,
                         reportedAt: new Date(),
                     },
-                });
-            })
+                })
+            )
         );
 
         const tnReport = patientMedicine.tradeName;

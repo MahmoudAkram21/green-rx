@@ -62,7 +62,7 @@ model PatientSideEffect {
   patientMedicineId Int
   /** Display name as reported by the patient (trimmed). */
   reportedName      String
-  /** Normalized key: lower(trim(reportedName)) for idempotency. */
+  /** Normalized key: lower(trim(reportedName)) for matching and indexing (multiple rows per key allowed). */
   reportKey         String
   severity          PatientSideEffectSeverity?
   notes             String?
@@ -73,7 +73,7 @@ model PatientSideEffect {
   patient         Patient         @relation(fields: [patientId], references: [id], onDelete: Cascade)
   patientMedicine PatientMedicine @relation(fields: [patientMedicineId], references: [id], onDelete: Cascade)
 
-  @@unique([patientId, patientMedicineId, reportKey])
+  @@index([patientId, patientMedicineId, reportKey])
   @@index([patientId])
   @@index([patientMedicineId])
   @@map("patient_side_effects")

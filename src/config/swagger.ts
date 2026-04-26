@@ -522,7 +522,7 @@ s('/medicines/{tradeNameId}/side-effects', 'get', [PATIENT_TAGS.SIDE_EFFECTS, DO
 // INSTRUCTION PDF (Medicine instructions)
 s('/trade-names/{tradeNameId}/instruction-pdf/view', 'post', [DOCTOR_TAGS.DRUG_SAFETY, DOCTOR_PATIENTS_SECTION], 'View instruction PDF for a medicine and increment the view counter. Doctor or Admin: call this when opening the PDF so views are tracked. Returns PDF metadata including url (not file bytes).', true, [p('tradeNameId')], undefined, { '404': 'Instruction PDF not found for this medicine' }, 'ViewInstructionPdfResponse');
 s('/trade-names/{tradeNameId}/instruction-pdf/stats', 'get', [DOCTOR_TAGS.DRUG_SAFETY, DOCTOR_PATIENTS_SECTION, ADMIN_TAG], 'Get view count statistics for an instruction PDF without incrementing the counter. Authorized: Doctor, Admin, or Company (company users see stats for their products).', true, [p('tradeNameId')], undefined, { '404': 'Instruction PDF not found for this medicine' }, 'GetInstructionPdfStatsResponse');
-s('/my-side-effects', 'post', PATIENT_TAGS.SIDE_EFFECTS, 'Report side effects for a medication (Patient). Body: **`medicationId`** — **`PatientMedicine.id`** **or** **`TradeName.id`** when a single profile medicine matches — and **`sideEffects`** array of **`{ name, severity?, notes? }`**. Stored on **`PatientSideEffect`** only. **`sideEffectId` is not accepted.** **201** includes **`externalSubmitUrl`** when the trade name has **no** manufacturer (same SuperAdmin fallback as POST **`/side-effects/add`**). **400** ambiguous `medicationId`; **403** medicine not in profile; **409** duplicate report.', true, [], { schemaRef: 'ReportSideEffectsRequest' }, { '201': 'Created — see ReportSideEffectsResponse', '400': 'Invalid body, ambiguous medicationId, or severity/notes', '403': 'Medicine not in profile', '404': 'Patient profile not found', '409': 'Duplicate submission' });
+s('/my-side-effects', 'post', PATIENT_TAGS.SIDE_EFFECTS, 'Report side effects for a medication (Patient). Body: **`medicationId`** — **`PatientMedicine.id`** **or** **`TradeName.id`** when a single profile medicine matches — and **`sideEffects`** array of **`{ name, severity?, notes? }`**. Stored on **`PatientSideEffect`** only; **the same `name` may be reported again** for the same medicine (history). **`sideEffectId` is not accepted.** **201** includes **`externalSubmitUrl`** when the trade name has **no** manufacturer (same SuperAdmin fallback as POST **`/side-effects/add`**). **400** ambiguous `medicationId`; **403** medicine not in profile.', true, [], { schemaRef: 'ReportSideEffectsRequest' }, { '201': 'Created — see ReportSideEffectsResponse', '400': 'Invalid body, ambiguous medicationId, or severity/notes', '403': 'Medicine not in profile', '404': 'Patient profile not found' });
 s('/my-side-effects', 'get', [PATIENT_TAGS.SIDE_EFFECTS, DOCTOR_PATIENTS_SECTION], 'Get all side effects reported by the patient');
 s('/my-side-effects/by-medication/{medicationId}', 'get', [PATIENT_TAGS.SIDE_EFFECTS, DOCTOR_PATIENTS_SECTION], 'Get side effects reported for one medicine. **`medicationId`:** **`PatientMedicine.id`** or **`TradeName.id`** if only one profile row matches (**400** if ambiguous).', true, [p('medicationId')]);
 s('/adr/questions-template', 'get', [PATIENT_TAGS.SIDE_EFFECTS, DOCTOR_PATIENTS_SECTION], 'Get ADR questionnaire template in EN/AR (served from **database** for active rows; falls back to server defaults if none seeded). Each item includes **`fieldType`** (`TEXT`, `TEXTAREA`, `DATE`, `BOOLEAN`, `NUMBER`, `SINGLE_CHOICE`) for mobile UI. Query: `lang=en|ar`.', true, [q('lang', 'Language for primary label. Defaults to en.')], undefined, {}, 'AdrQuestionTemplateResponse');
@@ -558,10 +558,6 @@ if (paths['/my-side-effects']?.post) {
   };
   paths['/my-side-effects'].post.responses['404'] = {
     description: 'Authenticated user has no patient profile.',
-    content: { 'application/json': { schema: err } }
-  };
-  paths['/my-side-effects'].post.responses['409'] = {
-    description: 'One or more side effects were already reported for this patient + medication.',
     content: { 'application/json': { schema: err } }
   };
 }
@@ -2733,12 +2729,11 @@ const options: Record<string, unknown> = {
             success: { type: 'boolean', example: false },
             error: {
               type: 'string',
-              example: 'DUPLICATE_SUBMISSION',
-              description: 'Machine code e.g. INVALID_MEDICATION_ID, AMBIGUOUS_MEDICATION_ID, INVALID_SIDE_EFFECTS, INVALID_SIDE_EFFECT_FORMAT, INVALID_SEVERITY, INVALID_NOTES, MEDICINE_NOT_IN_PROFILE, PATIENT_NOT_FOUND, DUPLICATE_SUBMISSION.'
+              example: 'INVALID_SIDE_EFFECTS',
+              description: 'Machine code e.g. INVALID_MEDICATION_ID, AMBIGUOUS_MEDICATION_ID, INVALID_SIDE_EFFECTS, INVALID_SIDE_EFFECT_FORMAT, INVALID_SEVERITY, INVALID_NOTES, MEDICINE_NOT_IN_PROFILE, PATIENT_NOT_FOUND.'
             },
             message: { type: 'string', example: 'This medicine is not in your medication profile' },
-            redirect: { type: 'string', format: 'uri', description: 'Reserved; not returned by current error responses. Use **201** `externalSubmitUrl` when the trade name has no manufacturer.' },
-            duplicates: { type: 'array', items: { type: 'string' }, description: 'Normalized **reportKey** values already reported for this patient + medication (error DUPLICATE_SUBMISSION).' }
+            redirect: { type: 'string', format: 'uri', description: 'Reserved; not returned by current error responses. Use **201** `externalSubmitUrl` when the trade name has no manufacturer.' }
           }
         },
         ReportSideEffectItemRequest: {
